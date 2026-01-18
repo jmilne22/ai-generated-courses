@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 17: Integration Testing | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+        nav a:hover { color: var(--green-bright); }
+        .module-tag { font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 3rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .lesson h3 { color: var(--orange); margin: 1.5rem 0 1rem; }
+        .lesson p { color: var(--text-dim); margin-bottom: 1rem; }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--blue); }
+        .code-header.terminal { color: var(--green-bright); }
+        .code-header.file { color: var(--orange); }
+        .code-header::before { content: '● '; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); } .string { color: var(--green-bright); } .comment { color: var(--text-dim); } .func { color: var(--blue); } .type { color: var(--orange); } .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .warning { background: rgba(255, 157, 0, 0.1); border-left: 3px solid var(--orange); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .warning-title { font-weight: 600; color: var(--orange); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
+        .nav-btn:hover { border-color: var(--green-bright); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul, ol { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); } li { margin-bottom: 0.5rem; }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        .exercise { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .exercise h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1rem; }
+        .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
+        details { margin-top: 0.75rem; }
+        details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
+        details summary:hover { color: var(--green-bright); }
+        details[open] summary { color: var(--green-bright); }
+        .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
+        .hint-content code { background: var(--bg-code); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); font-size: 0.85rem; }
+        .hint-content pre { margin: 0.5rem 0; padding: 0.75rem; background: var(--bg-code); border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); }
+        .expected { margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 255, 157, 0.05); border: 1px dashed var(--green-bright); border-radius: 6px; }
+        .expected-title { font-size: 0.75rem; color: var(--green-bright); margin-bottom: 0.4rem; text-transform: uppercase; font-weight: 600; }
+        .expected pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav><a href="module16.html">← Module 16</a><a href="index.html">Course Home →</a></nav>
+        <div class="module-tag">// MODULE 17</div>
+        <h1>Integration Testing</h1>
+        <p class="module-desc">Testing real components working together: HTTP servers, databases, file systems, external services.</p>
+
+        <div class="lesson">
+            <h2>Unit vs Integration Tests</h2>
+            <p>Quick distinction:</p>
+            <ul>
+                <li><strong>Unit tests</strong> — test one function/component in isolation, mocked dependencies, fast</li>
+                <li><strong>Integration tests</strong> — test multiple components together, real dependencies, slower</li>
+            </ul>
+            <p>Both are valuable. Unit tests catch logic bugs fast. Integration tests catch wiring bugs.</p>
+        </div>
+
+        <div class="lesson">
+            <h2>Testing HTTP Handlers</h2>
+            <p>Go's <span class="inline-code">net/http/httptest</span> package lets you test handlers without starting a real server.</p>
+            
+            <div class="code-block">
+                <div class="code-header file">server.go</div>
+                <pre><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"encoding/json"</span>
+    <span class="string">"net/http"</span>
+)
+
+<span class="keyword">type</span> <span class="type">Response</span> <span class="keyword">struct</span> {
+    Message <span class="type">string</span> <span class="string">`json:"message"`</span>
+}
+
+<span class="keyword">func</span> <span class="func">healthHandler</span>(w http.<span class="type">ResponseWriter</span>, r *http.<span class="type">Request</span>) {
+    w.<span class="func">Header</span>().<span class="func">Set</span>(<span class="string">"Content-Type"</span>, <span class="string">"application/json"</span>)
+    json.<span class="func">NewEncoder</span>(w).<span class="func">Encode</span>(<span class="type">Response</span>{Message: <span class="string">"ok"</span>})
+}
+
+<span class="keyword">func</span> <span class="func">echoHandler</span>(w http.<span class="type">ResponseWriter</span>, r *http.<span class="type">Request</span>) {
+    name := r.URL.<span class="func">Query</span>().<span class="func">Get</span>(<span class="string">"name"</span>)
+    <span class="keyword">if</span> name == <span class="string">""</span> {
+        http.<span class="func">Error</span>(w, <span class="string">"name required"</span>, http.StatusBadRequest)
+        <span class="keyword">return</span>
+    }
+    w.<span class="func">Header</span>().<span class="func">Set</span>(<span class="string">"Content-Type"</span>, <span class="string">"application/json"</span>)
+    json.<span class="func">NewEncoder</span>(w).<span class="func">Encode</span>(<span class="type">Response</span>{Message: <span class="string">"hello "</span> + name})
+}</pre>
+            </div>
+            
+            <div class="code-block">
+                <div class="code-header file">server_test.go</div>
+                <pre><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"encoding/json"</span>
+    <span class="string">"net/http"</span>
+    <span class="string">"net/http/httptest"</span>
+    <span class="string">"testing"</span>
+)
+
+<span class="keyword">func</span> <span class="func">TestHealthHandler</span>(t *testing.<span class="type">T</span>) {
+    <span class="comment">// Create a request</span>
+    req := httptest.<span class="func">NewRequest</span>(<span class="string">"GET"</span>, <span class="string">"/health"</span>, <span class="keyword">nil</span>)
+    
+    <span class="comment">// Create a ResponseRecorder to capture the response</span>
+    rr := httptest.<span class="func">NewRecorder</span>()
+    
+    <span class="comment">// Call the handler directly</span>
+    <span class="func">healthHandler</span>(rr, req)
+    
+    <span class="comment">// Check status code</span>
+    <span class="keyword">if</span> rr.Code != http.StatusOK {
+        t.<span class="func">Errorf</span>(<span class="string">"got status %d, want %d"</span>, rr.Code, http.StatusOK)
+    }
+    
+    <span class="comment">// Check response body</span>
+    <span class="keyword">var</span> resp <span class="type">Response</span>
+    <span class="keyword">if</span> err := json.<span class="func">NewDecoder</span>(rr.Body).<span class="func">Decode</span>(&resp); err != <span class="keyword">nil</span> {
+        t.<span class="func">Fatalf</span>(<span class="string">"failed to decode response: %v"</span>, err)
+    }
+    
+    <span class="keyword">if</span> resp.Message != <span class="string">"ok"</span> {
+        t.<span class="func">Errorf</span>(<span class="string">"got message %q, want %q"</span>, resp.Message, <span class="string">"ok"</span>)
+    }
+}
+
+<span class="keyword">func</span> <span class="func">TestEchoHandler</span>(t *testing.<span class="type">T</span>) {
+    tests := []<span class="keyword">struct</span> {
+        name       <span class="type">string</span>
+        query      <span class="type">string</span>
+        wantStatus <span class="type">int</span>
+        wantMsg    <span class="type">string</span>
+    }{
+        {<span class="string">"valid"</span>, <span class="string">"?name=World"</span>, http.StatusOK, <span class="string">"hello World"</span>},
+        {<span class="string">"missing name"</span>, <span class="string">""</span>, http.StatusBadRequest, <span class="string">""</span>},
+    }
+    
+    <span class="keyword">for</span> _, tt := <span class="keyword">range</span> tests {
+        t.<span class="func">Run</span>(tt.name, <span class="keyword">func</span>(t *testing.<span class="type">T</span>) {
+            req := httptest.<span class="func">NewRequest</span>(<span class="string">"GET"</span>, <span class="string">"/echo"</span>+tt.query, <span class="keyword">nil</span>)
+            rr := httptest.<span class="func">NewRecorder</span>()
+            
+            <span class="func">echoHandler</span>(rr, req)
+            
+            <span class="keyword">if</span> rr.Code != tt.wantStatus {
+                t.<span class="func">Errorf</span>(<span class="string">"status = %d, want %d"</span>, rr.Code, tt.wantStatus)
+            }
+            
+            <span class="keyword">if</span> tt.wantStatus == http.StatusOK {
+                <span class="keyword">var</span> resp <span class="type">Response</span>
+                json.<span class="func">NewDecoder</span>(rr.Body).<span class="func">Decode</span>(&resp)
+                <span class="keyword">if</span> resp.Message != tt.wantMsg {
+                    t.<span class="func">Errorf</span>(<span class="string">"message = %q, want %q"</span>, resp.Message, tt.wantMsg)
+                }
+            }
+        })
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Testing Full HTTP Server</h2>
+            <p>Use <span class="inline-code">httptest.NewServer</span> to spin up a real test server.</p>
+            
+            <div class="code-block">
+                <div class="code-header">Full server test</div>
+                <pre><span class="keyword">func</span> <span class="func">TestFullServer</span>(t *testing.<span class="type">T</span>) {
+    <span class="comment">// Create router/mux with all handlers</span>
+    mux := http.<span class="func">NewServeMux</span>()
+    mux.<span class="func">HandleFunc</span>(<span class="string">"/health"</span>, healthHandler)
+    mux.<span class="func">HandleFunc</span>(<span class="string">"/echo"</span>, echoHandler)
+    
+    <span class="comment">// Start test server</span>
+    server := httptest.<span class="func">NewServer</span>(mux)
+    <span class="keyword">defer</span> server.<span class="func">Close</span>()
+    
+    <span class="comment">// Make real HTTP request</span>
+    resp, err := http.<span class="func">Get</span>(server.URL + <span class="string">"/health"</span>)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        t.<span class="func">Fatalf</span>(<span class="string">"request failed: %v"</span>, err)
+    }
+    <span class="keyword">defer</span> resp.Body.<span class="func">Close</span>()
+    
+    <span class="keyword">if</span> resp.StatusCode != http.StatusOK {
+        t.<span class="func">Errorf</span>(<span class="string">"got status %d"</span>, resp.StatusCode)
+    }
+}
+
+<span class="comment">// Test with custom client (for timeouts, etc)</span>
+<span class="keyword">func</span> <span class="func">TestWithClient</span>(t *testing.<span class="type">T</span>) {
+    server := httptest.<span class="func">NewServer</span>(http.<span class="func">HandlerFunc</span>(healthHandler))
+    <span class="keyword">defer</span> server.<span class="func">Close</span>()
+    
+    client := &http.<span class="type">Client</span>{
+        Timeout: <span class="number">5</span> * time.Second,
+    }
+    
+    resp, err := client.<span class="func">Get</span>(server.URL)
+    <span class="comment">// ...</span>
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Testing with Temporary Files</h2>
+            <p>Use <span class="inline-code">t.TempDir()</span> for tests that need file system access.</p>
+            
+            <div class="code-block">
+                <div class="code-header">Temp directory testing</div>
+                <pre><span class="keyword">func</span> <span class="func">TestConfigLoader</span>(t *testing.<span class="type">T</span>) {
+    <span class="comment">// t.TempDir() creates a temp dir, auto-cleaned after test</span>
+    dir := t.<span class="func">TempDir</span>()
+    
+    <span class="comment">// Create test config file</span>
+    configPath := filepath.<span class="func">Join</span>(dir, <span class="string">"config.yaml"</span>)
+    content := []<span class="type">byte</span>(<span class="string">`
+name: test
+port: 8080
+`</span>)
+    <span class="keyword">if</span> err := os.<span class="func">WriteFile</span>(configPath, content, <span class="number">0644</span>); err != <span class="keyword">nil</span> {
+        t.<span class="func">Fatalf</span>(<span class="string">"failed to write config: %v"</span>, err)
+    }
+    
+    <span class="comment">// Test your loader</span>
+    cfg, err := <span class="func">LoadConfig</span>(configPath)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        t.<span class="func">Fatalf</span>(<span class="string">"LoadConfig failed: %v"</span>, err)
+    }
+    
+    <span class="keyword">if</span> cfg.Name != <span class="string">"test"</span> {
+        t.<span class="func">Errorf</span>(<span class="string">"name = %q, want %q"</span>, cfg.Name, <span class="string">"test"</span>)
+    }
+}
+
+<span class="keyword">func</span> <span class="func">TestFileWriter</span>(t *testing.<span class="type">T</span>) {
+    dir := t.<span class="func">TempDir</span>()
+    outPath := filepath.<span class="func">Join</span>(dir, <span class="string">"output.txt"</span>)
+    
+    <span class="comment">// Test your writer</span>
+    err := <span class="func">WriteReport</span>(outPath, data)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        t.<span class="func">Fatalf</span>(<span class="string">"WriteReport failed: %v"</span>, err)
+    }
+    
+    <span class="comment">// Verify file was written correctly</span>
+    got, err := os.<span class="func">ReadFile</span>(outPath)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        t.<span class="func">Fatalf</span>(<span class="string">"failed to read output: %v"</span>, err)
+    }
+    
+    <span class="keyword">if</span> !bytes.<span class="func">Contains</span>(got, []<span class="type">byte</span>(<span class="string">"expected content"</span>)) {
+        t.<span class="func">Errorf</span>(<span class="string">"output missing expected content"</span>)
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Build Tags for Integration Tests</h2>
+            <p>Separate slow integration tests from fast unit tests using build tags.</p>
+            
+            <div class="code-block">
+                <div class="code-header file">db_integration_test.go</div>
+                <pre><span class="comment">//go:build integration</span>
+
+<span class="keyword">package</span> db
+
+<span class="keyword">import</span> <span class="string">"testing"</span>
+
+<span class="comment">// This test only runs when you specify the tag</span>
+<span class="keyword">func</span> <span class="func">TestRealDatabaseConnection</span>(t *testing.<span class="type">T</span>) {
+    db, err := <span class="func">Connect</span>(os.<span class="func">Getenv</span>(<span class="string">"DATABASE_URL"</span>))
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        t.<span class="func">Fatalf</span>(<span class="string">"failed to connect: %v"</span>, err)
+    }
+    <span class="keyword">defer</span> db.<span class="func">Close</span>()
+    
+    <span class="comment">// Test real queries...</span>
+}</pre>
+            </div>
+            
+            <div class="code-block">
+                <div class="code-header terminal">Running with tags</div>
+                <pre><span class="comment"># Run only unit tests (default)</span>
+$ go test ./...
+
+<span class="comment"># Run integration tests too</span>
+$ go test -tags=integration ./...
+
+<span class="comment"># Run ONLY integration tests</span>
+$ go test -tags=integration -run Integration ./...</pre>
+            </div>
+            
+            <div class="tip">
+                <div class="tip-title">CI Strategy</div>
+                <p>Run unit tests on every commit. Run integration tests on PR merge or nightly. Keep your feedback loop fast.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Testing with Environment Variables</h2>
+            <div class="code-block">
+                <div class="code-header">Env var testing</div>
+                <pre><span class="keyword">func</span> <span class="func">TestConfigFromEnv</span>(t *testing.<span class="type">T</span>) {
+    <span class="comment">// Set env for this test</span>
+    t.<span class="func">Setenv</span>(<span class="string">"APP_PORT"</span>, <span class="string">"9000"</span>)
+    t.<span class="func">Setenv</span>(<span class="string">"APP_DEBUG"</span>, <span class="string">"true"</span>)
+    
+    <span class="comment">// t.Setenv automatically restores original value after test</span>
+    
+    cfg := <span class="func">LoadConfigFromEnv</span>()
+    
+    <span class="keyword">if</span> cfg.Port != <span class="number">9000</span> {
+        t.<span class="func">Errorf</span>(<span class="string">"port = %d, want 9000"</span>, cfg.Port)
+    }
+    <span class="keyword">if</span> !cfg.Debug {
+        t.<span class="func">Error</span>(<span class="string">"debug should be true"</span>)
+    }
+}
+
+<span class="comment">// Skip if required env var not set</span>
+<span class="keyword">func</span> <span class="func">TestExternalAPI</span>(t *testing.<span class="type">T</span>) {
+    apiKey := os.<span class="func">Getenv</span>(<span class="string">"API_KEY"</span>)
+    <span class="keyword">if</span> apiKey == <span class="string">""</span> {
+        t.<span class="func">Skip</span>(<span class="string">"API_KEY not set, skipping integration test"</span>)
+    }
+    
+    <span class="comment">// Test with real API...</span>
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>TestMain for Setup/Teardown</h2>
+            <p>Need to run setup before any tests in a package? Use <span class="inline-code">TestMain</span>.</p>
+            
+            <div class="code-block">
+                <div class="code-header file">db_test.go</div>
+                <pre><span class="keyword">package</span> db
+
+<span class="keyword">import</span> (
+    <span class="string">"os"</span>
+    <span class="string">"testing"</span>
+)
+
+<span class="keyword">var</span> testDB *<span class="type">DB</span>
+
+<span class="keyword">func</span> <span class="func">TestMain</span>(m *testing.<span class="type">M</span>) {
+    <span class="comment">// Setup: runs before any tests</span>
+    <span class="keyword">var</span> err <span class="type">error</span>
+    testDB, err = <span class="func">SetupTestDatabase</span>()
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        fmt.<span class="func">Printf</span>(<span class="string">"failed to setup test db: %v\n"</span>, err)
+        os.<span class="func">Exit</span>(<span class="number">1</span>)
+    }
+    
+    <span class="comment">// Run all tests</span>
+    code := m.<span class="func">Run</span>()
+    
+    <span class="comment">// Teardown: runs after all tests</span>
+    testDB.<span class="func">Close</span>()
+    <span class="func">CleanupTestDatabase</span>()
+    
+    os.<span class="func">Exit</span>(code)
+}
+
+<span class="keyword">func</span> <span class="func">TestCreateUser</span>(t *testing.<span class="type">T</span>) {
+    <span class="comment">// testDB is available here</span>
+    err := testDB.<span class="func">CreateUser</span>(&<span class="type">User</span>{Name: <span class="string">"Alice"</span>})
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        t.<span class="func">Fatalf</span>(<span class="string">"CreateUser failed: %v"</span>, err)
+    }
+}
+
+<span class="keyword">func</span> <span class="func">TestGetUser</span>(t *testing.<span class="type">T</span>) {
+    <span class="comment">// testDB is available here too</span>
+    user, err := testDB.<span class="func">GetUser</span>(<span class="string">"alice"</span>)
+    <span class="comment">// ...</span>
+}</pre>
+            </div>
+            
+            <div class="warning">
+                <div class="warning-title">TestMain Gotcha</div>
+                <p>If you define <span class="inline-code">TestMain</span>, you MUST call <span class="inline-code">m.Run()</span> or no tests will execute. Don't forget <span class="inline-code">os.Exit(code)</span> at the end.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Testing External Services</h2>
+            <p>For external APIs, either mock them or use a test/sandbox environment.</p>
+            
+            <div class="code-block">
+                <div class="code-header">Mock external API</div>
+                <pre><span class="keyword">func</span> <span class="func">TestPaymentProcessor</span>(t *testing.<span class="type">T</span>) {
+    <span class="comment">// Create mock server that mimics the external API</span>
+    mockAPI := httptest.<span class="func">NewServer</span>(http.<span class="func">HandlerFunc</span>(
+        <span class="keyword">func</span>(w http.<span class="type">ResponseWriter</span>, r *http.<span class="type">Request</span>) {
+            <span class="comment">// Verify request</span>
+            <span class="keyword">if</span> r.URL.Path != <span class="string">"/v1/charge"</span> {
+                t.<span class="func">Errorf</span>(<span class="string">"unexpected path: %s"</span>, r.URL.Path)
+            }
+            
+            <span class="comment">// Return mock response</span>
+            w.<span class="func">Header</span>().<span class="func">Set</span>(<span class="string">"Content-Type"</span>, <span class="string">"application/json"</span>)
+            fmt.<span class="func">Fprint</span>(w, <span class="string">`{"id": "ch_123", "status": "success"}`</span>)
+        },
+    ))
+    <span class="keyword">defer</span> mockAPI.<span class="func">Close</span>()
+    
+    <span class="comment">// Point your client at the mock</span>
+    client := <span class="func">NewPaymentClient</span>(mockAPI.URL)
+    
+    result, err := client.<span class="func">Charge</span>(<span class="number">1000</span>)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        t.<span class="func">Fatalf</span>(<span class="string">"Charge failed: %v"</span>, err)
+    }
+    
+    <span class="keyword">if</span> result.Status != <span class="string">"success"</span> {
+        t.<span class="func">Errorf</span>(<span class="string">"status = %q, want success"</span>, result.Status)
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Parallel Tests</h2>
+            <p>Speed up tests by running them in parallel (when safe to do so).</p>
+            
+            <div class="code-block">
+                <div class="code-header">Parallel execution</div>
+                <pre><span class="keyword">func</span> <span class="func">TestA</span>(t *testing.<span class="type">T</span>) {
+    t.<span class="func">Parallel</span>()  <span class="comment">// Mark as safe to run in parallel</span>
+    <span class="comment">// ... test code ...</span>
+}
+
+<span class="keyword">func</span> <span class="func">TestB</span>(t *testing.<span class="type">T</span>) {
+    t.<span class="func">Parallel</span>()
+    <span class="comment">// ... test code ...</span>
+}
+
+<span class="comment">// Table-driven with parallel subtests</span>
+<span class="keyword">func</span> <span class="func">TestParallelSubtests</span>(t *testing.<span class="type">T</span>) {
+    tests := []<span class="keyword">struct</span>{ name <span class="type">string</span>; input <span class="type">int</span> }{
+        {<span class="string">"case1"</span>, <span class="number">1</span>},
+        {<span class="string">"case2"</span>, <span class="number">2</span>},
+        {<span class="string">"case3"</span>, <span class="number">3</span>},
+    }
+    
+    <span class="keyword">for</span> _, tt := <span class="keyword">range</span> tests {
+        tt := tt  <span class="comment">// IMPORTANT: capture range variable</span>
+        t.<span class="func">Run</span>(tt.name, <span class="keyword">func</span>(t *testing.<span class="type">T</span>) {
+            t.<span class="func">Parallel</span>()
+            <span class="comment">// ... test using tt.input ...</span>
+        })
+    }
+}</pre>
+            </div>
+            
+            <div class="warning">
+                <div class="warning-title">When NOT to parallelize</div>
+                <p>Don't use <span class="inline-code">t.Parallel()</span> if tests share state, write to same files, or use shared database rows. Race conditions will ruin your day.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Golden Files</h2>
+            <p>For complex output, compare against "golden" reference files.</p>
+            
+            <div class="code-block">
+                <div class="code-header">Golden file testing</div>
+                <pre><span class="keyword">func</span> <span class="func">TestRenderTemplate</span>(t *testing.<span class="type">T</span>) {
+    output := <span class="func">RenderTemplate</span>(data)
+    
+    goldenPath := <span class="string">"testdata/expected_output.golden"</span>
+    
+    <span class="comment">// Update golden file if -update flag is set</span>
+    <span class="keyword">if</span> *update {
+        os.<span class="func">WriteFile</span>(goldenPath, []<span class="type">byte</span>(output), <span class="number">0644</span>)
+        <span class="keyword">return</span>
+    }
+    
+    <span class="comment">// Compare against golden file</span>
+    expected, err := os.<span class="func">ReadFile</span>(goldenPath)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        t.<span class="func">Fatalf</span>(<span class="string">"failed to read golden file: %v"</span>, err)
+    }
+    
+    <span class="keyword">if</span> output != <span class="func">string</span>(expected) {
+        t.<span class="func">Errorf</span>(<span class="string">"output doesn't match golden file\ngot:\n%s\nwant:\n%s"</span>, 
+            output, expected)
+    }
+}
+
+<span class="comment">// Define flag at package level</span>
+<span class="keyword">var</span> update = flag.<span class="func">Bool</span>(<span class="string">"update"</span>, <span class="keyword">false</span>, <span class="string">"update golden files"</span>)</pre>
+            </div>
+            
+            <div class="code-block">
+                <div class="code-header terminal">Usage</div>
+                <pre><span class="comment"># Run tests normally</span>
+$ go test
+
+<span class="comment"># Update golden files when output changes intentionally</span>
+$ go test -update</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Exercises</h2>
+            
+            <div class="exercise">
+                <h4>Exercise 1: Test an API Client</h4>
+                <p>Create API client. Use <code>httptest.NewServer</code> to mock. Test: success, 404, 500, timeout.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Create mock server that returns different responses based on URL path or query params.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func TestAPIClient(t *testing.T) {
+    server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        switch r.URL.Path {
+        case "/ok":
+            json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+        case "/notfound":
+            http.Error(w, "not found", 404)
+        case "/error":
+            http.Error(w, "server error", 500)
+        }
+    }))
+    defer server.Close()
+    
+    client := NewAPIClient(server.URL)
+    
+    t.Run("success", func(t *testing.T) {
+        resp, err := client.Get("/ok")
+        if err != nil || resp.Status != "ok" {
+            t.Error("expected success")
+        }
+    })
+    
+    t.Run("404", func(t *testing.T) {
+        _, err := client.Get("/notfound")
+        if err == nil {
+            t.Error("expected error")
+        }
+    })
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 2: File Processing Test</h4>
+                <p>Write CSV parser. Use <code>t.TempDir()</code> for test files. Test valid, empty, malformed, missing.</p>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func TestParseCSV(t *testing.T) {
+    t.Run("valid", func(t *testing.T) {
+        dir := t.TempDir()
+        path := filepath.Join(dir, "test.csv")
+        os.WriteFile(path, []byte("a,b,c\n1,2,3\n"), 0644)
+        
+        rows, err := ParseCSV(path)
+        if err != nil || len(rows) != 2 {
+            t.Errorf("expected 2 rows, got %d, err=%v", len(rows), err)
+        }
+    })
+    
+    t.Run("missing", func(t *testing.T) {
+        _, err := ParseCSV("/nonexistent.csv")
+        if err == nil {
+            t.Error("expected error for missing file")
+        }
+    })
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 3: Build Tagged Tests</h4>
+                <p>Create package with unit + integration tests. Separate with <code>//go:build integration</code>.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Integration test file starts with:<br>
+                        <code>//go:build integration</code><br><br>
+                        Run with: <code>go test -tags=integration</code>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Behavior</div>
+                    <pre># Unit tests only (default)
+$ go test ./...
+
+# Include integration tests
+$ go test -tags=integration ./...</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 4: End-to-End HTTP Test</h4>
+                <p>Build HTTP service with 3 endpoints. Write tests that start full server and make real requests.</p>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func TestServer(t *testing.T) {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/health", healthHandler)
+    mux.HandleFunc("/users", usersHandler)
+    mux.HandleFunc("/echo", echoHandler)
+    
+    server := httptest.NewServer(mux)
+    defer server.Close()
+    
+    tests := []struct {
+        path       string
+        wantStatus int
+    }{
+        {"/health", 200},
+        {"/users", 200},
+        {"/notfound", 404},
+    }
+    
+    for _, tt := range tests {
+        resp, _ := http.Get(server.URL + tt.path)
+        if resp.StatusCode != tt.wantStatus {
+            t.Errorf("%s: got %d, want %d", tt.path, resp.StatusCode, tt.wantStatus)
+        }
+    }
+}</pre>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 17 Summary</h2>
+            <ul>
+                <li><strong>httptest.NewRecorder</strong> — test handlers without network</li>
+                <li><strong>httptest.NewServer</strong> — spin up real test server</li>
+                <li><strong>t.TempDir()</strong> — auto-cleaned temp directories</li>
+                <li><strong>t.Setenv()</strong> — set env vars that auto-restore</li>
+                <li><strong>//go:build integration</strong> — separate slow tests</li>
+                <li><strong>TestMain</strong> — package-level setup/teardown</li>
+                <li><strong>t.Parallel()</strong> — run tests concurrently</li>
+                <li><strong>Golden files</strong> — compare against reference output</li>
+            </ul>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module16.html" class="nav-btn">← Module 16</a>
+            <a href="index.html" class="nav-btn primary">Course Complete! 🎉</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 7: Files, YAML & Shell | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 1000; opacity: 0.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+        nav a:hover { color: var(--green-bright); }
+        .module-tag { font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 3rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .lesson h3 { color: var(--orange); margin: 1.5rem 0 1rem; }
+        .lesson p { color: var(--text-dim); margin-bottom: 1rem; }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--blue); }
+        .code-header.yaml { color: var(--orange); }
+        .code-header.terminal { color: var(--green-bright); }
+        .code-header::before { content: '● '; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); }
+        .string { color: var(--green-bright); }
+        .comment { color: var(--text-dim); }
+        .func { color: var(--blue); }
+        .type { color: var(--orange); }
+        .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .warning { background: rgba(255, 157, 0, 0.1); border-left: 3px solid var(--orange); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .warning-title { font-weight: 600; color: var(--orange); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .project-box { background: linear-gradient(135deg, rgba(0, 255, 157, 0.1), rgba(0, 180, 255, 0.1)); border: 2px solid var(--green-bright); border-radius: 12px; padding: 2rem; margin: 2rem 0; }
+        .project-box h3 { color: var(--green-bright); margin-bottom: 1rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
+        .nav-btn:hover { border-color: var(--green-bright); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul, ol { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); }
+        li { margin-bottom: 0.5rem; }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="module6.html">← Module 6</a>
+            <a href="module8.html">Module 8 →</a>
+        </nav>
+        <div class="module-tag">// MODULE 07</div>
+        <h1>Files, YAML & Shell</h1>
+        <p class="module-desc">Read files, parse configs, run shell commands. Build a task runner from scratch.</p>
+
+        <div class="lesson">
+            <h2>Reading & Writing Files</h2>
+            <div class="code-block">
+                <div class="code-header">File operations</div>
+                <pre><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"os"</span>
+)
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    <span class="comment">// Read entire file (simple)</span>
+    data, err := os.<span class="func">ReadFile</span>(<span class="string">"config.yaml"</span>)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="func">panic</span>(err)
+    }
+    
+    <span class="comment">// Write entire file</span>
+    err = os.<span class="func">WriteFile</span>(<span class="string">"output.txt"</span>, []<span class="type">byte</span>(<span class="string">"Hello!"</span>), <span class="number">0644</span>)
+    
+    <span class="comment">// Check if file exists</span>
+    <span class="keyword">if</span> _, err := os.<span class="func">Stat</span>(<span class="string">"file.txt"</span>); os.<span class="func">IsNotExist</span>(err) {
+        fmt.<span class="func">Println</span>(<span class="string">"File doesn't exist"</span>)
+    }
+    
+    <span class="comment">// Create directory</span>
+    os.<span class="func">MkdirAll</span>(<span class="string">"path/to/dir"</span>, <span class="number">0755</span>)
+    
+    <span class="comment">// List directory</span>
+    entries, _ := os.<span class="func">ReadDir</span>(<span class="string">"."</span>)
+    <span class="keyword">for</span> _, e := <span class="keyword">range</span> entries {
+        fmt.<span class="func">Println</span>(e.<span class="func">Name</span>(), e.<span class="func">IsDir</span>())
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Parsing YAML</h2>
+            <div class="code-block">
+                <div class="code-header terminal">Install yaml package</div>
+                <pre>$ go get gopkg.in/yaml.v3</pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header yaml">tasks.yaml</div>
+                <pre>name: my-project
+version: "1.0"
+
+tasks:
+  build:
+    command: go build -o app .
+    description: Build the application
+  
+  test:
+    command: go test ./...
+    description: Run tests
+  
+  deploy:
+    command: ./deploy.sh
+    depends_on:
+      - build
+      - test</pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">Parsing YAML</div>
+                <pre><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"fmt"</span>
+    <span class="string">"os"</span>
+    <span class="string">"gopkg.in/yaml.v3"</span>
+)
+
+<span class="keyword">type</span> <span class="type">Config</span> <span class="keyword">struct</span> {
+    Name    <span class="type">string</span>          <span class="string">`yaml:"name"`</span>
+    Version <span class="type">string</span>          <span class="string">`yaml:"version"`</span>
+    Tasks   <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">Task</span> <span class="string">`yaml:"tasks"`</span>
+}
+
+<span class="keyword">type</span> <span class="type">Task</span> <span class="keyword">struct</span> {
+    Command     <span class="type">string</span>   <span class="string">`yaml:"command"`</span>
+    Description <span class="type">string</span>   <span class="string">`yaml:"description"`</span>
+    DependsOn   []<span class="type">string</span> <span class="string">`yaml:"depends_on"`</span>
+}
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    data, err := os.<span class="func">ReadFile</span>(<span class="string">"tasks.yaml"</span>)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="func">panic</span>(err)
+    }
+    
+    <span class="keyword">var</span> config <span class="type">Config</span>
+    <span class="keyword">if</span> err := yaml.<span class="func">Unmarshal</span>(data, &config); err != <span class="keyword">nil</span> {
+        <span class="func">panic</span>(err)
+    }
+    
+    fmt.<span class="func">Printf</span>(<span class="string">"Project: %s v%s\n"</span>, config.Name, config.Version)
+    <span class="keyword">for</span> name, task := <span class="keyword">range</span> config.Tasks {
+        fmt.<span class="func">Printf</span>(<span class="string">"  %s: %s\n"</span>, name, task.Description)
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Running Shell Commands</h2>
+            <div class="code-block">
+                <div class="code-header">os/exec package</div>
+                <pre><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"fmt"</span>
+    <span class="string">"os"</span>
+    <span class="string">"os/exec"</span>
+)
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    <span class="comment">// Simple command with output</span>
+    out, err := exec.<span class="func">Command</span>(<span class="string">"ls"</span>, <span class="string">"-la"</span>).<span class="func">Output</span>()
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        fmt.<span class="func">Println</span>(<span class="string">"Error:"</span>, err)
+    }
+    fmt.<span class="func">Println</span>(<span class="func">string</span>(out))
+    
+    <span class="comment">// Run through shell (for pipes, etc)</span>
+    cmd := exec.<span class="func">Command</span>(<span class="string">"bash"</span>, <span class="string">"-c"</span>, <span class="string">"echo hello | tr a-z A-Z"</span>)
+    out, _ = cmd.<span class="func">Output</span>()
+    fmt.<span class="func">Println</span>(<span class="func">string</span>(out))  <span class="comment">// HELLO</span>
+    
+    <span class="comment">// Stream output in real-time</span>
+    cmd = exec.<span class="func">Command</span>(<span class="string">"go"</span>, <span class="string">"build"</span>, <span class="string">"-v"</span>, <span class="string">"."</span>)
+    cmd.Stdout = os.Stdout  <span class="comment">// Connect to our stdout</span>
+    cmd.Stderr = os.Stderr
+    err = cmd.<span class="func">Run</span>()
+    
+    <span class="comment">// Get exit code</span>
+    <span class="keyword">if</span> exitErr, ok := err.(*exec.ExitError); ok {
+        fmt.<span class="func">Println</span>(<span class="string">"Exit code:"</span>, exitErr.<span class="func">ExitCode</span>())
+    }
+}</pre>
+            </div>
+            <div class="warning">
+                <div class="warning-title">Security</div>
+                <p>Never pass user input directly to shell commands. Use exec.Command with separate args, not bash -c with string interpolation.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Environment Variables</h2>
+            <div class="code-block">
+                <div class="code-header">Working with env vars</div>
+                <pre><span class="keyword">import</span> <span class="string">"os"</span>
+
+<span class="comment">// Get env var (empty string if not set)</span>
+home := os.<span class="func">Getenv</span>(<span class="string">"HOME"</span>)
+
+<span class="comment">// Get with default</span>
+port := os.<span class="func">Getenv</span>(<span class="string">"PORT"</span>)
+<span class="keyword">if</span> port == <span class="string">""</span> {
+    port = <span class="string">"8080"</span>
+}
+
+<span class="comment">// Check if set</span>
+val, exists := os.<span class="func">LookupEnv</span>(<span class="string">"API_KEY"</span>)
+<span class="keyword">if</span> !exists {
+    <span class="func">panic</span>(<span class="string">"API_KEY not set"</span>)
+}
+
+<span class="comment">// Set env var</span>
+os.<span class="func">Setenv</span>(<span class="string">"MY_VAR"</span>, <span class="string">"value"</span>)
+
+<span class="comment">// Pass env to subprocess</span>
+cmd := exec.<span class="func">Command</span>(<span class="string">"./script.sh"</span>)
+cmd.Env = <span class="func">append</span>(os.<span class="func">Environ</span>(), <span class="string">"CUSTOM=value"</span>)</pre>
+            </div>
+        </div>
+
+        <div class="project-box">
+            <h3>🔨 Project: Task Runner</h3>
+            <p>Build a simple task runner that:</p>
+            <ol>
+                <li>Reads <span class="inline-code">tasks.yaml</span> from current directory</li>
+                <li>Lists available tasks with <span class="inline-code">mytask list</span></li>
+                <li>Runs a task with <span class="inline-code">mytask run build</span></li>
+                <li>Handles task dependencies (run deps first)</li>
+                <li>Shows real-time output while running</li>
+            </ol>
+            <div class="code-block">
+                <div class="code-header">Starter code</div>
+                <pre><span class="keyword">func</span> <span class="func">runTask</span>(config *<span class="type">Config</span>, taskName <span class="type">string</span>, ran <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">bool</span>) <span class="type">error</span> {
+    <span class="keyword">if</span> ran[taskName] {
+        <span class="keyword">return</span> <span class="keyword">nil</span>  <span class="comment">// Already ran</span>
+    }
+    
+    task, ok := config.Tasks[taskName]
+    <span class="keyword">if</span> !ok {
+        <span class="keyword">return</span> fmt.<span class="func">Errorf</span>(<span class="string">"unknown task: %s"</span>, taskName)
+    }
+    
+    <span class="comment">// Run dependencies first</span>
+    <span class="keyword">for</span> _, dep := <span class="keyword">range</span> task.DependsOn {
+        <span class="keyword">if</span> err := <span class="func">runTask</span>(config, dep, ran); err != <span class="keyword">nil</span> {
+            <span class="keyword">return</span> err
+        }
+    }
+    
+    fmt.<span class="func">Printf</span>(<span class="string">"▶ Running: %s\n"</span>, taskName)
+    cmd := exec.<span class="func">Command</span>(<span class="string">"bash"</span>, <span class="string">"-c"</span>, task.Command)
+    cmd.Stdout = os.Stdout
+    cmd.Stderr = os.Stderr
+    
+    <span class="keyword">if</span> err := cmd.<span class="func">Run</span>(); err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> fmt.<span class="func">Errorf</span>(<span class="string">"task %s failed: %w"</span>, taskName, err)
+    }
+    
+    ran[taskName] = <span class="keyword">true</span>
+    <span class="keyword">return</span> <span class="keyword">nil</span>
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 7 Summary</h2>
+            <ul>
+                <li><strong>os.ReadFile / WriteFile</strong> — simple file I/O</li>
+                <li><strong>yaml.Unmarshal</strong> — parse YAML into structs</li>
+                <li><strong>exec.Command</strong> — run external commands</li>
+                <li><strong>cmd.Stdout = os.Stdout</strong> — stream output</li>
+                <li><strong>os.Getenv / LookupEnv</strong> — environment variables</li>
+            </ul>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module6.html" class="nav-btn">← Module 6</a>
+            <a href="module8.html" class="nav-btn primary">Module 8: Building TUIs →</a>
+        </div>
+    </div>
+</body>
+</html>

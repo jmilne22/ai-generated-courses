@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6: CLI Foundations | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 1000; opacity: 0.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+        nav a:hover { color: var(--green-bright); }
+        .module-tag { font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 3rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .lesson h3 { color: var(--orange); margin: 1.5rem 0 1rem; }
+        .lesson p { color: var(--text-dim); margin-bottom: 1rem; }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--blue); }
+        .code-header.terminal { color: var(--green-bright); }
+        .code-header::before { content: '● '; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); }
+        .string { color: var(--green-bright); }
+        .comment { color: var(--text-dim); }
+        .func { color: var(--blue); }
+        .type { color: var(--orange); }
+        .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
+        .nav-btn:hover { border-color: var(--green-bright); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); }
+        li { margin-bottom: 0.5rem; }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        .exercise { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .exercise h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1rem; }
+        .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
+        details { margin-top: 0.75rem; }
+        details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
+        details summary:hover { color: var(--green-bright); }
+        details[open] summary { color: var(--green-bright); }
+        .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
+        .hint-content code { background: var(--bg-code); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); font-size: 0.85rem; }
+        .hint-content pre { margin: 0.5rem 0; padding: 0.75rem; background: var(--bg-code); border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); }
+        .expected { margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 255, 157, 0.05); border: 1px dashed var(--green-bright); border-radius: 6px; }
+        .expected-title { font-size: 0.75rem; color: var(--green-bright); margin-bottom: 0.4rem; text-transform: uppercase; font-weight: 600; }
+        .expected pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="module5.html">← Module 5</a>
+            <a href="module7.html">Module 7 →</a>
+        </nav>
+        <div class="module-tag">// MODULE 06</div>
+        <h1>CLI Foundations</h1>
+        <p class="module-desc">Arguments, flags, stdin/stdout, and building tools that feel native to the terminal.</p>
+
+        <div class="lesson">
+            <h2>Basic Arguments with os.Args</h2>
+            <div class="code-block">
+                <div class="code-header">os.Args basics</div>
+                <pre><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"fmt"</span>
+    <span class="string">"os"</span>
+)
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    <span class="comment">// os.Args[0] = program name</span>
+    <span class="comment">// os.Args[1:] = actual arguments</span>
+    fmt.<span class="func">Println</span>(<span class="string">"Program:"</span>, os.Args[<span class="number">0</span>])
+    fmt.<span class="func">Println</span>(<span class="string">"Args:"</span>, os.Args[<span class="number">1</span>:])
+    
+    <span class="keyword">if</span> <span class="func">len</span>(os.Args) < <span class="number">2</span> {
+        fmt.<span class="func">Fprintln</span>(os.Stderr, <span class="string">"Usage: program &lt;name&gt;"</span>)
+        os.<span class="func">Exit</span>(<span class="number">1</span>)
+    }
+}</pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header terminal">Terminal</div>
+                <pre>$ go run main.go hello world
+Program: /tmp/go-build.../main
+Args: [hello world]</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>The flag Package</h2>
+            <div class="code-block">
+                <div class="code-header">Using flag</div>
+                <pre><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"flag"</span>
+    <span class="string">"fmt"</span>
+)
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    <span class="comment">// Define flags (returns pointers!)</span>
+    name := flag.<span class="func">String</span>(<span class="string">"name"</span>, <span class="string">"World"</span>, <span class="string">"Name to greet"</span>)
+    count := flag.<span class="func">Int</span>(<span class="string">"count"</span>, <span class="number">1</span>, <span class="string">"Times to greet"</span>)
+    verbose := flag.<span class="func">Bool</span>(<span class="string">"verbose"</span>, <span class="keyword">false</span>, <span class="string">"Verbose output"</span>)
+    
+    <span class="comment">// Parse command line</span>
+    flag.<span class="func">Parse</span>()
+    
+    <span class="comment">// Access values (dereference pointers)</span>
+    <span class="keyword">for</span> i := <span class="number">0</span>; i < *count; i++ {
+        <span class="keyword">if</span> *verbose {
+            fmt.<span class="func">Printf</span>(<span class="string">"[%d] Hello, %s!\n"</span>, i+<span class="number">1</span>, *name)
+        } <span class="keyword">else</span> {
+            fmt.<span class="func">Printf</span>(<span class="string">"Hello, %s!\n"</span>, *name)
+        }
+    }
+    
+    <span class="comment">// Remaining args (non-flag)</span>
+    fmt.<span class="func">Println</span>(<span class="string">"Remaining:"</span>, flag.<span class="func">Args</span>())
+}</pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header terminal">Usage</div>
+                <pre>$ go run main.go -name=Gopher -count=3 -verbose
+[1] Hello, Gopher!
+[2] Hello, Gopher!
+[3] Hello, Gopher!
+
+$ go run main.go -help
+Usage of main:
+  -count int
+        Times to greet (default 1)
+  -name string
+        Name to greet (default "World")
+  -verbose
+        Verbose output</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Cobra for Subcommands</h2>
+            <p>For complex CLIs with subcommands (like git, docker), use Cobra.</p>
+            <div class="code-block">
+                <div class="code-header terminal">Install Cobra</div>
+                <pre>$ go get github.com/spf13/cobra@latest</pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">Cobra structure</div>
+                <pre><span class="comment">// cmd/root.go</span>
+<span class="keyword">package</span> cmd
+
+<span class="keyword">import</span> <span class="string">"github.com/spf13/cobra"</span>
+
+<span class="keyword">var</span> rootCmd = &cobra.Command{
+    Use:   <span class="string">"myapp"</span>,
+    Short: <span class="string">"My awesome CLI app"</span>,
+}
+
+<span class="keyword">func</span> <span class="func">Execute</span>() <span class="type">error</span> {
+    <span class="keyword">return</span> rootCmd.<span class="func">Execute</span>()
+}
+
+<span class="comment">// cmd/greet.go</span>
+<span class="keyword">var</span> greetCmd = &cobra.Command{
+    Use:   <span class="string">"greet [name]"</span>,
+    Short: <span class="string">"Greet someone"</span>,
+    Args:  cobra.<span class="func">ExactArgs</span>(<span class="number">1</span>),
+    Run: <span class="keyword">func</span>(cmd *cobra.Command, args []<span class="type">string</span>) {
+        loud, _ := cmd.Flags().<span class="func">GetBool</span>(<span class="string">"loud"</span>)
+        name := args[<span class="number">0</span>]
+        <span class="keyword">if</span> loud {
+            fmt.<span class="func">Printf</span>(<span class="string">"HELLO, %s!!!\n"</span>, strings.<span class="func">ToUpper</span>(name))
+        } <span class="keyword">else</span> {
+            fmt.<span class="func">Printf</span>(<span class="string">"Hello, %s!\n"</span>, name)
+        }
+    },
+}
+
+<span class="keyword">func</span> <span class="func">init</span>() {
+    greetCmd.Flags().<span class="func">BoolP</span>(<span class="string">"loud"</span>, <span class="string">"l"</span>, <span class="keyword">false</span>, <span class="string">"Shout the greeting"</span>)
+    rootCmd.<span class="func">AddCommand</span>(greetCmd)
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>stdin, stdout, stderr</h2>
+            <div class="code-block">
+                <div class="code-header">Working with streams</div>
+                <pre><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"bufio"</span>
+    <span class="string">"fmt"</span>
+    <span class="string">"os"</span>
+    <span class="string">"strings"</span>
+)
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    <span class="comment">// Write to stdout (normal output)</span>
+    fmt.<span class="func">Println</span>(<span class="string">"This goes to stdout"</span>)
+    
+    <span class="comment">// Write to stderr (errors/progress)</span>
+    fmt.<span class="func">Fprintln</span>(os.Stderr, <span class="string">"This goes to stderr"</span>)
+    
+    <span class="comment">// Read from stdin line by line</span>
+    scanner := bufio.<span class="func">NewScanner</span>(os.Stdin)
+    <span class="keyword">for</span> scanner.<span class="func">Scan</span>() {
+        line := scanner.<span class="func">Text</span>()
+        fmt.<span class="func">Println</span>(strings.<span class="func">ToUpper</span>(line))
+    }
+    
+    <span class="keyword">if</span> err := scanner.<span class="func">Err</span>(); err != <span class="keyword">nil</span> {
+        fmt.<span class="func">Fprintln</span>(os.Stderr, <span class="string">"Error:"</span>, err)
+        os.<span class="func">Exit</span>(<span class="number">1</span>)
+    }
+}</pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header terminal">Piping</div>
+                <pre><span class="comment"># Pipe input</span>
+$ echo "hello world" | go run main.go
+HELLO WORLD
+
+<span class="comment"># Redirect stderr</span>
+$ go run main.go 2>/dev/null
+
+<span class="comment"># Combine with other tools</span>
+$ cat file.txt | go run main.go | grep pattern</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Exit Codes</h2>
+            <div class="code-block">
+                <div class="code-header">Proper exit handling</div>
+                <pre><span class="keyword">func</span> <span class="func">main</span>() {
+    <span class="keyword">if</span> err := run(); err != <span class="keyword">nil</span> {
+        fmt.<span class="func">Fprintln</span>(os.Stderr, <span class="string">"Error:"</span>, err)
+        os.<span class="func">Exit</span>(<span class="number">1</span>)
+    }
+}
+
+<span class="keyword">func</span> <span class="func">run</span>() <span class="type">error</span> {
+    <span class="comment">// Your actual logic here</span>
+    <span class="comment">// Return errors instead of os.Exit()</span>
+    <span class="keyword">return</span> <span class="keyword">nil</span>
+}
+
+<span class="comment">// Common exit codes:</span>
+<span class="comment">// 0 = success</span>
+<span class="comment">// 1 = general error</span>
+<span class="comment">// 2 = misuse of command</span></pre>
+            </div>
+            <div class="tip">
+                <div class="tip-title">Pattern</div>
+                <p>Keep main() thin. Put logic in run() that returns errors. Easier to test!</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Exercises</h2>
+            
+            <div class="exercise">
+                <h4>Exercise 1: Echo Clone</h4>
+                <p>Build <code>echo</code> that prints args joined by spaces. Add <code>-n</code> flag to suppress trailing newline.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Use <code>flag.Bool("n", false, "...")</code>. After <code>flag.Parse()</code>, args are in <code>flag.Args()</code>. Use <code>strings.Join()</code>.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func main() {
+    noNewline := flag.Bool("n", false, "no trailing newline")
+    flag.Parse()
+    
+    output := strings.Join(flag.Args(), " ")
+    if *noNewline {
+        fmt.Print(output)
+    } else {
+        fmt.Println(output)
+    }
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>$ ./echo hello world
+hello world
+$ ./echo -n hello world
+hello world$</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 2: Line Counter</h4>
+                <p>Build <code>lc</code> that reads stdin and counts lines. Add <code>-w</code> for words, <code>-c</code> for characters.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Use <code>bufio.Scanner</code> for lines. For words, use <code>strings.Fields()</code>. For chars, use <code>len([]rune(line))</code>.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func main() {
+    words := flag.Bool("w", false, "count words")
+    chars := flag.Bool("c", false, "count chars")
+    flag.Parse()
+    
+    var lines, wordCount, charCount int
+    scanner := bufio.NewScanner(os.Stdin)
+    for scanner.Scan() {
+        line := scanner.Text()
+        lines++
+        wordCount += len(strings.Fields(line))
+        charCount += len([]rune(line))
+    }
+    
+    switch {
+    case *words:
+        fmt.Println(wordCount)
+    case *chars:
+        fmt.Println(charCount)
+    default:
+        fmt.Println(lines)
+    }
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>$ echo -e "hello world\nfoo bar" | ./lc
+2
+$ echo -e "hello world\nfoo bar" | ./lc -w
+4</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 3: Env Printer</h4>
+                <p>Print env vars. No args = all. With args = only matching. Add <code>-export</code> for export format.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <code>os.Environ()</code> returns <code>[]string</code> in "KEY=value" format. Filter by checking prefix of key.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func main() {
+    export := flag.Bool("export", false, "export format")
+    flag.Parse()
+    filters := flag.Args()
+    
+    for _, env := range os.Environ() {
+        parts := strings.SplitN(env, "=", 2)
+        key, val := parts[0], parts[1]
+        
+        if len(filters) > 0 && !matchesAny(key, filters) {
+            continue
+        }
+        
+        if *export {
+            fmt.Printf("export %s=%q\n", key, val)
+        } else {
+            fmt.Println(env)
+        }
+    }
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 4: Simple Calculator</h4>
+                <p>Build <code>calc num op num</code> supporting +, -, *, /. Exit code 1 on division by zero.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Parse with <code>strconv.ParseFloat()</code>. Use switch on operator. Call <code>os.Exit(1)</code> for errors.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func main() {
+    if len(os.Args) != 4 {
+        fmt.Fprintln(os.Stderr, "usage: calc num op num")
+        os.Exit(1)
+    }
+    a, _ := strconv.ParseFloat(os.Args[1], 64)
+    op := os.Args[2]
+    b, _ := strconv.ParseFloat(os.Args[3], 64)
+    
+    var result float64
+    switch op {
+    case "+":
+        result = a + b
+    case "-":
+        result = a - b
+    case "*":
+        result = a * b
+    case "/":
+        if b == 0 {
+            fmt.Fprintln(os.Stderr, "division by zero")
+            os.Exit(1)
+        }
+        result = a / b
+    default:
+        fmt.Fprintln(os.Stderr, "unknown operator")
+        os.Exit(1)
+    }
+    fmt.Println(result)
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>$ ./calc 10 + 5
+15
+$ ./calc 10 / 0
+division by zero
+$ echo $?
+1</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 6 Summary</h2>
+            <ul>
+                <li><strong>os.Args</strong> — raw argument access</li>
+                <li><strong>flag package</strong> — built-in flag parsing</li>
+                <li><strong>Cobra</strong> — for complex subcommand CLIs</li>
+                <li><strong>os.Stdin/Stdout/Stderr</strong> — standard streams</li>
+                <li><strong>os.Exit(code)</strong> — 0 = success, 1+ = error</li>
+            </ul>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module5.html" class="nav-btn">← Module 5</a>
+            <a href="module7.html" class="nav-btn primary">Module 7: Files & YAML →</a>
+        </div>
+    </div>
+</body>
+</html>

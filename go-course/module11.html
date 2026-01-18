@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 11: HTTP & API Design | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+        nav a:hover { color: var(--green-bright); }
+        .module-tag { font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 3rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .lesson h3 { color: var(--orange); margin: 1.5rem 0 1rem; }
+        .lesson p { color: var(--text-dim); margin-bottom: 1rem; }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--blue); }
+        .code-header.terminal { color: var(--green-bright); }
+        .code-header::before { content: '● '; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); } .string { color: var(--green-bright); } .comment { color: var(--text-dim); } .func { color: var(--blue); } .type { color: var(--orange); } .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .project-box { background: linear-gradient(135deg, rgba(0, 255, 157, 0.1), rgba(0, 180, 255, 0.1)); border: 2px solid var(--green-bright); border-radius: 12px; padding: 2rem; margin: 2rem 0; }
+        .project-box h3 { color: var(--green-bright); margin-bottom: 1rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
+        .nav-btn:hover { border-color: var(--green-bright); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul, ol { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); } li { margin-bottom: 0.5rem; }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav><a href="module10.html">← Module 10</a><a href="module12.html">Module 12 →</a></nav>
+        <div class="module-tag">// MODULE 11</div>
+        <h1>HTTP & API Design</h1>
+        <p class="module-desc">Build REST APIs, make HTTP requests, middleware patterns. Build a GitHub CLI.</p>
+
+        <div class="lesson">
+            <h2>HTTP Client Basics</h2>
+            <div class="code-block">
+                <div class="code-header">Making HTTP requests</div>
+                <pre><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"encoding/json"</span>
+    <span class="string">"io"</span>
+    <span class="string">"net/http"</span>
+)
+
+<span class="comment">// Simple GET</span>
+resp, err := http.<span class="func">Get</span>(<span class="string">"https://api.github.com/users/golang"</span>)
+<span class="keyword">if</span> err != <span class="keyword">nil</span> {
+    <span class="func">panic</span>(err)
+}
+<span class="keyword">defer</span> resp.Body.<span class="func">Close</span>()
+
+body, _ := io.<span class="func">ReadAll</span>(resp.Body)
+fmt.<span class="func">Println</span>(<span class="func">string</span>(body))
+
+<span class="comment">// JSON response into struct</span>
+<span class="keyword">type</span> <span class="type">User</span> <span class="keyword">struct</span> {
+    Login     <span class="type">string</span> <span class="string">`json:"login"`</span>
+    Name      <span class="type">string</span> <span class="string">`json:"name"`</span>
+    Followers <span class="type">int</span>    <span class="string">`json:"followers"`</span>
+}
+
+<span class="keyword">var</span> user <span class="type">User</span>
+json.<span class="func">NewDecoder</span>(resp.Body).<span class="func">Decode</span>(&user)
+
+<span class="comment">// Custom request with headers</span>
+req, _ := http.<span class="func">NewRequest</span>(<span class="string">"GET"</span>, <span class="string">"https://api.github.com/user"</span>, <span class="keyword">nil</span>)
+req.Header.<span class="func">Set</span>(<span class="string">"Authorization"</span>, <span class="string">"Bearer "</span>+token)
+req.Header.<span class="func">Set</span>(<span class="string">"Accept"</span>, <span class="string">"application/json"</span>)
+
+client := &http.<span class="type">Client</span>{Timeout: <span class="number">10</span> * time.Second}
+resp, err = client.<span class="func">Do</span>(req)</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Building an API Client</h2>
+            <div class="code-block">
+                <div class="code-header">GitHub API client</div>
+                <pre><span class="keyword">type</span> <span class="type">GitHubClient</span> <span class="keyword">struct</span> {
+    baseURL    <span class="type">string</span>
+    token      <span class="type">string</span>
+    httpClient *http.<span class="type">Client</span>
+}
+
+<span class="keyword">func</span> <span class="func">NewGitHubClient</span>(token <span class="type">string</span>) *<span class="type">GitHubClient</span> {
+    <span class="keyword">return</span> &<span class="type">GitHubClient</span>{
+        baseURL:    <span class="string">"https://api.github.com"</span>,
+        token:      token,
+        httpClient: &http.<span class="type">Client</span>{Timeout: <span class="number">30</span> * time.Second},
+    }
+}
+
+<span class="keyword">func</span> (c *<span class="type">GitHubClient</span>) <span class="func">request</span>(method, path <span class="type">string</span>, body <span class="type">any</span>) (*http.<span class="type">Response</span>, <span class="type">error</span>) {
+    <span class="keyword">var</span> bodyReader io.<span class="type">Reader</span>
+    <span class="keyword">if</span> body != <span class="keyword">nil</span> {
+        data, _ := json.<span class="func">Marshal</span>(body)
+        bodyReader = bytes.<span class="func">NewReader</span>(data)
+    }
+    
+    req, err := http.<span class="func">NewRequest</span>(method, c.baseURL+path, bodyReader)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="keyword">nil</span>, err
+    }
+    
+    req.Header.<span class="func">Set</span>(<span class="string">"Authorization"</span>, <span class="string">"Bearer "</span>+c.token)
+    req.Header.<span class="func">Set</span>(<span class="string">"Accept"</span>, <span class="string">"application/vnd.github+json"</span>)
+    <span class="keyword">if</span> body != <span class="keyword">nil</span> {
+        req.Header.<span class="func">Set</span>(<span class="string">"Content-Type"</span>, <span class="string">"application/json"</span>)
+    }
+    
+    <span class="keyword">return</span> c.httpClient.<span class="func">Do</span>(req)
+}
+
+<span class="keyword">func</span> (c *<span class="type">GitHubClient</span>) <span class="func">GetUser</span>(username <span class="type">string</span>) (*<span class="type">User</span>, <span class="type">error</span>) {
+    resp, err := c.<span class="func">request</span>(<span class="string">"GET"</span>, <span class="string">"/users/"</span>+username, <span class="keyword">nil</span>)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="keyword">nil</span>, err
+    }
+    <span class="keyword">defer</span> resp.Body.<span class="func">Close</span>()
+    
+    <span class="keyword">if</span> resp.StatusCode != http.StatusOK {
+        <span class="keyword">return</span> <span class="keyword">nil</span>, fmt.<span class="func">Errorf</span>(<span class="string">"API error: %s"</span>, resp.Status)
+    }
+    
+    <span class="keyword">var</span> user <span class="type">User</span>
+    <span class="keyword">if</span> err := json.<span class="func">NewDecoder</span>(resp.Body).<span class="func">Decode</span>(&user); err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="keyword">nil</span>, err
+    }
+    <span class="keyword">return</span> &user, <span class="keyword">nil</span>
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Building HTTP Servers</h2>
+            <div class="code-block">
+                <div class="code-header">Simple HTTP server</div>
+                <pre><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"encoding/json"</span>
+    <span class="string">"net/http"</span>
+)
+
+<span class="keyword">type</span> <span class="type">Response</span> <span class="keyword">struct</span> {
+    Message <span class="type">string</span> <span class="string">`json:"message"`</span>
+}
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    http.<span class="func">HandleFunc</span>(<span class="string">"/health"</span>, <span class="keyword">func</span>(w http.<span class="type">ResponseWriter</span>, r *http.<span class="type">Request</span>) {
+        w.<span class="func">WriteHeader</span>(http.StatusOK)
+        w.<span class="func">Write</span>([]<span class="type">byte</span>(<span class="string">"OK"</span>))
+    })
+    
+    http.<span class="func">HandleFunc</span>(<span class="string">"/api/greet"</span>, <span class="keyword">func</span>(w http.<span class="type">ResponseWriter</span>, r *http.<span class="type">Request</span>) {
+        name := r.URL.Query().<span class="func">Get</span>(<span class="string">"name"</span>)
+        <span class="keyword">if</span> name == <span class="string">""</span> {
+            name = <span class="string">"World"</span>
+        }
+        
+        resp := <span class="type">Response</span>{Message: <span class="string">"Hello, "</span> + name}
+        
+        w.Header().<span class="func">Set</span>(<span class="string">"Content-Type"</span>, <span class="string">"application/json"</span>)
+        json.<span class="func">NewEncoder</span>(w).<span class="func">Encode</span>(resp)
+    })
+    
+    fmt.<span class="func">Println</span>(<span class="string">"Server running on :8080"</span>)
+    http.<span class="func">ListenAndServe</span>(<span class="string">":8080"</span>, <span class="keyword">nil</span>)
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Middleware Pattern</h2>
+            <div class="code-block">
+                <div class="code-header">Middleware</div>
+                <pre><span class="comment">// Middleware wraps a handler</span>
+<span class="keyword">type</span> <span class="type">Middleware</span> <span class="keyword">func</span>(http.<span class="type">Handler</span>) http.<span class="type">Handler</span>
+
+<span class="comment">// Logging middleware</span>
+<span class="keyword">func</span> <span class="func">LoggingMiddleware</span>(next http.<span class="type">Handler</span>) http.<span class="type">Handler</span> {
+    <span class="keyword">return</span> http.<span class="func">HandlerFunc</span>(<span class="keyword">func</span>(w http.<span class="type">ResponseWriter</span>, r *http.<span class="type">Request</span>) {
+        start := time.<span class="func">Now</span>()
+        next.<span class="func">ServeHTTP</span>(w, r)
+        fmt.<span class="func">Printf</span>(<span class="string">"%s %s %v\n"</span>, r.Method, r.URL.Path, time.<span class="func">Since</span>(start))
+    })
+}
+
+<span class="comment">// Auth middleware</span>
+<span class="keyword">func</span> <span class="func">AuthMiddleware</span>(next http.<span class="type">Handler</span>) http.<span class="type">Handler</span> {
+    <span class="keyword">return</span> http.<span class="func">HandlerFunc</span>(<span class="keyword">func</span>(w http.<span class="type">ResponseWriter</span>, r *http.<span class="type">Request</span>) {
+        token := r.Header.<span class="func">Get</span>(<span class="string">"Authorization"</span>)
+        <span class="keyword">if</span> token == <span class="string">""</span> {
+            http.<span class="func">Error</span>(w, <span class="string">"Unauthorized"</span>, http.StatusUnauthorized)
+            <span class="keyword">return</span>
+        }
+        next.<span class="func">ServeHTTP</span>(w, r)
+    })
+}
+
+<span class="comment">// Chain middleware</span>
+<span class="keyword">func</span> <span class="func">Chain</span>(h http.<span class="type">Handler</span>, middlewares ...<span class="type">Middleware</span>) http.<span class="type">Handler</span> {
+    <span class="keyword">for</span> _, m := <span class="keyword">range</span> middlewares {
+        h = m(h)
+    }
+    <span class="keyword">return</span> h
+}
+
+<span class="comment">// Usage</span>
+handler := <span class="func">Chain</span>(myHandler, <span class="func">LoggingMiddleware</span>, <span class="func">AuthMiddleware</span>)</pre>
+            </div>
+        </div>
+
+        <div class="project-box">
+            <h3>🔨 Project: GitHub CLI Tool</h3>
+            <p>Build a CLI that interacts with GitHub API:</p>
+            <ol>
+                <li><span class="inline-code">gh user &lt;username&gt;</span> — show user info</li>
+                <li><span class="inline-code">gh repos &lt;username&gt;</span> — list repositories</li>
+                <li><span class="inline-code">gh star &lt;owner/repo&gt;</span> — star a repo</li>
+                <li><span class="inline-code">gh issues &lt;owner/repo&gt;</span> — list open issues</li>
+            </ol>
+            <div class="tip">
+                <div class="tip-title">Use</div>
+                <p>Cobra for CLI, our GitHubClient for API, lipgloss for pretty output.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 11 Summary</h2>
+            <ul>
+                <li><strong>http.Get/Post</strong> — simple requests</li>
+                <li><strong>http.NewRequest</strong> — custom requests with headers</li>
+                <li><strong>json.Decoder</strong> — stream JSON from response</li>
+                <li><strong>http.HandleFunc</strong> — register routes</li>
+                <li><strong>Middleware</strong> — wrap handlers for cross-cutting concerns</li>
+            </ul>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module10.html" class="nav-btn">← Module 10</a>
+            <a href="module12.html" class="nav-btn primary">Module 12: Concurrency →</a>
+        </div>
+    </div>
+</body>
+</html>

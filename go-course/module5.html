@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5: Data Structures | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 1000; opacity: 0.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+        nav a:hover { color: var(--green-bright); }
+        .module-tag { font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 3rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .lesson h3 { color: var(--orange); margin: 1.5rem 0 1rem; }
+        .lesson p { color: var(--text-dim); margin-bottom: 1rem; }
+        .lesson p strong { color: var(--text-main); }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--blue); }
+        .code-header::before { content: '● '; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); }
+        .string { color: var(--green-bright); }
+        .comment { color: var(--text-dim); }
+        .func { color: var(--blue); }
+        .type { color: var(--orange); }
+        .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .warning { background: rgba(255, 157, 0, 0.1); border-left: 3px solid var(--orange); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .warning-title { font-weight: 600; color: var(--orange); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
+        .nav-btn:hover { border-color: var(--green-bright); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); }
+        li { margin-bottom: 0.5rem; }
+        li strong { color: var(--text-main); }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        .exercise { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .exercise h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1rem; }
+        .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
+        details { margin-top: 0.75rem; }
+        details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
+        details summary:hover { color: var(--green-bright); }
+        details[open] summary { color: var(--green-bright); }
+        .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
+        .hint-content code { background: var(--bg-code); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); font-size: 0.85rem; }
+        .hint-content pre { margin: 0.5rem 0; padding: 0.75rem; background: var(--bg-code); border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); }
+        .expected { margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 255, 157, 0.05); border: 1px dashed var(--green-bright); border-radius: 6px; }
+        .expected-title { font-size: 0.75rem; color: var(--green-bright); margin-bottom: 0.4rem; text-transform: uppercase; font-weight: 600; }
+        .expected pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="module4.html">← Module 4</a>
+            <a href="module6.html">Module 6 →</a>
+        </nav>
+        <div class="module-tag">// MODULE 05</div>
+        <h1>Data Structures</h1>
+        <p class="module-desc">Slices deep dive, maps, and building your own data structures with generics.</p>
+
+        <div class="lesson">
+            <h2>Slices: The Deep Dive</h2>
+            <p>Slices are Go's workhorse. They're more complex than Python lists under the hood.</p>
+            <div class="code-block">
+                <div class="code-header">Slice internals</div>
+                <pre><span class="comment">// A slice is a struct with 3 fields:</span>
+<span class="comment">// - pointer to underlying array</span>
+<span class="comment">// - length (current elements)</span>
+<span class="comment">// - capacity (max before realloc)</span>
+
+s := <span class="keyword">make</span>([]<span class="type">int</span>, <span class="number">3</span>, <span class="number">10</span>)  <span class="comment">// len=3, cap=10</span>
+fmt.<span class="func">Println</span>(<span class="func">len</span>(s))  <span class="comment">// 3</span>
+fmt.<span class="func">Println</span>(<span class="func">cap</span>(s))  <span class="comment">// 10</span>
+
+<span class="comment">// Append grows the slice</span>
+s = <span class="func">append</span>(s, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)
+
+<span class="comment">// Slicing creates a view (shares memory!)</span>
+original := []<span class="type">int</span>{<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>}
+slice := original[<span class="number">1</span>:<span class="number">4</span>]  <span class="comment">// [2 3 4]</span>
+slice[<span class="number">0</span>] = <span class="number">999</span>
+fmt.<span class="func">Println</span>(original)  <span class="comment">// [1 999 3 4 5] — modified!</span></pre>
+            </div>
+            <div class="warning">
+                <div class="warning-title">Gotcha</div>
+                <p>Slicing creates a view, not a copy. Modifying the slice modifies the original!</p>
+            </div>
+
+            <h3>Common Slice Operations</h3>
+            <div class="code-block">
+                <div class="code-header">Slice operations</div>
+                <pre><span class="comment">// Copy (to avoid shared memory)</span>
+dst := <span class="keyword">make</span>([]<span class="type">int</span>, <span class="func">len</span>(src))
+<span class="func">copy</span>(dst, src)
+
+<span class="comment">// Delete element at index i</span>
+s = <span class="func">append</span>(s[:<span class="number">i</span>], s[<span class="number">i</span>+<span class="number">1</span>:]...)
+
+<span class="comment">// Insert at index i</span>
+s = <span class="func">append</span>(s[:<span class="number">i</span>], <span class="func">append</span>([]<span class="type">int</span>{newItem}, s[<span class="number">i</span>:]...)...)
+
+<span class="comment">// Filter (create new slice)</span>
+<span class="keyword">var</span> filtered []<span class="type">int</span>
+<span class="keyword">for</span> _, v := <span class="keyword">range</span> nums {
+    <span class="keyword">if</span> v > <span class="number">10</span> {
+        filtered = <span class="func">append</span>(filtered, v)
+    }
+}
+
+<span class="comment">// Reverse in place</span>
+<span class="keyword">for</span> i, j := <span class="number">0</span>, <span class="func">len</span>(s)-<span class="number">1</span>; i < j; i, j = i+<span class="number">1</span>, j-<span class="number">1</span> {
+    s[i], s[j] = s[j], s[i]
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Maps Deep Dive</h2>
+            <div class="code-block">
+                <div class="code-header">Map operations</div>
+                <pre><span class="comment">// Create</span>
+m := <span class="keyword">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span>)
+m := <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span>{<span class="string">"a"</span>: <span class="number">1</span>, <span class="string">"b"</span>: <span class="number">2</span>}
+
+<span class="comment">// Check existence (IMPORTANT!)</span>
+val, ok := m[<span class="string">"key"</span>]
+<span class="keyword">if</span> !ok {
+    <span class="comment">// key doesn't exist</span>
+}
+
+<span class="comment">// Delete</span>
+<span class="func">delete</span>(m, <span class="string">"key"</span>)
+
+<span class="comment">// Iterate (random order!)</span>
+<span class="keyword">for</span> key, val := <span class="keyword">range</span> m {
+    fmt.<span class="func">Println</span>(key, val)
+}
+
+<span class="comment">// Get keys</span>
+keys := <span class="keyword">make</span>([]<span class="type">string</span>, <span class="number">0</span>, <span class="func">len</span>(m))
+<span class="keyword">for</span> k := <span class="keyword">range</span> m {
+    keys = <span class="func">append</span>(keys, k)
+}</pre>
+            </div>
+            <div class="tip">
+                <div class="tip-title">Map Iteration</div>
+                <p>Map iteration order is random by design. If you need ordered keys, sort them separately.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Building a Set</h2>
+            <p>Go doesn't have a built-in set. Use a map with empty struct values.</p>
+            <div class="code-block">
+                <div class="code-header">Set implementation</div>
+                <pre><span class="comment">// Set using map[T]struct{}</span>
+<span class="comment">// struct{} takes zero bytes!</span>
+
+<span class="keyword">type</span> <span class="type">Set</span>[T comparable] <span class="keyword">map</span>[T]<span class="keyword">struct</span>{}
+
+<span class="keyword">func</span> <span class="func">NewSet</span>[T comparable]() <span class="type">Set</span>[T] {
+    <span class="keyword">return</span> <span class="keyword">make</span>(<span class="type">Set</span>[T])
+}
+
+<span class="keyword">func</span> (s <span class="type">Set</span>[T]) <span class="func">Add</span>(item T) {
+    s[item] = <span class="keyword">struct</span>{}{}
+}
+
+<span class="keyword">func</span> (s <span class="type">Set</span>[T]) <span class="func">Contains</span>(item T) <span class="type">bool</span> {
+    _, ok := s[item]
+    <span class="keyword">return</span> ok
+}
+
+<span class="keyword">func</span> (s <span class="type">Set</span>[T]) <span class="func">Remove</span>(item T) {
+    <span class="func">delete</span>(s, item)
+}
+
+<span class="comment">// Usage</span>
+fruits := <span class="func">NewSet</span>[<span class="type">string</span>]()
+fruits.<span class="func">Add</span>(<span class="string">"apple"</span>)
+fruits.<span class="func">Add</span>(<span class="string">"banana"</span>)
+fmt.<span class="func">Println</span>(fruits.<span class="func">Contains</span>(<span class="string">"apple"</span>))  <span class="comment">// true</span></pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Building a Stack</h2>
+            <div class="code-block">
+                <div class="code-header">Generic stack</div>
+                <pre><span class="keyword">type</span> <span class="type">Stack</span>[T <span class="type">any</span>] <span class="keyword">struct</span> {
+    items []T
+}
+
+<span class="keyword">func</span> (s *<span class="type">Stack</span>[T]) <span class="func">Push</span>(item T) {
+    s.items = <span class="func">append</span>(s.items, item)
+}
+
+<span class="keyword">func</span> (s *<span class="type">Stack</span>[T]) <span class="func">Pop</span>() (T, <span class="type">bool</span>) {
+    <span class="keyword">if</span> <span class="func">len</span>(s.items) == <span class="number">0</span> {
+        <span class="keyword">var</span> zero T
+        <span class="keyword">return</span> zero, <span class="keyword">false</span>
+    }
+    item := s.items[<span class="func">len</span>(s.items)-<span class="number">1</span>]
+    s.items = s.items[:<span class="func">len</span>(s.items)-<span class="number">1</span>]
+    <span class="keyword">return</span> item, <span class="keyword">true</span>
+}
+
+<span class="keyword">func</span> (s *<span class="type">Stack</span>[T]) <span class="func">Peek</span>() (T, <span class="type">bool</span>) {
+    <span class="keyword">if</span> <span class="func">len</span>(s.items) == <span class="number">0</span> {
+        <span class="keyword">var</span> zero T
+        <span class="keyword">return</span> zero, <span class="keyword">false</span>
+    }
+    <span class="keyword">return</span> s.items[<span class="func">len</span>(s.items)-<span class="number">1</span>], <span class="keyword">true</span>
+}
+
+<span class="keyword">func</span> (s *<span class="type">Stack</span>[T]) <span class="func">Len</span>() <span class="type">int</span> {
+    <span class="keyword">return</span> <span class="func">len</span>(s.items)
+}
+
+<span class="comment">// Usage</span>
+stack := &<span class="type">Stack</span>[<span class="type">int</span>]{}
+stack.<span class="func">Push</span>(<span class="number">1</span>)
+stack.<span class="func">Push</span>(<span class="number">2</span>)
+val, _ := stack.<span class="func">Pop</span>()  <span class="comment">// 2</span></pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Building a Queue</h2>
+            <div class="code-block">
+                <div class="code-header">Generic queue</div>
+                <pre><span class="keyword">type</span> <span class="type">Queue</span>[T <span class="type">any</span>] <span class="keyword">struct</span> {
+    items []T
+}
+
+<span class="keyword">func</span> (q *<span class="type">Queue</span>[T]) <span class="func">Enqueue</span>(item T) {
+    q.items = <span class="func">append</span>(q.items, item)
+}
+
+<span class="keyword">func</span> (q *<span class="type">Queue</span>[T]) <span class="func">Dequeue</span>() (T, <span class="type">bool</span>) {
+    <span class="keyword">if</span> <span class="func">len</span>(q.items) == <span class="number">0</span> {
+        <span class="keyword">var</span> zero T
+        <span class="keyword">return</span> zero, <span class="keyword">false</span>
+    }
+    item := q.items[<span class="number">0</span>]
+    q.items = q.items[<span class="number">1</span>:]
+    <span class="keyword">return</span> item, <span class="keyword">true</span>
+}
+
+<span class="keyword">func</span> (q *<span class="type">Queue</span>[T]) <span class="func">IsEmpty</span>() <span class="type">bool</span> {
+    <span class="keyword">return</span> <span class="func">len</span>(q.items) == <span class="number">0</span>
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Generics Basics</h2>
+            <p>Go 1.18+ introduced generics. Write once, use with any type.</p>
+            <div class="code-block">
+                <div class="code-header">Generic functions</div>
+                <pre><span class="comment">// Generic function</span>
+<span class="keyword">func</span> <span class="func">Min</span>[T constraints.Ordered](a, b T) T {
+    <span class="keyword">if</span> a < b {
+        <span class="keyword">return</span> a
+    }
+    <span class="keyword">return</span> b
+}
+
+<span class="comment">// Works with any ordered type</span>
+<span class="func">Min</span>(<span class="number">3</span>, <span class="number">5</span>)          <span class="comment">// 3</span>
+<span class="func">Min</span>(<span class="string">"a"</span>, <span class="string">"b"</span>)      <span class="comment">// "a"</span>
+<span class="func">Min</span>(<span class="number">3.14</span>, <span class="number">2.71</span>)    <span class="comment">// 2.71</span>
+
+<span class="comment">// Generic Map function</span>
+<span class="keyword">func</span> <span class="func">Map</span>[T, U <span class="type">any</span>](items []T, f <span class="keyword">func</span>(T) U) []U {
+    result := <span class="keyword">make</span>([]U, <span class="func">len</span>(items))
+    <span class="keyword">for</span> i, item := <span class="keyword">range</span> items {
+        result[i] = f(item)
+    }
+    <span class="keyword">return</span> result
+}
+
+<span class="comment">// Usage</span>
+nums := []<span class="type">int</span>{<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>}
+doubled := <span class="func">Map</span>(nums, <span class="keyword">func</span>(n <span class="type">int</span>) <span class="type">int</span> { <span class="keyword">return</span> n * <span class="number">2</span> })
+<span class="comment">// [2, 4, 6]</span></pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Exercises</h2>
+            
+            <div class="exercise">
+                <h4>Exercise 1: Remove Duplicates</h4>
+                <p>Write <code>func unique(items []string) []string</code> that removes duplicates, preserving order.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Use a map to track seen items. Only append to result if not seen before.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func unique(items []string) []string {
+    seen := make(map[string]bool)
+    result := make([]string, 0)
+    for _, item := range items {
+        if !seen[item] {
+            seen[item] = true
+            result = append(result, item)
+        }
+    }
+    return result
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>unique([]string{"a", "b", "a", "c", "b"})
+// ["a", "b", "c"]</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 2: Merge Maps</h4>
+                <p>Write <code>func merge[K comparable, V any](a, b map[K]V) map[K]V</code>. Values from b override a.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Create new map. Copy all from a, then all from b (which overwrites conflicts).
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func merge[K comparable, V any](a, b map[K]V) map[K]V {
+    result := make(map[K]V)
+    for k, v := range a {
+        result[k] = v
+    }
+    for k, v := range b {
+        result[k] = v
+    }
+    return result
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>a := map[string]int{"x": 1, "y": 2}
+b := map[string]int{"y": 3, "z": 4}
+merge(a, b) // {"x": 1, "y": 3, "z": 4}</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 3: Simple Cache</h4>
+                <p>Implement cache with <code>Get(key string) (string, bool)</code> and <code>Set(key, value string)</code>.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Wrap a <code>map[string]string</code>. Get returns value and ok. Set just assigns.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type Cache struct {
+    data map[string]string
+}
+
+func NewCache() *Cache {
+    return &Cache{data: make(map[string]string)}
+}
+
+func (c *Cache) Get(key string) (string, bool) {
+    val, ok := c.data[key]
+    return val, ok
+}
+
+func (c *Cache) Set(key, value string) {
+    c.data[key] = value
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 4: Generic Filter</h4>
+                <p>Write <code>func Filter[T any](items []T, pred func(T) bool) []T</code>.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Loop through items, call pred on each, append to result if true.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func Filter[T any](items []T, pred func(T) bool) []T {
+    result := make([]T, 0)
+    for _, item := range items {
+        if pred(item) {
+            result = append(result, item)
+        }
+    }
+    return result
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>nums := []int{1, 2, 3, 4, 5}
+evens := Filter(nums, func(n int) bool { return n%2 == 0 })
+// [2, 4]</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 5: Balanced Brackets</h4>
+                <p>Using a Stack, check if brackets are balanced: <code>"({[]})"</code> → true, <code>"([)]"</code> → false.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Push opening brackets. On closing bracket, pop and check if it matches. Stack should be empty at end.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func isBalanced(s string) bool {
+    stack := make([]rune, 0)
+    pairs := map[rune]rune{')': '(', ']': '[', '}': '{'}
+    
+    for _, ch := range s {
+        switch ch {
+        case '(', '[', '{':
+            stack = append(stack, ch)
+        case ')', ']', '}':
+            if len(stack) == 0 || stack[len(stack)-1] != pairs[ch] {
+                return false
+            }
+            stack = stack[:len(stack)-1]
+        }
+    }
+    return len(stack) == 0
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>isBalanced("({[]})")  // true
+isBalanced("([)]")    // false
+isBalanced("((())")   // false</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 5 Summary</h2>
+            <ul>
+                <li><strong>Slices</strong> have length AND capacity</li>
+                <li><strong>Slicing shares memory</strong> — use copy() for independence</li>
+                <li><strong>Maps iterate randomly</strong> — sort keys if order matters</li>
+                <li><strong>Set = map[T]struct{}</strong></li>
+                <li><strong>Generics</strong> with [T any] or [T constraints.Ordered]</li>
+            </ul>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module4.html" class="nav-btn">← Module 4</a>
+            <a href="module6.html" class="nav-btn primary">Module 6: CLI Foundations →</a>
+        </div>
+    </div>
+</body>
+</html>

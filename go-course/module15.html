@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 15: Sets & Diffing | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+        nav a:hover { color: var(--green-bright); }
+        .module-tag { font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 3rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .lesson h3 { color: var(--orange); margin: 1.5rem 0 1rem; }
+        .lesson p { color: var(--text-dim); margin-bottom: 1rem; }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--blue); }
+        .code-header::before { content: '● '; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); } .string { color: var(--green-bright); } .comment { color: var(--text-dim); } .func { color: var(--blue); } .type { color: var(--orange); } .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
+        .nav-btn:hover { border-color: var(--green-bright); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); } li { margin-bottom: 0.5rem; }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        .exercise { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .exercise h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1rem; }
+        .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
+        details { margin-top: 0.75rem; }
+        details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
+        details summary:hover { color: var(--green-bright); }
+        details[open] summary { color: var(--green-bright); }
+        .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
+        .hint-content code { background: var(--bg-code); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); font-size: 0.85rem; }
+        .hint-content pre { margin: 0.5rem 0; padding: 0.75rem; background: var(--bg-code); border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); }
+        .expected { margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 255, 157, 0.05); border: 1px dashed var(--green-bright); border-radius: 6px; }
+        .expected-title { font-size: 0.75rem; color: var(--green-bright); margin-bottom: 0.4rem; text-transform: uppercase; font-weight: 600; }
+        .expected pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
+
+        .diagram { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.4; white-space: pre; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav><a href="module14.html">← Module 14</a><a href="module16.html">Module 16 →</a></nav>
+        <div class="module-tag">// MODULE 15</div>
+        <h1>Sets & Diffing</h1>
+        <p class="module-desc">Set operations are everywhere. Comparing lists, finding differences, computing what changed.</p>
+
+        <div class="lesson">
+            <h2>Why Sets Matter</h2>
+            <p>Tons of real problems are set problems in disguise:</p>
+            <ul>
+                <li>What files are in directory A but not B?</li>
+                <li>Which users have permission X but not Y?</li>
+                <li>What config changed between versions?</li>
+                <li>Which items need to be added/removed to sync two lists?</li>
+            </ul>
+            <p>If you have two lists and need to compare them, you're doing set math.</p>
+        </div>
+
+        <div class="lesson">
+            <h2>Set Operations Visualized</h2>
+            
+            <div class="diagram">Set A: {1, 2, 3, 4}
+Set B: {3, 4, 5, 6}
+
+<span style="color: var(--green-bright)">Union (A ∪ B)</span>        = {1, 2, 3, 4, 5, 6}   <span style="color: var(--text-dim)">// Everything</span>
+<span style="color: var(--blue)">Intersection (A ∩ B)</span> = {3, 4}               <span style="color: var(--text-dim)">// In both</span>
+<span style="color: var(--orange)">Difference (A - B)</span>   = {1, 2}               <span style="color: var(--text-dim)">// In A but not B</span>
+<span style="color: var(--red)">Difference (B - A)</span>   = {5, 6}               <span style="color: var(--text-dim)">// In B but not A</span></div>
+        </div>
+
+        <div class="lesson">
+            <h2>Sets in Go: map[T]struct{}</h2>
+            <p>Go doesn't have a built-in set type. Use a map with empty struct values.</p>
+            
+            <div class="code-block">
+                <div class="code-header">Basic set</div>
+                <pre><span class="comment">// struct{} takes zero bytes — perfect for "I just need the keys"</span>
+<span class="keyword">type</span> <span class="type">Set</span>[T comparable] <span class="keyword">map</span>[T]<span class="keyword">struct</span>{}
+
+<span class="comment">// Create from slice</span>
+<span class="keyword">func</span> <span class="func">NewSet</span>[T comparable](items []T) <span class="type">Set</span>[T] {
+    s := <span class="keyword">make</span>(<span class="type">Set</span>[T], <span class="func">len</span>(items))
+    <span class="keyword">for</span> _, item := <span class="keyword">range</span> items {
+        s[item] = <span class="keyword">struct</span>{}{}
+    }
+    <span class="keyword">return</span> s
+}
+
+<span class="comment">// Check membership — O(1)</span>
+<span class="keyword">func</span> (s <span class="type">Set</span>[T]) <span class="func">Contains</span>(item T) <span class="type">bool</span> {
+    _, ok := s[item]
+    <span class="keyword">return</span> ok
+}
+
+<span class="comment">// Add item</span>
+<span class="keyword">func</span> (s <span class="type">Set</span>[T]) <span class="func">Add</span>(item T) {
+    s[item] = <span class="keyword">struct</span>{}{}
+}
+
+<span class="comment">// Convert back to slice</span>
+<span class="keyword">func</span> (s <span class="type">Set</span>[T]) <span class="func">ToSlice</span>() []T {
+    result := <span class="keyword">make</span>([]T, <span class="number">0</span>, <span class="func">len</span>(s))
+    <span class="keyword">for</span> item := <span class="keyword">range</span> s {
+        result = <span class="func">append</span>(result, item)
+    }
+    <span class="keyword">return</span> result
+}</pre>
+            </div>
+            
+            <div class="tip">
+                <div class="tip-title">Why struct{} instead of bool?</div>
+                <p><span class="inline-code">map[string]bool</span> works but wastes 1 byte per entry. <span class="inline-code">map[string]struct{}</span> uses zero extra bytes. For large sets, this adds up.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Set Operations</h2>
+            
+            <div class="code-block">
+                <div class="code-header">Set operations</div>
+                <pre><span class="comment">// Difference: items in A but not in B</span>
+<span class="keyword">func</span> <span class="func">Difference</span>[T comparable](a, b <span class="type">Set</span>[T]) <span class="type">Set</span>[T] {
+    result := <span class="keyword">make</span>(<span class="type">Set</span>[T])
+    <span class="keyword">for</span> item := <span class="keyword">range</span> a {
+        <span class="keyword">if</span> !b.<span class="func">Contains</span>(item) {
+            result[item] = <span class="keyword">struct</span>{}{}
+        }
+    }
+    <span class="keyword">return</span> result
+}
+
+<span class="comment">// Intersection: items in both A and B</span>
+<span class="keyword">func</span> <span class="func">Intersection</span>[T comparable](a, b <span class="type">Set</span>[T]) <span class="type">Set</span>[T] {
+    result := <span class="keyword">make</span>(<span class="type">Set</span>[T])
+    <span class="keyword">for</span> item := <span class="keyword">range</span> a {
+        <span class="keyword">if</span> b.<span class="func">Contains</span>(item) {
+            result[item] = <span class="keyword">struct</span>{}{}
+        }
+    }
+    <span class="keyword">return</span> result
+}
+
+<span class="comment">// Union: items in A or B or both</span>
+<span class="keyword">func</span> <span class="func">Union</span>[T comparable](a, b <span class="type">Set</span>[T]) <span class="type">Set</span>[T] {
+    result := <span class="keyword">make</span>(<span class="type">Set</span>[T], <span class="func">len</span>(a)+<span class="func">len</span>(b))
+    <span class="keyword">for</span> item := <span class="keyword">range</span> a {
+        result[item] = <span class="keyword">struct</span>{}{}
+    }
+    <span class="keyword">for</span> item := <span class="keyword">range</span> b {
+        result[item] = <span class="keyword">struct</span>{}{}
+    }
+    <span class="keyword">return</span> result
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Comparing Two Lists</h2>
+            <p>The classic "diff" problem: given two lists, what's different?</p>
+            
+            <div class="code-block">
+                <div class="code-header">Diff two slices</div>
+                <pre><span class="comment">// Result of comparing two lists</span>
+<span class="keyword">type</span> <span class="type">Diff</span>[T comparable] <span class="keyword">struct</span> {
+    OnlyInA []T  <span class="comment">// In first list but not second</span>
+    OnlyInB []T  <span class="comment">// In second list but not first</span>
+    InBoth  []T  <span class="comment">// In both lists</span>
+}
+
+<span class="keyword">func</span> <span class="func">Compare</span>[T comparable](a, b []T) <span class="type">Diff</span>[T] {
+    setA := <span class="func">NewSet</span>(a)
+    setB := <span class="func">NewSet</span>(b)
+    
+    <span class="keyword">return</span> <span class="type">Diff</span>[T]{
+        OnlyInA: <span class="func">Difference</span>(setA, setB).<span class="func">ToSlice</span>(),
+        OnlyInB: <span class="func">Difference</span>(setB, setA).<span class="func">ToSlice</span>(),
+        InBoth:  <span class="func">Intersection</span>(setA, setB).<span class="func">ToSlice</span>(),
+    }
+}
+
+<span class="comment">// Usage</span>
+current := []<span class="type">string</span>{<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>}
+desired := []<span class="type">string</span>{<span class="string">"b"</span>, <span class="string">"c"</span>, <span class="string">"d"</span>}
+
+diff := <span class="func">Compare</span>(current, desired)
+<span class="comment">// diff.OnlyInA = ["a"]      // current has, desired doesn't</span>
+<span class="comment">// diff.OnlyInB = ["d"]      // desired has, current doesn't</span>
+<span class="comment">// diff.InBoth  = ["b", "c"] // both have</span></pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Performance: O(n) vs O(n²)</h2>
+            <p>This is why sets matter for performance.</p>
+            
+            <div class="code-block">
+                <div class="code-header">Naive approach — O(n²)</div>
+                <pre><span class="comment">// DON'T DO THIS for large lists</span>
+<span class="keyword">func</span> <span class="func">slowDiff</span>(a, b []<span class="type">string</span>) []<span class="type">string</span> {
+    <span class="keyword">var</span> onlyInA []<span class="type">string</span>
+    <span class="keyword">for</span> _, itemA := <span class="keyword">range</span> a {
+        found := <span class="keyword">false</span>
+        <span class="keyword">for</span> _, itemB := <span class="keyword">range</span> b {  <span class="comment">// Loops through B for every A</span>
+            <span class="keyword">if</span> itemA == itemB {
+                found = <span class="keyword">true</span>
+                <span class="keyword">break</span>
+            }
+        }
+        <span class="keyword">if</span> !found {
+            onlyInA = <span class="func">append</span>(onlyInA, itemA)
+        }
+    }
+    <span class="keyword">return</span> onlyInA
+}
+<span class="comment">// 1000 items × 1000 items = 1,000,000 comparisons</span></pre>
+            </div>
+            
+            <div class="code-block">
+                <div class="code-header">Set approach — O(n)</div>
+                <pre><span class="comment">// DO THIS</span>
+<span class="keyword">func</span> <span class="func">fastDiff</span>(a, b []<span class="type">string</span>) []<span class="type">string</span> {
+    setB := <span class="func">NewSet</span>(b)  <span class="comment">// O(n) to build</span>
+    
+    <span class="keyword">var</span> onlyInA []<span class="type">string</span>
+    <span class="keyword">for</span> _, item := <span class="keyword">range</span> a {
+        <span class="keyword">if</span> !setB.<span class="func">Contains</span>(item) {  <span class="comment">// O(1) lookup!</span>
+            onlyInA = <span class="func">append</span>(onlyInA, item)
+        }
+    }
+    <span class="keyword">return</span> onlyInA
+}
+<span class="comment">// 1000 items = ~2000 operations</span></pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Sorting for Consistent Output</h2>
+            <p>Maps (and therefore sets) iterate in random order. Sort before displaying.</p>
+            
+            <div class="code-block">
+                <div class="code-header">Sorted output</div>
+                <pre><span class="keyword">import</span> <span class="string">"sort"</span>
+
+<span class="keyword">func</span> (s <span class="type">Set</span>[<span class="type">string</span>]) <span class="func">SortedSlice</span>() []<span class="type">string</span> {
+    result := s.<span class="func">ToSlice</span>()
+    sort.<span class="func">Strings</span>(result)
+    <span class="keyword">return</span> result
+}
+
+<span class="comment">// For any comparable type that's also orderable</span>
+<span class="keyword">func</span> <span class="func">SortedKeys</span>[K cmp.Ordered, V <span class="type">any</span>](m <span class="keyword">map</span>[K]V) []K {
+    keys := <span class="keyword">make</span>([]K, <span class="number">0</span>, <span class="func">len</span>(m))
+    <span class="keyword">for</span> k := <span class="keyword">range</span> m {
+        keys = <span class="func">append</span>(keys, k)
+    }
+    slices.<span class="func">Sort</span>(keys)
+    <span class="keyword">return</span> keys
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Real World Applications</h2>
+            <p>Places you'll use this pattern:</p>
+            <ul>
+                <li><strong>File sync</strong> — what files to copy/delete</li>
+                <li><strong>Database migrations</strong> — what columns to add/remove</li>
+                <li><strong>Permission systems</strong> — what access to grant/revoke</li>
+                <li><strong>Config management</strong> — what changed between versions</li>
+                <li><strong>Dependency resolution</strong> — what to install/uninstall</li>
+                <li><strong>Cache invalidation</strong> — what keys are stale</li>
+            </ul>
+            <p>Any time you're comparing "what is" vs "what should be" — that's a diff.</p>
+        </div>
+
+        <div class="lesson">
+            <h2>Exercises</h2>
+            
+            <div class="exercise">
+                <h4>Exercise 1: Directory Diff</h4>
+                <p>Compare filenames in two directories. Print files only in A, only in B, and in both.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Use <code>os.ReadDir()</code> to list files. Build sets from filenames. Apply set operations.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func listFiles(dir string) map[string]struct{} {
+    set := make(map[string]struct{})
+    entries, _ := os.ReadDir(dir)
+    for _, e := range entries {
+        set[e.Name()] = struct{}{}
+    }
+    return set
+}
+
+func main() {
+    a := listFiles(os.Args[1])
+    b := listFiles(os.Args[2])
+    
+    fmt.Println("Only in A:")
+    for f := range a {
+        if _, ok := b[f]; !ok {
+            fmt.Println(" ", f)
+        }
+    }
+    // Similar for only in B and in both...
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 2: Find Common</h4>
+                <p>Given two text files (one word per line), find words in both.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Read files with <code>bufio.Scanner</code>. Build set from first file. Check second file against it.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func readLines(path string) map[string]struct{} {
+    set := make(map[string]struct{})
+    file, _ := os.Open(path)
+    defer file.Close()
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        set[scanner.Text()] = struct{}{}
+    }
+    return set
+}
+
+func main() {
+    a := readLines(os.Args[1])
+    b := readLines(os.Args[2])
+    
+    for word := range a {
+        if _, ok := b[word]; ok {
+            fmt.Println(word)
+        }
+    }
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 3: Set Calculator</h4>
+                <p>Build CLI: <code>setcalc union|intersect|diff file1.txt file2.txt</code></p>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func main() {
+    op := os.Args[1]
+    a := readLines(os.Args[2])
+    b := readLines(os.Args[3])
+    
+    switch op {
+    case "union":
+        for w := range a { fmt.Println(w) }
+        for w := range b {
+            if _, ok := a[w]; !ok { fmt.Println(w) }
+        }
+    case "intersect":
+        for w := range a {
+            if _, ok := b[w]; ok { fmt.Println(w) }
+        }
+    case "diff":
+        for w := range a {
+            if _, ok := b[w]; !ok { fmt.Println(w) }
+        }
+    }
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>$ ./setcalc intersect file1.txt file2.txt
+apple
+banana</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 4: Change Detector</h4>
+                <p>Take before/after snapshots of a directory. Report what was added, removed, unchanged.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Save "before" listing to a temp file or in memory. After changes, diff against new listing.
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 15 Summary</h2>
+            <ul>
+                <li><strong>Set = map[T]struct{}</strong> — O(1) membership test</li>
+                <li><strong>Difference(A, B)</strong> — in A but not B</li>
+                <li><strong>Intersection(A, B)</strong> — in both</li>
+                <li><strong>Union(A, B)</strong> — in either or both</li>
+                <li><strong>Compare two lists</strong> → OnlyInA, OnlyInB, InBoth</li>
+                <li><strong>Always sort</strong> before displaying for consistency</li>
+            </ul>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module14.html" class="nav-btn">← Module 14</a>
+            <a href="index.html" class="nav-btn primary">Course Complete! 🎉</a>
+        </div>
+    </div>
+</body>
+</html>

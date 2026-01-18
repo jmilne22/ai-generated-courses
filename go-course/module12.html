@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 12: Concurrency & Goroutines | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+        nav a:hover { color: var(--green-bright); }
+        .module-tag { font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 3rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .lesson h3 { color: var(--orange); margin: 1.5rem 0 1rem; }
+        .lesson p { color: var(--text-dim); margin-bottom: 1rem; }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--blue); }
+        .code-header::before { content: '● '; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); } .string { color: var(--green-bright); } .comment { color: var(--text-dim); } .func { color: var(--blue); } .type { color: var(--orange); } .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .warning { background: rgba(255, 157, 0, 0.1); border-left: 3px solid var(--orange); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .warning-title { font-weight: 600; color: var(--orange); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .project-box { background: linear-gradient(135deg, rgba(0, 255, 157, 0.1), rgba(0, 180, 255, 0.1)); border: 2px solid var(--green-bright); border-radius: 12px; padding: 2rem; margin: 2rem 0; }
+        .project-box h3 { color: var(--green-bright); margin-bottom: 1rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
+        .nav-btn:hover { border-color: var(--green-bright); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul, ol { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); } li { margin-bottom: 0.5rem; }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        .exercise { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .exercise h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1rem; }
+        .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
+        details { margin-top: 0.75rem; }
+        details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
+        details summary:hover { color: var(--green-bright); }
+        details[open] summary { color: var(--green-bright); }
+        .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
+        .hint-content code { background: var(--bg-code); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); font-size: 0.85rem; }
+        .hint-content pre { margin: 0.5rem 0; padding: 0.75rem; background: var(--bg-code); border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); }
+        .expected { margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 255, 157, 0.05); border: 1px dashed var(--green-bright); border-radius: 6px; }
+        .expected-title { font-size: 0.75rem; color: var(--green-bright); margin-bottom: 0.4rem; text-transform: uppercase; font-weight: 600; }
+        .expected pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
+
+        .visual-box { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav><a href="module11.html">← Module 11</a><a href="module13.html">Module 13 →</a></nav>
+        <div class="module-tag">// MODULE 12</div>
+        <h1>Concurrency & Goroutines</h1>
+        <p class="module-desc">Goroutines, channels, and patterns. The stuff that makes Go actually fast.</p>
+
+        <div class="lesson">
+            <h2>Goroutines: Lightweight Threads</h2>
+            <p>A goroutine is like a lightweight thread. Spawning millions is fine.</p>
+            <div class="code-block">
+                <div class="code-header">Basic goroutine</div>
+                <pre><span class="keyword">func</span> <span class="func">main</span>() {
+    <span class="comment">// Start a goroutine with 'go'</span>
+    <span class="keyword">go</span> <span class="keyword">func</span>() {
+        fmt.<span class="func">Println</span>(<span class="string">"Hello from goroutine!"</span>)
+    }()
+    
+    <span class="comment">// Or call a named function</span>
+    <span class="keyword">go</span> <span class="func">doWork</span>(<span class="string">"task1"</span>)
+    <span class="keyword">go</span> <span class="func">doWork</span>(<span class="string">"task2"</span>)
+    
+    <span class="comment">// Main must wait, or it exits and kills goroutines</span>
+    time.<span class="func">Sleep</span>(<span class="number">100</span> * time.Millisecond)
+}
+
+<span class="keyword">func</span> <span class="func">doWork</span>(name <span class="type">string</span>) {
+    fmt.<span class="func">Printf</span>(<span class="string">"Starting %s\n"</span>, name)
+    time.<span class="func">Sleep</span>(<span class="number">50</span> * time.Millisecond)
+    fmt.<span class="func">Printf</span>(<span class="string">"Finished %s\n"</span>, name)
+}</pre>
+            </div>
+            <div class="warning">
+                <div class="warning-title">Don't use time.Sleep!</div>
+                <p>Use proper synchronization (channels, WaitGroup). Sleep is just for demos.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Channels: Goroutine Communication</h2>
+            <div class="visual-box">
+                <p style="color: var(--text-dim);">// Channel is a pipe between goroutines</p>
+                <p style="color: var(--green-bright);">Goroutine A  ──[value]──>  Channel  ──[value]──>  Goroutine B</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">Basic channels</div>
+                <pre><span class="comment">// Create a channel</span>
+ch := <span class="keyword">make</span>(<span class="keyword">chan</span> <span class="type">string</span>)
+
+<span class="comment">// Send to channel (blocks until received)</span>
+<span class="keyword">go</span> <span class="keyword">func</span>() {
+    ch <- <span class="string">"hello"</span>  <span class="comment">// Send</span>
+}()
+
+<span class="comment">// Receive from channel (blocks until sent)</span>
+msg := <-ch  <span class="comment">// Receive</span>
+fmt.<span class="func">Println</span>(msg)
+
+<span class="comment">// Buffered channel (non-blocking until full)</span>
+buffered := <span class="keyword">make</span>(<span class="keyword">chan</span> <span class="type">int</span>, <span class="number">3</span>)  <span class="comment">// Buffer size 3</span>
+buffered <- <span class="number">1</span>
+buffered <- <span class="number">2</span>
+buffered <- <span class="number">3</span>
+<span class="comment">// buffered <- 4  // Would block!</span></pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>WaitGroup: Waiting for Goroutines</h2>
+            <div class="code-block">
+                <div class="code-header">sync.WaitGroup</div>
+                <pre><span class="keyword">import</span> <span class="string">"sync"</span>
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    <span class="keyword">var</span> wg sync.<span class="type">WaitGroup</span>
+    
+    urls := []<span class="type">string</span>{
+        <span class="string">"https://google.com"</span>,
+        <span class="string">"https://github.com"</span>,
+        <span class="string">"https://golang.org"</span>,
+    }
+    
+    <span class="keyword">for</span> _, url := <span class="keyword">range</span> urls {
+        wg.<span class="func">Add</span>(<span class="number">1</span>)  <span class="comment">// Increment counter</span>
+        <span class="keyword">go</span> <span class="keyword">func</span>(u <span class="type">string</span>) {
+            <span class="keyword">defer</span> wg.<span class="func">Done</span>()  <span class="comment">// Decrement when done</span>
+            <span class="func">fetch</span>(u)
+        }(url)
+    }
+    
+    wg.<span class="func">Wait</span>()  <span class="comment">// Block until counter is 0</span>
+    fmt.<span class="func">Println</span>(<span class="string">"All done!"</span>)
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Select: Multiplexing Channels</h2>
+            <div class="code-block">
+                <div class="code-header">Select statement</div>
+                <pre><span class="keyword">func</span> <span class="func">main</span>() {
+    ch1 := <span class="keyword">make</span>(<span class="keyword">chan</span> <span class="type">string</span>)
+    ch2 := <span class="keyword">make</span>(<span class="keyword">chan</span> <span class="type">string</span>)
+    
+    <span class="keyword">go</span> <span class="keyword">func</span>() {
+        time.<span class="func">Sleep</span>(<span class="number">100</span> * time.Millisecond)
+        ch1 <- <span class="string">"from ch1"</span>
+    }()
+    
+    <span class="keyword">go</span> <span class="keyword">func</span>() {
+        time.<span class="func">Sleep</span>(<span class="number">200</span> * time.Millisecond)
+        ch2 <- <span class="string">"from ch2"</span>
+    }()
+    
+    <span class="comment">// Select waits on multiple channels</span>
+    <span class="keyword">for</span> i := <span class="number">0</span>; i < <span class="number">2</span>; i++ {
+        <span class="keyword">select</span> {
+        <span class="keyword">case</span> msg := <-ch1:
+            fmt.<span class="func">Println</span>(msg)
+        <span class="keyword">case</span> msg := <-ch2:
+            fmt.<span class="func">Println</span>(msg)
+        }
+    }
+}
+
+<span class="comment">// Select with timeout</span>
+<span class="keyword">select</span> {
+<span class="keyword">case</span> result := <-ch:
+    fmt.<span class="func">Println</span>(result)
+<span class="keyword">case</span> <-time.<span class="func">After</span>(<span class="number">5</span> * time.Second):
+    fmt.<span class="func">Println</span>(<span class="string">"Timeout!"</span>)
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Context: Cancellation & Timeouts</h2>
+            <div class="code-block">
+                <div class="code-header">Context usage</div>
+                <pre><span class="keyword">import</span> <span class="string">"context"</span>
+
+<span class="comment">// With timeout</span>
+ctx, cancel := context.<span class="func">WithTimeout</span>(context.<span class="func">Background</span>(), <span class="number">5</span>*time.Second)
+<span class="keyword">defer</span> cancel()
+
+<span class="comment">// Pass context to functions</span>
+result, err := <span class="func">fetchWithContext</span>(ctx, <span class="string">"https://api.example.com"</span>)
+
+<span class="keyword">func</span> <span class="func">fetchWithContext</span>(ctx context.<span class="type">Context</span>, url <span class="type">string</span>) ([]<span class="type">byte</span>, <span class="type">error</span>) {
+    req, _ := http.<span class="func">NewRequestWithContext</span>(ctx, <span class="string">"GET"</span>, url, <span class="keyword">nil</span>)
+    
+    resp, err := http.DefaultClient.<span class="func">Do</span>(req)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="keyword">nil</span>, err
+    }
+    <span class="keyword">defer</span> resp.Body.<span class="func">Close</span>()
+    
+    <span class="keyword">return</span> io.<span class="func">ReadAll</span>(resp.Body)
+}
+
+<span class="comment">// Check if cancelled in long-running work</span>
+<span class="keyword">func</span> <span class="func">doWork</span>(ctx context.<span class="type">Context</span>) <span class="type">error</span> {
+    <span class="keyword">for</span> {
+        <span class="keyword">select</span> {
+        <span class="keyword">case</span> <-ctx.<span class="func">Done</span>():
+            <span class="keyword">return</span> ctx.<span class="func">Err</span>()  <span class="comment">// Cancelled or deadline exceeded</span>
+        <span class="keyword">default</span>:
+            <span class="comment">// Do work...</span>
+        }
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Worker Pool Pattern</h2>
+            <div class="code-block">
+                <div class="code-header">Worker pool</div>
+                <pre><span class="keyword">func</span> <span class="func">worker</span>(id <span class="type">int</span>, jobs <-<span class="keyword">chan</span> <span class="type">int</span>, results <span class="keyword">chan</span><- <span class="type">int</span>) {
+    <span class="keyword">for</span> job := <span class="keyword">range</span> jobs {
+        fmt.<span class="func">Printf</span>(<span class="string">"Worker %d processing job %d\n"</span>, id, job)
+        time.<span class="func">Sleep</span>(<span class="number">100</span> * time.Millisecond)  <span class="comment">// Simulate work</span>
+        results <- job * <span class="number">2</span>
+    }
+}
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    numJobs := <span class="number">10</span>
+    numWorkers := <span class="number">3</span>
+    
+    jobs := <span class="keyword">make</span>(<span class="keyword">chan</span> <span class="type">int</span>, numJobs)
+    results := <span class="keyword">make</span>(<span class="keyword">chan</span> <span class="type">int</span>, numJobs)
+    
+    <span class="comment">// Start workers</span>
+    <span class="keyword">for</span> w := <span class="number">1</span>; w <= numWorkers; w++ {
+        <span class="keyword">go</span> <span class="func">worker</span>(w, jobs, results)
+    }
+    
+    <span class="comment">// Send jobs</span>
+    <span class="keyword">for</span> j := <span class="number">1</span>; j <= numJobs; j++ {
+        jobs <- j
+    }
+    <span class="func">close</span>(jobs)
+    
+    <span class="comment">// Collect results</span>
+    <span class="keyword">for</span> r := <span class="number">1</span>; r <= numJobs; r++ {
+        <-results
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="project-box">
+            <h3>🔨 Project: Parallel Downloader</h3>
+            <p>Build a concurrent file downloader:</p>
+            <ol>
+                <li>Accept list of URLs from file or stdin</li>
+                <li>Download files in parallel (configurable workers)</li>
+                <li>Show progress bar for each download</li>
+                <li>Handle errors gracefully (retry failed downloads)</li>
+                <li>Support cancellation with Ctrl+C</li>
+            </ol>
+            <div class="tip">
+                <div class="tip-title">Components</div>
+                <p>Worker pool for downloads, context for cancellation, channels for progress updates.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Exercises</h2>
+            
+            <div class="exercise">
+                <h4>Exercise 1: Parallel Sum</h4>
+                <p>Split a large slice into chunks, sum each in a goroutine, combine results. Compare timing vs sequential.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Create a channel for partial sums. Launch N goroutines for N chunks. Receive N results and add them.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func parallelSum(nums []int, workers int) int {
+    ch := make(chan int, workers)
+    chunkSize := len(nums) / workers
+    
+    for i := 0; i < workers; i++ {
+        start := i * chunkSize
+        end := start + chunkSize
+        if i == workers-1 {
+            end = len(nums)
+        }
+        go func(chunk []int) {
+            sum := 0
+            for _, n := range chunk {
+                sum += n
+            }
+            ch <- sum
+        }(nums[start:end])
+    }
+    
+    total := 0
+    for i := 0; i < workers; i++ {
+        total += <-ch
+    }
+    return total
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 2: Timeout Pattern</h4>
+                <p>Write a function that calls a slow operation but returns error if it takes too long. Use <code>select</code> with <code>time.After</code>.</p>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func doWithTimeout(timeout time.Duration) (string, error) {
+    ch := make(chan string, 1)
+    go func() {
+        result := slowOperation()
+        ch <- result
+    }()
+    
+    select {
+    case result := <-ch:
+        return result, nil
+    case <-time.After(timeout):
+        return "", fmt.Errorf("operation timed out")
+    }
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 3: Fan-Out Fan-In</h4>
+                <p>Create 3 goroutines generating numbers. Merge all outputs into a single channel. Print from merged channel.</p>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func merge(channels ...<-chan int) <-chan int {
+    out := make(chan int)
+    var wg sync.WaitGroup
+    
+    for _, ch := range channels {
+        wg.Add(1)
+        go func(c <-chan int) {
+            defer wg.Done()
+            for n := range c {
+                out <- n
+            }
+        }(ch)
+    }
+    
+    go func() {
+        wg.Wait()
+        close(out)
+    }()
+    
+    return out
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 4: Rate Limiter</h4>
+                <p>Build a rate limiter using <code>time.Ticker</code>. Allow max N operations per second.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Create ticker with interval <code>time.Second/N</code>. Block on ticker before allowing each operation.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type RateLimiter struct {
+    ticker *time.Ticker
+}
+
+func NewRateLimiter(perSecond int) *RateLimiter {
+    return &RateLimiter{
+        ticker: time.NewTicker(time.Second / time.Duration(perSecond)),
+    }
+}
+
+func (r *RateLimiter) Wait() {
+    <-r.ticker.C
+}
+
+func (r *RateLimiter) Stop() {
+    r.ticker.Stop()
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 5: Graceful Shutdown</h4>
+                <p>Start a worker goroutine. On Ctrl+C, signal it to stop gracefully, wait for it, then exit.</p>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func main() {
+    stop := make(chan struct{})
+    done := make(chan struct{})
+    
+    go func() {
+        defer close(done)
+        for {
+            select {
+            case <-stop:
+                fmt.Println("Worker stopping...")
+                return
+            default:
+                // do work
+                time.Sleep(100 * time.Millisecond)
+            }
+        }
+    }()
+    
+    sigCh := make(chan os.Signal, 1)
+    signal.Notify(sigCh, os.Interrupt)
+    <-sigCh
+    
+    fmt.Println("Shutting down...")
+    close(stop)
+    <-done
+    fmt.Println("Done")
+}</pre>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 12 Summary</h2>
+            <ul>
+                <li><strong>go func()</strong> — spawn goroutine</li>
+                <li><strong>chan T</strong> — create channel</li>
+                <li><strong>ch <- / <-ch</strong> — send / receive</li>
+                <li><strong>sync.WaitGroup</strong> — wait for goroutines</li>
+                <li><strong>select</strong> — multiplex channels</li>
+                <li><strong>context</strong> — cancellation and timeouts</li>
+                <li><strong>Worker pool</strong> — bounded parallelism</li>
+            </ul>
+            <div class="tip">
+                <div class="tip-title">The Go Proverb</div>
+                <p>"Don't communicate by sharing memory; share memory by communicating." — Use channels, not mutexes.</p>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module11.html" class="nav-btn">← Module 11</a>
+            <a href="index.html" class="nav-btn primary">🎉 Course Complete!</a>
+        </div>
+    </div>
+</body>
+</html>

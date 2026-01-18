@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 9: Error Handling & Testing | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+        nav a:hover { color: var(--green-bright); }
+        .module-tag { font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 3rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .lesson h3 { color: var(--orange); margin: 1.5rem 0 1rem; }
+        .lesson p { color: var(--text-dim); margin-bottom: 1rem; }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--blue); }
+        .code-header.terminal { color: var(--green-bright); }
+        .code-header::before { content: '● '; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); } .string { color: var(--green-bright); } .comment { color: var(--text-dim); } .func { color: var(--blue); } .type { color: var(--orange); } .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .warning { background: rgba(255, 157, 0, 0.1); border-left: 3px solid var(--orange); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .warning-title { font-weight: 600; color: var(--orange); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
+        .nav-btn:hover { border-color: var(--green-bright); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); } li { margin-bottom: 0.5rem; }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        .exercise { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .exercise h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1rem; }
+        .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
+        details { margin-top: 0.75rem; }
+        details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
+        details summary:hover { color: var(--green-bright); }
+        details[open] summary { color: var(--green-bright); }
+        .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
+        .hint-content code { background: var(--bg-code); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); font-size: 0.85rem; }
+        .hint-content pre { margin: 0.5rem 0; padding: 0.75rem; background: var(--bg-code); border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); }
+        .expected { margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 255, 157, 0.05); border: 1px dashed var(--green-bright); border-radius: 6px; }
+        .expected-title { font-size: 0.75rem; color: var(--green-bright); margin-bottom: 0.4rem; text-transform: uppercase; font-weight: 600; }
+        .expected pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav><a href="module8.html">← Module 8</a><a href="module10.html">Module 10 →</a></nav>
+        <div class="module-tag">// MODULE 09</div>
+        <h1>Error Handling & Testing</h1>
+        <p class="module-desc">Go's explicit error handling and how to write tests that actually catch bugs.</p>
+
+        <div class="lesson">
+            <h2>Errors Are Values</h2>
+            <p>Go doesn't have exceptions. Errors are just values that you return and check.</p>
+            <div class="code-block">
+                <div class="code-header">Basic error handling</div>
+                <pre><span class="comment">// Function that can fail returns (result, error)</span>
+<span class="keyword">func</span> <span class="func">divide</span>(a, b <span class="type">float64</span>) (<span class="type">float64</span>, <span class="type">error</span>) {
+    <span class="keyword">if</span> b == <span class="number">0</span> {
+        <span class="keyword">return</span> <span class="number">0</span>, errors.<span class="func">New</span>(<span class="string">"division by zero"</span>)
+    }
+    <span class="keyword">return</span> a / b, <span class="keyword">nil</span>
+}
+
+<span class="comment">// Always handle errors!</span>
+result, err := <span class="func">divide</span>(<span class="number">10</span>, <span class="number">0</span>)
+<span class="keyword">if</span> err != <span class="keyword">nil</span> {
+    fmt.<span class="func">Println</span>(<span class="string">"Error:"</span>, err)
+    <span class="keyword">return</span>
+}
+fmt.<span class="func">Println</span>(result)</pre>
+            </div>
+            <div class="tip">
+                <div class="tip-title">The Mantra</div>
+                <p>Check errors immediately. Don't defer it. Don't ignore it with <span class="inline-code">_</span>.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Custom Error Types</h2>
+            <div class="code-block">
+                <div class="code-header">Custom errors</div>
+                <pre><span class="comment">// Simple custom error</span>
+<span class="keyword">var</span> ErrNotFound = errors.<span class="func">New</span>(<span class="string">"not found"</span>)
+
+<span class="comment">// Rich custom error type</span>
+<span class="keyword">type</span> <span class="type">ValidationError</span> <span class="keyword">struct</span> {
+    Field   <span class="type">string</span>
+    Message <span class="type">string</span>
+}
+
+<span class="keyword">func</span> (e *<span class="type">ValidationError</span>) <span class="func">Error</span>() <span class="type">string</span> {
+    <span class="keyword">return</span> fmt.<span class="func">Sprintf</span>(<span class="string">"%s: %s"</span>, e.Field, e.Message)
+}
+
+<span class="comment">// Using fmt.Errorf with %w for wrapping</span>
+<span class="keyword">func</span> <span class="func">loadConfig</span>(path <span class="type">string</span>) (*<span class="type">Config</span>, <span class="type">error</span>) {
+    data, err := os.<span class="func">ReadFile</span>(path)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="keyword">nil</span>, fmt.<span class="func">Errorf</span>(<span class="string">"loading config: %w"</span>, err)
+    }
+    <span class="comment">// ...</span>
+}
+
+<span class="comment">// Check error type</span>
+<span class="keyword">if</span> errors.<span class="func">Is</span>(err, ErrNotFound) {
+    <span class="comment">// Handle not found</span>
+}
+
+<span class="keyword">var</span> validErr *<span class="type">ValidationError</span>
+<span class="keyword">if</span> errors.<span class="func">As</span>(err, &validErr) {
+    fmt.<span class="func">Println</span>(<span class="string">"Field:"</span>, validErr.Field)
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Writing Tests</h2>
+            <div class="code-block">
+                <div class="code-header">math.go</div>
+                <pre><span class="keyword">package</span> math
+
+<span class="keyword">func</span> <span class="func">Add</span>(a, b <span class="type">int</span>) <span class="type">int</span> {
+    <span class="keyword">return</span> a + b
+}</pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">math_test.go</div>
+                <pre><span class="keyword">package</span> math
+
+<span class="keyword">import</span> <span class="string">"testing"</span>
+
+<span class="keyword">func</span> <span class="func">TestAdd</span>(t *testing.T) {
+    result := <span class="func">Add</span>(<span class="number">2</span>, <span class="number">3</span>)
+    <span class="keyword">if</span> result != <span class="number">5</span> {
+        t.<span class="func">Errorf</span>(<span class="string">"Add(2, 3) = %d; want 5"</span>, result)
+    }
+}</pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header terminal">Run tests</div>
+                <pre>$ go test ./...
+$ go test -v ./...           <span class="comment"># Verbose</span>
+$ go test -run TestAdd ./... <span class="comment"># Run specific test</span>
+$ go test -cover ./...       <span class="comment"># With coverage</span></pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Table-Driven Tests</h2>
+            <p>The Go way to test multiple cases without repetition.</p>
+            <div class="code-block">
+                <div class="code-header">Table-driven test</div>
+                <pre><span class="keyword">func</span> <span class="func">TestAdd</span>(t *testing.T) {
+    tests := []<span class="keyword">struct</span> {
+        name     <span class="type">string</span>
+        a, b     <span class="type">int</span>
+        expected <span class="type">int</span>
+    }{
+        {<span class="string">"positive"</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>},
+        {<span class="string">"negative"</span>, -<span class="number">1</span>, -<span class="number">2</span>, -<span class="number">3</span>},
+        {<span class="string">"zero"</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>},
+        {<span class="string">"mixed"</span>, -<span class="number">5</span>, <span class="number">10</span>, <span class="number">5</span>},
+    }
+    
+    <span class="keyword">for</span> _, tt := <span class="keyword">range</span> tests {
+        t.<span class="func">Run</span>(tt.name, <span class="keyword">func</span>(t *testing.T) {
+            result := <span class="func">Add</span>(tt.a, tt.b)
+            <span class="keyword">if</span> result != tt.expected {
+                t.<span class="func">Errorf</span>(<span class="string">"Add(%d, %d) = %d; want %d"</span>,
+                    tt.a, tt.b, result, tt.expected)
+            }
+        })
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Testing with Interfaces (Mocking)</h2>
+            <div class="code-block">
+                <div class="code-header">Interface-based testing</div>
+                <pre><span class="comment">// Define interface for dependencies</span>
+<span class="keyword">type</span> <span class="type">UserStore</span> <span class="keyword">interface</span> {
+    <span class="func">GetUser</span>(id <span class="type">string</span>) (*<span class="type">User</span>, <span class="type">error</span>)
+}
+
+<span class="comment">// Service uses the interface</span>
+<span class="keyword">type</span> <span class="type">UserService</span> <span class="keyword">struct</span> {
+    store <span class="type">UserStore</span>
+}
+
+<span class="keyword">func</span> (s *<span class="type">UserService</span>) <span class="func">GetUserName</span>(id <span class="type">string</span>) (<span class="type">string</span>, <span class="type">error</span>) {
+    user, err := s.store.<span class="func">GetUser</span>(id)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="string">""</span>, err
+    }
+    <span class="keyword">return</span> user.Name, <span class="keyword">nil</span>
+}
+
+<span class="comment">// Mock for testing</span>
+<span class="keyword">type</span> <span class="type">mockStore</span> <span class="keyword">struct</span> {
+    users <span class="keyword">map</span>[<span class="type">string</span>]*<span class="type">User</span>
+}
+
+<span class="keyword">func</span> (m *<span class="type">mockStore</span>) <span class="func">GetUser</span>(id <span class="type">string</span>) (*<span class="type">User</span>, <span class="type">error</span>) {
+    <span class="keyword">if</span> u, ok := m.users[id]; ok {
+        <span class="keyword">return</span> u, <span class="keyword">nil</span>
+    }
+    <span class="keyword">return</span> <span class="keyword">nil</span>, ErrNotFound
+}
+
+<span class="keyword">func</span> <span class="func">TestGetUserName</span>(t *testing.T) {
+    mock := &<span class="type">mockStore</span>{
+        users: <span class="keyword">map</span>[<span class="type">string</span>]*<span class="type">User</span>{
+            <span class="string">"1"</span>: {Name: <span class="string">"Alice"</span>},
+        },
+    }
+    svc := &<span class="type">UserService</span>{store: mock}
+    
+    name, err := svc.<span class="func">GetUserName</span>(<span class="string">"1"</span>)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        t.<span class="func">Fatal</span>(err)
+    }
+    <span class="keyword">if</span> name != <span class="string">"Alice"</span> {
+        t.<span class="func">Errorf</span>(<span class="string">"got %s, want Alice"</span>, name)
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Exercises</h2>
+            
+            <div class="exercise">
+                <h4>Exercise 1: Custom Error</h4>
+                <p>Create <code>ValidationError</code> with <code>Field</code> and <code>Message</code>. Implement <code>error</code> interface. Use <code>errors.As</code> to extract it.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Implement <code>Error() string</code>. Use <code>var ve *ValidationError; errors.As(err, &ve)</code>.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type ValidationError struct {
+    Field   string
+    Message string
+}
+
+func (e *ValidationError) Error() string {
+    return fmt.Sprintf("%s: %s", e.Field, e.Message)
+}
+
+// Usage:
+err := &ValidationError{Field: "email", Message: "invalid format"}
+var ve *ValidationError
+if errors.As(err, &ve) {
+    fmt.Println("Field:", ve.Field)
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 2: Test Your Module 1 Code</h4>
+                <p>Write table-driven tests for FizzBuzz, reverse string, and word counter from Module 1.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Define test struct with input and expected output. Use <code>t.Run()</code> for subtests.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func TestReverse(t *testing.T) {
+    tests := []struct {
+        input, want string
+    }{
+        {"hello", "olleh"},
+        {"", ""},
+        {"a", "a"},
+        {"世界", "界世"},
+    }
+    for _, tt := range tests {
+        t.Run(tt.input, func(t *testing.T) {
+            if got := reverse(tt.input); got != tt.want {
+                t.Errorf("reverse(%q) = %q, want %q", tt.input, got, tt.want)
+            }
+        })
+    }
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 3: Test Coverage</h4>
+                <p>Run <code>go test -cover</code> on your code. Get at least 80% coverage on one function.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Use <code>go tool cover -html=coverage.out</code> to see which lines aren't covered. Add edge case tests.
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 4: Mock an Interface</h4>
+                <p>Define <code>Fetcher</code> interface with <code>Fetch(url string) ([]byte, error)</code>. Write a function using it. Test with a mock.</p>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type Fetcher interface {
+    Fetch(url string) ([]byte, error)
+}
+
+type mockFetcher struct {
+    data []byte
+    err  error
+}
+
+func (m *mockFetcher) Fetch(url string) ([]byte, error) {
+    return m.data, m.err
+}
+
+func TestWithMock(t *testing.T) {
+    mock := &mockFetcher{data: []byte("test data")}
+    result := ProcessURL(mock, "http://example.com")
+    // assert result...
+}</pre>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 9 Summary</h2>
+            <ul>
+                <li><strong>Errors are values</strong> — return (result, error)</li>
+                <li><strong>Always check errors</strong> — immediately after the call</li>
+                <li><strong>Wrap errors</strong> with fmt.Errorf("context: %w", err)</li>
+                <li><strong>errors.Is/As</strong> — check error types</li>
+                <li><strong>Table-driven tests</strong> — the Go standard</li>
+                <li><strong>Interfaces for mocking</strong> — easy dependency injection</li>
+            </ul>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module8.html" class="nav-btn">← Module 8</a>
+            <a href="module10.html" class="nav-btn primary">Module 10: Design Patterns →</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 1: Go Fundamentals | Go From Python</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --green-dim: #00cc7d; --green-glow: rgba(0, 255, 157, 0.15); --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); min-height: 100vh; line-height: 1.7; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 1000; opacity: 0.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; transition: color 0.3s; }
+        nav a:hover { color: var(--green-bright); }
+        .module-header { margin-bottom: 3rem; }
+        .module-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--green-bright); margin-bottom: 0.5rem; }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; }
+        .lesson h2::before { content: '#'; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h3 { font-size: 1.2rem; margin: 1.5rem 0 1rem; color: var(--orange); }
+        .lesson p { margin-bottom: 1rem; color: var(--text-dim); }
+        .lesson p strong { color: var(--text-main); }
+        .code-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+        @media (max-width: 700px) { .code-compare { grid-template-columns: 1fr; } }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+        .code-header.python { color: var(--orange); }
+        .code-header.go { color: var(--blue); }
+        .code-header::before { content: '●'; font-size: 0.6rem; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); }
+        .string { color: var(--green-bright); }
+        .comment { color: var(--text-dim); }
+        .func { color: var(--blue); }
+        .type { color: var(--orange); }
+        .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .warning { background: rgba(255, 157, 0, 0.1); border-left: 3px solid var(--orange); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .warning-title { font-weight: 600; color: var(--orange); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; transition: all 0.3s; }
+        .nav-btn:hover { border-color: var(--green-bright); box-shadow: 0 0 20px var(--green-glow); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul, ol { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); }
+        li { margin-bottom: 0.5rem; }
+        li strong { color: var(--text-main); }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.85em; color: var(--green-bright); }
+        .exercise { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .exercise h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1rem; }
+        .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
+        details { margin-top: 0.75rem; }
+        details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
+        details summary:hover { color: var(--green-bright); }
+        details[open] summary { color: var(--green-bright); }
+        .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
+        .hint-content code { background: var(--bg-code); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); font-size: 0.85rem; }
+        .hint-content pre { margin: 0.5rem 0; padding: 0.75rem; background: var(--bg-code); border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); }
+        .expected { margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 255, 157, 0.05); border: 1px dashed var(--green-bright); border-radius: 6px; }
+        .expected-title { font-size: 0.75rem; color: var(--green-bright); margin-bottom: 0.4rem; text-transform: uppercase; font-weight: 600; }
+        .expected pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="module0.html">← Module 0</a>
+            <a href="module2.html">Module 2 →</a>
+        </nav>
+
+        <div class="module-header">
+            <div class="module-tag">// MODULE 01</div>
+            <h1>Go Fundamentals</h1>
+            <p class="module-desc">Variables, types, functions, and control flow. Every concept mapped from Python.</p>
+        </div>
+
+        <div class="lesson">
+            <h2>Your First Go Program</h2>
+            <div class="code-compare">
+                <div class="code-block" style="margin:0">
+                    <div class="code-header python">Python</div>
+                    <pre><span class="func">print</span>(<span class="string">"Hello, World!"</span>)</pre>
+                </div>
+                <div class="code-block" style="margin:0">
+                    <div class="code-header go">Go</div>
+                    <pre><span class="keyword">package</span> main
+
+<span class="keyword">import</span> <span class="string">"fmt"</span>
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    fmt.<span class="func">Println</span>(<span class="string">"Hello, World!"</span>)
+}</pre>
+                </div>
+            </div>
+            <ul>
+                <li><strong>package main</strong> — Entry point package</li>
+                <li><strong>import "fmt"</strong> — Import formatting package</li>
+                <li><strong>func main()</strong> — Entry point function</li>
+            </ul>
+            <div class="tip">
+                <div class="tip-title">Run it</div>
+                <p>Save as <span class="inline-code">main.go</span>, run with <span class="inline-code">go run main.go</span></p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Variables & Types</h2>
+            <p>Python is dynamically typed. Go is statically typed. This is the biggest shift.</p>
+            <div class="code-compare">
+                <div class="code-block" style="margin:0">
+                    <div class="code-header python">Python</div>
+                    <pre>name = <span class="string">"Alice"</span>
+age = <span class="number">30</span>
+height = <span class="number">5.9</span>
+is_cool = <span class="keyword">True</span></pre>
+                </div>
+                <div class="code-block" style="margin:0">
+                    <div class="code-header go">Go</div>
+                    <pre><span class="comment">// Explicit types</span>
+<span class="keyword">var</span> name <span class="type">string</span> = <span class="string">"Alice"</span>
+<span class="keyword">var</span> age <span class="type">int</span> = <span class="number">30</span>
+
+<span class="comment">// Type inference with :=</span>
+name := <span class="string">"Alice"</span>
+age := <span class="number">30</span>
+height := <span class="number">5.9</span>
+isCool := <span class="keyword">true</span></pre>
+                </div>
+            </div>
+            <div class="warning">
+                <div class="warning-title">Gotcha</div>
+                <p><span class="inline-code">:=</span> only works inside functions. At package level, use <span class="inline-code">var</span>.</p>
+            </div>
+            <h3>Common Types</h3>
+            <div class="code-block">
+                <div class="code-header go">Types</div>
+                <pre><span class="type">string</span>   <span class="comment">// "hello"</span>
+<span class="type">int</span>      <span class="comment">// 42 (platform-dependent size)</span>
+<span class="type">int64</span>    <span class="comment">// 64-bit integer</span>
+<span class="type">float64</span>  <span class="comment">// 3.14</span>
+<span class="type">bool</span>     <span class="comment">// true, false</span>
+<span class="type">byte</span>     <span class="comment">// alias for uint8</span>
+<span class="type">rune</span>     <span class="comment">// alias for int32 (Unicode code point)</span></pre>
+            </div>
+            <div class="tip">
+                <div class="tip-title">Zero Values</div>
+                <p>Uninitialized variables get zero values: <span class="inline-code">""</span> for string, <span class="inline-code">0</span> for numbers, <span class="inline-code">false</span> for bool.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Functions</h2>
+            <div class="code-compare">
+                <div class="code-block" style="margin:0">
+                    <div class="code-header python">Python</div>
+                    <pre><span class="keyword">def</span> <span class="func">add</span>(a, b):
+    <span class="keyword">return</span> a + b
+
+<span class="keyword">def</span> <span class="func">greet</span>(name):
+    <span class="keyword">return</span> <span class="string">f"Hello, </span>{name}<span class="string">!"</span></pre>
+                </div>
+                <div class="code-block" style="margin:0">
+                    <div class="code-header go">Go</div>
+                    <pre><span class="keyword">func</span> <span class="func">add</span>(a <span class="type">int</span>, b <span class="type">int</span>) <span class="type">int</span> {
+    <span class="keyword">return</span> a + b
+}
+
+<span class="keyword">func</span> <span class="func">greet</span>(name <span class="type">string</span>) <span class="type">string</span> {
+    <span class="keyword">return</span> fmt.<span class="func">Sprintf</span>(<span class="string">"Hello, %s!"</span>, name)
+}</pre>
+                </div>
+            </div>
+            <h3>Multiple Return Values</h3>
+            <div class="code-block">
+                <div class="code-header go">Multiple returns</div>
+                <pre><span class="keyword">func</span> <span class="func">divide</span>(a, b <span class="type">float64</span>) (<span class="type">float64</span>, <span class="type">error</span>) {
+    <span class="keyword">if</span> b == <span class="number">0</span> {
+        <span class="keyword">return</span> <span class="number">0</span>, errors.<span class="func">New</span>(<span class="string">"division by zero"</span>)
+    }
+    <span class="keyword">return</span> a / b, <span class="keyword">nil</span>
+}
+
+result, err := divide(<span class="number">10</span>, <span class="number">2</span>)
+<span class="keyword">if</span> err != <span class="keyword">nil</span> {
+    fmt.<span class="func">Println</span>(err)
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Control Flow</h2>
+            <h3>If Statements</h3>
+            <div class="code-compare">
+                <div class="code-block" style="margin:0">
+                    <div class="code-header python">Python</div>
+                    <pre><span class="keyword">if</span> age >= <span class="number">21</span>:
+    <span class="func">print</span>(<span class="string">"Can drink"</span>)
+<span class="keyword">elif</span> age >= <span class="number">18</span>:
+    <span class="func">print</span>(<span class="string">"Can vote"</span>)
+<span class="keyword">else</span>:
+    <span class="func">print</span>(<span class="string">"Too young"</span>)</pre>
+                </div>
+                <div class="code-block" style="margin:0">
+                    <div class="code-header go">Go</div>
+                    <pre><span class="keyword">if</span> age >= <span class="number">21</span> {
+    fmt.<span class="func">Println</span>(<span class="string">"Can drink"</span>)
+} <span class="keyword">else if</span> age >= <span class="number">18</span> {
+    fmt.<span class="func">Println</span>(<span class="string">"Can vote"</span>)
+} <span class="keyword">else</span> {
+    fmt.<span class="func">Println</span>(<span class="string">"Too young"</span>)
+}</pre>
+                </div>
+            </div>
+            <h3>For Loops (The Only Loop)</h3>
+            <div class="code-compare">
+                <div class="code-block" style="margin:0">
+                    <div class="code-header python">Python</div>
+                    <pre><span class="keyword">for</span> i <span class="keyword">in</span> <span class="func">range</span>(<span class="number">5</span>):
+    <span class="func">print</span>(i)
+
+<span class="keyword">for</span> i, item <span class="keyword">in</span> <span class="func">enumerate</span>(items):
+    <span class="func">print</span>(i, item)</pre>
+                </div>
+                <div class="code-block" style="margin:0">
+                    <div class="code-header go">Go</div>
+                    <pre><span class="keyword">for</span> i := <span class="number">0</span>; i < <span class="number">5</span>; i++ {
+    fmt.<span class="func">Println</span>(i)
+}
+
+<span class="keyword">for</span> i, item := <span class="keyword">range</span> items {
+    fmt.<span class="func">Println</span>(i, item)
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Slices & Maps</h2>
+            <h3>Slices (Dynamic Arrays)</h3>
+            <div class="code-block">
+                <div class="code-header go">Slices</div>
+                <pre>nums := []<span class="type">int</span>{<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>}
+nums = <span class="func">append</span>(nums, <span class="number">4</span>)
+fmt.<span class="func">Println</span>(nums[<span class="number">0</span>])     <span class="comment">// 1</span>
+fmt.<span class="func">Println</span>(<span class="func">len</span>(nums))  <span class="comment">// 4</span>
+fmt.<span class="func">Println</span>(nums[<span class="number">1</span>:<span class="number">3</span>])   <span class="comment">// [2 3]</span></pre>
+            </div>
+            <h3>Maps (Dictionaries)</h3>
+            <div class="code-block">
+                <div class="code-header go">Creating and using maps</div>
+                <pre>ages := <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span>{
+    <span class="string">"alice"</span>: <span class="number">30</span>,
+    <span class="string">"bob"</span>:   <span class="number">25</span>,
+}
+ages[<span class="string">"charlie"</span>] = <span class="number">35</span>  <span class="comment">// Add new key</span>
+
+fmt.<span class="func">Println</span>(ages[<span class="string">"alice"</span>])  <span class="comment">// 30</span></pre>
+            </div>
+            <div class="warning">
+                <div class="warning-title">The Missing Key Problem</div>
+                <p>In Python, accessing a missing key raises <span class="inline-code">KeyError</span>. In Go, it returns the <strong>zero value</strong> (0 for int, "" for string, etc). This means you can't tell if a key is missing or just has a zero value!</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header go">The "comma ok" idiom - checking if a key exists</div>
+                <pre><span class="comment">// Wrong: Can't tell if dave is missing or age is 0</span>
+age := ages[<span class="string">"dave"</span>]  <span class="comment">// Returns 0 (zero value)</span>
+
+<span class="comment">// Right: Use the "comma ok" pattern</span>
+<span class="comment">// ORDER: value, exists := map[key]</span>
+<span class="comment">//        ↑      ↑</span>
+<span class="comment">//        │      └── boolean: true if found, false if not</span>
+<span class="comment">//        └── the actual value (or zero value)</span>
+
+age, ok := ages[<span class="string">"dave"</span>]
+<span class="comment">// age = 0 (zero value for int)</span>
+<span class="comment">// ok = false (key doesn't exist)</span>
+
+<span class="keyword">if</span> ok {
+    fmt.<span class="func">Println</span>(<span class="string">"Found:"</span>, age)
+} <span class="keyword">else</span> {
+    fmt.<span class="func">Println</span>(<span class="string">"Not found"</span>)  <span class="comment">// This prints</span>
+}
+
+<span class="comment">// Common shorthand: declare inside if statement</span>
+<span class="keyword">if</span> age, ok := ages[<span class="string">"alice"</span>]; ok {
+    <span class="comment">//   ↑    ↑</span>
+    <span class="comment">//   30  true</span>
+    fmt.<span class="func">Println</span>(<span class="string">"Alice is"</span>, age)  <span class="comment">// Prints: Alice is 30</span>
+}</pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header python">Python equivalent</div>
+                <pre><span class="comment"># In Python, you might do:</span>
+age = ages.get(<span class="string">"dave"</span>)  <span class="comment"># Returns None if missing</span>
+<span class="keyword">if</span> age <span class="keyword">is not None</span>:
+    <span class="func">print</span>(<span class="string">f"Found: </span>{age}<span class="string">"</span>)
+
+<span class="comment"># Or check with 'in':</span>
+<span class="keyword">if</span> <span class="string">"dave"</span> <span class="keyword">in</span> ages:
+    <span class="func">print</span>(<span class="string">f"Found: </span>{ages[<span class="string">'dave'</span>]}<span class="string">"</span>)</pre>
+            </div>
+            <div class="tip">
+                <div class="tip-title">Remember the order!</div>
+                <p><strong>First variable</strong> = the value you're looking for<br>
+                <strong>Second variable</strong> = boolean (did we find it?)<br><br>
+                Pattern: <span class="inline-code">value, found := map[key]</span><br>
+                You can name them anything, but <span class="inline-code">ok</span> is conventional for the boolean.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Exercises</h2>
+            <p>Progress through each section in order. Each level introduces new concepts gradually.</p>
+            
+            <h3 style="color: var(--green-bright); margin-top: 1.5rem;">🔥 Warmups</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Practice individual concepts you just learned.</p>
+            
+            <div class="exercise">
+                <h4>Warmup 1: Simple Loop</h4>
+                <p>Write a program that prints the numbers 1 to 10, one per line.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Use a <code>for</code> loop with <code>i := 1; i <= 10; i++</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>for i := 1; i <= 10; i++ {
+    fmt.Println(i)
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Warmup 2: If/Else Practice</h4>
+                <p>Write a function <code>func checkNumber(n int) string</code> that returns "positive" if n > 0, "negative" if n < 0, and "zero" if n == 0.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Use <code>if n > 0</code>, then <code>else if n < 0</code>, then <code>else</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func checkNumber(n int) string {
+    if n > 0 {
+        return "positive"
+    } else if n < 0 {
+        return "negative"
+    } else {
+        return "zero"
+    }
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Warmup 3: Working with Slices</h4>
+                <p>Create a slice of your three favorite numbers, then print each one using a <code>for</code> loop with <code>range</code>.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Create slice: <code>nums := []int{1, 2, 3}</code><br>
+                        Loop: <code>for _, num := range nums</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>nums := []int{7, 42, 99}
+for _, num := range nums {
+    fmt.Println(num)
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Warmup 4: Simple Map</h4>
+                <p>Create a map that stores the ages of three people, then print each person's name and age.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Map syntax: <code>map[string]int{"name": age}</code><br>
+                        Loop: <code>for key, value := range mapName</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>ages := map[string]int{
+    "alice": 30,
+    "bob":   25,
+    "carol": 35,
+}
+for name, age := range ages {
+    fmt.Printf("%s is %d years old\n", name, age)
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <h3 style="color: var(--blue); margin-top: 2rem;">📚 Intermediate</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Each exercise introduces ONE new concept. Build your toolkit!</p>
+
+            <div class="exercise">
+                <h4>Intermediate 1: The make Function</h4>
+                <p>Create an empty slice using <code>make([]int, 0)</code>, add three numbers to it with <code>append</code>, then print its length.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <code>make()</code> creates an empty slice with space to grow.<br>
+                        <code>make([]int, 0)</code> means: "make an int slice with 0 initial elements"<br>
+                        Then use: <code>nums = append(nums, value)</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>nums := make([]int, 0)
+nums = append(nums, 10)
+nums = append(nums, 20)
+nums = append(nums, 30)
+fmt.Println(len(nums))  // prints 3</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>3</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Intermediate 2: Checking Map Keys</h4>
+                <p>Create a map of fruit prices. Check if "banana" exists in the map using the <code>value, ok := map[key]</code> pattern.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        The "comma ok" idiom: <code>value, ok := myMap[key]</code><br>
+                        <code>ok</code> will be <code>true</code> if the key exists, <code>false</code> if not.<br>
+                        Use it in an if statement: <code>if price, ok := prices["banana"]; ok { ... }</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>prices := map[string]float64{
+    "apple":  1.50,
+    "orange": 2.00,
+}
+
+if price, ok := prices["banana"]; ok {
+    fmt.Printf("Banana costs $%.2f\n", price)
+} else {
+    fmt.Println("Banana not found")
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>Banana not found</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Intermediate 3: Range with Index and Value</h4>
+                <p>Create a slice of strings (your favorite foods). Loop through it and print both the index and value: "0: pizza", "1: tacos", etc.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <code>range</code> returns TWO values: index and element<br>
+                        <code>for i, food := range foods</code> where <code>i</code> is the index (0, 1, 2...) and <code>food</code> is the value
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>foods := []string{"pizza", "tacos", "sushi"}
+for i, food := range foods {
+    fmt.Printf("%d: %s\n", i, food)
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>0: pizza
+1: tacos
+2: sushi</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Intermediate 4: Building Slices in a Loop</h4>
+                <p>Create an empty slice, then use a loop to add only the even numbers from 1-10 to it. Print the final slice.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Start with: <code>evens := []int{}</code> (or <code>make([]int, 0)</code>)<br>
+                        Loop from 1 to 10, check <code>if i%2 == 0</code>, then <code>append</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>evens := []int{}
+for i := 1; i <= 10; i++ {
+    if i%2 == 0 {
+        evens = append(evens, i)
+    }
+}
+fmt.Println(evens)  // [2 4 6 8 10]</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>[2 4 6 8 10]</pre>
+                </div>
+            </div>
+
+            <h3 style="color: var(--orange); margin-top: 2rem;">💪 Challenges</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Combine multiple concepts to solve these.</p>
+            
+            <div class="exercise">
+                <h4>Challenge 1: Sum of Slice</h4>
+                <p>Write a function <code>func sum(numbers []int) int</code> that returns the sum of all numbers in a slice.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Create a <code>total</code> variable, loop through with <code>range</code>, add each number to total, return total.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func sum(numbers []int) int {
+    total := 0
+    for _, num := range numbers {
+        total += num
+    }
+    return total
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>sum([]int{1, 2, 3, 4, 5}) → 15
+sum([]int{10, 20}) → 30</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Challenge 2: Find in Slice</h4>
+                <p>Write a function <code>func contains(items []string, target string) bool</code> that returns true if target is in the slice.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Loop through items, compare each to target using <code>==</code>, return true if found, return false after loop.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func contains(items []string, target string) bool {
+    for _, item := range items {
+        if item == target {
+            return true
+        }
+    }
+    return false
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>contains([]string{"a", "b", "c"}, "b") → true
+contains([]string{"a", "b", "c"}, "z") → false</pre>
+                </div>
+            </div>
+            
+            <div class="exercise">
+                <h4>Challenge 3: FizzBuzz</h4>
+                <p>Print numbers 1-20. For multiples of 3 print "Fizz", multiples of 5 print "Buzz", multiples of both print "FizzBuzz".</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Use <code>%</code> (modulo) to check divisibility. Check for 15 first (or check 3 AND 5), otherwise "FizzBuzz" won't print.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>for i := 1; i <= 20; i++ {
+    if i%15 == 0 {
+        fmt.Println("FizzBuzz")
+    } else if i%3 == 0 {
+        fmt.Println("Fizz")
+    } else if i%5 == 0 {
+        fmt.Println("Buzz")
+    } else {
+        fmt.Println(i)
+    }
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output (partial)</div>
+                    <pre>1
+2
+Fizz
+4
+Buzz
+Fizz
+7
+...
+FizzBuzz</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Challenge 4: Reverse a Slice</h4>
+                <p>Write a function <code>func reverseSlice(nums []int) []int</code> that returns a new slice with elements in reverse order.</p>
+                
+                <details>
+                    <summary>📖 Pre-reading: The Two-Pointer Technique</summary>
+                    <div class="hint-content">
+                        <strong>What is it?</strong> A common algorithm pattern where you use two variables (pointers) starting at different positions, moving toward each other.<br><br>
+                        <strong>For reversing:</strong><br>
+                        • Start one pointer at the beginning (index 0)<br>
+                        • Start another at the end (index len-1)<br>
+                        • Swap the elements they point to<br>
+                        • Move pointers toward the middle<br>
+                        • Stop when they meet<br><br>
+                        <strong>Example:</strong> [1, 2, 3, 4, 5]<br>
+                        Step 1: Swap positions 0 and 4 → [5, 2, 3, 4, 1]<br>
+                        Step 2: Swap positions 1 and 3 → [5, 4, 3, 2, 1]<br>
+                        Step 3: Position 2 stays (middle) → Done!
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Use the two-pointer technique: start with <code>i</code> at the beginning (0) and <code>j</code> at the end (<code>len(nums)-1</code>).<br>
+                        Swap elements and move pointers toward each other until they meet.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution with Explanation</summary>
+                    <div class="hint-content">
+<pre>func reverseSlice(nums []int) []int {
+    // Step 1: Create a copy so we don't modify the original
+    result := make([]int, len(nums))
+    copy(result, nums)
+    
+    // Step 2: Two-pointer swap
+    // i starts at beginning, j starts at end
+    for i, j := 0, len(result)-1; i < j; i, j = i+1, j-1 {
+        // Swap elements at positions i and j
+        result[i], result[j] = result[j], result[i]
+    }
+    return result
+}</pre>
+                        <strong>Breaking down the for loop:</strong><br>
+                        <code>i, j := 0, len(result)-1</code> - Initialize TWO variables at once<br>
+                        <code>i < j</code> - Continue while pointers haven't crossed<br>
+                        <code>i, j = i+1, j-1</code> - Move BOTH pointers (i forward, j backward)<br><br>
+                        
+                        <strong>The swap:</strong><br>
+                        <code>result[i], result[j] = result[j], result[i]</code><br>
+                        This is Go's simultaneous assignment - it swaps values in one line!<br><br>
+                        
+                        📚 <strong>Learn more:</strong><br>
+                        • <a href="https://go.dev/tour/moretypes/7" target="_blank" style="color: var(--green-bright);">Go slices (official tour)</a><br>
+                        • <a href="https://go.dev/blog/slices-intro" target="_blank" style="color: var(--green-bright);">Slices introduction (Go blog)</a>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>reverseSlice([]int{1, 2, 3, 4, 5}) → [5, 4, 3, 2, 1]
+reverseSlice([]int{10, 20}) → [20, 10]</pre>
+                </div>
+            </div>
+
+            <h3 style="color: var(--purple); margin-top: 2rem;">🚀 Advanced</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">These combine many concepts and introduce new Go features. Complete intermediate challenges first!</p>
+
+            <div class="exercise">
+                <h4>Advanced 1: Understanding Runes</h4>
+                <p>Write a function <code>func explainRunes(s string) []rune</code> that converts a string to a slice of runes and returns it. Print each rune and its numeric value.</p>
+                
+                <details>
+                    <summary>📖 Pre-reading: Strings vs Runes in Go</summary>
+                    <div class="hint-content">
+                        <strong>The Problem:</strong> In Go, a <code>string</code> is a sequence of <strong>bytes</strong>, not characters!<br><br>
+                        
+                        For ASCII (a-z, 0-9), one character = one byte. Easy!<br>
+                        But for Unicode (emoji 🎉, Chinese 世界, Arabic, etc.), one character can be 2-4 bytes.<br><br>
+                        
+                        <strong>Example:</strong><br>
+                        <code>"Hello"</code> = 5 bytes = 5 characters ✅<br>
+                        <code>"世界"</code> = 6 bytes but only 2 characters! ⚠️<br>
+                        <code>"🎉"</code> = 4 bytes but only 1 character! ⚠️<br><br>
+                        
+                        <strong>The Solution: Runes</strong><br>
+                        A <code>rune</code> is Go's type for a Unicode character (actually an <code>int32</code>).<br>
+                        Converting to <code>[]rune</code> splits the string into actual characters, not bytes.<br><br>
+                        
+                        📚 <strong>Learn more:</strong><br>
+                        • <a href="https://go.dev/blog/strings" target="_blank" style="color: var(--green-bright);">Strings, bytes, runes (Go blog)</a><br>
+                        • <a href="https://www.youtube.com/watch?v=MijG1ZYT6z0" target="_blank" style="color: var(--green-bright);">Understanding UTF-8 encoding</a>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 What are runes?</summary>
+                    <div class="hint-content">
+                        In Go, strings are sequences of bytes, not characters. For Unicode (emojis, Chinese, Arabic, etc.), you need <code>rune</code>.<br>
+                        A <code>rune</code> is an alias for <code>int32</code> and represents a Unicode code point.<br>
+                        Convert: <code>runes := []rune("Hello")</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Convert the string with <code>[]rune(s)</code>, then loop through and print each rune and its value using <code>%c</code> and <code>%d</code>.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution with Explanation</summary>
+                    <div class="hint-content">
+<pre>func explainRunes(s string) []rune {
+    // Convert string to slice of runes (actual characters)
+    runes := []rune(s)
+    
+    // Loop through and print each character
+    for i, r := range runes {
+        // %c = print as character, %d = print as number
+        fmt.Printf("runes[%d] = '%c' (value: %d)\n", i, r, r)
+    }
+    return runes
+}
+
+// Test it:
+explainRunes("Hi🎉")</pre>
+                        <strong>Why this matters:</strong><br>
+                        • <code>len("Hi🎉")</code> returns 6 (bytes) not 3 (characters)!<br>
+                        • <code>len([]rune("Hi🎉"))</code> returns 3 (correct!)✅<br>
+                        • When reversing strings with emojis/Unicode, you MUST use runes<br><br>
+                        
+                        <strong>Format verbs used:</strong><br>
+                        <code>%c</code> - Print as a character ('H')<br>
+                        <code>%d</code> - Print as a decimal number (72)<br><br>
+                        
+                        📚 <strong>Learn more:</strong><br>
+                        • <a href="https://pkg.go.dev/fmt" target="_blank" style="color: var(--green-bright);">fmt package (Printf formatting)</a>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output for "Hi🎉"</div>
+                    <pre>runes[0] = 'H' (value: 72)
+runes[1] = 'i' (value: 105)
+runes[2] = '🎉' (value: 127881)</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Advanced 2: Reverse a String</h4>
+                <p>Now write <code>func reverse(s string) string</code> that reverses any string, including Unicode characters like emojis.</p>
+                
+                <details>
+                    <summary>📖 Pre-reading: Combining Concepts</summary>
+                    <div class="hint-content">
+                        <strong>This exercise combines:</strong><br>
+                        1. Runes (from Advanced 1) - handle Unicode properly<br>
+                        2. Two-pointer reversal (from Challenge 4) - swap elements<br>
+                        3. Type conversions - string ↔ []rune<br><br>
+                        
+                        <strong>Why you can't just reverse bytes:</strong><br>
+                        "Hi🎉" as bytes = [72, 105, 240, 159, 142, 137]<br>
+                        Reverse bytes = [137, 142, 159, 240, 105, 72] = gibberish! ❌<br>
+                        Must reverse as runes = ['🎉', 'i', 'H'] = "🎉iH" ✅
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Combine what you learned:<br>
+                        1. Convert string to <code>[]rune</code> (from Advanced 1)<br>
+                        2. Use the two-pointer reversal technique (from Challenge 4)<br>
+                        3. Convert back to string with <code>string(runes)</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution with Step-by-Step Explanation</summary>
+                    <div class="hint-content">
+<pre>func reverse(s string) string {
+    // Step 1: Convert to runes (handles Unicode properly)
+    runes := []rune(s)
+    
+    // Step 2: Two-pointer reversal
+    // Break down: for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1
+    //
+    // INITIALIZATION (before loop starts):
+    //   i := 0              → i starts at first position
+    //   j := len(runes)-1   → j starts at last position
+    //
+    // CONDITION (checked each iteration):
+    //   i < j               → continue while pointers haven't crossed
+    //
+    // UPDATE (after each iteration):
+    //   i, j = i+1, j-1     → move i forward AND j backward
+    //                          (simultaneous assignment!)
+    
+    for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+        // Swap characters at positions i and j
+        runes[i], runes[j] = runes[j], runes[i]
+    }
+    
+    // Step 3: Convert back to string
+    return string(runes)
+}</pre>
+                        <strong>Visual walkthrough for "Go":</strong><br>
+                        Start: <code>['G', 'o']</code>, i=0, j=1<br>
+                        Swap: <code>['o', 'G']</code><br>
+                        Update: i=1, j=0 → i < j is false, stop ✅<br><br>
+                        
+                        <strong>Visual walkthrough for "Hi🎉":</strong><br>
+                        Start: <code>['H', 'i', '🎉']</code>, i=0, j=2<br>
+                        Iteration 1: Swap positions 0,2 → <code>['🎉', 'i', 'H']</code><br>
+                        Update: i=1, j=1 → i < j is false, stop ✅<br><br>
+                        
+                        <strong>Key Go syntax:</strong><br>
+                        • <code>for a, b := x, y</code> - declare multiple variables<br>
+                        • <code>a, b = b, a</code> - simultaneous swap (no temp variable needed!)<br>
+                        • <code>string(runes)</code> - convert []rune back to string<br><br>
+                        
+                        📚 <strong>Learn more:</strong><br>
+                        • <a href="https://go.dev/ref/spec#For_statements" target="_blank" style="color: var(--green-bright);">For loop syntax (Go spec)</a><br>
+                        • <a href="https://go.dev/ref/spec#Assignments" target="_blank" style="color: var(--green-bright);">Assignment statements</a>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>reverse("hello") → "olleh"
+reverse("世界") → "界世"
+reverse("Go🚀") → "🚀oG"</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Advanced 3: Word Counter</h4>
+                <p>Write <code>func wordCount(s string) map[string]int</code> that counts how many times each word appears in a string.</p>
+                
+                <details>
+                    <summary>💡 New Concept: strings.Fields()</summary>
+                    <div class="hint-content">
+                        Go's <code>strings</code> package has useful functions. You need to import it:<br>
+                        <code>import "strings"</code><br><br>
+                        <code>strings.Fields(s)</code> splits a string on any whitespace and returns <code>[]string</code><br>
+                        Example: <code>strings.Fields("hello world")</code> → <code>["hello", "world"]</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        1. Create a map with <code>make(map[string]int)</code><br>
+                        2. Split the string with <code>strings.Fields(s)</code><br>
+                        3. Loop through words and increment the count: <code>counts[word]++</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>import "strings"
+
+func wordCount(s string) map[string]int {
+    counts := make(map[string]int)
+    for _, word := range strings.Fields(s) {
+        counts[word]++
+    }
+    return counts
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>wordCount("the quick brown fox jumps over the lazy dog")
+→ map[brown:1 dog:1 fox:1 jumps:1 lazy:1 over:1 quick:1 the:2]</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Advanced 4: Two Sum</h4>
+                <p>Given a slice of ints and a target, return indices of two numbers that add up to the target. <code>func twoSum(nums []int, target int) []int</code></p>
+                
+                <details>
+                    <summary>📖 Pre-reading: The Hash Map Pattern</summary>
+                    <div class="hint-content">
+                        <strong>The Naive Approach (slow):</strong><br>
+                        Check every pair of numbers - requires nested loops O(n²)<br>
+                        For 1000 numbers, that's 1,000,000 comparisons! 🐌<br><br>
+                        
+                        <strong>The Smart Approach (fast):</strong><br>
+                        Use a map to remember what you've seen - only one loop O(n)<br>
+                        For 1000 numbers, that's just 1000 operations! 🚀<br><br>
+                        
+                        <strong>The Key Insight:</strong><br>
+                        If target = 9 and current number = 2, we need to find 7.<br>
+                        Instead of searching the whole array for 7, just check: "Have I seen 7 before?"<br>
+                        Maps make this lookup instant!<br><br>
+                        
+                        📚 <strong>Learn more:</strong><br>
+                        • <a href="https://www.youtube.com/watch?v=KLlXCFG5TnA" target="_blank" style="color: var(--green-bright);">Two Sum explained (video)</a><br>
+                        • <a href="https://en.wikipedia.org/wiki/Hash_table" target="_blank" style="color: var(--green-bright);">Hash tables (Wikipedia)</a>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Strategy: The Map Lookup Pattern</summary>
+                    <div class="hint-content">
+                        This is a classic algorithm pattern. Instead of checking every pair (slow), use a map to remember what you've seen.<br><br>
+                        For each number, ask: "Have I seen the number that would complete this sum?"<br>
+                        If target is 9 and current number is 2, look for 7 in your map.<br>
+                        If found → return both indices!<br>
+                        If not → remember 2 and its index for later
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        1. Create a map: <code>seen := make(map[int]int)</code> (number → index)<br>
+                        2. For each number, calculate: <code>complement := target - num</code><br>
+                        3. Check: <code>if j, ok := seen[complement]; ok { return []int{j, i} }</code><br>
+                        4. Store current: <code>seen[num] = i</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution with Visual Walkthrough</summary>
+                    <div class="hint-content">
+<pre>func twoSum(nums []int, target int) []int {
+    // Map to remember: number → its index
+    seen := make(map[int]int)
+    
+    // Loop through each number
+    for i, num := range nums {
+        // What number would complete the sum?
+        complement := target - num
+        
+        // Have we seen that number before?
+        if j, ok := seen[complement]; ok {
+            // Yes! Return both indices
+            return []int{j, i}
+        }
+        
+        // No, remember this number for later
+        seen[num] = i
+    }
+    
+    // No solution found
+    return nil
+}</pre>
+                        <strong>Visual walkthrough:</strong><br>
+                        Input: <code>nums = [2, 7, 11, 15]</code>, <code>target = 9</code><br><br>
+                        
+                        <strong>Iteration 1:</strong> i=0, num=2<br>
+                        • complement = 9 - 2 = 7<br>
+                        • Is 7 in seen? No<br>
+                        • Add to map: seen = {2: 0}<br><br>
+                        
+                        <strong>Iteration 2:</strong> i=1, num=7<br>
+                        • complement = 9 - 7 = 2<br>
+                        • Is 2 in seen? Yes! (at index 0) ✅<br>
+                        • Return [0, 1]<br><br>
+                        
+                        <strong>Why this works:</strong><br>
+                        When we're at 7, we look back and say "I've seen 2 before at index 0"<br>
+                        2 + 7 = 9, so we return indices [0, 1]!<br><br>
+                        
+                        <strong>Key concepts used:</strong><br>
+                        • <code>make(map[int]int)</code> - create empty map<br>
+                        • <code>if j, ok := map[key]; ok</code> - check if key exists<br>
+                        • <code>map[key] = value</code> - store in map<br>
+                        • <code>[]int{a, b}</code> - create slice literal<br><br>
+                        
+                        📚 <strong>Learn more:</strong><br>
+                        • <a href="https://go.dev/blog/maps" target="_blank" style="color: var(--green-bright);">Go maps in action</a><br>
+                        • <a href="https://pkg.go.dev/builtin#make" target="_blank" style="color: var(--green-bright);">The make function</a>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>twoSum([]int{2, 7, 11, 15}, 9) → [0, 1]
+twoSum([]int{3, 2, 4}, 6) → [1, 2]
+twoSum([]int{3, 3}, 6) → [0, 1]</pre>
+                </div>
+            </div>
+
+            <div class="tip">
+                <div class="tip-title">Learning Path</div>
+                <p><strong>Warmups</strong> → master basic syntax<br>
+                <strong>Intermediate</strong> → learn one new concept at a time<br>
+                <strong>Challenges</strong> → combine what you know<br>
+                <strong>Advanced</strong> → tackle algorithms with proper scaffolding<br><br>
+                Stuck? Check the hint. Still stuck after 5 minutes? Check the solution and study it!</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 1 Summary</h2>
+            <ul>
+                <li><strong>:=</strong> for declaration + assignment inside functions</li>
+                <li><strong>Types:</strong> string, int, float64, bool</li>
+                <li><strong>Functions:</strong> <span class="inline-code">func name(params) returnType { }</span></li>
+                <li><strong>Multiple returns:</strong> <span class="inline-code">func f() (int, error)</span></li>
+                <li><strong>Slices:</strong> <span class="inline-code">[]Type{}</span></li>
+                <li><strong>Maps:</strong> <span class="inline-code">map[KeyType]ValueType{}</span></li>
+            </ul>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module0.html" class="nav-btn">← Module 0</a>
+            <a href="module2.html" class="nav-btn primary">Module 2: Pointers →</a>
+        </div>
+    </div>
+</body>
+</html>

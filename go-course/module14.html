@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 14: System Interaction | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+        nav a:hover { color: var(--green-bright); }
+        .module-tag { font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 3rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .lesson h3 { color: var(--orange); margin: 1.5rem 0 1rem; }
+        .lesson p { color: var(--text-dim); margin-bottom: 1rem; }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--blue); }
+        .code-header.terminal { color: var(--green-bright); }
+        .code-header::before { content: '● '; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); } .string { color: var(--green-bright); } .comment { color: var(--text-dim); } .func { color: var(--blue); } .type { color: var(--orange); } .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .warning { background: rgba(255, 157, 0, 0.1); border-left: 3px solid var(--orange); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .warning-title { font-weight: 600; color: var(--orange); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
+        .nav-btn:hover { border-color: var(--green-bright); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul, ol { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); } li { margin-bottom: 0.5rem; }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        .exercise { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .exercise h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1rem; }
+        .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
+        details { margin-top: 0.75rem; }
+        details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
+        details summary:hover { color: var(--green-bright); }
+        details[open] summary { color: var(--green-bright); }
+        .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
+        .hint-content code { background: var(--bg-code); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); font-size: 0.85rem; }
+        .hint-content pre { margin: 0.5rem 0; padding: 0.75rem; background: var(--bg-code); border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); }
+        .expected { margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 255, 157, 0.05); border: 1px dashed var(--green-bright); border-radius: 6px; }
+        .expected-title { font-size: 0.75rem; color: var(--green-bright); margin-bottom: 0.4rem; text-transform: uppercase; font-weight: 600; }
+        .expected pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav><a href="module13.html">← Module 13</a><a href="module15.html">Module 15 →</a></nav>
+        <div class="module-tag">// MODULE 14</div>
+        <h1>System Interaction</h1>
+        <p class="module-desc">Detecting what's available, running external commands, parsing their output. The glue between Go and the OS.</p>
+
+        <div class="lesson">
+            <h2>Checking If Things Exist</h2>
+            
+            <h3>Files and Directories</h3>
+            <div class="code-block">
+                <div class="code-header">File existence</div>
+                <pre><span class="keyword">import</span> (
+    <span class="string">"errors"</span>
+    <span class="string">"os"</span>
+)
+
+<span class="comment">// Check if path exists (file or directory)</span>
+<span class="keyword">func</span> <span class="func">exists</span>(path <span class="type">string</span>) <span class="type">bool</span> {
+    _, err := os.<span class="func">Stat</span>(path)
+    <span class="keyword">return</span> err == <span class="keyword">nil</span>
+}
+
+<span class="comment">// Check specifically for file vs directory</span>
+<span class="keyword">func</span> <span class="func">isFile</span>(path <span class="type">string</span>) <span class="type">bool</span> {
+    info, err := os.<span class="func">Stat</span>(path)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="keyword">false</span>
+    }
+    <span class="keyword">return</span> !info.<span class="func">IsDir</span>()
+}
+
+<span class="comment">// Check specifically for "doesn't exist" vs other errors</span>
+<span class="keyword">func</span> <span class="func">existsStrict</span>(path <span class="type">string</span>) (<span class="type">bool</span>, <span class="type">error</span>) {
+    _, err := os.<span class="func">Stat</span>(path)
+    <span class="keyword">if</span> err == <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="keyword">true</span>, <span class="keyword">nil</span>
+    }
+    <span class="keyword">if</span> errors.<span class="func">Is</span>(err, os.ErrNotExist) {
+        <span class="keyword">return</span> <span class="keyword">false</span>, <span class="keyword">nil</span>
+    }
+    <span class="keyword">return</span> <span class="keyword">false</span>, err  <span class="comment">// Some other error (permissions, etc)</span>
+}</pre>
+            </div>
+            
+            <h3>Commands in PATH</h3>
+            <div class="code-block">
+                <div class="code-header">Command existence</div>
+                <pre><span class="keyword">import</span> <span class="string">"os/exec"</span>
+
+<span class="comment">// Check if a command is available</span>
+<span class="keyword">func</span> <span class="func">commandExists</span>(name <span class="type">string</span>) <span class="type">bool</span> {
+    _, err := exec.<span class="func">LookPath</span>(name)
+    <span class="keyword">return</span> err == <span class="keyword">nil</span>
+}
+
+<span class="comment">// Get full path to command</span>
+<span class="keyword">func</span> <span class="func">whichCommand</span>(name <span class="type">string</span>) (<span class="type">string</span>, <span class="type">error</span>) {
+    <span class="keyword">return</span> exec.<span class="func">LookPath</span>(name)
+}
+
+<span class="comment">// Usage</span>
+<span class="keyword">if</span> <span class="func">commandExists</span>(<span class="string">"git"</span>) {
+    fmt.<span class="func">Println</span>(<span class="string">"Git is installed"</span>)
+}
+
+path, err := <span class="func">whichCommand</span>(<span class="string">"python3"</span>)
+<span class="comment">// path = "/usr/bin/python3"</span></pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Running Commands</h2>
+            <p>The <span class="inline-code">os/exec</span> package is your friend here.</p>
+            
+            <h3>Capture Output</h3>
+            <div class="code-block">
+                <div class="code-header">Getting command output</div>
+                <pre><span class="keyword">import</span> (
+    <span class="string">"os/exec"</span>
+    <span class="string">"strings"</span>
+)
+
+<span class="comment">// Simple: run and get stdout</span>
+out, err := exec.<span class="func">Command</span>(<span class="string">"whoami"</span>).<span class="func">Output</span>()
+<span class="keyword">if</span> err != <span class="keyword">nil</span> {
+    <span class="func">panic</span>(err)
+}
+username := strings.<span class="func">TrimSpace</span>(<span class="func">string</span>(out))
+
+<span class="comment">// With arguments</span>
+out, err = exec.<span class="func">Command</span>(<span class="string">"ls"</span>, <span class="string">"-la"</span>, <span class="string">"/tmp"</span>).<span class="func">Output</span>()
+
+<span class="comment">// Get output as lines</span>
+<span class="keyword">func</span> <span class="func">runLines</span>(name <span class="type">string</span>, args ...<span class="type">string</span>) ([]<span class="type">string</span>, <span class="type">error</span>) {
+    out, err := exec.<span class="func">Command</span>(name, args...).<span class="func">Output</span>()
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="keyword">nil</span>, err
+    }
+    text := strings.<span class="func">TrimSpace</span>(<span class="func">string</span>(out))
+    <span class="keyword">if</span> text == <span class="string">""</span> {
+        <span class="keyword">return</span> []<span class="type">string</span>{}, <span class="keyword">nil</span>
+    }
+    <span class="keyword">return</span> strings.<span class="func">Split</span>(text, <span class="string">"\n"</span>), <span class="keyword">nil</span>
+}</pre>
+            </div>
+            
+            <h3>Capture stdout AND stderr</h3>
+            <div class="code-block">
+                <div class="code-header">Both streams</div>
+                <pre><span class="keyword">import</span> <span class="string">"bytes"</span>
+
+<span class="keyword">func</span> <span class="func">runFull</span>(name <span class="type">string</span>, args ...<span class="type">string</span>) (stdout, stderr <span class="type">string</span>, err <span class="type">error</span>) {
+    cmd := exec.<span class="func">Command</span>(name, args...)
+    
+    <span class="keyword">var</span> outBuf, errBuf bytes.<span class="type">Buffer</span>
+    cmd.Stdout = &outBuf
+    cmd.Stderr = &errBuf
+    
+    err = cmd.<span class="func">Run</span>()
+    <span class="keyword">return</span> outBuf.<span class="func">String</span>(), errBuf.<span class="func">String</span>(), err
+}
+
+<span class="comment">// CombinedOutput merges stdout and stderr</span>
+out, err := exec.<span class="func">Command</span>(<span class="string">"make"</span>).<span class="func">CombinedOutput</span>()</pre>
+            </div>
+            
+            <h3>Stream to Terminal (Interactive)</h3>
+            <div class="code-block">
+                <div class="code-header">Interactive commands</div>
+                <pre><span class="keyword">import</span> <span class="string">"os"</span>
+
+<span class="comment">// Connect command to our terminal</span>
+cmd := exec.<span class="func">Command</span>(<span class="string">"vim"</span>, <span class="string">"file.txt"</span>)
+cmd.Stdin = os.Stdin
+cmd.Stdout = os.Stdout
+cmd.Stderr = os.Stderr
+err := cmd.<span class="func">Run</span>()
+
+<span class="comment">// For commands that need user input (like sudo password)</span>
+cmd := exec.<span class="func">Command</span>(<span class="string">"sudo"</span>, <span class="string">"apt"</span>, <span class="string">"update"</span>)
+cmd.Stdin = os.Stdin
+cmd.Stdout = os.Stdout
+cmd.Stderr = os.Stderr
+cmd.<span class="func">Run</span>()</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Working Directory & Environment</h2>
+            <div class="code-block">
+                <div class="code-header">Command context</div>
+                <pre><span class="comment">// Run command in specific directory</span>
+cmd := exec.<span class="func">Command</span>(<span class="string">"git"</span>, <span class="string">"status"</span>)
+cmd.Dir = <span class="string">"/path/to/repo"</span>
+out, err := cmd.<span class="func">Output</span>()
+
+<span class="comment">// Set environment variables</span>
+cmd := exec.<span class="func">Command</span>(<span class="string">"./script.sh"</span>)
+cmd.Env = <span class="func">append</span>(os.<span class="func">Environ</span>(), <span class="string">"MY_VAR=value"</span>)
+
+<span class="comment">// Or replace entire environment</span>
+cmd.Env = []<span class="type">string</span>{
+    <span class="string">"PATH=/usr/bin"</span>,
+    <span class="string">"HOME=/home/user"</span>,
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Exit Codes</h2>
+            <div class="code-block">
+                <div class="code-header">Handling exit codes</div>
+                <pre><span class="keyword">import</span> <span class="string">"os/exec"</span>
+
+cmd := exec.<span class="func">Command</span>(<span class="string">"grep"</span>, <span class="string">"pattern"</span>, <span class="string">"file.txt"</span>)
+err := cmd.<span class="func">Run</span>()
+
+<span class="keyword">if</span> err != <span class="keyword">nil</span> {
+    <span class="comment">// Try to get exit code</span>
+    <span class="keyword">if</span> exitErr, ok := err.(*exec.<span class="type">ExitError</span>); ok {
+        code := exitErr.<span class="func">ExitCode</span>()
+        fmt.<span class="func">Printf</span>(<span class="string">"Command exited with code %d\n"</span>, code)
+        
+        <span class="comment">// For grep: 0 = found, 1 = not found, 2 = error</span>
+        <span class="keyword">if</span> code == <span class="number">1</span> {
+            fmt.<span class="func">Println</span>(<span class="string">"Pattern not found"</span>)
+        }
+    } <span class="keyword">else</span> {
+        <span class="comment">// Some other error (command not found, etc)</span>
+        fmt.<span class="func">Println</span>(<span class="string">"Failed to run:"</span>, err)
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Parsing Key-Value Files</h2>
+            <p>Many config files on Linux use simple <span class="inline-code">KEY=value</span> format.</p>
+            <div class="code-block">
+                <div class="code-header">Parsing KEY=value files</div>
+                <pre><span class="keyword">import</span> (
+    <span class="string">"bufio"</span>
+    <span class="string">"os"</span>
+    <span class="string">"strings"</span>
+)
+
+<span class="keyword">func</span> <span class="func">parseKeyValueFile</span>(path <span class="type">string</span>) (<span class="keyword">map</span>[<span class="type">string</span>]<span class="type">string</span>, <span class="type">error</span>) {
+    file, err := os.<span class="func">Open</span>(path)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="keyword">nil</span>, err
+    }
+    <span class="keyword">defer</span> file.<span class="func">Close</span>()
+    
+    result := <span class="keyword">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]<span class="type">string</span>)
+    scanner := bufio.<span class="func">NewScanner</span>(file)
+    
+    <span class="keyword">for</span> scanner.<span class="func">Scan</span>() {
+        line := strings.<span class="func">TrimSpace</span>(scanner.<span class="func">Text</span>())
+        
+        <span class="comment">// Skip empty lines and comments</span>
+        <span class="keyword">if</span> line == <span class="string">""</span> || strings.<span class="func">HasPrefix</span>(line, <span class="string">"#"</span>) {
+            <span class="keyword">continue</span>
+        }
+        
+        <span class="comment">// Split on first = only</span>
+        parts := strings.<span class="func">SplitN</span>(line, <span class="string">"="</span>, <span class="number">2</span>)
+        <span class="keyword">if</span> <span class="func">len</span>(parts) == <span class="number">2</span> {
+            key := parts[<span class="number">0</span>]
+            value := strings.<span class="func">Trim</span>(parts[<span class="number">1</span>], <span class="string">"\"'"</span>)  <span class="comment">// Remove quotes</span>
+            result[key] = value
+        }
+    }
+    
+    <span class="keyword">return</span> result, scanner.<span class="func">Err</span>()
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Parsing Command Output</h2>
+            <p>Every command has different output. Learn to parse them.</p>
+            <div class="code-block">
+                <div class="code-header">Common parsing patterns</div>
+                <pre><span class="comment">// Simple: one item per line</span>
+lines, _ := <span class="func">runLines</span>(<span class="string">"ls"</span>)
+<span class="keyword">for</span> _, line := <span class="keyword">range</span> lines {
+    fmt.<span class="func">Println</span>(line)
+}
+
+<span class="comment">// Columns: split by whitespace</span>
+lines, _ := <span class="func">runLines</span>(<span class="string">"ps"</span>, <span class="string">"aux"</span>)
+<span class="keyword">for</span> _, line := <span class="keyword">range</span> lines[<span class="number">1</span>:] {  <span class="comment">// Skip header</span>
+    fields := strings.<span class="func">Fields</span>(line)
+    <span class="keyword">if</span> <span class="func">len</span>(fields) >= <span class="number">11</span> {
+        user := fields[<span class="number">0</span>]
+        pid := fields[<span class="number">1</span>]
+        command := fields[<span class="number">10</span>]
+        fmt.<span class="func">Printf</span>(<span class="string">"%s %s %s\n"</span>, user, pid, command)
+    }
+}
+
+<span class="comment">// Delimiter: split by specific char</span>
+<span class="comment">// /etc/passwd format: name:x:uid:gid:info:home:shell</span>
+lines, _ := <span class="func">runLines</span>(<span class="string">"cat"</span>, <span class="string">"/etc/passwd"</span>)
+<span class="keyword">for</span> _, line := <span class="keyword">range</span> lines {
+    parts := strings.<span class="func">Split</span>(line, <span class="string">":"</span>)
+    <span class="keyword">if</span> <span class="func">len</span>(parts) >= <span class="number">7</span> {
+        username := parts[<span class="number">0</span>]
+        shell := parts[<span class="number">6</span>]
+        fmt.<span class="func">Printf</span>(<span class="string">"%s uses %s\n"</span>, username, shell)
+    }
+}
+
+<span class="comment">// Extracting part of a string</span>
+<span class="comment">// Version strings like "git version 2.34.1"</span>
+out, _ := exec.<span class="func">Command</span>(<span class="string">"git"</span>, <span class="string">"--version"</span>).<span class="func">Output</span>()
+version := strings.<span class="func">TrimPrefix</span>(<span class="func">string</span>(out), <span class="string">"git version "</span>)
+version = strings.<span class="func">TrimSpace</span>(version)</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Checking Permissions</h2>
+            <div class="code-block">
+                <div class="code-header">User and permissions</div>
+                <pre><span class="keyword">import</span> <span class="string">"os"</span>
+
+<span class="comment">// Am I root?</span>
+<span class="keyword">func</span> <span class="func">isRoot</span>() <span class="type">bool</span> {
+    <span class="keyword">return</span> os.<span class="func">Geteuid</span>() == <span class="number">0</span>
+}
+
+<span class="comment">// Get current user</span>
+<span class="keyword">import</span> <span class="string">"os/user"</span>
+
+u, err := user.<span class="func">Current</span>()
+<span class="keyword">if</span> err == <span class="keyword">nil</span> {
+    fmt.<span class="func">Println</span>(u.Username)  <span class="comment">// "alice"</span>
+    fmt.<span class="func">Println</span>(u.HomeDir)   <span class="comment">// "/home/alice"</span>
+}
+
+<span class="comment">// Check if file is readable/writable</span>
+info, err := os.<span class="func">Stat</span>(<span class="string">"/etc/shadow"</span>)
+<span class="keyword">if</span> err == <span class="keyword">nil</span> {
+    mode := info.<span class="func">Mode</span>()
+    fmt.<span class="func">Printf</span>(<span class="string">"Permissions: %s\n"</span>, mode.<span class="func">Perm</span>())
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Exercises</h2>
+            
+            <div class="exercise">
+                <h4>Exercise 1: Which Clone</h4>
+                <p>Build <code>which</code> command. Print full path if found, exit 1 if not.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Use <code>exec.LookPath(os.Args[1])</code>. Check error to determine exit code.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func main() {
+    if len(os.Args) < 2 {
+        fmt.Fprintln(os.Stderr, "usage: which command")
+        os.Exit(1)
+    }
+    
+    path, err := exec.LookPath(os.Args[1])
+    if err != nil {
+        os.Exit(1)
+    }
+    fmt.Println(path)
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>$ ./which go
+/usr/local/go/bin/go
+$ ./which nonexistent
+$ echo $?
+1</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 2: System Info</h4>
+                <p>Print: hostname, current user, home directory, shell, and whether you're root.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <code>os.Hostname()</code>, <code>user.Current()</code>, <code>os.Getenv("SHELL")</code>, <code>os.Geteuid() == 0</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func main() {
+    hostname, _ := os.Hostname()
+    u, _ := user.Current()
+    shell := os.Getenv("SHELL")
+    isRoot := os.Geteuid() == 0
+    
+    fmt.Println("Hostname:", hostname)
+    fmt.Println("User:", u.Username)
+    fmt.Println("Home:", u.HomeDir)
+    fmt.Println("Shell:", shell)
+    fmt.Println("Root:", isRoot)
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 3: Process List</h4>
+                <p>Run <code>ps aux</code>, parse output, print PID and command for processes using &gt;1% CPU.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <code>strings.Fields()</code> for columns. CPU% is field 2 (0-indexed). Parse with <code>strconv.ParseFloat</code>.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func main() {
+    out, _ := exec.Command("ps", "aux").Output()
+    lines := strings.Split(string(out), "\n")
+    
+    for _, line := range lines[1:] {
+        fields := strings.Fields(line)
+        if len(fields) < 11 {
+            continue
+        }
+        cpu, _ := strconv.ParseFloat(fields[2], 64)
+        if cpu > 1.0 {
+            fmt.Printf("PID: %s  CPU: %.1f%%  CMD: %s\n", 
+                fields[1], cpu, fields[10])
+        }
+    }
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 4: Git Status Parser</h4>
+                <p>Run <code>git status --porcelain</code> and print counts of modified, new, and deleted files.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Porcelain format: first 2 chars are status. M=modified, A=added, D=deleted, ??=untracked.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func main() {
+    out, err := exec.Command("git", "status", "--porcelain").Output()
+    if err != nil {
+        fmt.Println("Not a git repo")
+        return
+    }
+    
+    var modified, added, deleted int
+    for _, line := range strings.Split(string(out), "\n") {
+        if len(line) < 2 {
+            continue
+        }
+        switch line[0:2] {
+        case " M", "M ", "MM":
+            modified++
+        case "A ", "??":
+            added++
+        case " D", "D ":
+            deleted++
+        }
+    }
+    fmt.Printf("Modified: %d, Added: %d, Deleted: %d\n", 
+        modified, added, deleted)
+}</pre>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 14 Summary</h2>
+            <ul>
+                <li><strong>os.Stat()</strong> — check if files/dirs exist</li>
+                <li><strong>exec.LookPath()</strong> — check if command exists in PATH</li>
+                <li><strong>exec.Command().Output()</strong> — run and capture stdout</li>
+                <li><strong>cmd.Stdin/Stdout/Stderr = os.Std*</strong> — interactive commands</li>
+                <li><strong>ExitError.ExitCode()</strong> — get exit status</li>
+                <li><strong>strings.Fields()</strong> — split by whitespace</li>
+                <li><strong>strings.SplitN(s, "=", 2)</strong> — split on first occurrence only</li>
+            </ul>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module13.html" class="nav-btn">← Module 13</a>
+            <a href="module15.html" class="nav-btn primary">Module 15: Sets & Diffing →</a>
+        </div>
+    </div>
+</body>
+</html>

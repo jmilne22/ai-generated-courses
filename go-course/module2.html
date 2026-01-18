@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: Pointers & Memory | Go From Python</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --green-dim: #00cc7d; --green-glow: rgba(0, 255, 157, 0.15); --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); min-height: 100vh; line-height: 1.7; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 1000; opacity: 0.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; transition: color 0.3s; }
+        nav a:hover { color: var(--green-bright); }
+        .module-header { margin-bottom: 3rem; }
+        .module-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--green-bright); margin-bottom: 0.5rem; }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; }
+        .lesson h2::before { content: '#'; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h3 { font-size: 1.2rem; margin: 1.5rem 0 1rem; color: var(--orange); }
+        .lesson p { margin-bottom: 1rem; color: var(--text-dim); }
+        .lesson p strong { color: var(--text-main); }
+        .code-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+        @media (max-width: 700px) { .code-compare { grid-template-columns: 1fr; } }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+        .code-header.python { color: var(--orange); }
+        .code-header.go { color: var(--blue); }
+        .code-header.terminal { color: var(--green-bright); }
+        .code-header::before { content: '●'; font-size: 0.6rem; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); }
+        .string { color: var(--green-bright); }
+        .comment { color: var(--text-dim); }
+        .func { color: var(--blue); }
+        .type { color: var(--orange); }
+        .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .warning { background: rgba(255, 157, 0, 0.1); border-left: 3px solid var(--orange); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .warning-title { font-weight: 600; color: var(--orange); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; transition: all 0.3s; font-size: 0.95rem; }
+        .nav-btn:hover { border-color: var(--green-bright); box-shadow: 0 0 20px var(--green-glow); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); border-color: var(--green-bright); }
+        .nav-btn.primary:hover { background: #fff; }
+        ul, ol { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); }
+        li { margin-bottom: 0.5rem; }
+        li strong { color: var(--text-main); }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.85em; color: var(--green-bright); }
+        .exercise { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .exercise h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1rem; }
+        .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
+        details { margin-top: 0.75rem; }
+        details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
+        details summary:hover { color: var(--green-bright); }
+        details[open] summary { color: var(--green-bright); }
+        .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
+        .hint-content code { background: var(--bg-code); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); font-size: 0.85rem; }
+        .hint-content pre { margin: 0.5rem 0; padding: 0.75rem; background: var(--bg-code); border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); }
+        .expected { margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 255, 157, 0.05); border: 1px dashed var(--green-bright); border-radius: 6px; }
+        .expected-title { font-size: 0.75rem; color: var(--green-bright); margin-bottom: 0.4rem; text-transform: uppercase; font-weight: 600; }
+        .expected pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
+
+        .visual-box { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; margin: 1.5rem 0; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="module1.html">← Module 1</a>
+            <a href="module3.html">Module 3 →</a>
+        </nav>
+
+        <div class="module-header">
+            <div class="module-tag">// MODULE 02</div>
+            <h1>Pointers & Memory</h1>
+            <p class="module-desc">Pointers demystified. They're not scary — they're just addresses. Let's make them click.</p>
+        </div>
+
+        <!-- Lesson 1: What's a Pointer -->
+        <div class="lesson">
+            <h2>What Even Is a Pointer?</h2>
+            
+            <p>In Python, you never think about this. In Go, you sometimes do. Here's the deal:</p>
+
+            <p>A <strong>pointer</strong> is just a variable that holds a <strong>memory address</strong> instead of a direct value.</p>
+
+            <div class="visual-box">
+                <p style="color: var(--text-dim); margin-bottom: 1rem;">// Visual representation</p>
+                <p>Regular variable:</p>
+                <p style="color: var(--green-bright);">   x := 42</p>
+                <p style="color: var(--text-dim);">   ┌─────────┐</p>
+                <p style="color: var(--text-dim);">   │   42    │  ← x holds the value directly</p>
+                <p style="color: var(--text-dim);">   └─────────┘</p>
+                <br>
+                <p>Pointer variable:</p>
+                <p style="color: var(--green-bright);">   p := &x</p>
+                <p style="color: var(--text-dim);">   ┌─────────┐      ┌─────────┐</p>
+                <p style="color: var(--text-dim);">   │ 0xc0001 │ ──→  │   42    │  ← p holds address, points to value</p>
+                <p style="color: var(--text-dim);">   └─────────┘      └─────────┘</p>
+                <p style="color: var(--text-dim);">       p               x</p>
+            </div>
+
+            <h3>The Two Operators</h3>
+            <div class="code-block">
+                <div class="code-header go">Pointer operators</div>
+                <pre>x := <span class="number">42</span>
+
+<span class="comment">// & = "address of" — get the memory address</span>
+p := &x        <span class="comment">// p is now a pointer to x</span>
+fmt.<span class="func">Println</span>(p)  <span class="comment">// 0xc0000b4008 (some memory address)</span>
+
+<span class="comment">// * = "dereference" — get the value at address</span>
+fmt.<span class="func">Println</span>(*p) <span class="comment">// 42 (the actual value)</span>
+
+<span class="comment">// Modify through pointer</span>
+*p = <span class="number">100</span>
+fmt.<span class="func">Println</span>(x)  <span class="comment">// 100 — x changed!</span></pre>
+            </div>
+
+            <div class="tip">
+                <div class="tip-title">Memory Trick</div>
+                <p><span class="inline-code">&</span> = "get <strong>A</strong>ddress" (& looks like 'A')<br>
+                <span class="inline-code">*</span> = "get value" (go <strong>*</strong>through the pointer)</p>
+            </div>
+        </div>
+
+        <!-- Lesson 2: Python Comparison -->
+        <div class="lesson">
+            <h2>How Python Handles This</h2>
+            
+            <p>Python has pointers too — you just can't see them. Everything in Python is a reference.</p>
+
+            <div class="code-compare">
+                <div class="code-block" style="margin: 0;">
+                    <div class="code-header python">Python (hidden references)</div>
+                    <pre><span class="comment"># Lists are mutable, passed by ref</span>
+<span class="keyword">def</span> <span class="func">modify</span>(lst):
+    lst.append(<span class="number">4</span>)
+
+my_list = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+modify(my_list)
+<span class="func">print</span>(my_list)  <span class="comment"># [1, 2, 3, 4] changed!</span>
+
+<span class="comment"># Ints are immutable</span>
+<span class="keyword">def</span> <span class="func">modify_int</span>(x):
+    x = <span class="number">100</span>
+
+n = <span class="number">42</span>
+modify_int(n)
+<span class="func">print</span>(n)  <span class="comment"># 42 unchanged</span></pre>
+                </div>
+                <div class="code-block" style="margin: 0;">
+                    <div class="code-header go">Go (explicit choice)</div>
+                    <pre><span class="comment">// Slices work like Python lists</span>
+<span class="keyword">func</span> <span class="func">modify</span>(s []<span class="type">int</span>) {
+    s[<span class="number">0</span>] = <span class="number">999</span>  <span class="comment">// Modifies original</span>
+}
+
+<span class="comment">// Ints: pass by value (copy)</span>
+<span class="keyword">func</span> <span class="func">modifyInt</span>(x <span class="type">int</span>) {
+    x = <span class="number">100</span>  <span class="comment">// Only changes copy</span>
+}
+
+<span class="comment">// Ints: pass by pointer (reference)</span>
+<span class="keyword">func</span> <span class="func">modifyIntPtr</span>(x *<span class="type">int</span>) {
+    *x = <span class="number">100</span>  <span class="comment">// Changes original!</span>
+}
+
+n := <span class="number">42</span>
+<span class="func">modifyIntPtr</span>(&n)  <span class="comment">// Pass address</span>
+fmt.<span class="func">Println</span>(n)     <span class="comment">// 100</span></pre>
+                </div>
+            </div>
+
+            <p><strong>The difference:</strong> Go makes you choose explicitly. Python hides the decision based on mutability.</p>
+        </div>
+
+        <!-- Lesson 3: When to Use Pointers -->
+        <div class="lesson">
+            <h2>When to Use Pointers</h2>
+            
+            <h3>Use Pointers When:</h3>
+            <ol>
+                <li><strong>You need to modify the original:</strong> Functions receive copies by default</li>
+                <li><strong>The data is large:</strong> Copying big structs is slow; pass a pointer instead</li>
+                <li><strong>You need to express "nothing":</strong> Pointers can be <span class="inline-code">nil</span></li>
+                <li><strong>Consistency:</strong> If some methods need pointers, make all methods use pointers</li>
+            </ol>
+
+            <h3>Don't Use Pointers When:</h3>
+            <ol>
+                <li><strong>Data is small:</strong> <span class="inline-code">int</span>, <span class="inline-code">bool</span>, small structs — copying is fine</li>
+                <li><strong>You want immutability:</strong> Pass by value guarantees the original won't change</li>
+                <li><strong>Slices, maps, channels:</strong> Already reference types (sort of)</li>
+            </ol>
+
+            <div class="code-block">
+                <div class="code-header go">Practical examples</div>
+                <pre><span class="comment">// ❌ Unnecessary pointer — int is tiny</span>
+<span class="keyword">func</span> <span class="func">double</span>(x *<span class="type">int</span>) <span class="type">int</span> {
+    <span class="keyword">return</span> *x * <span class="number">2</span>
+}
+
+<span class="comment">// ✓ Just take the value</span>
+<span class="keyword">func</span> <span class="func">double</span>(x <span class="type">int</span>) <span class="type">int</span> {
+    <span class="keyword">return</span> x * <span class="number">2</span>
+}
+
+<span class="comment">// ✓ Pointer needed — modifying a struct</span>
+<span class="keyword">func</span> (u *<span class="type">User</span>) <span class="func">UpdateEmail</span>(email <span class="type">string</span>) {
+    u.Email = email
+}
+
+<span class="comment">// ✓ Pointer useful — large struct</span>
+<span class="keyword">type</span> <span class="type">BigData</span> <span class="keyword">struct</span> {
+    Items [<span class="number">10000</span>]<span class="type">int</span>
+}
+<span class="keyword">func</span> <span class="func">process</span>(d *<span class="type">BigData</span>) { <span class="comment">/* ... */</span> }</pre>
+            </div>
+        </div>
+
+        <!-- Lesson 4: nil Pointers -->
+        <div class="lesson">
+            <h2>nil: The Absence of a Value</h2>
+            
+            <p>A pointer that points to nothing is <span class="inline-code">nil</span>. It's Go's equivalent of Python's <span class="inline-code">None</span> for pointers.</p>
+
+            <div class="code-block">
+                <div class="code-header go">nil pointers</div>
+                <pre><span class="keyword">var</span> p *<span class="type">int</span>           <span class="comment">// Declared but not initialized</span>
+fmt.<span class="func">Println</span>(p)       <span class="comment">// &lt;nil&gt;</span>
+fmt.<span class="func">Println</span>(p == <span class="keyword">nil</span>) <span class="comment">// true</span>
+
+<span class="comment">// DANGER: Dereferencing nil crashes!</span>
+<span class="comment">// fmt.Println(*p)  // panic: runtime error</span>
+
+<span class="comment">// Always check for nil</span>
+<span class="keyword">if</span> p != <span class="keyword">nil</span> {
+    fmt.<span class="func">Println</span>(*p)
+}</pre>
+            </div>
+
+            <h3>Using nil for "Optional" Values</h3>
+            <div class="code-block">
+                <div class="code-header go">nil as optional</div>
+                <pre><span class="keyword">type</span> <span class="type">Config</span> <span class="keyword">struct</span> {
+    Timeout *time.Duration  <span class="comment">// nil = use default</span>
+    MaxSize *<span class="type">int</span>             <span class="comment">// nil = unlimited</span>
+}
+
+<span class="keyword">func</span> <span class="func">NewServer</span>(cfg <span class="type">Config</span>) *<span class="type">Server</span> {
+    timeout := <span class="number">30</span> * time.Second  <span class="comment">// default</span>
+    <span class="keyword">if</span> cfg.Timeout != <span class="keyword">nil</span> {
+        timeout = *cfg.Timeout
+    }
+    <span class="comment">// ...</span>
+}
+
+<span class="comment">// Usage</span>
+customTimeout := <span class="number">60</span> * time.Second
+<span class="func">NewServer</span>(<span class="type">Config</span>{Timeout: &customTimeout})
+<span class="func">NewServer</span>(<span class="type">Config</span>{})  <span class="comment">// Uses defaults</span></pre>
+            </div>
+
+            <div class="warning">
+                <div class="warning-title">nil Panic</div>
+                <p>Dereferencing a nil pointer causes a panic (crash). Always check <span class="inline-code">!= nil</span> before using <span class="inline-code">*p</span>.</p>
+            </div>
+        </div>
+
+        <!-- Lesson 5: Pointer Receivers -->
+        <div class="lesson">
+            <h2>Pointer Receivers on Methods</h2>
+            
+            <p>This is where pointers matter most in day-to-day Go.</p>
+
+            <div class="code-block">
+                <div class="code-header go">Value vs Pointer receivers</div>
+                <pre><span class="keyword">type</span> <span class="type">Counter</span> <span class="keyword">struct</span> {
+    count <span class="type">int</span>
+}
+
+<span class="comment">// Value receiver: gets a COPY</span>
+<span class="keyword">func</span> (c <span class="type">Counter</span>) <span class="func">IncrementBroken</span>() {
+    c.count++  <span class="comment">// Increments the copy, not original!</span>
+}
+
+<span class="comment">// Pointer receiver: gets the original</span>
+<span class="keyword">func</span> (c *<span class="type">Counter</span>) <span class="func">Increment</span>() {
+    c.count++  <span class="comment">// Actually increments</span>
+}
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    c := <span class="type">Counter</span>{}
+    
+    c.<span class="func">IncrementBroken</span>()
+    fmt.<span class="func">Println</span>(c.count)  <span class="comment">// 0 — didn't work!</span>
+    
+    c.<span class="func">Increment</span>()
+    fmt.<span class="func">Println</span>(c.count)  <span class="comment">// 1 — works!</span>
+}</pre>
+            </div>
+
+            <h3>The Rule of Thumb</h3>
+            <ul>
+                <li>If <strong>any</strong> method needs a pointer receiver, make <strong>all</strong> methods use pointer receivers</li>
+                <li>Pointer receivers for: mutation, large structs, consistency</li>
+                <li>Value receivers for: small immutable types, when you want a copy</li>
+            </ul>
+
+            <div class="tip">
+                <div class="tip-title">Go Does Some Magic</div>
+                <p>You can call pointer methods on values and vice versa — Go automatically converts. But be consistent anyway.</p>
+            </div>
+        </div>
+
+        <!-- Lesson 6: new() and make() -->
+        <div class="lesson">
+            <h2>Creating Pointers: new() and &</h2>
+            
+            <div class="code-block">
+                <div class="code-header go">Different ways to create pointers</div>
+                <pre><span class="comment">// Method 1: & operator (most common)</span>
+x := <span class="number">42</span>
+p := &x
+
+<span class="comment">// Method 2: new() — allocates zeroed memory, returns pointer</span>
+p := <span class="keyword">new</span>(<span class="type">int</span>)      <span class="comment">// *int pointing to 0</span>
+*p = <span class="number">42</span>
+
+<span class="comment">// Method 3: For structs, use & with literal</span>
+user := &<span class="type">User</span>{Name: <span class="string">"Alice"</span>}  <span class="comment">// Returns *User</span>
+
+<span class="comment">// Equivalent to:</span>
+user := <span class="keyword">new</span>(<span class="type">User</span>)
+user.Name = <span class="string">"Alice"</span></pre>
+            </div>
+
+            <h3>new() vs make()</h3>
+            <div class="code-block">
+                <div class="code-header go">new vs make</div>
+                <pre><span class="comment">// new() — for any type, returns pointer to zero value</span>
+p := <span class="keyword">new</span>(<span class="type">int</span>)        <span class="comment">// *int → 0</span>
+s := <span class="keyword">new</span>([]<span class="type">int</span>)      <span class="comment">// *[]int → nil slice (not useful!)</span>
+
+<span class="comment">// make() — ONLY for slices, maps, channels</span>
+<span class="comment">// Returns initialized (not pointer!) value</span>
+slice := <span class="keyword">make</span>([]<span class="type">int</span>, <span class="number">10</span>)        <span class="comment">// []int with len=10</span>
+m := <span class="keyword">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span>)       <span class="comment">// Initialized map</span>
+ch := <span class="keyword">make</span>(<span class="keyword">chan</span> <span class="type">int</span>, <span class="number">5</span>)         <span class="comment">// Buffered channel</span></pre>
+            </div>
+
+            <div class="tip">
+                <div class="tip-title">Rule</div>
+                <p><span class="inline-code">new()</span> = zero value + pointer. <span class="inline-code">make()</span> = initialized slice/map/channel (no pointer).</p>
+            </div>
+        </div>
+
+        <!-- Lesson 7: Common Mistakes -->
+        <div class="lesson">
+            <h2>Common Pointer Mistakes</h2>
+            
+            <h3>Mistake 1: Returning Address of Local Variable... is Fine!</h3>
+            <div class="code-block">
+                <div class="code-header go">This is actually okay in Go</div>
+                <pre><span class="keyword">func</span> <span class="func">newUser</span>() *<span class="type">User</span> {
+    u := <span class="type">User</span>{Name: <span class="string">"Alice"</span|}
+    <span class="keyword">return</span> &u  <span class="comment">// Fine! Go moves u to heap</span>
+}
+<span class="comment">// In C this would be a bug. Go's escape analysis handles it.</span></pre>
+            </div>
+
+            <h3>Mistake 2: Modifying Loop Variable</h3>
+            <div class="code-block">
+                <div class="code-header go">Loop variable trap</div>
+                <pre>users := []<span class="type">User</span>{{Name: <span class="string">"A"</span>}, {Name: <span class="string">"B"</span>}, {Name: <span class="string">"C"</span>}}
+<span class="keyword">var</span> ptrs []*<span class="type">User</span>
+
+<span class="comment">// ❌ WRONG: All pointers point to same address!</span>
+<span class="keyword">for</span> _, u := <span class="keyword">range</span> users {
+    ptrs = <span class="func">append</span>(ptrs, &u)  <span class="comment">// &u is same address each iteration</span>
+}
+<span class="comment">// All ptrs[i] point to "C"!</span>
+
+<span class="comment">// ✓ CORRECT: Use index</span>
+<span class="keyword">for</span> i := <span class="keyword">range</span> users {
+    ptrs = <span class="func">append</span>(ptrs, &users[i])
+}
+
+<span class="comment">// ✓ OR in Go 1.22+: loop var is new each iteration</span></pre>
+            </div>
+
+            <h3>Mistake 3: Forgetting nil Check</h3>
+            <div class="code-block">
+                <div class="code-header go">Nil checks</div>
+                <pre><span class="keyword">func</span> <span class="func">process</span>(u *<span class="type">User</span>) {
+    <span class="comment">// ❌ Crashes if u is nil</span>
+    fmt.<span class="func">Println</span>(u.Name)
+    
+    <span class="comment">// ✓ Check first</span>
+    <span class="keyword">if</span> u == <span class="keyword">nil</span> {
+        <span class="keyword">return</span>
+    }
+    fmt.<span class="func">Println</span>(u.Name)
+}</pre>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="lesson">
+            <h2>Exercises</h2>
+            
+            <h3 style="color: var(--green-bright); margin-top: 1.5rem;">🔥 Warmups</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Practice pointer basics before combining concepts.</p>
+            
+            <div class="exercise">
+                <h4>Warmup 1: Get an Address</h4>
+                <p>Create an integer variable, get its address using <code>&</code>, and print both the value and the address.</p>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>x := 42
+ptr := &x
+fmt.Println("Value:", x)
+fmt.Println("Address:", ptr)</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Warmup 2: Modify Through Pointer</h4>
+                <p>Create a variable, get a pointer to it, then change the value using <code>*ptr = newValue</code>. Print before and after.</p>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>x := 10
+fmt.Println("Before:", x)
+ptr := &x
+*ptr = 50
+fmt.Println("After:", x)  // 50</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Warmup 3: Function with Pointer Parameter</h4>
+                <p>Write <code>func double(n *int)</code> that doubles the value at the pointer.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Dereference the pointer to get and set the value: <code>*n = *n * 2</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func double(n *int) {
+    *n = *n * 2
+}
+
+// Test:
+x := 5
+double(&x)
+fmt.Println(x)  // 10</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Warmup 4: Check for nil</h4>
+                <p>Write a function <code>func printValue(p *int)</code> that prints the value if p is not nil, or prints "pointer is nil" if it is.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Check <code>if p != nil</code> before dereferencing.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func printValue(p *int) {
+    if p != nil {
+        fmt.Println("Value:", *p)
+    } else {
+        fmt.Println("pointer is nil")
+    }
+}</pre>
+                    </div>
+                </details>
+            </div>
+
+            <h3 style="color: var(--orange); margin-top: 2rem;">💪 Challenges</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Combine pointer concepts with structs and methods.</p>
+            
+            <div class="exercise">
+                <h4>Challenge 1: Swap</h4>
+                <p>Write a function <code>func swap(a, b *int)</code> that swaps two integers using pointers.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Dereference both pointers, swap the values. Use parallel assignment: <code>*a, *b = *b, *a</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func swap(a, b *int) {
+    *a, *b = *b, *a
+}
+
+// Usage:
+x, y := 10, 20
+swap(&x, &y)
+fmt.Println(x, y) // 20 10</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>x, y := 5, 10
+swap(&x, &y)
+// x = 10, y = 5</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Challenge 2: Counter Struct</h4>
+                <p>Create a <code>Counter</code> struct with an <code>int</code> value. Add methods <code>Increment()</code>, <code>Decrement()</code>, and <code>Value() int</code>.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <code>Increment</code> and <code>Decrement</code> need pointer receivers to modify the struct. <code>Value</code> can use value receiver.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type Counter struct {
+    value int
+}
+
+func (c *Counter) Increment() {
+    c.value++
+}
+
+func (c *Counter) Decrement() {
+    c.value--
+}
+
+func (c *Counter) Value() int {
+    return c.value
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>c := Counter{}
+c.Increment()
+c.Increment()
+c.Decrement()
+fmt.Println(c.Value()) // 1</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Challenge 3: Safe Dereference</h4>
+                <p>Write <code>func safeDeref(p *string) string</code> that returns the string value if p is not nil, or <code>"&lt;nil&gt;"</code> if it is.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Check <code>p == nil</code> before dereferencing. Return the fallback string if nil.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func safeDeref(p *string) string {
+    if p == nil {
+        return "<nil>"
+    }
+    return *p
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>s := "hello"
+fmt.Println(safeDeref(&s))  // "hello"
+fmt.Println(safeDeref(nil)) // "<nil>"</pre>
+                </div>
+            </div>
+
+            <h3 style="color: var(--purple); margin-top: 2rem;">🚀 Advanced (Optional)</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Data structures using pointers. Only attempt after completing warmups and challenges.</p>
+
+            <div class="exercise">
+                <h4>Advanced: Linked List Node</h4>
+                <p>Define a <code>Node</code> struct with <code>Value int</code> and <code>Next *Node</code>. Write functions to build a list from a slice and traverse it.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Build in reverse: start from the last element, create node, link to previous. Traverse with <code>for node != nil</code>.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type Node struct {
+    Value int
+    Next  *Node
+}
+
+func buildList(values []int) *Node {
+    var head *Node
+    for i := len(values) - 1; i >= 0; i-- {
+        head = &Node{Value: values[i], Next: head}
+    }
+    return head
+}
+
+func traverse(head *Node) {
+    for node := head; node != nil; node = node.Next {
+        fmt.Println(node.Value)
+    }
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>list := buildList([]int{1, 2, 3})
+traverse(list)
+// 1
+// 2
+// 3</pre>
+                </div>
+            </div>
+            
+            <div class="tip">
+                <div class="tip-title">Practice Strategy</div>
+                <p>Do warmups first to get comfortable with pointer syntax. Then tackle challenges that combine pointers with other concepts. Save the advanced exercise for when you're confident with the basics!</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 2 Summary</h2>
+            <ul>
+                <li><strong>&</strong> gets the address, <strong>*</strong> dereferences (gets value)</li>
+                <li><strong>Use pointers</strong> to modify originals or avoid copying large data</li>
+                <li><strong>nil</strong> = pointer to nothing — always check before dereferencing</li>
+                <li><strong>Pointer receivers</strong> let methods modify structs</li>
+                <li><strong>new()</strong> = zero value pointer, <strong>make()</strong> = initialized slice/map/channel</li>
+                <li><strong>Go handles memory</strong> — you don't free things manually</li>
+            </ul>
+
+            <div class="tip">
+                <div class="tip-title">The Mantra</div>
+                <p>When in doubt, start without pointers. Add them when you need mutation or have large data.</p>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module1.html" class="nav-btn">← Module 1</a>
+            <a href="module3.html" class="nav-btn primary">Module 3: Structs →</a>
+        </div>
+    </div>
+</body>
+</html>

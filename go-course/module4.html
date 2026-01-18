@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 4: Interfaces & Polymorphism | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; --green-glow: rgba(0, 255, 157, 0.15); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 1000; opacity: 0.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+        nav a:hover { color: var(--green-bright); }
+        .module-tag { font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 3rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .lesson h3 { color: var(--orange); margin: 1.5rem 0 1rem; }
+        .lesson p { color: var(--text-dim); margin-bottom: 1rem; }
+        .lesson p strong { color: var(--text-main); }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--blue); }
+        .code-header::before { content: '● '; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); }
+        .string { color: var(--green-bright); }
+        .comment { color: var(--text-dim); }
+        .func { color: var(--blue); }
+        .type { color: var(--orange); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .warning { background: rgba(255, 157, 0, 0.1); border-left: 3px solid var(--orange); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .warning-title { font-weight: 600; color: var(--orange); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
+        .nav-btn:hover { border-color: var(--green-bright); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); }
+        li { margin-bottom: 0.5rem; }
+        li strong { color: var(--text-main); }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        .exercise { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .exercise h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1rem; }
+        .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
+        details { margin-top: 0.75rem; }
+        details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
+        details summary:hover { color: var(--green-bright); }
+        details[open] summary { color: var(--green-bright); }
+        .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
+        .hint-content code { background: var(--bg-code); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); font-size: 0.85rem; }
+        .hint-content pre { margin: 0.5rem 0; padding: 0.75rem; background: var(--bg-code); border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); }
+        .expected { margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 255, 157, 0.05); border: 1px dashed var(--green-bright); border-radius: 6px; }
+        .expected-title { font-size: 0.75rem; color: var(--green-bright); margin-bottom: 0.4rem; text-transform: uppercase; font-weight: 600; }
+        .expected pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="module3.html">← Module 3</a>
+            <a href="module5.html">Module 5 →</a>
+        </nav>
+        <div class="module-tag">// MODULE 04</div>
+        <h1>Interfaces & Polymorphism</h1>
+        <p class="module-desc">Implicit interfaces, type assertions, and thinking in behaviors. This is Go's secret weapon.</p>
+
+        <div class="lesson">
+            <h2>Interfaces Are Implicit</h2>
+            <p>In Python you'd use duck typing or ABC. In Go, interfaces are <strong>implicit</strong> — no "implements" keyword.</p>
+            <div class="code-block">
+                <div class="code-header">Implicit implementation</div>
+                <pre><span class="comment">// Define an interface</span>
+<span class="keyword">type</span> <span class="type">Speaker</span> <span class="keyword">interface</span> {
+    <span class="func">Speak</span>() <span class="type">string</span>
+}
+
+<span class="comment">// Any type with Speak() method implements Speaker</span>
+<span class="keyword">type</span> <span class="type">Dog</span> <span class="keyword">struct</span>{ Name <span class="type">string</span> }
+<span class="keyword">func</span> (d <span class="type">Dog</span>) <span class="func">Speak</span>() <span class="type">string</span> { <span class="keyword">return</span> <span class="string">"Woof!"</span> }
+
+<span class="keyword">type</span> <span class="type">Cat</span> <span class="keyword">struct</span>{ Name <span class="type">string</span> }
+<span class="keyword">func</span> (c <span class="type">Cat</span>) <span class="func">Speak</span>() <span class="type">string</span> { <span class="keyword">return</span> <span class="string">"Meow!"</span> }
+
+<span class="comment">// Both work as Speaker — no declaration needed!</span>
+<span class="keyword">func</span> <span class="func">MakeSound</span>(s <span class="type">Speaker</span>) {
+    fmt.<span class="func">Println</span>(s.<span class="func">Speak</span>())
+}
+
+<span class="func">MakeSound</span>(<span class="type">Dog</span>{<span class="string">"Rex"</span>})  <span class="comment">// Woof!</span>
+<span class="func">MakeSound</span>(<span class="type">Cat</span>{<span class="string">"Whiskers"</span>})  <span class="comment">// Meow!</span></pre>
+            </div>
+            <div class="tip">
+                <div class="tip-title">The Magic</div>
+                <p>Dog and Cat never mention Speaker. They just have the right method. Go figures it out.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Common Standard Library Interfaces</h2>
+            <div class="code-block">
+                <div class="code-header">Interfaces you'll use constantly</div>
+                <pre><span class="comment">// io.Reader — anything you can read from</span>
+<span class="keyword">type</span> <span class="type">Reader</span> <span class="keyword">interface</span> {
+    <span class="func">Read</span>(p []<span class="type">byte</span>) (n <span class="type">int</span>, err <span class="type">error</span>)
+}
+
+<span class="comment">// io.Writer — anything you can write to</span>
+<span class="keyword">type</span> <span class="type">Writer</span> <span class="keyword">interface</span> {
+    <span class="func">Write</span>(p []<span class="type">byte</span>) (n <span class="type">int</span>, err <span class="type">error</span>)
+}
+
+<span class="comment">// fmt.Stringer — custom string representation</span>
+<span class="keyword">type</span> <span class="type">Stringer</span> <span class="keyword">interface</span> {
+    <span class="func">String</span>() <span class="type">string</span>
+}
+
+<span class="comment">// error — yes, it's just an interface!</span>
+<span class="keyword">type</span> <span class="type">error</span> <span class="keyword">interface</span> {
+    <span class="func">Error</span>() <span class="type">string</span>
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>The Empty Interface: any</h2>
+            <p>The empty interface <span class="inline-code">interface{}</span> (or <span class="inline-code">any</span> in Go 1.18+) matches everything.</p>
+            <div class="code-block">
+                <div class="code-header">Empty interface</div>
+                <pre><span class="comment">// Accepts anything</span>
+<span class="keyword">func</span> <span class="func">PrintAnything</span>(v <span class="type">any</span>) {
+    fmt.<span class="func">Println</span>(v)
+}
+
+<span class="func">PrintAnything</span>(<span class="number">42</span>)
+<span class="func">PrintAnything</span>(<span class="string">"hello"</span>)
+<span class="func">PrintAnything</span>([]<span class="type">int</span>{<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>})
+
+<span class="comment">// Map with any values</span>
+data := <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">any</span>{
+    <span class="string">"name"</span>: <span class="string">"Alice"</span>,
+    <span class="string">"age"</span>:  <span class="number">30</span>,
+    <span class="string">"active"</span>: <span class="keyword">true</span>,
+}</pre>
+            </div>
+            <div class="warning">
+                <div class="warning-title">Use Sparingly</div>
+                <p><span class="inline-code">any</span> loses type safety. Prefer specific interfaces when possible.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Type Assertions & Type Switches</h2>
+            <div class="code-block">
+                <div class="code-header">Type assertion</div>
+                <pre><span class="keyword">var</span> i <span class="type">any</span> = <span class="string">"hello"</span>
+
+<span class="comment">// Type assertion (may panic!)</span>
+s := i.(<span class="type">string</span>)
+fmt.<span class="func">Println</span>(s)  <span class="comment">// "hello"</span>
+
+<span class="comment">// Safe type assertion with ok</span>
+s, ok := i.(<span class="type">string</span>)
+<span class="keyword">if</span> ok {
+    fmt.<span class="func">Println</span>(<span class="string">"It's a string:"</span>, s)
+}
+
+<span class="comment">// Type switch — handle multiple types</span>
+<span class="keyword">func</span> <span class="func">describe</span>(i <span class="type">any</span>) {
+    <span class="keyword">switch</span> v := i.(<span class="keyword">type</span>) {
+    <span class="keyword">case</span> <span class="type">int</span>:
+        fmt.<span class="func">Printf</span>(<span class="string">"Integer: %d\n"</span>, v)
+    <span class="keyword">case</span> <span class="type">string</span>:
+        fmt.<span class="func">Printf</span>(<span class="string">"String: %s\n"</span>, v)
+    <span class="keyword">case</span> <span class="type">bool</span>:
+        fmt.<span class="func">Printf</span>(<span class="string">"Boolean: %t\n"</span>, v)
+    <span class="keyword">default</span>:
+        fmt.<span class="func">Printf</span>(<span class="string">"Unknown type\n"</span>)
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Interface Design Principles</h2>
+            <h3>Keep Interfaces Small</h3>
+            <div class="code-block">
+                <div class="code-header">Small interfaces</div>
+                <pre><span class="comment">// ✓ Good — small, focused</span>
+<span class="keyword">type</span> <span class="type">Reader</span> <span class="keyword">interface</span> {
+    <span class="func">Read</span>(p []<span class="type">byte</span>) (n <span class="type">int</span>, err <span class="type">error</span>)
+}
+
+<span class="comment">// ✓ Compose when needed</span>
+<span class="keyword">type</span> <span class="type">ReadWriter</span> <span class="keyword">interface</span> {
+    <span class="type">Reader</span>
+    <span class="type">Writer</span>
+}
+
+<span class="comment">// ❌ Avoid — too big, hard to implement</span>
+<span class="keyword">type</span> <span class="type">DoEverything</span> <span class="keyword">interface</span> {
+    <span class="func">Read</span>() <span class="type">error</span>
+    <span class="func">Write</span>() <span class="type">error</span>
+    <span class="func">Close</span>() <span class="type">error</span>
+    <span class="func">Flush</span>() <span class="type">error</span>
+    <span class="comment">// ... 10 more methods</span>
+}</pre>
+            </div>
+
+            <h3>Accept Interfaces, Return Structs</h3>
+            <div class="code-block">
+                <div class="code-header">Interface guidelines</div>
+                <pre><span class="comment">// ✓ Accept interface — flexible</span>
+<span class="keyword">func</span> <span class="func">Process</span>(r io.<span class="type">Reader</span>) <span class="type">error</span> {
+    <span class="comment">// Works with files, network, strings, etc.</span>
+}
+
+<span class="comment">// ✓ Return concrete type — clear</span>
+<span class="keyword">func</span> <span class="func">NewServer</span>() *<span class="type">Server</span> {
+    <span class="keyword">return</span> &<span class="type">Server</span>{}
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Exercises</h2>
+            
+            <div class="exercise">
+                <h4>Exercise 1: Implement Stringer</h4>
+                <p>Create a <code>Person</code> struct and implement <code>fmt.Stringer</code> so printing is nice.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Implement <code>String() string</code> method. Use <code>fmt.Sprintf</code> to format.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type Person struct {
+    Name string
+    Age  int
+}
+
+func (p Person) String() string {
+    return fmt.Sprintf("%s (%d years old)", p.Name, p.Age)
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>p := Person{Name: "Alice", Age: 30}
+fmt.Println(p) // Alice (30 years old)</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 2: Shape Interface</h4>
+                <p>Define <code>Shape</code> interface with <code>Area() float64</code>. Implement for <code>Circle</code> and <code>Rectangle</code>. Write <code>TotalArea(shapes []Shape)</code>.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Circle area = π × r². Loop through shapes, sum areas. Use <code>math.Pi</code>.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type Shape interface {
+    Area() float64
+}
+
+type Circle struct{ Radius float64 }
+func (c Circle) Area() float64 { return math.Pi * c.Radius * c.Radius }
+
+type Rectangle struct{ Width, Height float64 }
+func (r Rectangle) Area() float64 { return r.Width * r.Height }
+
+func TotalArea(shapes []Shape) float64 {
+    var total float64
+    for _, s := range shapes {
+        total += s.Area()
+    }
+    return total
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>shapes := []Shape{Circle{5}, Rectangle{4, 3}}
+fmt.Println(TotalArea(shapes)) // ~90.54</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 3: Custom Writer</h4>
+                <p>Create <code>UpperWriter</code> that wraps <code>io.Writer</code> and uppercases all bytes before writing.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Store inner writer in struct. In <code>Write(p []byte)</code>, use <code>bytes.ToUpper(p)</code> then call inner writer.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type UpperWriter struct {
+    w io.Writer
+}
+
+func (u *UpperWriter) Write(p []byte) (int, error) {
+    return u.w.Write(bytes.ToUpper(p))
+}
+
+// Usage:
+upper := &UpperWriter{os.Stdout}
+fmt.Fprintln(upper, "hello") // HELLO</pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 4: Type Switch</h4>
+                <p>Write <code>func describe(i any) string</code> returning type-specific descriptions.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Use <code>switch v := i.(type)</code>. Handle <code>int</code>, <code>string</code>, <code>bool</code>, and <code>default</code>.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func describe(i any) string {
+    switch v := i.(type) {
+    case int:
+        return fmt.Sprintf("integer: %d", v)
+    case string:
+        return fmt.Sprintf("text: %s", v)
+    case bool:
+        return fmt.Sprintf("boolean: %t", v)
+    default:
+        return "unknown"
+    }
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>describe(42)      // "integer: 42"
+describe("hi")    // "text: hi"
+describe(true)    // "boolean: true"
+describe(3.14)    // "unknown"</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 4 Summary</h2>
+            <ul>
+                <li><strong>Implicit implementation</strong> — no "implements" keyword</li>
+                <li><strong>Small interfaces</strong> — 1-3 methods ideal</li>
+                <li><strong>any/interface{}</strong> — matches everything, use sparingly</li>
+                <li><strong>Type assertions</strong> — extract concrete type from interface</li>
+                <li><strong>Type switches</strong> — handle multiple types elegantly</li>
+                <li><strong>Accept interfaces, return structs</strong></li>
+            </ul>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module3.html" class="nav-btn">← Module 3</a>
+            <a href="module5.html" class="nav-btn primary">Module 5: Data Structures →</a>
+        </div>
+    </div>
+</body>
+</html>

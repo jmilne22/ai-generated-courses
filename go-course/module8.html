@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 8: Building TUIs | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 1000; opacity: 0.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+        nav a:hover { color: var(--green-bright); }
+        .module-tag { font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 3rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .lesson h3 { color: var(--orange); margin: 1.5rem 0 1rem; }
+        .lesson p { color: var(--text-dim); margin-bottom: 1rem; }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--blue); }
+        .code-header.terminal { color: var(--green-bright); }
+        .code-header::before { content: '● '; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); }
+        .string { color: var(--green-bright); }
+        .comment { color: var(--text-dim); }
+        .func { color: var(--blue); }
+        .type { color: var(--orange); }
+        .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .project-box { background: linear-gradient(135deg, rgba(0, 255, 157, 0.1), rgba(0, 180, 255, 0.1)); border: 2px solid var(--green-bright); border-radius: 12px; padding: 2rem; margin: 2rem 0; }
+        .project-box h3 { color: var(--green-bright); margin-bottom: 1rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
+        .nav-btn:hover { border-color: var(--green-bright); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul, ol { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); }
+        li { margin-bottom: 0.5rem; }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
+        .tui-demo { background: #000; border: 2px solid var(--border); border-radius: 8px; padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; margin: 1.5rem 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="module7.html">← Module 7</a>
+            <a href="module9.html">Module 9 →</a>
+        </nav>
+        <div class="module-tag">// MODULE 08</div>
+        <h1>Building TUIs</h1>
+        <p class="module-desc">Terminal User Interfaces with Bubble Tea. Build interactive CLI apps that look amazing.</p>
+
+        <div class="lesson">
+            <h2>What is Bubble Tea?</h2>
+            <p>Bubble Tea is a TUI framework based on The Elm Architecture: <strong>Model → Update → View</strong></p>
+            <div class="code-block">
+                <div class="code-header terminal">Install</div>
+                <pre>go get github.com/charmbracelet/bubbletea
+go get github.com/charmbracelet/lipgloss  <span class="comment"># Styling</span>
+go get github.com/charmbracelet/bubbles   <span class="comment"># Pre-built components</span></pre>
+            </div>
+            <div class="tui-demo">
+<span style="color: var(--green-bright)">? Select a task:</span>
+<br><span style="color: var(--purple)">❯</span> <span style="color: var(--text-main)">build</span> <span style="color: var(--text-dim)">- Build the application</span>
+<br>  <span style="color: var(--text-dim)">test - Run all tests</span>
+<br>  <span style="color: var(--text-dim)">deploy - Deploy to production</span>
+<br>  <span style="color: var(--text-dim)">clean - Remove build artifacts</span>
+<br><br><span style="color: var(--text-dim)">↑/↓: navigate • enter: select • q: quit</span>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>The Elm Architecture</h2>
+            <div class="code-block">
+                <div class="code-header">Basic structure</div>
+                <pre><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"fmt"</span>
+    tea <span class="string">"github.com/charmbracelet/bubbletea"</span>
+)
+
+<span class="comment">// MODEL: Your application state</span>
+<span class="keyword">type</span> <span class="type">model</span> <span class="keyword">struct</span> {
+    choices  []<span class="type">string</span>
+    cursor   <span class="type">int</span>
+    selected <span class="keyword">map</span>[<span class="type">int</span>]<span class="keyword">struct</span>{}
+}
+
+<span class="comment">// INIT: Initial state and optional command</span>
+<span class="keyword">func</span> <span class="func">initialModel</span>() <span class="type">model</span> {
+    <span class="keyword">return</span> <span class="type">model</span>{
+        choices:  []<span class="type">string</span>{<span class="string">"Buy milk"</span>, <span class="string">"Walk dog"</span>, <span class="string">"Write code"</span>},
+        selected: <span class="keyword">make</span>(<span class="keyword">map</span>[<span class="type">int</span>]<span class="keyword">struct</span>{}),
+    }
+}
+
+<span class="keyword">func</span> (m <span class="type">model</span>) <span class="func">Init</span>() tea.Cmd {
+    <span class="keyword">return</span> <span class="keyword">nil</span>  <span class="comment">// No initial command</span>
+}
+
+<span class="comment">// UPDATE: Handle messages (key presses, etc)</span>
+<span class="keyword">func</span> (m <span class="type">model</span>) <span class="func">Update</span>(msg tea.Msg) (tea.Model, tea.Cmd) {
+    <span class="keyword">switch</span> msg := msg.(<span class="keyword">type</span>) {
+    <span class="keyword">case</span> tea.KeyMsg:
+        <span class="keyword">switch</span> msg.<span class="func">String</span>() {
+        <span class="keyword">case</span> <span class="string">"q"</span>, <span class="string">"ctrl+c"</span>:
+            <span class="keyword">return</span> m, tea.<span class="func">Quit</span>
+        <span class="keyword">case</span> <span class="string">"up"</span>, <span class="string">"k"</span>:
+            <span class="keyword">if</span> m.cursor > <span class="number">0</span> {
+                m.cursor--
+            }
+        <span class="keyword">case</span> <span class="string">"down"</span>, <span class="string">"j"</span>:
+            <span class="keyword">if</span> m.cursor < <span class="func">len</span>(m.choices)-<span class="number">1</span> {
+                m.cursor++
+            }
+        <span class="keyword">case</span> <span class="string">"enter"</span>, <span class="string">" "</span>:
+            <span class="keyword">if</span> _, ok := m.selected[m.cursor]; ok {
+                <span class="func">delete</span>(m.selected, m.cursor)
+            } <span class="keyword">else</span> {
+                m.selected[m.cursor] = <span class="keyword">struct</span>{}{}
+            }
+        }
+    }
+    <span class="keyword">return</span> m, <span class="keyword">nil</span>
+}
+
+<span class="comment">// VIEW: Render the UI as a string</span>
+<span class="keyword">func</span> (m <span class="type">model</span>) <span class="func">View</span>() <span class="type">string</span> {
+    s := <span class="string">"What do you want to do?\n\n"</span>
+    
+    <span class="keyword">for</span> i, choice := <span class="keyword">range</span> m.choices {
+        cursor := <span class="string">" "</span>
+        <span class="keyword">if</span> m.cursor == i {
+            cursor = <span class="string">">"</span>
+        }
+        
+        checked := <span class="string">" "</span>
+        <span class="keyword">if</span> _, ok := m.selected[i]; ok {
+            checked = <span class="string">"x"</span>
+        }
+        
+        s += fmt.<span class="func">Sprintf</span>(<span class="string">"%s [%s] %s\n"</span>, cursor, checked, choice)
+    }
+    
+    s += <span class="string">"\nPress q to quit.\n"</span>
+    <span class="keyword">return</span> s
+}
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    p := tea.<span class="func">NewProgram</span>(<span class="func">initialModel</span>())
+    <span class="keyword">if</span> _, err := p.<span class="func">Run</span>(); err != <span class="keyword">nil</span> {
+        fmt.<span class="func">Println</span>(<span class="string">"Error:"</span>, err)
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Styling with Lipgloss</h2>
+            <div class="code-block">
+                <div class="code-header">Using lipgloss</div>
+                <pre><span class="keyword">import</span> <span class="string">"github.com/charmbracelet/lipgloss"</span>
+
+<span class="comment">// Define styles</span>
+<span class="keyword">var</span> (
+    titleStyle = lipgloss.<span class="func">NewStyle</span>().
+        <span class="func">Bold</span>(<span class="keyword">true</span>).
+        <span class="func">Foreground</span>(lipgloss.<span class="func">Color</span>(<span class="string">"#00ff9d"</span>)).
+        <span class="func">MarginBottom</span>(<span class="number">1</span>)
+    
+    selectedStyle = lipgloss.<span class="func">NewStyle</span>().
+        <span class="func">Foreground</span>(lipgloss.<span class="func">Color</span>(<span class="string">"#9d00ff"</span>)).
+        <span class="func">Bold</span>(<span class="keyword">true</span>)
+    
+    normalStyle = lipgloss.<span class="func">NewStyle</span>().
+        <span class="func">Foreground</span>(lipgloss.<span class="func">Color</span>(<span class="string">"#888888"</span>))
+    
+    boxStyle = lipgloss.<span class="func">NewStyle</span>().
+        <span class="func">Border</span>(lipgloss.RoundedBorder()).
+        <span class="func">BorderForeground</span>(lipgloss.<span class="func">Color</span>(<span class="string">"#00ff9d"</span>)).
+        <span class="func">Padding</span>(<span class="number">1</span>, <span class="number">2</span>)
+)
+
+<span class="keyword">func</span> (m <span class="type">model</span>) <span class="func">View</span>() <span class="type">string</span> {
+    title := titleStyle.<span class="func">Render</span>(<span class="string">"Select Tasks"</span>)
+    
+    <span class="keyword">var</span> items <span class="type">string</span>
+    <span class="keyword">for</span> i, choice := <span class="keyword">range</span> m.choices {
+        <span class="keyword">if</span> m.cursor == i {
+            items += selectedStyle.<span class="func">Render</span>(<span class="string">"❯ "</span>+choice) + <span class="string">"\n"</span>
+        } <span class="keyword">else</span> {
+            items += normalStyle.<span class="func">Render</span>(<span class="string">"  "</span>+choice) + <span class="string">"\n"</span>
+        }
+    }
+    
+    <span class="keyword">return</span> boxStyle.<span class="func">Render</span>(title + items)
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Using Pre-built Components (Bubbles)</h2>
+            <div class="code-block">
+                <div class="code-header">Text input component</div>
+                <pre><span class="keyword">import</span> (
+    <span class="string">"github.com/charmbracelet/bubbles/textinput"</span>
+    tea <span class="string">"github.com/charmbracelet/bubbletea"</span>
+)
+
+<span class="keyword">type</span> <span class="type">model</span> <span class="keyword">struct</span> {
+    textInput textinput.Model
+    err       <span class="type">error</span>
+}
+
+<span class="keyword">func</span> <span class="func">initialModel</span>() <span class="type">model</span> {
+    ti := textinput.<span class="func">New</span>()
+    ti.<span class="func">Placeholder</span> = <span class="string">"Enter your name"</span>
+    ti.<span class="func">Focus</span>()
+    ti.CharLimit = <span class="number">50</span>
+    ti.Width = <span class="number">30</span>
+    
+    <span class="keyword">return</span> <span class="type">model</span>{textInput: ti}
+}
+
+<span class="keyword">func</span> (m <span class="type">model</span>) <span class="func">Update</span>(msg tea.Msg) (tea.Model, tea.Cmd) {
+    <span class="keyword">var</span> cmd tea.Cmd
+    
+    <span class="keyword">switch</span> msg := msg.(<span class="keyword">type</span>) {
+    <span class="keyword">case</span> tea.KeyMsg:
+        <span class="keyword">switch</span> msg.<span class="func">Type</span> {
+        <span class="keyword">case</span> tea.KeyEnter:
+            <span class="keyword">return</span> m, tea.<span class="func">Quit</span>
+        <span class="keyword">case</span> tea.KeyCtrlC:
+            <span class="keyword">return</span> m, tea.<span class="func">Quit</span>
+        }
+    }
+    
+    m.textInput, cmd = m.textInput.<span class="func">Update</span>(msg)
+    <span class="keyword">return</span> m, cmd
+}
+
+<span class="keyword">func</span> (m <span class="type">model</span>) <span class="func">View</span>() <span class="type">string</span> {
+    <span class="keyword">return</span> fmt.<span class="func">Sprintf</span>(
+        <span class="string">"What's your name?\n\n%s\n\n%s"</span>,
+        m.textInput.<span class="func">View</span>(),
+        <span class="string">"(press enter to submit)"</span>,
+    )
+}</pre>
+            </div>
+        </div>
+
+        <div class="project-box">
+            <h3>🔨 Project: File Browser TUI</h3>
+            <p>Build an interactive file browser:</p>
+            <ol>
+                <li>Navigate directories with arrow keys</li>
+                <li>Enter to go into directory / open file info</li>
+                <li>Backspace to go up a directory</li>
+                <li>Show file sizes and permissions</li>
+                <li>Syntax highlighting for different file types</li>
+            </ol>
+            <div class="tip">
+                <div class="tip-title">Components to use</div>
+                <p><span class="inline-code">bubbles/list</span> for the file list, <span class="inline-code">lipgloss</span> for styling, <span class="inline-code">os.ReadDir</span> for directory contents.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 8 Summary</h2>
+            <ul>
+                <li><strong>Bubble Tea</strong> = Elm Architecture for terminals</li>
+                <li><strong>Model</strong> = your state</li>
+                <li><strong>Update</strong> = handle messages/events</li>
+                <li><strong>View</strong> = render state as string</li>
+                <li><strong>Lipgloss</strong> = CSS-like styling</li>
+                <li><strong>Bubbles</strong> = pre-built components</li>
+            </ul>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module7.html" class="nav-btn">← Module 7</a>
+            <a href="module9.html" class="nav-btn primary">Module 9: Error Handling →</a>
+        </div>
+    </div>
+</body>
+</html>

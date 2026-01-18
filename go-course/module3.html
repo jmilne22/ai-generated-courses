@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Structs Deep Dive | Go From Python</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --green-dim: #00cc7d; --green-glow: rgba(0, 255, 157, 0.15); --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); min-height: 100vh; line-height: 1.7; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 1000; opacity: 0.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+        nav a:hover { color: var(--green-bright); }
+        .module-header { margin-bottom: 3rem; }
+        .module-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--green-bright); }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .module-desc { color: var(--text-dim); font-size: 1.1rem; }
+        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
+        .lesson h3 { font-size: 1.2rem; margin: 1.5rem 0 1rem; color: var(--orange); }
+        .lesson p { margin-bottom: 1rem; color: var(--text-dim); }
+        .lesson p strong { color: var(--text-main); }
+        .code-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+        @media (max-width: 700px) { .code-compare { grid-template-columns: 1fr; } }
+        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); }
+        .code-header.python { color: var(--orange); }
+        .code-header.go { color: var(--blue); }
+        .code-header::before { content: '● '; font-size: 0.6rem; }
+        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .keyword { color: var(--purple); }
+        .string { color: var(--green-bright); }
+        .comment { color: var(--text-dim); }
+        .func { color: var(--blue); }
+        .type { color: var(--orange); }
+        .number { color: var(--red); }
+        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .tip-title { font-weight: 600; color: var(--green-bright); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; }
+        .warning { background: rgba(255, 157, 0, 0.1); border-left: 3px solid var(--orange); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .warning-title { font-weight: 600; color: var(--orange); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
+        .nav-btn:hover { border-color: var(--green-bright); box-shadow: 0 0 20px var(--green-glow); }
+        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
+        ul { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); }
+        li { margin-bottom: 0.5rem; }
+        li strong { color: var(--text-main); }
+        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.85em; color: var(--green-bright); }
+        .exercise { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .exercise h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1rem; }
+        .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
+        details { margin-top: 0.75rem; }
+        details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
+        details summary:hover { color: var(--green-bright); }
+        details[open] summary { color: var(--green-bright); }
+        .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
+        .hint-content code { background: var(--bg-code); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); font-size: 0.85rem; }
+        .hint-content pre { margin: 0.5rem 0; padding: 0.75rem; background: var(--bg-code); border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); }
+        .expected { margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 255, 157, 0.05); border: 1px dashed var(--green-bright); border-radius: 6px; }
+        .expected-title { font-size: 0.75rem; color: var(--green-bright); margin-bottom: 0.4rem; text-transform: uppercase; font-weight: 600; }
+        .expected pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="module2.html">← Module 2</a>
+            <a href="module4.html">Module 4 →</a>
+        </nav>
+        <div class="module-header">
+            <div class="module-tag">// MODULE 03</div>
+            <h1>Structs Deep Dive</h1>
+            <p class="module-desc">Go's alternative to classes. Composition over inheritance, methods, and struct tags.</p>
+        </div>
+
+        <div class="lesson">
+            <h2>Structs vs Classes</h2>
+            <p>Go doesn't have classes. Instead, it has structs + methods. It's simpler and more flexible.</p>
+            <div class="code-compare">
+                <div class="code-block" style="margin:0">
+                    <div class="code-header python">Python Class</div>
+                    <pre><span class="keyword">class</span> <span class="type">User</span>:
+    <span class="keyword">def</span> <span class="func">__init__</span>(self, name, age):
+        self.name = name
+        self.age = age
+    
+    <span class="keyword">def</span> <span class="func">greet</span>(self):
+        <span class="keyword">return</span> <span class="string">f"Hi, I'm </span>{self.name}<span class="string">"</span>
+
+u = User(<span class="string">"Alice"</span>, <span class="number">30</span>)</pre>
+                </div>
+                <div class="code-block" style="margin:0">
+                    <div class="code-header go">Go Struct</div>
+                    <pre><span class="keyword">type</span> <span class="type">User</span> <span class="keyword">struct</span> {
+    Name <span class="type">string</span>
+    Age  <span class="type">int</span>
+}
+
+<span class="keyword">func</span> (u <span class="type">User</span>) <span class="func">Greet</span>() <span class="type">string</span> {
+    <span class="keyword">return</span> fmt.<span class="func">Sprintf</span>(<span class="string">"Hi, I'm %s"</span>, u.Name)
+}
+
+u := <span class="type">User</span>{Name: <span class="string">"Alice"</span>, Age: <span class="number">30</span>}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Creating Structs</h2>
+            <div class="code-block">
+                <div class="code-header go">Different ways to create structs</div>
+                <pre><span class="keyword">type</span> <span class="type">User</span> <span class="keyword">struct</span> {
+    Name  <span class="type">string</span>
+    Email <span class="type">string</span>
+    Age   <span class="type">int</span>
+}
+
+<span class="comment">// Named fields (preferred)</span>
+u1 := <span class="type">User</span>{Name: <span class="string">"Alice"</span>, Email: <span class="string">"alice@example.com"</span>, Age: <span class="number">30</span>}
+
+<span class="comment">// Positional (fragile, avoid)</span>
+u2 := <span class="type">User</span>{<span class="string">"Bob"</span>, <span class="string">"bob@example.com"</span>, <span class="number">25</span|}
+
+<span class="comment">// Zero value struct</span>
+<span class="keyword">var</span> u3 <span class="type">User</span>  <span class="comment">// All fields are zero values</span>
+
+<span class="comment">// Pointer to struct</span>
+u4 := &<span class="type">User</span>{Name: <span class="string">"Charlie"</span|}
+
+<span class="comment">// Access fields</span>
+fmt.<span class="func">Println</span>(u1.Name)
+u1.Age = <span class="number">31</span></pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Methods</h2>
+            <p>Methods are functions with a <strong>receiver</strong> — the struct they operate on.</p>
+            <div class="code-block">
+                <div class="code-header go">Value vs Pointer Receivers</div>
+                <pre><span class="keyword">type</span> <span class="type">Counter</span> <span class="keyword">struct</span> {
+    count <span class="type">int</span>
+}
+
+<span class="comment">// Value receiver: gets a COPY</span>
+<span class="keyword">func</span> (c <span class="type">Counter</span>) <span class="func">Value</span>() <span class="type">int</span> {
+    <span class="keyword">return</span> c.count
+}
+
+<span class="comment">// Pointer receiver: modifies original</span>
+<span class="keyword">func</span> (c *<span class="type">Counter</span>) <span class="func">Increment</span>() {
+    c.count++
+}
+
+c := <span class="type">Counter</span>{}
+c.<span class="func">Increment</span>()
+fmt.<span class="func">Println</span>(c.<span class="func">Value</span>())  <span class="comment">// 1</span></pre>
+            </div>
+            <div class="warning">
+                <div class="warning-title">Rule</div>
+                <p>If any method needs a pointer receiver, make ALL methods use pointer receivers for consistency.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Struct Embedding (Composition)</h2>
+            <p>Go doesn't have inheritance. Instead, embed structs to compose behavior.</p>
+            <div class="code-block">
+                <div class="code-header go">Embedding</div>
+                <pre><span class="keyword">type</span> <span class="type">Person</span> <span class="keyword">struct</span> {
+    Name string
+    Age  int
+}
+
+<span class="keyword">func</span> (p <span class="type">Person</span>) <span class="func">Greet</span>() <span class="type">string</span> {
+    <span class="keyword">return</span> <span class="string">"Hi, I'm "</span> + p.Name
+}
+
+<span class="comment">// Employee embeds Person</span>
+<span class="keyword">type</span> <span class="type">Employee</span> <span class="keyword">struct</span> {
+    <span class="type">Person</span>          <span class="comment">// Embedded (no field name)</span>
+    Company <span class="type">string</span>
+    Salary  <span class="type">int</span>
+}
+
+e := <span class="type">Employee</span>{
+    Person:  <span class="type">Person</span>{Name: <span class="string">"Alice"</span>, Age: <span class="number">30</span>},
+    Company: <span class="string">"Acme"</span>,
+    Salary:  <span class="number">100000</span>,
+}
+
+<span class="comment">// Access embedded fields directly</span>
+fmt.<span class="func">Println</span>(e.Name)     <span class="comment">// "Alice" - promoted from Person</span>
+fmt.<span class="func">Println</span>(e.<span class="func">Greet</span>())  <span class="comment">// "Hi, I'm Alice" - method promoted</span></pre>
+            </div>
+            <div class="tip">
+                <div class="tip-title">Composition over Inheritance</div>
+                <p>This is more flexible than inheritance. You can embed multiple types and override methods.</p>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Struct Tags</h2>
+            <p>Tags add metadata to fields — used for JSON, database mapping, validation, etc.</p>
+            <div class="code-block">
+                <div class="code-header go">Struct tags</div>
+                <pre><span class="keyword">type</span> <span class="type">User</span> <span class="keyword">struct</span> {
+    ID        <span class="type">int</span>       <span class="string">`json:"id" db:"user_id"`</span>
+    Name      <span class="type">string</span>    <span class="string">`json:"name"`</span>
+    Email     <span class="type">string</span>    <span class="string">`json:"email" validate:"required,email"`</span>
+    Password  <span class="type">string</span>    <span class="string">`json:"-"`</span>              <span class="comment">// Excluded from JSON</span>
+    CreatedAt time.Time <span class="string">`json:"created_at,omitempty"`</span>
+}
+
+<span class="comment">// JSON encoding respects tags</span>
+user := <span class="type">User</span>{ID: <span class="number">1</span>, Name: <span class="string">"Alice"</span>, Password: <span class="string">"secret"</span>}
+data, _ := json.<span class="func">Marshal</span>(user)
+<span class="comment">// {"id":1,"name":"Alice","email":""}</span>
+<span class="comment">// Note: Password excluded, CreatedAt omitted (zero value)</span></pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Constructor Functions</h2>
+            <p>Go doesn't have constructors. Use factory functions instead.</p>
+            <div class="code-block">
+                <div class="code-header go">Constructor pattern</div>
+                <pre><span class="keyword">type</span> <span class="type">Server</span> <span class="keyword">struct</span> {
+    host    <span class="type">string</span>
+    port    <span class="type">int</span>
+    timeout time.Duration
+}
+
+<span class="comment">// Constructor function (convention: New + TypeName)</span>
+<span class="keyword">func</span> <span class="func">NewServer</span>(host <span class="type">string</span>, port <span class="type">int</span>) *<span class="type">Server</span> {
+    <span class="keyword">return</span> &<span class="type">Server</span>{
+        host:    host,
+        port:    port,
+        timeout: <span class="number">30</span> * time.Second, <span class="comment">// Default value</span>
+    }
+}
+
+<span class="comment">// With validation</span>
+<span class="keyword">func</span> <span class="func">NewServer</span>(host <span class="type">string</span>, port <span class="type">int</span>) (*<span class="type">Server</span>, <span class="type">error</span>) {
+    <span class="keyword">if</span> port < <span class="number">1</span> || port > <span class="number">65535</span> {
+        <span class="keyword">return</span> <span class="keyword">nil</span>, errors.<span class="func">New</span>(<span class="string">"invalid port"</span>)
+    }
+    <span class="keyword">return</span> &<span class="type">Server</span>{host: host, port: port}, <span class="keyword">nil</span>
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Exercises</h2>
+            
+            <div class="exercise">
+                <h4>Exercise 1: Rectangle</h4>
+                <p>Create a <code>Rectangle</code> struct with <code>Width</code> and <code>Height</code>. Add methods <code>Area() float64</code> and <code>Perimeter() float64</code>.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Area = width × height. Perimeter = 2 × (width + height). Value receivers are fine here.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type Rectangle struct {
+    Width  float64
+    Height float64
+}
+
+func (r Rectangle) Area() float64 {
+    return r.Width * r.Height
+}
+
+func (r Rectangle) Perimeter() float64 {
+    return 2 * (r.Width + r.Height)
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>r := Rectangle{Width: 10, Height: 5}
+fmt.Println(r.Area())      // 50
+fmt.Println(r.Perimeter()) // 30</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 2: Bank Account</h4>
+                <p>Create a <code>BankAccount</code> with unexported <code>balance</code>. Add <code>Deposit</code>, <code>Withdraw</code> (returns error if insufficient), and <code>Balance</code>.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Lowercase <code>balance</code> makes it private. Use pointer receivers for Deposit/Withdraw. Return <code>fmt.Errorf(...)</code> for insufficient funds.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type BankAccount struct {
+    balance float64
+}
+
+func (a *BankAccount) Deposit(amount float64) {
+    a.balance += amount
+}
+
+func (a *BankAccount) Withdraw(amount float64) error {
+    if amount > a.balance {
+        return fmt.Errorf("insufficient funds: have %.2f, want %.2f", a.balance, amount)
+    }
+    a.balance -= amount
+    return nil
+}
+
+func (a *BankAccount) Balance() float64 {
+    return a.balance
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>acc := BankAccount{}
+acc.Deposit(100)
+acc.Withdraw(30)
+fmt.Println(acc.Balance()) // 70
+err := acc.Withdraw(100)   // error: insufficient funds</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 3: Embedding</h4>
+                <p>Create <code>Animal</code> with <code>Name</code> and <code>Speak()</code>. Create <code>Dog</code> and <code>Cat</code> that embed Animal and override <code>Speak()</code>.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Embed by putting <code>Animal</code> as a field without a name. Override by defining <code>Speak()</code> on the embedding struct.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type Animal struct {
+    Name string
+}
+
+func (a Animal) Speak() string {
+    return "..."
+}
+
+type Dog struct {
+    Animal
+}
+
+func (d Dog) Speak() string {
+    return "Woof!"
+}
+
+type Cat struct {
+    Animal
+}
+
+func (c Cat) Speak() string {
+    return "Meow!"
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>dog := Dog{Animal{Name: "Buddy"}}
+cat := Cat{Animal{Name: "Whiskers"}}
+fmt.Println(dog.Name, dog.Speak()) // Buddy Woof!
+fmt.Println(cat.Name, cat.Speak()) // Whiskers Meow!</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 4: JSON Config</h4>
+                <p>Define a struct that matches this JSON and parse it:</p>
+                <pre style="background: var(--bg-code); padding: 0.75rem; border-radius: 4px; margin: 0.5rem 0;">{"server":{"host":"localhost","port":8080},"debug":true,"allowed_origins":["http://localhost"]}</pre>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Nested struct for "server". Use json tags. <code>allowed_origins</code> is <code>[]string</code>.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>type Config struct {
+    Server struct {
+        Host string `json:"host"`
+        Port int    `json:"port"`
+    } `json:"server"`
+    Debug          bool     `json:"debug"`
+    AllowedOrigins []string `json:"allowed_origins"`
+}
+
+// Parse:
+var cfg Config
+json.Unmarshal([]byte(jsonStr), &cfg)</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>fmt.Println(cfg.Server.Host) // localhost
+fmt.Println(cfg.Server.Port) // 8080
+fmt.Println(cfg.Debug)       // true</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Module 3 Summary</h2>
+            <ul>
+                <li><strong>Structs</strong> = Go's data containers (no classes)</li>
+                <li><strong>Methods</strong> = functions with receivers</li>
+                <li><strong>Pointer receivers</strong> for mutation, value receivers for reading</li>
+                <li><strong>Embedding</strong> = composition over inheritance</li>
+                <li><strong>Tags</strong> = metadata for JSON, DB, validation</li>
+                <li><strong>NewX()</strong> = constructor function pattern</li>
+            </ul>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module2.html" class="nav-btn">← Module 2</a>
+            <a href="module4.html" class="nav-btn primary">Module 4: Interfaces →</a>
+        </div>
+    </div>
+</body>
+</html>
