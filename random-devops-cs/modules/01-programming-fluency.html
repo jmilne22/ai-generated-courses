@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 1: Programming Fluency</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+    
+    <header>
+        <span class="module-number">Module 01</span>
+        <h1>Programming Fluency & Language Confidence</h1>
+        <p class="subtitle">Stop Googling "python for loop" — build real fluency</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>The Real Problem</h2>
+            <p>You can write scripts that work. But you feel like an imposter because:</p>
+            <ul>
+                <li>You constantly look up basic syntax</li>
+                <li>You don't know if there's a "better" way to do something</li>
+                <li>Reading other people's code feels like reading a foreign language</li>
+                <li>You're not sure when to use a list vs. dict vs. set</li>
+            </ul>
+            <p>This module fixes that. We'll build <strong>fluency</strong> — the ability to express your ideas in code without friction.</p>
+        </section>
+
+        <section>
+            <h2>Part 0: From Thinking to Code</h2>
+            <p>Module 0 gave you a thinking framework. Now let's see how it translates to actual code. Here's a worked example showing the full process.</p>
+
+            <div class="callout">
+                <h4>📋 Problem</h4>
+                <p>Given a list of server logs, find the IP address that made the most requests.</p>
+                <pre><code>logs = [
+    "192.168.1.1 GET /api/users",
+    "10.0.0.5 POST /api/login",
+    "192.168.1.1 GET /api/products",
+    "192.168.1.1 DELETE /api/users/5",
+    "10.0.0.5 GET /api/users"
+]</code></pre>
+            </div>
+
+            <h3>Step 1: The Five Questions</h3>
+            <p><strong>Inputs:</strong> A list of strings, each starting with an IP address.</p>
+            <p><strong>Outputs:</strong> A single IP address (string) — the most common one.</p>
+            <p><strong>By hand:</strong> Go through each line, tally IP addresses, find the highest count. 192.168.1.1 appears 3 times, 10.0.0.5 appears 2 times. Answer: 192.168.1.1</p>
+            <p><strong>Edge cases:</strong> Empty list? All different IPs (tie)? Malformed lines?</p>
+            <p><strong>Simplest version:</strong> Assume valid data, ignore ties for now.</p>
+
+            <h3>Step 2: What Shapes?</h3>
+            <p>Breaking down what we did by hand:</p>
+            <ol>
+                <li><strong>Transform</strong> — Extract IP from each line</li>
+                <li><strong>Accumulate/Group</strong> — Count occurrences of each IP</li>
+                <li><strong>Search</strong> — Find the one with highest count</li>
+            </ol>
+
+            <h3>Step 3: Write It</h3>
+            <pre><code class="language-python"># Python
+def most_common_ip(logs):
+    # Transform: extract IPs
+    ips = [line.split()[0] for line in logs]
+
+    # Accumulate: count each
+    counts = {}
+    for ip in ips:
+        counts[ip] = counts.get(ip, 0) + 1
+
+    # Search: find max
+    max_ip = None
+    max_count = 0
+    for ip, count in counts.items():
+        if count > max_count:
+            max_count = count
+            max_ip = ip
+
+    return max_ip</code></pre>
+
+            <pre><code class="language-go">// Go
+func mostCommonIP(logs []string) string {
+    // Accumulate: count each IP
+    counts := make(map[string]int)
+    for _, line := range logs {
+        ip := strings.Fields(line)[0]
+        counts[ip]++
+    }
+
+    // Search: find max
+    var maxIP string
+    maxCount := 0
+    for ip, count := range counts {
+        if count > maxCount {
+            maxCount = count
+            maxIP = ip
+        }
+    }
+    return maxIP
+}</code></pre>
+
+            <p>Notice how the code structure directly mirrors the shapes we identified. No magic — just translating the manual process into syntax. This is what fluency looks like: the gap between "I know what to do" and "I can write it" becomes small.</p>
+        </section>
+
+        <section>
+            <h2>Part 1: The Core Building Blocks</h2>
+            <p>Every programming language has the same fundamental constructs. Once you understand these deeply, you can pick up any language quickly.</p>
+
+            <h3>1.1 Variables & Types</h3>
+            <p>Variables are just names pointing to values. The key insight: know what <em>type</em> of thing you're working with.</p>
+            
+            <table>
+                <tr><th>Type</th><th>What it is</th><th>Python Example</th><th>Go Example</th></tr>
+                <tr><td>Integer</td><td>Whole numbers</td><td><code>count = 42</code></td><td><code>count := 42</code></td></tr>
+                <tr><td>Float</td><td>Decimal numbers</td><td><code>price = 19.99</code></td><td><code>price := 19.99</code></td></tr>
+                <tr><td>String</td><td>Text</td><td><code>name = "nginx"</code></td><td><code>name := "nginx"</code></td></tr>
+                <tr><td>Boolean</td><td>True/False</td><td><code>ready = True</code></td><td><code>ready := true</code></td></tr>
+            </table>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>When your Terraform fails with "expected string, got number" — this is a type error. The value <code>80</code> is not the same as <code>"80"</code>.</p>
+            </div>
+
+            <h3>1.2 Collections: List vs Dict vs Set</h3>
+            <p>This is where most confusion happens. Here's the decision tree:</p>
+            
+            <div class="decision-tree">
+Do you need to look things up by a key/name?
+├─ YES → Use a Dict (Python) / Map (Go)
+│         Example: config["database_url"]
+│
+└─ NO → Do you need to track unique items only?
+        ├─ YES → Use a Set
+        │         Example: unique_ips = {"1.2.3.4", "5.6.7.8"}
+        │
+        └─ NO → Use a List (Python) / Slice (Go)
+                  Example: servers = ["web1", "web2", "web3"]
+            </div>
+
+            <h4>When to use what (practical examples):</h4>
+            <table>
+                <tr><th>Situation</th><th>Use</th><th>Why</th></tr>
+                <tr><td>List of servers to deploy to</td><td>List</td><td>Order might matter, duplicates possible</td></tr>
+                <tr><td>Environment variables</td><td>Dict</td><td>Look up by name: <code>env["DB_HOST"]</code></td></tr>
+                <tr><td>IPs that have accessed your API</td><td>Set</td><td>Only care about unique values</td></tr>
+                <tr><td>Pod labels in K8s</td><td>Dict</td><td>Key-value pairs: <code>{"app": "nginx"}</code></td></tr>
+                <tr><td>Build stages to run</td><td>List</td><td>Order matters!</td></tr>
+            </table>
+        </section>
+
+        <section>
+            <h3>1.3 Control Flow: If, For, While</h3>
+            <p>These let you make decisions and repeat actions.</p>
+            
+            <h4>If statements (making decisions)</h4>
+            <pre><code># Python
+if status_code == 200:
+    print("Success")
+elif status_code == 404:
+    print("Not found")
+else:
+    print(f"Error: {status_code}")</code></pre>
+
+            <pre><code>// Go
+if statusCode == 200 {
+    fmt.Println("Success")
+} else if statusCode == 404 {
+    fmt.Println("Not found")
+} else {
+    fmt.Printf("Error: %d\n", statusCode)
+}</code></pre>
+
+            <h4>For loops (repeating actions)</h4>
+            <pre><code># Python - iterate over items
+for server in servers:
+    deploy(server)
+
+# Python - iterate with index
+for i, server in enumerate(servers):
+    print(f"{i}: {server}")
+
+# Python - iterate over dict
+for key, value in config.items():
+    print(f"{key} = {value}")</code></pre>
+
+            <pre><code>// Go - iterate over slice
+for _, server := range servers {
+    deploy(server)
+}
+
+// Go - iterate with index  
+for i, server := range servers {
+    fmt.Printf("%d: %s\n", i, server)
+}
+
+// Go - iterate over map
+for key, value := range config {
+    fmt.Printf("%s = %s\n", key, value)
+}</code></pre>
+
+            <div class="callout">
+                <h4>💡 The _ (underscore)</h4>
+                <p>In both Python and Go, <code>_</code> means "I don't care about this value". Use it when you need the loop but don't need the index or value.</p>
+            </div>
+        </section>
+
+        <section>
+            <h3>1.4 Functions: Reusable Code Blocks</h3>
+            <p>Functions let you name a piece of logic and reuse it. Good functions do ONE thing.</p>
+            
+            <pre><code># Python
+def get_healthy_pods(namespace):
+    """Return list of healthy pod names in a namespace."""
+    pods = kubectl_get_pods(namespace)
+    return [p.name for p in pods if p.status == "Running"]
+
+# Usage
+healthy = get_healthy_pods("production")</code></pre>
+
+            <pre><code>// Go
+func getHealthyPods(namespace string) []string {
+    pods := kubectlGetPods(namespace)
+    var healthy []string
+    for _, p := range pods {
+        if p.Status == "Running" {
+            healthy = append(healthy, p.Name)
+        }
+    }
+    return healthy
+}
+
+// Usage
+healthy := getHealthyPods("production")</code></pre>
+
+            <h4>When to make a function:</h4>
+            <ul>
+                <li>You're copying and pasting code</li>
+                <li>A block of code does one logical thing</li>
+                <li>You want to give a name to a complex operation</li>
+                <li>You want to test something in isolation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Part 2: Error Handling</h2>
+            <p>Things break. Good code handles it gracefully.</p>
+
+            <h3>Python: Try/Except</h3>
+            <pre><code>try:
+    response = requests.get(url, timeout=5)
+    data = response.json()
+except requests.Timeout:
+    print(f"Timeout connecting to {url}")
+    data = None
+except requests.RequestException as e:
+    print(f"Request failed: {e}")
+    data = None</code></pre>
+
+            <h3>Go: Explicit Error Returns</h3>
+            <pre><code>response, err := http.Get(url)
+if err != nil {
+    log.Printf("Request failed: %v", err)
+    return nil, err
+}
+defer response.Body.Close()
+
+data, err := io.ReadAll(response.Body)
+if err != nil {
+    log.Printf("Failed to read body: %v", err)
+    return nil, err
+}</code></pre>
+
+            <div class="callout">
+                <h4>🔧 Python vs Go Philosophy</h4>
+                <p><strong>Python:</strong> "Ask for forgiveness, not permission" — try it and catch the error.<br>
+                <strong>Go:</strong> "Errors are values" — check every operation explicitly. This is why Go code has <code>if err != nil</code> everywhere.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 3: Reading Other People's Code</h2>
+            <p>This is a skill. Here's how to build it:</p>
+
+            <h3>Strategy 1: Start from main()</h3>
+            <p>Find the entry point. In Python, look for <code>if __name__ == "__main__":</code>. In Go, find <code>func main()</code>. Start there and follow the calls.</p>
+
+            <h3>Strategy 2: Ignore details first</h3>
+            <p>Don't try to understand every line. First pass: What are the major functions? What do they seem to do based on their names?</p>
+
+            <h3>Strategy 3: Find the data structures</h3>
+            <p>What types/classes/structs are defined? These tell you what the code is modeling.</p>
+
+            <h3>Strategy 4: Run it with print statements</h3>
+            <p>Add prints/logs to understand the flow. There's no shame in this — it's debugging.</p>
+
+            <div class="callout warning">
+                <h4>⚠️ Common Patterns You'll See</h4>
+                <ul style="margin-bottom: 0;">
+                    <li><code>*args, **kwargs</code> (Python) — "accept any arguments"</li>
+                    <li><code>lambda x: x.name</code> (Python) — inline mini-function</li>
+                    <li><code>[x for x in items if x.valid]</code> — list comprehension</li>
+                    <li><code>interface{}</code> or <code>any</code> (Go) — "any type"</li>
+                    <li><code>defer</code> (Go) — "run this when the function exits"</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 4: Common Idioms</h2>
+            <p>These patterns appear everywhere. Learn them once, recognize them forever.</p>
+
+            <h3>Python Idioms</h3>
+            <pre><code># List comprehension (filtering + transforming)
+names = [pod.name for pod in pods if pod.status == "Running"]
+
+# Dict comprehension
+env_map = {k: v for k, v in os.environ.items() if k.startswith("APP_")}
+
+# Get with default (never KeyError)
+timeout = config.get("timeout", 30)
+
+# Context manager (auto-cleanup)
+with open("config.yaml") as f:
+    config = yaml.safe_load(f)
+
+# Join strings
+hosts = ", ".join(server_list)  # "web1, web2, web3"
+
+# F-strings (formatting)
+message = f"Deployed {app} to {env} in {duration:.2f}s"</code></pre>
+
+            <h3>Go Idioms</h3>
+            <pre><code>// Short variable declaration
+name := "nginx"  // instead of: var name string = "nginx"
+
+// Check and assign in one line
+if err := doThing(); err != nil {
+    return err
+}
+
+// Defer for cleanup
+f, _ := os.Open("config.yaml")
+defer f.Close()
+
+// Type assertion
+if s, ok := value.(string); ok {
+    fmt.Println(s)
+}
+
+// Zero values are useful
+var count int    // automatically 0
+var name string  // automatically ""
+var ready bool   // automatically false</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 5: Building Muscle Memory</h2>
+            <p>Fluency comes from practice, not reading. Here's how to build it:</p>
+
+            <h3>Daily Practice (10 mins)</h3>
+            <ol>
+                <li>Pick a small problem from <a href="https://exercism.org/" target="_blank">Exercism</a></li>
+                <li>Solve it WITHOUT looking anything up</li>
+                <li>When stuck, note what you had to look up</li>
+                <li>Tomorrow, do a similar problem targeting that gap</li>
+            </ol>
+
+            <h3>The "No Google" Challenge</h3>
+            <p>Once a week, write a small script without Googling or using AI. Use only:</p>
+            <ul>
+                <li>Built-in help (<code>help()</code> in Python, <code>go doc</code> in Go)</li>
+                <li>Error messages</li>
+                <li>Your memory</li>
+            </ul>
+            <p>This is uncomfortable. That's the point. It builds real retention.</p>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+
+            <div class="exercise">
+                <h4>Exercise 1.1: Type Recognition</h4>
+                <p>For each piece of data below, decide: List, Dict, or Set?</p>
+                <ol>
+                    <li>Kubernetes pod labels</li>
+                    <li>Unique error codes seen in the last hour</li>
+                    <li>Ordered list of deployment stages</li>
+                    <li>Mapping of service names to their ports</li>
+                    <li>All namespaces in a cluster</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Ask yourself: Do I need key-value pairs? Do I need ordering? Do I need uniqueness? Do I need fast lookup?</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <ol>
+                            <li><strong>Dict</strong> — Labels are key-value pairs: <code>{"app": "nginx", "env": "prod"}</code></li>
+                            <li><strong>Set</strong> — We want unique codes, don't care about order: <code>{500, 502, 503}</code></li>
+                            <li><strong>List</strong> — Order matters: <code>["build", "test", "deploy", "verify"]</code></li>
+                            <li><strong>Dict</strong> — Mapping name to port: <code>{"web": 80, "api": 8080}</code></li>
+                            <li><strong>Set or List</strong> — Set if you need fast "is this namespace present?" checks; List if you need to iterate in a specific order</li>
+                        </ol>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 1.2: Translate Between Languages</h4>
+                <p>Take this Python snippet and rewrite it in Go (or vice versa):</p>
+                <pre><code>servers = ["web1", "web2", "web3"]
+healthy = []
+for server in servers:
+    if check_health(server):
+        healthy.append(server)
+print(f"Healthy: {len(healthy)}/{len(servers)}")</code></pre>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>In Go: slices use <code>append()</code>, formatting uses <code>fmt.Printf()</code>, and you'll need to handle the error from check_health.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution (Go)</summary>
+                    <div class="solution-content">
+                        <pre><code>servers := []string{"web1", "web2", "web3"}
+var healthy []string
+for _, server := range servers {
+    if checkHealth(server) {
+        healthy = append(healthy, server)
+    }
+}
+fmt.Printf("Healthy: %d/%d\n", len(healthy), len(servers))</code></pre>
+                        <p>Key differences: explicit types, <code>range</code> keyword, <code>append</code> returns new slice.</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 1.3: Read Real Code</h4>
+                <p>Find a popular DevOps tool you use (Terraform provider, Helm chart, etc). Spend 20 minutes reading its source code. Answer:</p>
+                <ol>
+                    <li>What's the entry point?</li>
+                    <li>What are the main data structures?</li>
+                    <li>Can you trace how one feature works?</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Good starting points:</p>
+                        <ul>
+                            <li><strong>Terraform AWS Provider:</strong> Look in <code>internal/service/</code> for specific resources</li>
+                            <li><strong>Helm:</strong> <code>pkg/action/install.go</code> shows how helm install works</li>
+                            <li><strong>kubectl:</strong> <code>staging/src/k8s.io/kubectl/pkg/cmd/</code></li>
+                        </ul>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Analysis</summary>
+                    <div class="solution-content">
+                        <p><strong>Example: Terraform AWS Provider - S3 Bucket</strong></p>
+                        <ol>
+                            <li><strong>Entry point:</strong> <code>internal/service/s3/bucket.go</code> - defines the resource schema</li>
+                            <li><strong>Main structures:</strong> <code>resourceBucket()</code> returns a schema.Resource with Create, Read, Update, Delete functions</li>
+                            <li><strong>Feature trace:</strong> <code>resourceBucketCreate()</code> calls AWS SDK's <code>CreateBucket()</code>, then sets the ID, then reads back to populate state</li>
+                        </ol>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 1.4: Exercism Track</h4>
+                <p>Complete the first 5 exercises in the <a href="https://exercism.org/tracks/python" target="_blank">Python</a> or <a href="https://exercism.org/tracks/go" target="_blank">Go</a> track on Exercism. Focus on: (1) Not looking things up, (2) Reading community solutions after you solve it.</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>The first few exercises are: Hello World, Two Fer, Raindrops, Hamming, Gigasecond. Don't skip reading community solutions — that's where the real learning happens.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ What to look for</summary>
+                    <div class="solution-content">
+                        <p>When reading community solutions, notice:</p>
+                        <ul>
+                            <li>Idiomatic patterns you didn't know (list comprehensions, slicing tricks)</li>
+                            <li>Standard library functions you could have used</li>
+                            <li>Different approaches to the same problem</li>
+                            <li>Code that's shorter but less readable (not always better!)</li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="project">
+            <h3>🏗️ Mini-Project: Config Parser</h3>
+            <p>Build a simple config file parser that:</p>
+            <ol>
+                <li>Reads a YAML or JSON config file</li>
+                <li>Validates that required keys exist</li>
+                <li>Returns a structured object/dict with defaults filled in</li>
+                <li>Handles errors gracefully (file not found, invalid format)</li>
+            </ol>
+            <p>Do it in both Python and Go if you want to build fluency in both.</p>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Further Reading</h2>
+
+            <h4>Interactive Practice</h4>
+            <ul>
+                <li><a href="https://go.dev/tour/" target="_blank">A Tour of Go</a> — Complete in one sitting (~2 hours), covers all basics</li>
+                <li><a href="https://exercism.org/tracks/python" target="_blank">Exercism Python Track</a> — Do "Hello World" through "Raindrops", then read community solutions</li>
+                <li><a href="https://gobyexample.com/" target="_blank">Go by Example</a> — Bookmark for reference; start with Slices, Maps, Errors, Goroutines</li>
+            </ul>
+
+            <h4>Articles & Guides</h4>
+            <ul>
+                <li><a href="https://realpython.com/python-f-strings/" target="_blank">Python f-strings Guide</a> — Master the formatting you'll use daily</li>
+                <li><a href="https://realpython.com/python-dicts/" target="_blank">Dictionaries in Python</a> — Deep dive on the data structure you'll use most</li>
+                <li><a href="https://go.dev/doc/effective_go" target="_blank">Effective Go</a> — Read "Formatting", "Names", and "Control structures" sections</li>
+                <li><a href="https://dave.cheney.net/practical-go/presentations/qcon-china.html" target="_blank">Practical Go: Real world advice</a> — Dave Cheney's excellent style guide</li>
+            </ul>
+
+            <h4>Video</h4>
+            <ul>
+                <li><a href="https://www.youtube.com/watch?v=8moWQ1561FY" target="_blank">Transforming Code into Beautiful, Idiomatic Python</a> — Raymond Hettinger's classic PyCon talk (48 min)</li>
+            </ul>
+
+            <h4>When Python vs Go?</h4>
+            <ul>
+                <li><a href="https://news.ycombinator.com/item?id=18142602" target="_blank">HN Discussion: Go concurrency vs Python</a> — Real experiences on when each shines</li>
+            </ul>
+        </section>
+    </main>
+
+    <nav class="module-nav">
+        <a href="00-problem-solving.html">← Previous: Problem Solving</a>
+        <a href="02-missing-semester.html">Next: The Missing Semester →</a>
+    </nav>
+
+    <footer>
+        <p>Module 1 of 12 — CS for DevOps Engineers</p>
+    </footer>
+</body>
+</html>
+

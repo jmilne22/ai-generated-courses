@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 9: Networking</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+    
+    <header>
+        <span class="module-number">Module 09</span>
+        <h1>Networking</h1>
+        <p class="subtitle">TCP/IP, DNS, HTTP, and how the internet actually works</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why Networking Matters</h2>
+            <p>Every distributed system is connected by a network. When things are slow or broken, you need to understand what's happening at the network level. This module covers the fundamentals you'll use daily.</p>
+        </section>
+
+        <section>
+            <h2>Part 1: The Network Stack</h2>
+
+            <h3>1.1 The OSI Model (Simplified)</h3>
+            <p>You don't need all 7 layers. Here's what matters:</p>
+            <table>
+                <tr><th>Layer</th><th>What</th><th>Examples</th><th>DevOps Relevance</th></tr>
+                <tr><td>Application (7)</td><td>App protocols</td><td>HTTP, DNS, SSH</td><td>API debugging, headers</td></tr>
+                <tr><td>Transport (4)</td><td>End-to-end delivery</td><td>TCP, UDP</td><td>Ports, connections, timeouts</td></tr>
+                <tr><td>Network (3)</td><td>Routing</td><td>IP, ICMP</td><td>IP addresses, routing tables</td></tr>
+                <tr><td>Link (2)</td><td>Local network</td><td>Ethernet, WiFi</td><td>MAC addresses, switches</td></tr>
+            </table>
+
+            <h3>1.2 IP Addresses</h3>
+            <pre><code># IPv4: 32 bits, written as 4 octets
+192.168.1.100
+
+# IPv6: 128 bits, written in hex
+2001:0db8:85a3:0000:0000:8a2e:0370:7334
+
+# CIDR notation: IP + network size
+192.168.1.0/24  # 256 addresses (192.168.1.0 - 192.168.1.255)
+10.0.0.0/8      # 16 million addresses</code></pre>
+
+            <p>Private IP ranges (not routable on internet):</p>
+            <ul>
+                <li><code>10.0.0.0/8</code> — Class A private</li>
+                <li><code>172.16.0.0/12</code> — Class B private</li>
+                <li><code>192.168.0.0/16</code> — Class C private</li>
+            </ul>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>VPC CIDR blocks, subnet sizing, pod IP ranges — all require understanding CIDR. A /24 gives you 254 usable IPs. Running out of IPs in your subnet is a real problem.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 2: TCP and UDP</h2>
+
+            <h3>2.1 TCP: Reliable Delivery</h3>
+            <p>TCP guarantees delivery, order, and integrity.</p>
+            <pre><code>Three-way handshake:
+Client → SYN → Server
+Client ← SYN-ACK ← Server  
+Client → ACK → Server
+[Connection established]
+
+Data transfer:
+Client → Data (seq=1) → Server
+Client ← ACK (ack=2) ← Server
+[If no ACK, client retransmits]
+
+Connection close:
+Client → FIN → Server
+Client ← ACK ← Server
+Client ← FIN ← Server
+Client → ACK → Server</code></pre>
+
+            <h3>2.2 TCP States</h3>
+            <pre><code># See TCP connections and states
+ss -tan
+netstat -an | grep tcp
+
+# Common states:
+# ESTABLISHED - active connection
+# TIME_WAIT - closed, waiting to ensure no stray packets
+# CLOSE_WAIT - remote closed, waiting for local close
+# SYN_SENT - connection attempt in progress</code></pre>
+
+            <div class="callout warning">
+                <h4>⚠️ TIME_WAIT Exhaustion</h4>
+                <p>Many short-lived connections can exhaust ports (stuck in TIME_WAIT for 60s). Solutions: connection pooling, <code>SO_REUSEADDR</code>, or tune <code>tcp_tw_reuse</code>.</p>
+            </div>
+
+            <h3>2.3 UDP: Fast but Unreliable</h3>
+            <p>No connection, no guarantees. Just send packets.</p>
+            <table>
+                <tr><th>TCP</th><th>UDP</th></tr>
+                <tr><td>Reliable</td><td>Unreliable</td></tr>
+                <tr><td>Ordered</td><td>Unordered</td></tr>
+                <tr><td>Connection-based</td><td>Connectionless</td></tr>
+                <tr><td>HTTP, SSH, databases</td><td>DNS, video streaming, games</td></tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Part 3: DNS</h2>
+
+            <h3>3.1 How DNS Works</h3>
+            <pre><code>Query: "What's the IP for api.example.com?"
+
+1. Check local cache
+2. Ask recursive resolver (usually ISP or 8.8.8.8)
+3. Resolver asks root server → "Who handles .com?"
+4. Resolver asks .com TLD server → "Who handles example.com?"
+5. Resolver asks example.com nameserver → "What's api.example.com?"
+6. Answer: 93.184.216.34
+7. Cache the result (respecting TTL)</code></pre>
+
+            <h3>3.2 DNS Record Types</h3>
+            <table>
+                <tr><th>Type</th><th>Purpose</th><th>Example</th></tr>
+                <tr><td>A</td><td>IPv4 address</td><td><code>api.example.com → 93.184.216.34</code></td></tr>
+                <tr><td>AAAA</td><td>IPv6 address</td><td><code>api.example.com → 2001:db8::1</code></td></tr>
+                <tr><td>CNAME</td><td>Alias to another name</td><td><code>www → example.com</code></td></tr>
+                <tr><td>MX</td><td>Mail server</td><td><code>example.com → mail.example.com</code></td></tr>
+                <tr><td>TXT</td><td>Text data</td><td>SPF, DKIM, verification</td></tr>
+                <tr><td>NS</td><td>Nameserver</td><td><code>example.com → ns1.provider.com</code></td></tr>
+            </table>
+
+            <pre><code># Query DNS
+dig api.example.com
+dig +short api.example.com
+dig @8.8.8.8 api.example.com  # Use specific resolver
+
+# Trace the full resolution path
+dig +trace api.example.com
+
+# Check specific record type
+dig MX example.com
+dig TXT example.com</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>DNS TTL matters for deployments. Low TTL = faster failover but more queries. High TTL = better caching but slower changes. 300s (5 min) is a common compromise.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 4: HTTP</h2>
+
+            <h3>4.1 HTTP Request/Response</h3>
+            <pre><code># Request
+GET /api/users HTTP/1.1
+Host: api.example.com
+Authorization: Bearer token123
+Accept: application/json
+
+# Response
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 42
+
+{"id": 1, "name": "Alice"}</code></pre>
+
+            <h3>4.2 HTTP Methods</h3>
+            <table>
+                <tr><th>Method</th><th>Purpose</th><th>Idempotent?</th><th>Safe?</th></tr>
+                <tr><td>GET</td><td>Retrieve</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>POST</td><td>Create</td><td>No</td><td>No</td></tr>
+                <tr><td>PUT</td><td>Replace</td><td>Yes</td><td>No</td></tr>
+                <tr><td>PATCH</td><td>Partial update</td><td>No*</td><td>No</td></tr>
+                <tr><td>DELETE</td><td>Remove</td><td>Yes</td><td>No</td></tr>
+            </table>
+
+            <h3>4.3 Status Codes</h3>
+            <pre><code>2xx - Success
+  200 OK
+  201 Created
+  204 No Content
+
+3xx - Redirect
+  301 Moved Permanently
+  302 Found (temporary redirect)
+  304 Not Modified (caching)
+
+4xx - Client Error
+  400 Bad Request
+  401 Unauthorized (not authenticated)
+  403 Forbidden (not authorized)
+  404 Not Found
+  429 Too Many Requests
+
+5xx - Server Error
+  500 Internal Server Error
+  502 Bad Gateway
+  503 Service Unavailable
+  504 Gateway Timeout</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>502/503/504 are your friends in debugging. 502 = upstream returned invalid response. 503 = upstream unavailable. 504 = upstream timeout. Check your load balancer logs.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 5: Load Balancing</h2>
+
+            <h3>5.1 Layer 4 vs Layer 7</h3>
+            <table>
+                <tr><th>Layer 4 (TCP)</th><th>Layer 7 (HTTP)</th></tr>
+                <tr><td>Routes based on IP/port</td><td>Routes based on URL, headers, cookies</td></tr>
+                <tr><td>Faster, less overhead</td><td>More features, more overhead</td></tr>
+                <tr><td>Can't inspect content</td><td>Can modify requests/responses</td></tr>
+                <tr><td>NLB, HAProxy (TCP mode)</td><td>ALB, nginx, HAProxy (HTTP mode)</td></tr>
+            </table>
+
+            <h3>5.2 Load Balancing Algorithms</h3>
+            <ul>
+                <li><strong>Round Robin:</strong> Each server in turn</li>
+                <li><strong>Least Connections:</strong> Send to server with fewest active connections</li>
+                <li><strong>IP Hash:</strong> Same client IP → same server (sticky)</li>
+                <li><strong>Weighted:</strong> More traffic to more powerful servers</li>
+            </ul>
+
+            <h3>5.3 Health Checks</h3>
+            <pre><code># nginx health check example
+upstream backend {
+    server 10.0.0.1:8080;
+    server 10.0.0.2:8080;
+
+    # Check every 5s, 3 failures = unhealthy
+    health_check interval=5s fails=3 passes=2;
+}</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 6: Debugging Network Issues</h2>
+
+            <h3>6.1 Essential Tools</h3>
+            <pre><code># Test connectivity
+ping host
+telnet host port
+nc -zv host port
+
+# DNS lookup
+dig domain
+nslookup domain
+
+# See routing
+traceroute host
+mtr host  # Better traceroute
+
+# See connections
+ss -tan  # TCP connections
+ss -uan  # UDP
+lsof -i :8080  # What's using port 8080
+
+# Capture packets
+tcpdump -i any port 80
+tcpdump -i any host 10.0.0.1
+
+# HTTP debugging
+curl -v https://api.example.com
+curl -I https://api.example.com  # Headers only</code></pre>
+
+            <h3>6.2 Common Issues</h3>
+            <div class="decision-tree">
+Can't connect?
+├─ DNS resolution works? → dig domain
+│   └─ NO → Check DNS config, /etc/resolv.conf
+├─ Port open? → nc -zv host port
+│   └─ NO → Firewall, security group, service not running
+├─ Route exists? → traceroute host
+│   └─ NO → Routing table, VPC config
+└─ Connection refused vs timeout?
+    ├─ Refused → Service not listening on that port
+    └─ Timeout → Firewall dropping packets
+            </div>
+
+            <h3>6.3 Reading tcpdump</h3>
+            <pre><code># Capture HTTP traffic
+tcpdump -i any -A port 80
+
+# Output:
+# 10:30:00.123 IP client.45678 > server.80: Flags [S], seq 123
+# 10:30:00.124 IP server.80 > client.45678: Flags [S.], seq 456, ack 124
+# 10:30:00.125 IP client.45678 > server.80: Flags [.], ack 457
+
+# Flags: S=SYN, .=ACK, F=FIN, R=RST, P=PUSH</code></pre>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+
+            <div class="exercise">
+                <h4>Exercise 9.1: DNS Deep Dive</h4>
+                <p>For a domain you manage:</p>
+                <ol>
+                    <li>Trace the full DNS resolution with <code>dig +trace</code></li>
+                    <li>Check TTL values for each record</li>
+                    <li>Query from different resolvers (8.8.8.8, 1.1.1.1)</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p><code>dig +trace example.com</code> shows the full path from root servers. <code>dig @8.8.8.8 example.com</code> queries a specific resolver.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Output</summary>
+                    <div class="solution-content">
+                        <pre><code>$ dig +trace example.com
+
+.                   518400  IN  NS  a.root-servers.net.  # Root
+com.                172800  IN  NS  a.gtld-servers.net.  # TLD
+example.com.        172800  IN  NS  ns1.example.com.     # Authoritative
+example.com.        300     IN  A   93.184.216.34        # Answer (TTL=300s)
+
+# Different resolvers may have different cached values
+$ dig @8.8.8.8 example.com +short
+93.184.216.34
+
+$ dig @1.1.1.1 example.com +short
+93.184.216.34  # Should match (unless mid-propagation)</code></pre>
+                        <p>Low TTL (300s) = faster propagation but more DNS queries. High TTL = better caching but slower changes.</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 9.2: TCP Connection Analysis</h4>
+                <p>Use <code>tcpdump</code> to capture a full HTTP request:</p>
+                <ol>
+                    <li>Identify the three-way handshake</li>
+                    <li>Find the HTTP request and response</li>
+                    <li>Identify the connection close</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Use <code>tcpdump -i any port 80 -nn -A</code> to see ASCII content. Look for SYN, SYN-ACK, ACK flags. Use HTTP (not HTTPS) for readable content.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Capture</summary>
+                    <div class="solution-content">
+                        <pre><code># Terminal 1: Start capture
+sudo tcpdump -i any port 80 -nn
+
+# Terminal 2: Make request
+curl http://example.com
+
+# Output shows:
+# 1. Three-way handshake
+10:00:00 IP client.12345 > server.80: Flags [S], seq 100        # SYN
+10:00:00 IP server.80 > client.12345: Flags [S.], seq 200, ack 101  # SYN-ACK
+10:00:00 IP client.12345 > server.80: Flags [.], ack 201        # ACK
+
+# 2. HTTP request/response
+10:00:00 IP client.12345 > server.80: Flags [P.], "GET / HTTP/1.1"
+10:00:00 IP server.80 > client.12345: Flags [P.], "HTTP/1.1 200 OK"
+
+# 3. Connection close
+10:00:00 IP client.12345 > server.80: Flags [F.], seq 150       # FIN
+10:00:00 IP server.80 > client.12345: Flags [F.], seq 5000      # FIN-ACK</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 9.3: Debug a Connection Issue</h4>
+                <p>Intentionally break something (firewall rule, wrong DNS) and practice debugging with the tools from this module.</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Ideas: <code>iptables -A INPUT -p tcp --dport 80 -j DROP</code>, modify /etc/hosts, change a security group rule. Then debug as if you didn't know the cause.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Debugging Workflow</summary>
+                    <div class="solution-content">
+                        <pre><code># 1. Is DNS working?
+dig myservice.local
+# If fails: check /etc/resolv.conf, DNS server reachable?
+
+# 2. Is the IP reachable?
+ping &lt;ip&gt;
+# If fails: routing issue, firewall, host down
+
+# 3. Is the port open?
+nc -zv &lt;ip&gt; 80
+telnet &lt;ip&gt; 80
+# If timeout: firewall blocking
+# If refused: service not running
+
+# 4. Is TLS working?
+openssl s_client -connect &lt;ip&gt;:443
+# If fails: cert issues, protocol mismatch
+
+# 5. Is HTTP working?
+curl -v http://&lt;ip&gt;/health
+# Check response code, headers, body
+
+# 6. Packet-level debugging
+tcpdump -i any host &lt;ip&gt; and port 80
+# See what's actually happening on the wire</code></pre>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="project">
+            <h3>🏗️ Project: Network Troubleshooting Runbook</h3>
+            <p>Create a runbook for your team that covers:</p>
+            <ol>
+                <li>Common network issues you encounter</li>
+                <li>Step-by-step debugging process for each</li>
+                <li>Commands to run and what to look for</li>
+                <li>Escalation criteria</li>
+            </ol>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Further Reading</h2>
+
+            <h4>Visual Guides</h4>
+            <ul>
+                <li><a href="https://wizardzines.com/zines/dns/" target="_blank">How DNS Works (zine)</a> — Julia Evans' $12 zine, best visual explanation</li>
+                <li><a href="https://wizardzines.com/zines/http/" target="_blank">HTTP: Learn Your Browser's Language (zine)</a> — Headers, methods, status codes</li>
+            </ul>
+
+            <h4>Cloudflare Learning (Free, Excellent)</h4>
+            <ul>
+                <li><a href="https://www.cloudflare.com/learning/dns/what-is-dns/" target="_blank">What is DNS?</a> — Clear explanation with diagrams</li>
+                <li><a href="https://www.cloudflare.com/learning/ddos/glossary/tcp-ip/" target="_blank">What is TCP/IP?</a> — The protocol stack explained</li>
+                <li><a href="https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/" target="_blank">What happens in a TLS handshake?</a></li>
+            </ul>
+
+            <h4>Deep Dives</h4>
+            <ul>
+                <li><a href="https://hpbn.co/building-blocks-of-tcp/" target="_blank">HPBN: Building Blocks of TCP</a> — Chapter from free book, explains congestion control</li>
+                <li><a href="https://news.ycombinator.com/item?id=38918418" target="_blank">HN: Good book to learn modern networking?</a> — Recent recommendations (2024)</li>
+            </ul>
+
+            <h4>Debugging Tools Reference</h4>
+            <ul>
+                <li><a href="https://jvns.ca/tcpdump-zine.pdf" target="_blank">Let's Learn tcpdump!</a> — Free PDF, one-page reference</li>
+                <li><a href="https://www.netfilter.org/documentation/HOWTO/packet-filtering-HOWTO.html" target="_blank">Linux Packet Filtering HOWTO</a> — iptables fundamentals</li>
+            </ul>
+
+            <h4>Books (Specific Chapters)</h4>
+            <ul>
+                <li><strong>TCP/IP Illustrated Vol 1</strong> — Chapter 17-24 cover TCP in depth. Start with Chapter 17 "TCP: The Transmission Control Protocol"</li>
+            </ul>
+        </section>
+    </main>
+
+    <nav class="module-nav">
+        <a href="08-databases.html">← Previous: Databases & Storage</a>
+        <a href="10-concurrency.html">Next: Concurrency →</a>
+    </nav>
+
+    <footer>
+        <p>Module 9 of 12 — CS for DevOps Engineers</p>
+    </footer>
+</body>
+</html>
+

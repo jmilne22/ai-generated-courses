@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 7: Operating Systems</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+    
+    <header>
+        <span class="module-number">Module 07</span>
+        <h1>Operating Systems</h1>
+        <p class="subtitle">How Linux manages processes, memory, and resources</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why Operating Systems Matter</h2>
+            <p>Every container, every pod, every service runs on an OS. When things go wrong — OOM kills, zombie processes, high load — you need to understand what the OS is doing.</p>
+            <p>This module focuses on Linux, since that's what you're running in production.</p>
+        </section>
+
+        <section>
+            <h2>Part 1: Processes</h2>
+
+            <h3>1.1 What is a Process?</h3>
+            <p>A process is a running program. It has:</p>
+            <ul>
+                <li><strong>PID:</strong> Unique identifier</li>
+                <li><strong>Memory space:</strong> Its own virtual address space</li>
+                <li><strong>File descriptors:</strong> Open files, sockets, pipes</li>
+                <li><strong>State:</strong> Running, sleeping, stopped, zombie</li>
+            </ul>
+
+            <pre><code># See all processes
+ps aux
+
+# Process tree (shows parent-child relationships)
+pstree -p
+
+# Detailed info about a process
+cat /proc/&lt;pid&gt;/status
+
+# What files does a process have open?
+ls -la /proc/&lt;pid&gt;/fd</code></pre>
+
+            <h3>1.2 Process States</h3>
+            <table>
+                <tr><th>State</th><th>Code</th><th>Meaning</th></tr>
+                <tr><td>Running</td><td>R</td><td>Currently executing or ready to run</td></tr>
+                <tr><td>Sleeping</td><td>S</td><td>Waiting for something (I/O, timer)</td></tr>
+                <tr><td>Disk Sleep</td><td>D</td><td>Uninterruptible sleep (waiting for disk)</td></tr>
+                <tr><td>Stopped</td><td>T</td><td>Stopped by signal (Ctrl+Z)</td></tr>
+                <tr><td>Zombie</td><td>Z</td><td>Finished but parent hasn't collected exit status</td></tr>
+            </table>
+
+            <div class="callout warning">
+                <h4>⚠️ D State Processes</h4>
+                <p>Processes in D state can't be killed — they're waiting for the kernel. Usually indicates disk/NFS issues. If you see many D state processes, check your storage.</p>
+            </div>
+
+            <h3>1.3 Signals</h3>
+            <p>Signals are how processes communicate and how the OS controls them.</p>
+            <table>
+                <tr><th>Signal</th><th>Number</th><th>Default Action</th><th>Can Catch?</th></tr>
+                <tr><td>SIGTERM</td><td>15</td><td>Terminate gracefully</td><td>Yes</td></tr>
+                <tr><td>SIGKILL</td><td>9</td><td>Terminate immediately</td><td>No</td></tr>
+                <tr><td>SIGINT</td><td>2</td><td>Interrupt (Ctrl+C)</td><td>Yes</td></tr>
+                <tr><td>SIGHUP</td><td>1</td><td>Hangup (reload config)</td><td>Yes</td></tr>
+                <tr><td>SIGSTOP</td><td>19</td><td>Stop process</td><td>No</td></tr>
+            </table>
+
+            <pre><code># Send SIGTERM (graceful)
+kill &lt;pid&gt;
+
+# Send SIGKILL (force)
+kill -9 &lt;pid&gt;
+
+# Send to process group
+kill -TERM -&lt;pgid&gt;</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>Kubernetes sends SIGTERM, waits <code>terminationGracePeriodSeconds</code>, then SIGKILL. If your app doesn't handle SIGTERM, it gets killed hard. Always handle graceful shutdown.</p>
+            </div>
+
+            <h3>1.4 Fork and Exec</h3>
+            <p>How new processes are created:</p>
+            <ol>
+                <li><strong>fork():</strong> Create copy of current process</li>
+                <li><strong>exec():</strong> Replace process with new program</li>
+            </ol>
+            <pre><code># When you run "ls" in bash:
+# 1. bash calls fork() → creates child bash
+# 2. child calls exec("ls") → child becomes ls
+# 3. ls runs, exits
+# 4. parent bash continues</code></pre>
+
+            <p>This is why environment variables are inherited — fork copies everything.</p>
+        </section>
+
+        <section>
+            <h2>Part 2: Memory Management</h2>
+
+            <h3>2.1 Virtual Memory</h3>
+            <p>Every process thinks it has the entire address space. The OS maps virtual → physical.</p>
+            <pre><code>Process A sees:     Process B sees:     Physical RAM:
+0x0000-0xFFFF       0x0000-0xFFFF       [A's data at 0x1000]
+                                        [B's data at 0x2000]
+                                        [Shared lib at 0x3000]</code></pre>
+
+            <p>Benefits:</p>
+            <ul>
+                <li>Isolation: Processes can't access each other's memory</li>
+                <li>Simplicity: Every process starts at address 0</li>
+                <li>Overcommit: Can allocate more than physical RAM</li>
+            </ul>
+
+            <h3>2.2 Memory Layout</h3>
+            <pre><code>High addresses
+┌─────────────────┐
+│     Stack       │ ← Local variables, grows down
+├─────────────────┤
+│       ↓         │
+│                 │
+│       ↑         │
+├─────────────────┤
+│     Heap        │ ← malloc/new, grows up
+├─────────────────┤
+│     BSS         │ ← Uninitialized globals
+├─────────────────┤
+│     Data        │ ← Initialized globals
+├─────────────────┤
+│     Text        │ ← Program code
+└─────────────────┘
+Low addresses</code></pre>
+
+            <h3>2.3 The OOM Killer</h3>
+            <p>When the system runs out of memory, the OOM killer picks a process to kill.</p>
+            <pre><code># Check OOM score (higher = more likely to be killed)
+cat /proc/&lt;pid&gt;/oom_score
+
+# Adjust OOM score (-1000 to 1000)
+echo -500 > /proc/&lt;pid&gt;/oom_score_adj
+
+# Check if process was OOM killed
+dmesg | grep -i "killed process"</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>Kubernetes memory limits trigger the OOM killer. Set limits too low → constant OOM kills. Set too high → node runs out of memory. Monitor and tune.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 3: CPU Scheduling</h2>
+
+            <h3>3.1 How the Scheduler Works</h3>
+            <p>The scheduler decides which process runs on which CPU and for how long.</p>
+            <ul>
+                <li><strong>Time slice:</strong> Each process gets a turn (typically 1-10ms)</li>
+                <li><strong>Priority:</strong> Higher priority processes run more often</li>
+                <li><strong>Preemption:</strong> Scheduler can interrupt running processes</li>
+            </ul>
+
+            <h3>3.2 Nice Values</h3>
+            <pre><code># Nice values: -20 (highest priority) to 19 (lowest)
+nice -n 10 ./low_priority_job
+
+# Change running process priority
+renice -n 5 -p &lt;pid&gt;
+
+# See nice values
+ps -eo pid,ni,comm</code></pre>
+
+            <h3>3.3 Load Average</h3>
+            <pre><code># Show load average
+uptime
+# 10:30:00 up 5 days, load average: 2.50, 2.00, 1.50
+#                                   1min  5min  15min</code></pre>
+
+            <p>Load average = average number of processes wanting to run.</p>
+            <ul>
+                <li>Load 1.0 on 1 CPU = fully utilized</li>
+                <li>Load 4.0 on 4 CPUs = fully utilized</li>
+                <li>Load 8.0 on 4 CPUs = overloaded (processes waiting)</li>
+            </ul>
+
+            <div class="callout warning">
+                <h4>⚠️ Load Average Gotcha</h4>
+                <p>On Linux, load average includes processes waiting for I/O (D state). High load with low CPU usage often means disk bottleneck, not CPU.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 4: File Systems</h2>
+
+            <h3>4.1 Everything is a File</h3>
+            <p>In Unix, almost everything is represented as a file:</p>
+            <ul>
+                <li><code>/dev/sda</code> — disk device</li>
+                <li><code>/proc/cpuinfo</code> — CPU information</li>
+                <li><code>/sys/class/net/eth0</code> — network interface</li>
+                <li>Sockets, pipes, even processes</li>
+            </ul>
+
+            <h3>4.2 Inodes and File Descriptors</h3>
+            <p><strong>Inode:</strong> Metadata about a file (permissions, size, location on disk). Filename is just a pointer to an inode.</p>
+            <p><strong>File descriptor:</strong> Integer handle to an open file. Each process has its own table.</p>
+
+            <pre><code># See file descriptors for a process
+ls -la /proc/&lt;pid&gt;/fd
+
+# Check system-wide limits
+cat /proc/sys/fs/file-max
+
+# Check per-process limits
+ulimit -n</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>"Too many open files" errors mean you've hit the file descriptor limit. Increase with <code>ulimit -n</code> or in <code>/etc/security/limits.conf</code>.</p>
+            </div>
+
+            <h3>4.3 Mount Points</h3>
+            <pre><code># See all mounts
+mount
+df -h
+
+# Mount a filesystem
+mount /dev/sdb1 /mnt/data
+
+# Bind mount (mount directory to another location)
+mount --bind /data /container/data</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 5: Containers and Namespaces</h2>
+
+            <h3>5.1 What Makes a Container?</h3>
+            <p>Containers are just processes with isolation. Two Linux features make this work:</p>
+
+            <p><strong>Namespaces:</strong> Isolate what a process can see</p>
+            <table>
+                <tr><th>Namespace</th><th>Isolates</th></tr>
+                <tr><td>PID</td><td>Process IDs (container sees its own PID 1)</td></tr>
+                <tr><td>NET</td><td>Network interfaces, IPs, ports</td></tr>
+                <tr><td>MNT</td><td>Mount points (filesystem view)</td></tr>
+                <tr><td>UTS</td><td>Hostname</td></tr>
+                <tr><td>IPC</td><td>Inter-process communication</td></tr>
+                <tr><td>USER</td><td>User/group IDs</td></tr>
+            </table>
+
+            <p><strong>Cgroups:</strong> Limit what a process can use</p>
+            <ul>
+                <li>CPU limits and shares</li>
+                <li>Memory limits</li>
+                <li>I/O bandwidth</li>
+                <li>Network bandwidth</li>
+            </ul>
+
+            <pre><code># See cgroup limits for a container
+cat /sys/fs/cgroup/memory/docker/&lt;container-id&gt;/memory.limit_in_bytes
+
+# See namespace of a process
+ls -la /proc/&lt;pid&gt;/ns</code></pre>
+
+            <div class="callout success">
+                <h4>💡 Key Insight</h4>
+                <p>Containers aren't VMs. They're processes with fancy isolation. The kernel is shared. This is why containers are fast to start and lightweight.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 6: System Calls</h2>
+            <p>System calls are how programs ask the kernel to do things.</p>
+
+            <pre><code># Trace system calls
+strace ls
+
+# Common syscalls:
+# open()   - open a file
+# read()   - read from file descriptor
+# write()  - write to file descriptor
+# fork()   - create new process
+# exec()   - run new program
+# mmap()   - map memory
+# socket() - create network socket</code></pre>
+
+            <p>When debugging, <code>strace</code> shows you exactly what a program is asking the kernel to do.</p>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+
+            <div class="exercise">
+                <h4>Exercise 7.1: Process Exploration</h4>
+                <p>Pick a running service and explore:</p>
+                <ol>
+                    <li>Find its PID with <code>pgrep</code> or <code>ps</code></li>
+                    <li>Check its open files: <code>ls -la /proc/&lt;pid&gt;/fd</code></li>
+                    <li>Check its memory: <code>cat /proc/&lt;pid&gt;/status | grep Vm</code></li>
+                    <li>Check its cgroup limits (if containerized)</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>For containerized processes, cgroup info is in <code>/sys/fs/cgroup/</code> or check <code>cat /proc/&lt;pid&gt;/cgroup</code> to find the cgroup path.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Exploration</summary>
+                    <div class="solution-content">
+                        <pre><code># Find nginx PID
+$ pgrep -f nginx
+1234
+
+# Open file descriptors
+$ ls -la /proc/1234/fd
+lrwx------ 1 root root 0 ... 0 -> /dev/null
+lrwx------ 1 root root 0 ... 1 -> /var/log/nginx/access.log
+lrwx------ 1 root root 0 ... 6 -> socket:[12345]
+# Shows: stdin, stdout, and listening socket
+
+# Memory info
+$ cat /proc/1234/status | grep Vm
+VmPeak:    45000 kB  # Peak virtual memory
+VmRSS:     12000 kB  # Resident (actual RAM used)
+VmSwap:        0 kB  # Swapped out
+
+# Cgroup limits (for containerized)
+$ cat /sys/fs/cgroup/memory/docker/&lt;container-id&gt;/memory.limit_in_bytes
+536870912  # 512MB limit</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 7.2: Signal Handling</h4>
+                <p>Write a simple program that:</p>
+                <ol>
+                    <li>Catches SIGTERM and logs "Shutting down gracefully"</li>
+                    <li>Catches SIGHUP and logs "Reloading config"</li>
+                    <li>Test by sending signals with <code>kill</code></li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Python: use the <code>signal</code> module. Go: use <code>os/signal</code> package. The handler function receives the signal number.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution (Python)</summary>
+                    <div class="solution-content">
+                        <pre><code>import signal
+import time
+import sys
+
+def handle_sigterm(signum, frame):
+    print("Shutting down gracefully...")
+    sys.exit(0)
+
+def handle_sighup(signum, frame):
+    print("Reloading config...")
+
+signal.signal(signal.SIGTERM, handle_sigterm)
+signal.signal(signal.SIGHUP, handle_sighup)
+
+print(f"Running with PID {os.getpid()}")
+while True:
+    time.sleep(1)
+
+# Test: kill -SIGHUP &lt;pid&gt; → "Reloading config..."
+# Test: kill -SIGTERM &lt;pid&gt; → "Shutting down gracefully..."</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 7.3: Trigger OOM</h4>
+                <p>In a container with memory limits, write a program that allocates memory until OOM killed. Find the evidence in <code>dmesg</code>.</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Use <code>docker run --memory=50m</code> to limit memory. Check <code>docker events</code> in another terminal to see the OOM kill.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code># Run memory hog with 50MB limit
+docker run --memory=50m python:3.9 python -c "
+data = []
+while True:
+    data.append('x' * 10_000_000)
+"
+
+# Check exit code: 137 = 128 + 9 (SIGKILL) = OOM killed
+# Check dmesg:
+dmesg | grep -i "out of memory" -A 5</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 7.4: Namespace Exploration</h4>
+                <p>Run a container and compare:</p>
+                <ol>
+                    <li><code>ps aux</code> inside vs outside the container</li>
+                    <li><code>ip addr</code> inside vs outside</li>
+                    <li><code>hostname</code> inside vs outside</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Run <code>docker run -it alpine sh</code> and compare outputs to your host.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Comparison</summary>
+                    <div class="solution-content">
+                        <pre><code># Inside container
+$ docker run -it alpine sh
+/ # ps aux
+PID   USER     COMMAND
+    1 root     sh        # Only sees its own processes!
+/ # hostname
+a1b2c3d4e5f6              # Container ID
+/ # ip addr
+eth0: 172.17.0.2/16       # Container network
+
+# Outside (host): sees all processes, real hostname, bridge network
+# This is namespaces isolating the container's view</code></pre>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="project">
+            <h3>🏗️ Project: Build a Container from Scratch</h3>
+            <p>Using only Linux primitives (no Docker), create an isolated environment:</p>
+            <ol>
+                <li>Use <code>unshare</code> to create new namespaces</li>
+                <li>Use <code>chroot</code> to change root filesystem</li>
+                <li>Set up cgroup limits</li>
+                <li>Run a process in this "container"</li>
+            </ol>
+            <p>This will deeply cement your understanding of what containers really are.</p>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Further Reading</h2>
+
+            <h4>Containers Deep Dive</h4>
+            <ul>
+                <li><a href="https://jvns.ca/blog/2016/10/10/what-even-is-a-container/" target="_blank">What even is a container?</a> — Julia Evans' classic explainer</li>
+                <li><a href="https://news.ycombinator.com/item?id=36488356" target="_blank">HN: Build your own Docker with namespaces and cgroups</a> — Great discussion and resources</li>
+                <li><a href="https://ericchiang.github.io/post/containers-from-scratch/" target="_blank">Containers From Scratch</a> — Build a container in Go step by step</li>
+            </ul>
+
+            <h4>Linux Internals</h4>
+            <ul>
+                <li><a href="https://man7.org/linux/man-pages/man7/namespaces.7.html" target="_blank">namespaces(7)</a> — The definitive reference</li>
+                <li><a href="https://man7.org/linux/man-pages/man7/cgroups.7.html" target="_blank">cgroups(7)</a> — Resource limiting explained</li>
+                <li><a href="https://www.redhat.com/en/blog/introduction-linux-kernel-cgroups" target="_blank">Red Hat: Introduction to cgroups</a> — Practical examples</li>
+            </ul>
+
+            <h4>OSTEP (Free Textbook)</h4>
+            <ul>
+                <li><a href="https://pages.cs.wisc.edu/~remzi/OSTEP/" target="_blank">Operating Systems: Three Easy Pieces</a> — Free chapters:</li>
+                <li style="margin-left: 2em"><a href="https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-intro.pdf" target="_blank">Chapter 4: Processes</a></li>
+                <li style="margin-left: 2em"><a href="https://pages.cs.wisc.edu/~remzi/OSTEP/vm-intro.pdf" target="_blank">Chapter 13: Address Spaces</a></li>
+                <li style="margin-left: 2em"><a href="https://pages.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf" target="_blank">Chapter 26: Threads</a></li>
+            </ul>
+
+            <h4>Process & Signal Reference</h4>
+            <ul>
+                <li><a href="https://wizardzines.com/comics/zombie-processes/" target="_blank">Julia Evans: Zombie Processes</a> — Visual explanation</li>
+                <li><a href="https://www.brendangregg.com/blog/2024-05-02/linux-clock-drift.html" target="_blank">Linux Crisis Tools to install</a> — Before you need them</li>
+            </ul>
+        </section>
+    </main>
+
+    <nav class="module-nav">
+        <a href="06-systems-thinking.html">← Previous: Systems Thinking</a>
+        <a href="08-databases.html">Next: Databases & Storage →</a>
+    </nav>
+
+    <footer>
+        <p>Module 7 of 12 — CS for DevOps Engineers</p>
+    </footer>
+</body>
+</html>
+

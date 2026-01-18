@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Computer Architecture</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+    
+    <header>
+        <span class="module-number">Module 03</span>
+        <h1>Computer Architecture</h1>
+        <p class="subtitle">How computers actually work under the hood</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why This Matters for DevOps</h2>
+            <p>When you're debugging why your container is slow, why that query takes forever, or why adding more CPUs didn't help — you need to understand what's happening at the hardware level.</p>
+            <p>This isn't about building computers. It's about understanding them well enough to make better decisions.</p>
+        </section>
+
+        <section>
+            <h2>Part 1: The Big Picture</h2>
+            <p>A computer is fundamentally simple: it reads instructions, executes them, and moves data around. That's it.</p>
+
+            <h3>1.1 The Core Components</h3>
+            <table>
+                <tr><th>Component</th><th>What it does</th><th>DevOps Connection</th></tr>
+                <tr><td><strong>CPU</strong></td><td>Executes instructions</td><td>CPU limits in K8s, thread counts</td></tr>
+                <tr><td><strong>RAM</strong></td><td>Fast, temporary storage</td><td>Memory limits, OOM kills</td></tr>
+                <tr><td><strong>Storage</strong></td><td>Persistent storage</td><td>Disk IOPS, SSDs vs HDDs</td></tr>
+                <tr><td><strong>Network</strong></td><td>Communication</td><td>Bandwidth, latency</td></tr>
+            </table>
+
+            <h3>1.2 The Speed Hierarchy</h3>
+            <p>This is probably the most important concept in this module:</p>
+            <table>
+                <tr><th>Location</th><th>Size</th><th>Latency</th><th>Analogy</th></tr>
+                <tr><td>CPU Registers</td><td>~1 KB</td><td>~0.5 ns</td><td>Your hands</td></tr>
+                <tr><td>L1 Cache</td><td>~64 KB</td><td>~1 ns</td><td>Your desk</td></tr>
+                <tr><td>L2 Cache</td><td>~256 KB</td><td>~4 ns</td><td>Filing cabinet</td></tr>
+                <tr><td>L3 Cache</td><td>~8 MB</td><td>~20 ns</td><td>Same room</td></tr>
+                <tr><td>RAM</td><td>~32 GB</td><td>~100 ns</td><td>Down the hall</td></tr>
+                <tr><td>SSD</td><td>~1 TB</td><td>~100 μs</td><td>Different building</td></tr>
+                <tr><td>HDD</td><td>~4 TB</td><td>~10 ms</td><td>Different city</td></tr>
+                <tr><td>Network</td><td>∞</td><td>~100 ms</td><td>Different country</td></tr>
+            </table>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>SSD is 1000x slower than RAM. Network is 1,000,000x slower than RAM. This is why caching matters so much. When you add Redis between your app and Postgres, you're moving data from "different building" to "down the hall."</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 2: The CPU</h2>
+            
+            <h3>2.1 What a CPU Actually Does</h3>
+            <p>The CPU runs a simple loop forever:</p>
+            <ol>
+                <li><strong>Fetch</strong> — Get the next instruction from memory</li>
+                <li><strong>Decode</strong> — Figure out what the instruction means</li>
+                <li><strong>Execute</strong> — Do the thing (math, memory access, etc.)</li>
+                <li><strong>Repeat</strong></li>
+            </ol>
+
+            <p>This happens billions of times per second. A 3 GHz CPU does this 3 billion times per second.</p>
+
+            <h3>2.2 Cores and Threads</h3>
+            <pre><code># See your CPU info
+lscpu
+
+# Example output:
+# CPU(s):              8
+# Thread(s) per core:  2
+# Core(s) per socket:  4</code></pre>
+
+            <p><strong>Core:</strong> A physical execution unit. Can run one thing at a time.</p>
+            <p><strong>Thread (Hyper-threading):</strong> Makes one core look like two. Shares resources, so not 2x performance, more like 1.3x.</p>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>When you set <code>resources.limits.cpu: 2</code> in Kubernetes, you're saying "this pod can use 2 CPU-seconds per second." On a 4-core machine, that's 50% of total capacity. If your app can't parallelize well, more CPUs won't help.</p>
+            </div>
+
+            <h3>2.3 Context Switching</h3>
+            <p>Your 8-core machine can run thousands of processes because the OS switches between them rapidly. But switching has a cost:</p>
+            <ul>
+                <li>Save current process state (registers, program counter)</li>
+                <li>Load new process state</li>
+                <li>CPU caches become useless (new process needs different data)</li>
+            </ul>
+            <p>This is why too many containers on one host can hurt performance — constant context switching.</p>
+        </section>
+
+        <section>
+            <h2>Part 3: Memory</h2>
+
+            <h3>3.1 How Programs See Memory</h3>
+            <p>Every process thinks it has the entire memory space to itself. This is <strong>virtual memory</strong>.</p>
+            
+            <pre><code>Virtual Address (process sees)     Physical Address (RAM)
+0x0000 - 0xFFFF                →    0x7A00 - 0x7AFF
+                                    (via page table)</code></pre>
+
+            <p>The OS and CPU maintain a "page table" that translates virtual → physical addresses.</p>
+
+            <h3>3.2 Pages and Swap</h3>
+            <p>Memory is divided into <strong>pages</strong> (usually 4 KB). When RAM is full:</p>
+            <ol>
+                <li>OS picks pages that haven't been used recently</li>
+                <li>Writes them to disk (swap)</li>
+                <li>Frees that RAM for new data</li>
+                <li>If process needs that page again → slow disk read</li>
+            </ol>
+
+            <div class="callout warning">
+                <h4>⚠️ Swap Thrashing</h4>
+                <p>If you constantly swap pages in and out, your system crawls. This is why Kubernetes OOM-kills are sometimes better than letting pods swap — at least other pods keep running.</p>
+            </div>
+
+            <h3>3.3 The OOM Killer</h3>
+            <pre><code># Check if OOM killer hit your process
+dmesg | grep -i oom
+
+# Check process memory usage
+cat /proc/&lt;pid&gt;/status | grep -i vm
+
+# VmRSS = Actually in RAM
+# VmSize = Total virtual (includes not-yet-allocated)</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 4: Storage I/O</h2>
+
+            <h3>4.1 Why Disk is Slow</h3>
+            <p><strong>HDD:</strong> Physical spinning disk. To read, must:</p>
+            <ul>
+                <li>Move head to right track (seek time: ~10ms)</li>
+                <li>Wait for disk to rotate (rotational latency: ~5ms)</li>
+                <li>Read data (transfer: fast once positioned)</li>
+            </ul>
+
+            <p><strong>SSD:</strong> No moving parts. Direct electrical access. ~100x faster for random reads.</p>
+
+            <h3>4.2 Sequential vs Random I/O</h3>
+            <p>Reading 1 MB sequentially is <em>way</em> faster than reading 256 scattered 4 KB blocks.</p>
+            <table>
+                <tr><th>Pattern</th><th>HDD</th><th>SSD</th></tr>
+                <tr><td>Sequential read</td><td>~150 MB/s</td><td>~500 MB/s</td></tr>
+                <tr><td>Random read (4K)</td><td>~100 IOPS</td><td>~50,000 IOPS</td></tr>
+            </table>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>This is why databases care about IOPS. Write-ahead logs are sequential (fast). Index lookups are random (need SSDs). When you provision EBS on AWS, you're buying IOPS.</p>
+            </div>
+
+            <h3>4.3 Buffering and Caching</h3>
+            <p>The OS aggressively caches disk data in RAM:</p>
+            <pre><code># See memory breakdown
+free -h
+
+# "buff/cache" = RAM used to cache disk data
+# This is GOOD - unused RAM is wasted RAM
+# OS will free it when apps need memory</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 5: CPU Architecture Deep Dive</h2>
+
+            <h3>5.1 Instruction Pipelining</h3>
+            <p>Modern CPUs don't wait for one instruction to finish before starting the next. They overlap:</p>
+            <pre><code>Time →
+Instr 1: [Fetch][Decode][Execute][Write]
+Instr 2:        [Fetch][Decode][Execute][Write]
+Instr 3:               [Fetch][Decode][Execute][Write]</code></pre>
+            <p>This is why CPUs can execute close to 1 instruction per cycle despite each taking 4+ stages.</p>
+
+            <h3>5.2 Branch Prediction</h3>
+            <p>CPUs guess which way <code>if</code> statements will go and execute speculatively. If wrong, they throw away the work.</p>
+            <pre><code># Predictable (CPU loves this)
+for i in range(1000000):
+    if i &lt; 500000:
+        do_a()
+    else:
+        do_b()
+
+# Unpredictable (CPU hates this)
+for item in random_list:
+    if item.random_flag:  # 50/50 chance
+        do_a()
+    else:
+        do_b()</code></pre>
+
+            <div class="callout success">
+                <h4>💡 Why This Matters</h4>
+                <p>Sorted data is often faster to process than unsorted data — the branches become predictable. This isn't just algorithm theory, it's physics.</p>
+            </div>
+
+            <h3>5.3 x86 vs ARM</h3>
+            <table>
+                <tr><th>Aspect</th><th>x86 (Intel/AMD)</th><th>ARM (Apple M*, Graviton)</th></tr>
+                <tr><td>Philosophy</td><td>Complex instructions</td><td>Simple instructions</td></tr>
+                <tr><td>Power</td><td>Higher</td><td>Lower (great for laptops)</td></tr>
+                <tr><td>Server use</td><td>Traditional default</td><td>Growing (AWS Graviton is ARM)</td></tr>
+                <tr><td>Compatibility</td><td>Most Docker images</td><td>Need ARM builds</td></tr>
+            </table>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>AWS Graviton (ARM) instances can be 20% cheaper with similar performance. But your container images must be built for ARM: <code>--platform linux/arm64</code></p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 6: Putting It Together — Performance Analysis</h2>
+
+            <h3>6.1 Where is the Bottleneck?</h3>
+            <div class="decision-tree">
+Is the system slow?
+├─ CPU at 100%?
+│   ├─ YES → CPU-bound. Profile code, optimize algorithms.
+│   └─ NO → Check next
+├─ Memory usage high?
+│   ├─ Swapping? → Memory-bound. Add RAM or fix leaks.
+│   └─ NO → Check next
+├─ Disk I/O high?
+│   ├─ iostat shows high wait? → I/O bound. Use SSD, add cache.
+│   └─ NO → Check next
+└─ Network?
+    └─ Latency or bandwidth? → Network-bound. Check connection.
+            </div>
+
+            <h3>6.2 Monitoring Commands</h3>
+            <pre><code># CPU, Memory, Overview
+top
+htop
+
+# Disk I/O
+iostat -x 1
+
+# Network
+iftop
+nethogs
+
+# Everything at once
+dstat
+
+# Detailed process info
+pidstat -p &lt;pid&gt; 1</code></pre>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+
+            <div class="exercise">
+                <h4>Exercise 3.1: Memory Hierarchy Calculation</h4>
+                <p>If your app makes 10,000 random memory accesses per second, and 95% hit L3 cache (20ns) while 5% go to RAM (100ns), what's the average latency? What if 20% go to RAM?</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Weighted average: (probability₁ × latency₁) + (probability₂ × latency₂)</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <p><strong>95% cache hit:</strong></p>
+                        <pre><code>(0.95 × 20ns) + (0.05 × 100ns) = 19ns + 5ns = 24ns average</code></pre>
+                        <p><strong>80% cache hit (20% to RAM):</strong></p>
+                        <pre><code>(0.80 × 20ns) + (0.20 × 100ns) = 16ns + 20ns = 36ns average</code></pre>
+                        <p><strong>Key insight:</strong> Even a small increase in cache misses (5% → 20%) increased average latency by 50%. This is why cache efficiency matters so much. It's also why adding more RAM often helps — fewer cache misses.</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 3.2: Explore Your System</h4>
+                <p>Run these commands and understand the output:</p>
+                <ol>
+                    <li><code>lscpu</code> — What's your CPU?</li>
+                    <li><code>free -h</code> — How is memory split?</li>
+                    <li><code>cat /proc/meminfo</code> — What's cached?</li>
+                    <li><code>iostat -x 1</code> — Run during disk activity</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Look for: CPU cores vs threads (hyperthreading), L1/L2/L3 cache sizes, used vs available memory (not free!), disk utilization percentage.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Output Analysis</summary>
+                    <div class="solution-content">
+                        <pre><code># lscpu shows:
+CPU(s): 8                    # 8 logical CPUs
+Thread(s) per core: 2        # Hyperthreading enabled
+Core(s) per socket: 4        # 4 physical cores
+L1d cache: 32K               # Per-core data cache
+L2 cache: 256K               # Per-core
+L3 cache: 8192K              # Shared across cores
+
+# free -h shows:
+              total    used    free    shared  buff/cache   available
+Mem:           16G     8.2G    1.5G     350M       6.3G        7.1G
+# Don't panic at 1.5G "free" — look at "available" (7.1G)
+# buff/cache is memory Linux uses for caching that can be freed
+
+# iostat -x 1 shows:
+Device  r/s    w/s   %util
+sda     0.5    15.2   12.5%    # 12.5% utilized, plenty of headroom
+nvme0   500    1200   85.3%    # 85% utilized, potential bottleneck!</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 3.3: OOM Investigation</h4>
+                <p>Write a Python/Go program that allocates memory until it gets OOM killed. Watch with <code>watch -n1 free -h</code> in another terminal. Find the OOM message in <code>dmesg</code>.</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Just allocate in a loop. Python: append to a list. Go: append to a slice. The OOM killer message in dmesg shows which process was killed and why.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code># Python version
+data = []
+while True:
+    data.append("x" * 10_000_000)  # 10MB chunks
+    print(f"Allocated {len(data) * 10}MB")</code></pre>
+                        <pre><code># Go version
+package main
+func main() {
+    var data [][]byte
+    for {
+        data = append(data, make([]byte, 10_000_000))
+        fmt.Printf("Allocated %d MB\n", len(data)*10)
+    }
+}</code></pre>
+                        <pre><code># Check dmesg after it's killed:
+$ dmesg | grep -i "out of memory" -A 5
+Out of memory: Killed process 12345 (python) total-vm:16524032kB
+oom_score_adj: 0
+# Shows the process that was killed and memory state</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 3.4: Compare SSD vs RAM</h4>
+                <p>Time reading a 1GB file sequentially vs randomly (4KB chunks). Compare to reading from /dev/shm (RAM disk).</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Create test file with <code>dd</code>. Sequential read with <code>dd</code>. Random read with a script that seeks to random positions. /dev/shm is a tmpfs mounted in RAM.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code># Create 1GB test file (drop caches between tests)
+dd if=/dev/urandom of=/tmp/testfile bs=1M count=1024
+
+# Sequential read from SSD
+sync; echo 3 > /proc/sys/vm/drop_caches  # Clear cache
+time dd if=/tmp/testfile of=/dev/null bs=1M
+# Result: ~2 seconds (500 MB/s on good SSD)
+
+# Sequential read from RAM disk
+cp /tmp/testfile /dev/shm/testfile
+time dd if=/dev/shm/testfile of=/dev/null bs=1M
+# Result: ~0.2 seconds (5 GB/s)
+
+# Random read test (Python)
+import random, time
+with open('/tmp/testfile', 'rb') as f:
+    start = time.time()
+    for _ in range(10000):
+        f.seek(random.randint(0, 1024*1024*1024 - 4096))
+        f.read(4096)
+    print(f"10K random reads: {time.time()-start:.2f}s")
+# SSD: ~0.5s, HDD: ~100s (200x slower!)
+# RAM disk: ~0.01s</code></pre>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="project">
+            <h3>🏗️ Project: System Bottleneck Detective</h3>
+            <p>Find a slow application or service (or create one that's intentionally slow). Using only command-line tools, identify:</p>
+            <ol>
+                <li>Is it CPU, memory, disk, or network bound?</li>
+                <li>What specific resource is constrained?</li>
+                <li>What change would improve it?</li>
+            </ol>
+            <p>Document your investigation process.</p>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Further Reading</h2>
+
+            <h4>Must-Know Reference</h4>
+            <ul>
+                <li><a href="https://gist.github.com/jboner/2841832" target="_blank">Latency Numbers Every Programmer Should Know</a> — Memorize the orders of magnitude</li>
+                <li><a href="https://news.ycombinator.com/item?id=39657675" target="_blank">HN: Latency Numbers discussion (2024)</a> — Updated numbers and context</li>
+            </ul>
+
+            <h4>Visual Guides</h4>
+            <ul>
+                <li><a href="https://cpu.land/" target="_blank">Putting the "You" in CPU</a> — Excellent interactive guide to how CPUs work</li>
+                <li><a href="https://manybutfinite.com/post/anatomy-of-a-program-in-memory/" target="_blank">Anatomy of a Program in Memory</a> — How processes use memory, with diagrams</li>
+            </ul>
+
+            <h4>Brendan Gregg's Resources</h4>
+            <ul>
+                <li><a href="https://www.brendangregg.com/usemethod.html" target="_blank">The USE Method</a> — Utilization, Saturation, Errors for every resource</li>
+                <li><a href="https://www.brendangregg.com/linuxperf.html" target="_blank">Linux Performance</a> — Tools list with examples</li>
+            </ul>
+
+            <h4>Books (Specific Chapters)</h4>
+            <ul>
+                <li><strong>CS:APP</strong> (Computer Systems) — Chapter 6 "The Memory Hierarchy" is the key chapter for this module</li>
+                <li><strong>Systems Performance</strong> by Brendan Gregg — Chapter 2 "Methodologies" for systematic debugging, Chapter 6 "CPUs", Chapter 7 "Memory"</li>
+            </ul>
+
+            <h4>Courses</h4>
+            <ul>
+                <li><a href="https://www.nand2tetris.org/" target="_blank">Nand2Tetris Part 1</a> — Free course, build a computer from NAND gates (6 weeks)</li>
+            </ul>
+        </section>
+    </main>
+
+    <nav class="module-nav">
+        <a href="02-missing-semester.html">← Previous: The Missing Semester</a>
+        <a href="04-data-structures.html">Next: Data Structures →</a>
+    </nav>
+
+    <footer>
+        <p>Module 3 of 12 — CS for DevOps Engineers</p>
+    </footer>
+</body>
+</html>
+

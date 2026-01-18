@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6: Systems Thinking</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+    
+    <header>
+        <span class="module-number">Module 06</span>
+        <h1>Systems Thinking</h1>
+        <p class="subtitle">Mental models for understanding complex systems</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why Systems Thinking?</h2>
+            <p>DevOps is fundamentally about systems — not just individual components, but how they interact. A change in one place ripples through the whole system. Understanding these dynamics is what separates good engineers from great ones.</p>
+            <p>This module is different. It's about <em>how to think</em>, not what to code.</p>
+        </section>
+
+        <section>
+            <h2>Part 1: Fundamental Trade-offs</h2>
+            <p>Every engineering decision is a trade-off. There are no free lunches.</p>
+
+            <h3>1.1 The CAP Theorem</h3>
+            <p>In a distributed system, you can only have 2 of 3:</p>
+            <ul>
+                <li><strong>Consistency:</strong> Every read gets the most recent write</li>
+                <li><strong>Availability:</strong> Every request gets a response</li>
+                <li><strong>Partition tolerance:</strong> System works despite network failures</li>
+            </ul>
+            <p>Since network partitions <em>will</em> happen, you're really choosing between C and A.</p>
+
+            <table>
+                <tr><th>System</th><th>Choice</th><th>Trade-off</th></tr>
+                <tr><td>Traditional RDBMS</td><td>CP</td><td>Unavailable during partition</td></tr>
+                <tr><td>Cassandra, DynamoDB</td><td>AP</td><td>May return stale data</td></tr>
+                <tr><td>etcd, Consul</td><td>CP</td><td>Unavailable without quorum</td></tr>
+            </table>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>When Kubernetes etcd loses quorum, the cluster becomes read-only. That's CAP in action — etcd chose consistency over availability.</p>
+            </div>
+
+            <h3>1.2 Latency vs Throughput</h3>
+            <ul>
+                <li><strong>Latency:</strong> How long one request takes</li>
+                <li><strong>Throughput:</strong> How many requests per second</li>
+            </ul>
+            <p>You can often trade one for the other:</p>
+            <ul>
+                <li>Batching: Higher throughput, higher latency</li>
+                <li>Caching: Lower latency, but stale data risk</li>
+                <li>Async processing: Higher throughput, but delayed results</li>
+            </ul>
+
+            <h3>1.3 Simplicity vs Flexibility</h3>
+            <p>Simple systems are easier to understand, debug, and operate. Flexible systems handle more use cases but are harder to reason about.</p>
+            <pre><code># Simple: One way to do it
+kubectl apply -f deployment.yaml
+
+# Flexible: Many options, more complexity
+helm install myapp ./chart \
+  --set replicas=3 \
+  --set image.tag=v2 \
+  --set resources.limits.memory=512Mi \
+  --values custom-values.yaml \
+  --namespace production</code></pre>
+
+            <div class="callout warning">
+                <h4>⚠️ Complexity Creep</h4>
+                <p>Every "just one more feature" adds complexity. Complexity compounds. The system that handles every edge case is the system nobody understands.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 2: Mental Models</h2>
+
+            <h3>2.1 Feedback Loops</h3>
+            <p>Systems have feedback loops — outputs become inputs.</p>
+            
+            <p><strong>Positive feedback (amplifying):</strong></p>
+            <ul>
+                <li>Server slow → more retries → server slower → more retries → crash</li>
+                <li>This is why you need circuit breakers and backoff</li>
+            </ul>
+
+            <p><strong>Negative feedback (stabilizing):</strong></p>
+            <ul>
+                <li>CPU high → autoscaler adds pods → CPU drops → stable</li>
+                <li>This is why autoscaling works</li>
+            </ul>
+
+            <h3>2.2 Queuing Theory Basics</h3>
+            <p>When arrival rate approaches service rate, queues explode.</p>
+            <pre><code>Utilization = Arrival Rate / Service Rate
+
+At 50% utilization: Average queue length ≈ 1
+At 80% utilization: Average queue length ≈ 4
+At 90% utilization: Average queue length ≈ 9
+At 99% utilization: Average queue length ≈ 99</code></pre>
+
+            <div class="callout success">
+                <h4>💡 Key Insight</h4>
+                <p>This is why you don't run servers at 90% CPU. The math says latency will spike. Keep headroom for bursts.</p>
+            </div>
+
+            <h3>2.3 Failure Modes</h3>
+            <p>Systems fail. The question is how.</p>
+            <table>
+                <tr><th>Failure Mode</th><th>Description</th><th>Example</th></tr>
+                <tr><td>Fail-fast</td><td>Fail immediately and loudly</td><td>Crash on invalid config</td></tr>
+                <tr><td>Fail-safe</td><td>Fail to a safe state</td><td>Default to deny on auth failure</td></tr>
+                <tr><td>Fail-silent</td><td>Fail without indication</td><td>Dropped metrics (bad!)</td></tr>
+                <tr><td>Graceful degradation</td><td>Partial functionality</td><td>Serve cached data when DB down</td></tr>
+            </table>
+
+            <h3>2.4 Blast Radius</h3>
+            <p>When something fails, how much breaks?</p>
+            <ul>
+                <li><strong>Small blast radius:</strong> One pod crashes, others continue</li>
+                <li><strong>Large blast radius:</strong> Shared database corrupted, everything down</li>
+            </ul>
+            <p>Design to minimize blast radius: isolation, bulkheads, circuit breakers.</p>
+        </section>
+
+        <section>
+            <h2>Part 3: Distributed Systems Patterns</h2>
+
+            <h3>3.1 Idempotency</h3>
+            <p>An operation is idempotent if doing it twice has the same effect as doing it once.</p>
+            <pre><code># Idempotent (safe to retry)
+kubectl apply -f deployment.yaml
+PUT /users/123 {"name": "Alice"}
+
+# NOT idempotent (dangerous to retry)
+POST /orders {"item": "widget"}  # Creates duplicate orders
+counter += 1  # Increments twice</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>This is why Terraform uses <code>apply</code> not <code>create</code>. Apply is idempotent — run it 10 times, same result. Ansible's "desired state" model is the same idea.</p>
+            </div>
+
+            <h3>3.2 Eventual Consistency</h3>
+            <p>Updates propagate eventually, not immediately. The system will converge.</p>
+            <pre><code># DNS propagation: You update a record, but...
+# - Some resolvers have it cached
+# - TTL hasn't expired everywhere
+# - Eventually (minutes to hours), everyone sees the new value</code></pre>
+
+            <h3>3.3 Backpressure</h3>
+            <p>When a system is overwhelmed, push back on the source.</p>
+            <ul>
+                <li>Return 429 (Too Many Requests)</li>
+                <li>Drop messages from queue</li>
+                <li>Slow down producers</li>
+            </ul>
+            <p>Without backpressure, queues grow unbounded → OOM.</p>
+
+            <h3>3.4 Circuit Breakers</h3>
+            <p>Stop calling a failing service. Give it time to recover.</p>
+            <pre><code>States:
+CLOSED → calls go through normally
+OPEN → calls fail immediately (don't overwhelm failing service)
+HALF-OPEN → try a few calls, see if service recovered
+
+Transition:
+CLOSED → (too many failures) → OPEN
+OPEN → (timeout) → HALF-OPEN
+HALF-OPEN → (success) → CLOSED
+HALF-OPEN → (failure) → OPEN</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 4: Observability Thinking</h2>
+
+            <h3>4.1 The Three Pillars</h3>
+            <table>
+                <tr><th>Pillar</th><th>What</th><th>When to use</th></tr>
+                <tr><td><strong>Metrics</strong></td><td>Numeric measurements over time</td><td>Dashboards, alerts, trends</td></tr>
+                <tr><td><strong>Logs</strong></td><td>Discrete events with context</td><td>Debugging specific issues</td></tr>
+                <tr><td><strong>Traces</strong></td><td>Request flow across services</td><td>Understanding latency, dependencies</td></tr>
+            </table>
+
+            <h3>4.2 USE Method (for resources)</h3>
+            <p>For every resource (CPU, memory, disk, network):</p>
+            <ul>
+                <li><strong>U</strong>tilization: How busy is it? (0-100%)</li>
+                <li><strong>S</strong>aturation: How much work is queued?</li>
+                <li><strong>E</strong>rrors: Are there error events?</li>
+            </ul>
+
+            <h3>4.3 RED Method (for services)</h3>
+            <p>For every service:</p>
+            <ul>
+                <li><strong>R</strong>ate: Requests per second</li>
+                <li><strong>E</strong>rrors: Failed requests per second</li>
+                <li><strong>D</strong>uration: Latency distribution</li>
+            </ul>
+
+            <div class="callout success">
+                <h4>💡 Practical Tip</h4>
+                <p>USE for infrastructure, RED for applications. Together they cover most debugging scenarios.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 5: Thinking About Scale</h2>
+
+            <h3>5.1 Vertical vs Horizontal Scaling</h3>
+            <table>
+                <tr><th>Vertical (Scale Up)</th><th>Horizontal (Scale Out)</th></tr>
+                <tr><td>Bigger machine</td><td>More machines</td></tr>
+                <tr><td>Simple, no code changes</td><td>Requires distributed design</td></tr>
+                <tr><td>Has limits (biggest machine)</td><td>Theoretically unlimited</td></tr>
+                <tr><td>Single point of failure</td><td>Redundancy built-in</td></tr>
+            </table>
+
+            <h3>5.2 Stateless vs Stateful</h3>
+            <p>Stateless services are easy to scale — just add more instances.</p>
+            <p>Stateful services are hard — you need to think about:</p>
+            <ul>
+                <li>Where does state live?</li>
+                <li>How is it replicated?</li>
+                <li>What happens during failover?</li>
+            </ul>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>This is why Kubernetes has Deployments (stateless, easy) and StatefulSets (stateful, complex). Push state to managed services (RDS, S3) when possible.</p>
+            </div>
+
+            <h3>5.3 Back-of-Envelope Calculations</h3>
+            <p>Quick estimates to sanity-check designs:</p>
+            <pre><code># How much storage for 1 year of logs?
+# 1000 requests/sec × 1KB/request × 86400 sec/day × 365 days
+# = 31.5 TB/year
+
+# Can one Postgres handle our load?
+# 10,000 simple queries/sec is reasonable
+# 1,000 complex queries/sec is pushing it
+# If you need more, think about read replicas or sharding</code></pre>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+
+            <div class="exercise">
+                <h4>Exercise 6.1: Identify the Trade-off</h4>
+                <p>For each scenario, identify what's being traded:</p>
+                <ol>
+                    <li>Adding a Redis cache in front of Postgres</li>
+                    <li>Using async job queues instead of synchronous processing</li>
+                    <li>Deploying to multiple regions</li>
+                    <li>Using microservices instead of a monolith</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Think: What do you gain? What do you lose? Consider: latency, consistency, complexity, cost, reliability.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <ol>
+                            <li><strong>Redis cache:</strong> Trading <em>consistency</em> (cache can be stale) for <em>latency</em> (faster reads) and <em>throughput</em> (less DB load). Also adds <em>complexity</em> (cache invalidation).</li>
+                            <li><strong>Async queues:</strong> Trading <em>immediate feedback</em> for <em>resilience</em> (retries, backpressure) and <em>scalability</em>. Adds <em>eventual consistency</em> and <em>debugging complexity</em>.</li>
+                            <li><strong>Multi-region:</strong> Trading <em>simplicity</em> and <em>cost</em> for <em>availability</em> and <em>latency</em> for global users. Adds data consistency challenges.</li>
+                            <li><strong>Microservices:</strong> Trading <em>development simplicity</em> for <em>deployment flexibility</em> and <em>team autonomy</em>. Adds <em>operational complexity</em> (networking, observability).</li>
+                        </ol>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 6.2: Failure Mode Analysis</h4>
+                <p>Pick a system you operate. For each component, answer:</p>
+                <ol>
+                    <li>How does it fail?</li>
+                    <li>What's the blast radius?</li>
+                    <li>How do you detect the failure?</li>
+                    <li>How do you recover?</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Common failure modes: crash, hang, partial failure, performance degradation, data corruption, network partition.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Analysis</summary>
+                    <div class="solution-content">
+                        <p><strong>Component: Redis Cache</strong></p>
+                        <ol>
+                            <li><strong>How it fails:</strong> OOM (out of memory), network unreachable, master-replica sync issues, slow commands blocking</li>
+                            <li><strong>Blast radius:</strong> All services using cache see increased latency or errors. If cache-aside pattern: fallback to DB (slower but works). If cache-as-primary: data loss possible.</li>
+                            <li><strong>Detection:</strong> Latency alerts, connection error rate, memory usage alerts, missing Redis metrics</li>
+                            <li><strong>Recovery:</strong> Automatic: Redis Sentinel failover (30-60s). Manual: restart, scale up memory, eviction policy change</li>
+                        </ol>
+                        <p>Do this for every critical component. You'll be surprised what you haven't thought about.</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 6.3: Back-of-Envelope</h4>
+                <p>Estimate for your current system:</p>
+                <ol>
+                    <li>Requests per day</li>
+                    <li>Storage growth per month</li>
+                    <li>Cost per request</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Start from what you know (monthly bill, peak RPS, disk usage) and work backwards. Round to orders of magnitude.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Calculation</summary>
+                    <div class="solution-content">
+                        <pre><code># Requests per day
+Peak RPS: 100 requests/second
+Average: ~50% of peak = 50 RPS
+Per day: 50 × 60 × 60 × 24 = 4.3 million requests
+
+# Storage growth
+Logs: 1KB average × 4.3M requests = 4.3GB/day logs
+Database: 500 new rows/day × 2KB = 1MB/day
+Total: ~130GB/month (mostly logs)
+
+# Cost per request
+Monthly infra: $5,000
+Monthly requests: 4.3M × 30 = 130M
+Cost per request: $5000 / 130M = $0.00004 (0.004 cents)</code></pre>
+                        <p>These estimates help sanity-check: "Adding this feature costs 2x per request" or "We can't afford to store this data for 1 year."</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="project">
+            <h3>🏗️ Project: System Design Document</h3>
+            <p>Pick a system you work with and write a design document that includes:</p>
+            <ol>
+                <li>Architecture diagram</li>
+                <li>Key trade-offs made and why</li>
+                <li>Failure modes and mitigations</li>
+                <li>Scaling strategy</li>
+                <li>Observability approach (what metrics, logs, traces)</li>
+            </ol>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Further Reading</h2>
+
+            <h4>CAP Theorem & Distributed Systems</h4>
+            <ul>
+                <li><a href="https://martin.kleppmann.com/2015/05/11/please-stop-calling-databases-cp-or-ap.html" target="_blank">Please stop calling databases CP or AP</a> — Martin Kleppmann clarifies CAP nuances</li>
+                <li><a href="https://jepsen.io/consistency" target="_blank">Jepsen: Consistency Models</a> — Visual hierarchy of consistency levels</li>
+            </ul>
+
+            <h4>Google SRE Book (Key Chapters)</h4>
+            <ul>
+                <li><a href="https://sre.google/sre-book/embracing-risk/" target="_blank">Chapter 3: Embracing Risk</a> — Error budgets explained</li>
+                <li><a href="https://sre.google/sre-book/service-level-objectives/" target="_blank">Chapter 4: Service Level Objectives</a> — SLIs, SLOs, SLAs</li>
+                <li><a href="https://sre.google/sre-book/eliminating-toil/" target="_blank">Chapter 5: Eliminating Toil</a> — What to automate</li>
+            </ul>
+
+            <h4>Methodologies</h4>
+            <ul>
+                <li><a href="https://www.brendangregg.com/usemethod.html" target="_blank">The USE Method</a> — Utilization, Saturation, Errors for every resource</li>
+                <li><a href="https://www.brendangregg.com/tsamethod.html" target="_blank">The TSA Method</a> — Thread State Analysis for applications</li>
+            </ul>
+
+            <h4>Books (Specific Chapters)</h4>
+            <ul>
+                <li><strong>Release It!</strong> 2nd Ed — Chapter 4 "Stability Patterns" (circuit breakers, bulkheads), Chapter 5 "Stability Anti-Patterns"</li>
+                <li><strong>Thinking in Systems</strong> by Meadows — First 3 chapters are the core concepts (~60 pages)</li>
+            </ul>
+
+            <h4>Quick Reads</h4>
+            <ul>
+                <li><a href="https://github.com/binhnguyennus/awesome-scalability" target="_blank">Awesome Scalability</a> — Curated list of scalability articles and talks</li>
+            </ul>
+        </section>
+    </main>
+
+    <nav class="module-nav">
+        <a href="05-algorithms.html">← Previous: Algorithms</a>
+        <a href="07-operating-systems.html">Next: Operating Systems →</a>
+    </nav>
+
+    <footer>
+        <p>Module 6 of 12 — CS for DevOps Engineers</p>
+    </footer>
+</body>
+</html>
+

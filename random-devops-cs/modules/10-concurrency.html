@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 10: Concurrency</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+    
+    <header>
+        <span class="module-number">Module 10</span>
+        <h1>Concurrency</h1>
+        <p class="subtitle">Threads, async, and the art of doing many things at once</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why Concurrency Matters</h2>
+            <p>Modern systems handle thousands of requests simultaneously. Understanding concurrency helps you:</p>
+            <ul>
+                <li>Debug race conditions and deadlocks</li>
+                <li>Choose the right concurrency model for your workload</li>
+                <li>Understand why your async code behaves unexpectedly</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Part 1: Concurrency vs Parallelism</h2>
+
+            <h3>1.1 Definitions</h3>
+            <p><strong>Concurrency:</strong> Dealing with multiple things at once (structure)</p>
+            <p><strong>Parallelism:</strong> Doing multiple things at once (execution)</p>
+
+            <pre><code># Concurrency: One barista, multiple orders
+# - Takes order 1
+# - Starts brewing order 1
+# - Takes order 2 while order 1 brews
+# - Finishes order 1
+# - Starts order 2...
+
+# Parallelism: Multiple baristas, multiple orders
+# - Barista A handles order 1
+# - Barista B handles order 2 simultaneously</code></pre>
+
+            <p>You can have concurrency without parallelism (single CPU, time-slicing). Parallelism requires multiple CPUs.</p>
+
+            <h3>1.2 Why Concurrency is Hard</h3>
+            <p>When multiple threads access shared state, order matters:</p>
+            <pre><code># Two threads incrementing counter
+# Expected: counter = 2
+# What can happen:
+
+Thread A: read counter (0)
+Thread B: read counter (0)
+Thread A: write counter (1)
+Thread B: write counter (1)  # Overwrites A's work!
+
+# Result: counter = 1 (lost update)</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 2: Threads</h2>
+
+            <h3>2.1 What is a Thread?</h3>
+            <p>A thread is a unit of execution within a process. Threads share:</p>
+            <ul>
+                <li>Memory space (heap)</li>
+                <li>File descriptors</li>
+                <li>Code</li>
+            </ul>
+            <p>Threads have their own:</p>
+            <ul>
+                <li>Stack</li>
+                <li>Registers</li>
+                <li>Program counter</li>
+            </ul>
+
+            <pre><code># Python threading (limited by GIL for CPU work)
+import threading
+
+def worker(name):
+    print(f"Worker {name} starting")
+    # do work
+    print(f"Worker {name} done")
+
+threads = []
+for i in range(5):
+    t = threading.Thread(target=worker, args=(i,))
+    threads.append(t)
+    t.start()
+
+for t in threads:
+    t.join()  # Wait for all to complete</code></pre>
+
+            <div class="callout warning">
+                <h4>⚠️ Python's GIL</h4>
+                <p>Python's Global Interpreter Lock means only one thread executes Python bytecode at a time. Threads help with I/O-bound work, not CPU-bound. For CPU parallelism, use <code>multiprocessing</code>.</p>
+            </div>
+
+            <h3>2.2 Thread Pools</h3>
+            <p>Creating threads is expensive. Thread pools reuse a fixed number of threads.</p>
+            <pre><code>from concurrent.futures import ThreadPoolExecutor
+
+def fetch_url(url):
+    # ... fetch and return data
+    pass
+
+urls = ["http://a.com", "http://b.com", "http://c.com"]
+
+with ThreadPoolExecutor(max_workers=10) as executor:
+    results = executor.map(fetch_url, urls)</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>Web servers use thread pools. When you configure <code>worker_connections</code> in nginx or <code>max_threads</code> in Gunicorn, you're sizing the pool. Too few = requests queue. Too many = memory exhaustion.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 3: Synchronization Primitives</h2>
+
+            <h3>3.1 Mutex (Lock)</h3>
+            <p>Only one thread can hold the lock at a time.</p>
+            <pre><code>import threading
+
+counter = 0
+lock = threading.Lock()
+
+def increment():
+    global counter
+    with lock:  # Acquire lock, release when done
+        counter += 1  # Only one thread here at a time</code></pre>
+
+            <h3>3.2 Semaphore</h3>
+            <p>Like a lock, but allows N threads through.</p>
+            <pre><code># Limit concurrent database connections
+db_semaphore = threading.Semaphore(10)
+
+def query_database():
+    with db_semaphore:  # At most 10 threads here
+        # ... execute query
+        pass</code></pre>
+
+            <h3>3.3 Condition Variables</h3>
+            <p>Wait for a condition to become true.</p>
+            <pre><code>queue = []
+condition = threading.Condition()
+
+def producer():
+    with condition:
+        queue.append(item)
+        condition.notify()  # Wake up a waiting consumer
+
+def consumer():
+    with condition:
+        while not queue:
+            condition.wait()  # Sleep until notified
+        item = queue.pop(0)</code></pre>
+
+            <h3>3.4 Common Problems</h3>
+            <table>
+                <tr><th>Problem</th><th>Description</th><th>Solution</th></tr>
+                <tr><td>Deadlock</td><td>Threads waiting for each other forever</td><td>Lock ordering, timeouts</td></tr>
+                <tr><td>Race condition</td><td>Result depends on timing</td><td>Proper synchronization</td></tr>
+                <tr><td>Starvation</td><td>Thread never gets resources</td><td>Fair locks, priority</td></tr>
+                <tr><td>Livelock</td><td>Threads active but no progress</td><td>Backoff, randomization</td></tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Part 4: Async/Await</h2>
+
+            <h3>4.1 The Event Loop Model</h3>
+            <p>Instead of threads, use a single thread with non-blocking I/O.</p>
+            <pre><code># Traditional (blocking)
+data = fetch_from_database()  # Thread waits here
+process(data)
+
+# Async (non-blocking)
+data = await fetch_from_database()  # Thread does other work
+process(data)</code></pre>
+
+            <p>The event loop:</p>
+            <ol>
+                <li>Start async operation (e.g., network request)</li>
+                <li>Register callback for when it completes</li>
+                <li>Do other work while waiting</li>
+                <li>When operation completes, resume</li>
+            </ol>
+
+            <h3>4.2 Python Async</h3>
+            <pre><code>import asyncio
+import aiohttp
+
+async def fetch_url(session, url):
+    async with session.get(url) as response:
+        return await response.text()
+
+async def main():
+    urls = ["http://a.com", "http://b.com", "http://c.com"]
+    async with aiohttp.ClientSession() as session:
+        # Fetch all URLs concurrently
+        tasks = [fetch_url(session, url) for url in urls]
+        results = await asyncio.gather(*tasks)
+    return results
+
+asyncio.run(main())</code></pre>
+
+            <div class="callout success">
+                <h4>💡 When to Use What</h4>
+                <ul style="margin-bottom:0">
+                    <li><strong>Threads:</strong> I/O-bound work, simple code, blocking libraries</li>
+                    <li><strong>Async:</strong> Many concurrent I/O operations, high connection counts</li>
+                    <li><strong>Multiprocessing:</strong> CPU-bound work, true parallelism</li>
+                </ul>
+            </div>
+
+            <h3>4.3 Common Async Pitfalls</h3>
+            <pre><code># WRONG: Blocking call in async function
+async def bad():
+    time.sleep(1)  # Blocks the entire event loop!
+
+# RIGHT: Use async sleep
+async def good():
+    await asyncio.sleep(1)  # Yields to event loop
+
+# WRONG: Forgetting await
+async def bad():
+    result = fetch_data()  # Returns coroutine, doesn't execute!
+
+# RIGHT: Await the coroutine
+async def good():
+    result = await fetch_data()</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 5: Concurrency Patterns</h2>
+
+            <h3>5.1 Producer-Consumer</h3>
+            <pre><code>import asyncio
+
+async def producer(queue):
+    for i in range(10):
+        await queue.put(f"item-{i}")
+        await asyncio.sleep(0.1)
+    await queue.put(None)  # Signal done
+
+async def consumer(queue):
+    while True:
+        item = await queue.get()
+        if item is None:
+            break
+        print(f"Processing {item}")
+
+async def main():
+    queue = asyncio.Queue(maxsize=5)  # Backpressure!
+    await asyncio.gather(
+        producer(queue),
+        consumer(queue)
+    )</code></pre>
+
+            <h3>5.2 Worker Pool</h3>
+            <pre><code>async def worker(name, queue):
+    while True:
+        task = await queue.get()
+        if task is None:
+            break
+        await process(task)
+        queue.task_done()
+
+async def main():
+    queue = asyncio.Queue()
+
+    # Start workers
+    workers = [
+        asyncio.create_task(worker(f"worker-{i}", queue))
+        for i in range(5)
+    ]
+
+    # Add tasks
+    for task in tasks:
+        await queue.put(task)
+
+    # Wait for all tasks to complete
+    await queue.join()
+
+    # Stop workers
+    for _ in workers:
+        await queue.put(None)</code></pre>
+
+            <h3>5.3 Rate Limiting</h3>
+            <pre><code>import asyncio
+from asyncio import Semaphore
+
+# Limit to 10 concurrent requests
+semaphore = Semaphore(10)
+
+async def rate_limited_fetch(url):
+    async with semaphore:
+        return await fetch(url)
+
+# All 100 URLs will be fetched, but max 10 at a time
+results = await asyncio.gather(*[
+    rate_limited_fetch(url) for url in urls
+])</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 6: Go's Concurrency Model</h2>
+            <p>Go has excellent concurrency primitives worth understanding.</p>
+
+            <h3>6.1 Goroutines</h3>
+            <pre><code>// Lightweight threads managed by Go runtime
+go func() {
+    // This runs concurrently
+    doWork()
+}()
+
+// Can have thousands of goroutines (unlike OS threads)</code></pre>
+
+            <h3>6.2 Channels</h3>
+            <pre><code>// Channels for communication between goroutines
+ch := make(chan string)
+
+go func() {
+    ch <- "hello"  // Send
+}()
+
+msg := <-ch  // Receive (blocks until message available)
+
+// Buffered channel
+ch := make(chan string, 10)  // Can hold 10 messages</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>Many DevOps tools are written in Go (Kubernetes, Docker, Terraform) because of its excellent concurrency. Understanding channels helps when debugging or extending these tools.</p>
+            </div>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+
+            <div class="exercise">
+                <h4>Exercise 10.1: Race Condition</h4>
+                <p>Write code that demonstrates a race condition (counter increment without locking). Run it many times and observe inconsistent results. Then fix it with a lock.</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Use threading module in Python. Create multiple threads incrementing a shared counter. Run 10+ times to see different results each time.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code>import threading
+
+# BUGGY VERSION - Race condition
+counter = 0
+
+def increment():
+    global counter
+    for _ in range(100000):
+        counter += 1  # Not atomic!
+
+threads = [threading.Thread(target=increment) for _ in range(5)]
+for t in threads: t.start()
+for t in threads: t.join()
+print(f"Expected: 500000, Got: {counter}")  # Usually less!
+
+# FIXED VERSION - With lock
+counter = 0
+lock = threading.Lock()
+
+def increment_safe():
+    global counter
+    for _ in range(100000):
+        with lock:
+            counter += 1
+
+# Now always prints 500000</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 10.2: Async Web Scraper</h4>
+                <p>Write an async Python script that fetches 10 URLs concurrently. Compare the time to fetching them sequentially.</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Use <code>aiohttp</code> for async HTTP. Use <code>asyncio.gather()</code> to run multiple coroutines concurrently. Time both approaches with <code>time.time()</code>.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code>import asyncio
+import aiohttp
+import time
+
+urls = [f"https://httpbin.org/delay/1" for _ in range(10)]
+
+# Sequential (slow)
+async def fetch_sequential():
+    async with aiohttp.ClientSession() as session:
+        for url in urls:
+            async with session.get(url) as resp:
+                await resp.text()
+
+# Concurrent (fast)
+async def fetch_concurrent():
+    async with aiohttp.ClientSession() as session:
+        tasks = [session.get(url) for url in urls]
+        responses = await asyncio.gather(*tasks)
+        for resp in responses:
+            await resp.text()
+
+# Compare
+start = time.time()
+asyncio.run(fetch_sequential())
+print(f"Sequential: {time.time()-start:.1f}s")  # ~10s
+
+start = time.time()
+asyncio.run(fetch_concurrent())
+print(f"Concurrent: {time.time()-start:.1f}s")  # ~1s</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 10.3: Producer-Consumer</h4>
+                <p>Implement a producer-consumer pattern where:</p>
+                <ol>
+                    <li>Producer generates tasks at random intervals</li>
+                    <li>Multiple consumers process tasks</li>
+                    <li>Queue has a max size (backpressure)</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Use <code>asyncio.Queue(maxsize=N)</code>. Producer uses <code>await queue.put()</code> (blocks when full). Use sentinel value (None) to signal consumers to stop.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code>import asyncio
+import random
+
+async def producer(queue, n_items):
+    for i in range(n_items):
+        await asyncio.sleep(random.uniform(0.1, 0.5))
+        await queue.put(f"task-{i}")  # Blocks if queue full!
+        print(f"Produced task-{i}, queue size: {queue.qsize()}")
+
+    # Signal consumers to stop
+    for _ in range(3):  # Number of consumers
+        await queue.put(None)
+
+async def consumer(name, queue):
+    while True:
+        task = await queue.get()
+        if task is None:
+            break
+        await asyncio.sleep(random.uniform(0.2, 0.8))  # Simulate work
+        print(f"{name} processed {task}")
+
+async def main():
+    queue = asyncio.Queue(maxsize=5)  # Backpressure!
+
+    await asyncio.gather(
+        producer(queue, 20),
+        consumer("Consumer-1", queue),
+        consumer("Consumer-2", queue),
+        consumer("Consumer-3", queue),
+    )
+
+asyncio.run(main())</code></pre>
+                        <p>Watch the queue size — when it hits 5, producer blocks until consumers catch up. This is backpressure in action.</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="project">
+            <h3>🏗️ Project: Concurrent Health Checker</h3>
+            <p>Build a service health checker that:</p>
+            <ol>
+                <li>Checks multiple endpoints concurrently</li>
+                <li>Respects rate limits per endpoint</li>
+                <li>Retries with exponential backoff</li>
+                <li>Reports results as they complete</li>
+                <li>Has configurable concurrency limits</li>
+            </ol>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Further Reading</h2>
+
+            <h4>Must-Watch Talks</h4>
+            <ul>
+                <li><a href="https://www.youtube.com/watch?v=f6kdp27TYZs" target="_blank">Go Concurrency Patterns (2012)</a> — Rob Pike at Google I/O, 52 min. The foundational talk.</li>
+                <li><a href="https://www.youtube.com/watch?v=QDDwwePbDtw" target="_blank">Advanced Go Concurrency Patterns (2013)</a> — Follow-up talk, 34 min</li>
+                <li><a href="https://www.youtube.com/watch?v=cN_DpYBzKso" target="_blank">Concurrency is not Parallelism</a> — Rob Pike, 31 min. Understand the difference.</li>
+            </ul>
+
+            <h4>Python Async</h4>
+            <ul>
+                <li><a href="https://realpython.com/async-io-python/" target="_blank">Async IO in Python: A Complete Walkthrough</a> — Start here</li>
+                <li><a href="https://news.ycombinator.com/item?id=23289563" target="_blank">HN: Guide to Concurrency in Python with Asyncio</a> — Pitfalls discussed</li>
+                <li><a href="https://news.ycombinator.com/item?id=45106189" target="_blank">HN: Python has had async for 10 years – why isn't it more popular?</a> — When to use vs threads</li>
+            </ul>
+
+            <h4>Go Concurrency</h4>
+            <ul>
+                <li><a href="https://go.dev/blog/pipelines" target="_blank">Go Concurrency Patterns: Pipelines</a> — Official blog post</li>
+                <li><a href="https://go.dev/talks/2012/concurrency.slide" target="_blank">Go Concurrency Patterns (slides)</a> — Companion to Rob Pike's talk</li>
+            </ul>
+
+            <h4>Books (Specific Chapters)</h4>
+            <ul>
+                <li><strong>Java Concurrency in Practice</strong> — Chapter 1-3 cover fundamentals that apply to any language. Chapter 5 on "Building Blocks" is practical.</li>
+            </ul>
+
+            <h4>Quick Reference</h4>
+            <ul>
+                <li><a href="https://github.com/golang/go/wiki/LearnConcurrency" target="_blank">Go Wiki: Learn Concurrency</a> — Curated resources</li>
+            </ul>
+        </section>
+    </main>
+
+    <nav class="module-nav">
+        <a href="09-networking.html">← Previous: Networking</a>
+        <a href="11-security.html">Next: Security →</a>
+    </nav>
+
+    <footer>
+        <p>Module 10 of 12 — CS for DevOps Engineers</p>
+    </footer>
+</body>
+</html>
+

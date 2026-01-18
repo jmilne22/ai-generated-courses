@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 12: Software Architecture</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+    
+    <header>
+        <span class="module-number">Module 12</span>
+        <h1>Software Architecture</h1>
+        <p class="subtitle">Design patterns, system design, and architectural thinking</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why Architecture Matters for DevOps</h2>
+            <p>You deploy and operate systems designed by others. Understanding architectural patterns helps you:</p>
+            <ul>
+                <li>Anticipate operational challenges</li>
+                <li>Ask the right questions during design reviews</li>
+                <li>Debug issues faster by understanding system structure</li>
+                <li>Contribute to architectural decisions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Part 1: Architectural Patterns</h2>
+
+            <h3>1.1 Monolith</h3>
+            <p>Single deployable unit containing all functionality.</p>
+            <pre><code>┌─────────────────────────────────┐
+│           Monolith              │
+│  ┌─────┐ ┌─────┐ ┌─────────┐   │
+│  │Users│ │Orders│ │Inventory│   │
+│  └─────┘ └─────┘ └─────────┘   │
+│         Shared Database         │
+└─────────────────────────────────┘</code></pre>
+
+            <table>
+                <tr><th>Pros</th><th>Cons</th></tr>
+                <tr><td>Simple to develop initially</td><td>Hard to scale parts independently</td></tr>
+                <tr><td>Easy to deploy (one thing)</td><td>Long build/deploy times as it grows</td></tr>
+                <tr><td>No network latency between components</td><td>One bug can take down everything</td></tr>
+                <tr><td>Simple transactions</td><td>Technology lock-in</td></tr>
+            </table>
+
+            <div class="callout success">
+                <h4>💡 Monoliths Aren't Bad</h4>
+                <p>Start with a monolith. It's simpler. Extract services when you have a clear reason (scale, team boundaries, different tech needs). Premature microservices cause more problems than they solve.</p>
+            </div>
+
+            <h3>1.2 Microservices</h3>
+            <p>Multiple small, independent services communicating over the network.</p>
+            <pre><code>┌───────┐    ┌───────┐    ┌───────────┐
+│ Users │    │Orders │    │ Inventory │
+│Service│    │Service│    │  Service  │
+└───┬───┘    └───┬───┘    └─────┬─────┘
+    │            │              │
+    └────────────┼──────────────┘
+                 │
+         Message Queue / API Gateway</code></pre>
+
+            <table>
+                <tr><th>Pros</th><th>Cons</th></tr>
+                <tr><td>Scale services independently</td><td>Network complexity</td></tr>
+                <tr><td>Deploy services independently</td><td>Distributed transactions are hard</td></tr>
+                <tr><td>Team autonomy</td><td>Operational overhead</td></tr>
+                <tr><td>Technology flexibility</td><td>Debugging across services is hard</td></tr>
+            </table>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>Microservices trade development complexity for operational complexity. You need: service discovery, distributed tracing, centralized logging, circuit breakers. If you don't have these, microservices will hurt.</p>
+            </div>
+
+            <h3>1.3 Event-Driven Architecture</h3>
+            <p>Services communicate through events, not direct calls.</p>
+            <pre><code>Order Service                    Inventory Service
+     │                                  │
+     │── OrderCreated event ──>         │
+     │                          (updates stock)
+     │                                  │
+     │         <── StockReserved event ─│</code></pre>
+
+            <p><strong>Benefits:</strong> Loose coupling, async processing, better resilience</p>
+            <p><strong>Challenges:</strong> Eventual consistency, event ordering, debugging</p>
+
+            <h3>1.4 Serverless</h3>
+            <p>Functions as a Service — no servers to manage.</p>
+            <pre><code># AWS Lambda example
+def handler(event, context):
+    # Process event
+    return {"statusCode": 200, "body": "OK"}</code></pre>
+
+            <table>
+                <tr><th>Pros</th><th>Cons</th></tr>
+                <tr><td>No server management</td><td>Cold start latency</td></tr>
+                <tr><td>Pay per execution</td><td>Vendor lock-in</td></tr>
+                <tr><td>Auto-scaling</td><td>Limited execution time</td></tr>
+                <tr><td>Great for event-driven</td><td>Debugging is harder</td></tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Part 2: Design Patterns</h2>
+
+            <h3>2.1 API Gateway</h3>
+            <p>Single entry point for all clients. Handles cross-cutting concerns.</p>
+            <pre><code>Client → API Gateway → Service A
+                    → Service B
+                    → Service C
+
+Gateway handles:
+- Authentication
+- Rate limiting
+- Request routing
+- Response aggregation
+- SSL termination</code></pre>
+
+            <h3>2.2 Service Mesh</h3>
+            <p>Infrastructure layer for service-to-service communication.</p>
+            <pre><code>┌─────────────────┐    ┌─────────────────┐
+│   Service A     │    │   Service B     │
+│  ┌───────────┐  │    │  ┌───────────┐  │
+│  │    App    │  │    │  │    App    │  │
+│  └─────┬─────┘  │    │  └─────┬─────┘  │
+│  ┌─────┴─────┐  │    │  ┌─────┴─────┐  │
+│  │  Sidecar  │◄─┼────┼─►│  Sidecar  │  │
+│  │  (Envoy)  │  │    │  │  (Envoy)  │  │
+│  └───────────┘  │    │  └───────────┘  │
+└─────────────────┘    └─────────────────┘
+
+Sidecar handles: mTLS, retries, circuit breaking, observability</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>Istio, Linkerd are service meshes. They add operational complexity but provide powerful features. Don't add a service mesh until you need it.</p>
+            </div>
+
+            <h3>2.3 CQRS (Command Query Responsibility Segregation)</h3>
+            <p>Separate read and write models.</p>
+            <pre><code>Writes → Command Model → Event Store
+                              ↓
+                         Projections
+                              ↓
+Reads  → Query Model  ← Read Database</code></pre>
+
+            <p><strong>When to use:</strong> High read/write ratio, complex queries, event sourcing</p>
+
+            <h3>2.4 Saga Pattern</h3>
+            <p>Manage distributed transactions through a sequence of local transactions.</p>
+            <pre><code>Order Saga:
+1. Create Order (Order Service)
+2. Reserve Inventory (Inventory Service)
+3. Process Payment (Payment Service)
+4. Ship Order (Shipping Service)
+
+If step 3 fails:
+- Compensate step 2 (release inventory)
+- Compensate step 1 (cancel order)</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 3: System Design Concepts</h2>
+
+            <h3>3.1 Caching Strategies</h3>
+            <table>
+                <tr><th>Strategy</th><th>Description</th><th>Use When</th></tr>
+                <tr><td>Cache-Aside</td><td>App checks cache, loads from DB if miss</td><td>General purpose</td></tr>
+                <tr><td>Write-Through</td><td>Write to cache and DB together</td><td>Need consistency</td></tr>
+                <tr><td>Write-Behind</td><td>Write to cache, async write to DB</td><td>High write volume</td></tr>
+                <tr><td>Read-Through</td><td>Cache loads from DB on miss</td><td>Simplify app code</td></tr>
+            </table>
+
+            <pre><code># Cache-Aside pattern
+def get_user(user_id):
+    user = cache.get(f"user:{user_id}")
+    if user is None:
+        user = db.query("SELECT * FROM users WHERE id = ?", user_id)
+        cache.set(f"user:{user_id}", user, ttl=300)
+    return user</code></pre>
+
+            <h3>3.2 Database Scaling</h3>
+            <ul>
+                <li><strong>Read Replicas:</strong> Scale reads by adding replicas</li>
+                <li><strong>Sharding:</strong> Split data across multiple databases</li>
+                <li><strong>Partitioning:</strong> Split tables within a database</li>
+            </ul>
+
+            <pre><code># Sharding by user_id
+shard = hash(user_id) % num_shards
+db = get_shard_connection(shard)
+db.query("SELECT * FROM orders WHERE user_id = ?", user_id)</code></pre>
+
+            <h3>3.3 Message Queues</h3>
+            <p>Decouple producers and consumers. Handle spikes. Enable async processing.</p>
+            <pre><code>Producer → Queue → Consumer(s)
+
+Benefits:
+- Buffer during traffic spikes
+- Retry failed processing
+- Scale consumers independently
+- Decouple services</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>Monitor queue depth. Growing queue = consumers can't keep up. Dead letter queues catch failed messages. Set up alerts for both.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 4: Reliability Patterns</h2>
+
+            <h3>4.1 Circuit Breaker</h3>
+            <pre><code>class CircuitBreaker:
+    def __init__(self, failure_threshold=5, reset_timeout=30):
+        self.failures = 0
+        self.state = "CLOSED"
+        self.last_failure_time = None
+
+    def call(self, func):
+        if self.state == "OPEN":
+            if time.time() - self.last_failure_time > self.reset_timeout:
+                self.state = "HALF_OPEN"
+            else:
+                raise CircuitOpenError()
+
+        try:
+            result = func()
+            self.on_success()
+            return result
+        except Exception as e:
+            self.on_failure()
+            raise</code></pre>
+
+            <h3>4.2 Retry with Backoff</h3>
+            <pre><code>def retry_with_backoff(func, max_retries=3, base_delay=1):
+    for attempt in range(max_retries):
+        try:
+            return func()
+        except TransientError:
+            if attempt == max_retries - 1:
+                raise
+            delay = base_delay * (2 ** attempt)  # Exponential
+            delay += random.uniform(0, delay * 0.1)  # Jitter
+            time.sleep(delay)</code></pre>
+
+            <h3>4.3 Bulkhead</h3>
+            <p>Isolate failures. Don't let one slow dependency take down everything.</p>
+            <pre><code># Separate thread pools for different dependencies
+payment_pool = ThreadPoolExecutor(max_workers=10)
+inventory_pool = ThreadPoolExecutor(max_workers=10)
+
+# If payment service is slow, only payment_pool is affected
+# inventory calls continue normally</code></pre>
+
+            <h3>4.4 Timeout</h3>
+            <p>Always set timeouts. Waiting forever is never the right answer.</p>
+            <pre><code># Python requests
+response = requests.get(url, timeout=5)  # 5 second timeout
+
+# Kubernetes readiness probe
+readinessProbe:
+  httpGet:
+    path: /health
+  timeoutSeconds: 3</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 5: Twelve-Factor App</h2>
+            <p>Guidelines for building cloud-native applications:</p>
+            <ol>
+                <li><strong>Codebase:</strong> One codebase, many deploys</li>
+                <li><strong>Dependencies:</strong> Explicitly declare and isolate</li>
+                <li><strong>Config:</strong> Store in environment</li>
+                <li><strong>Backing services:</strong> Treat as attached resources</li>
+                <li><strong>Build, release, run:</strong> Strictly separate stages</li>
+                <li><strong>Processes:</strong> Execute as stateless processes</li>
+                <li><strong>Port binding:</strong> Export services via port</li>
+                <li><strong>Concurrency:</strong> Scale out via process model</li>
+                <li><strong>Disposability:</strong> Fast startup, graceful shutdown</li>
+                <li><strong>Dev/prod parity:</strong> Keep environments similar</li>
+                <li><strong>Logs:</strong> Treat as event streams</li>
+                <li><strong>Admin processes:</strong> Run as one-off processes</li>
+            </ol>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>These principles make apps easier to operate. When reviewing designs, check against this list. Violations often cause operational pain.</p>
+            </div>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+
+            <div class="exercise">
+                <h4>Exercise 12.1: Architecture Review</h4>
+                <p>Draw the architecture of a system you operate. Identify:</p>
+                <ol>
+                    <li>What pattern is it? (Monolith, microservices, etc.)</li>
+                    <li>Where are the single points of failure?</li>
+                    <li>What happens if each component fails?</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Use boxes for services, cylinders for databases, arrows for data flow. Color-code by criticality. Mark external dependencies.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Analysis</summary>
+                    <div class="solution-content">
+                        <pre><code>System: E-commerce Platform
+
+Pattern: Modular monolith with external services
+[Web App] → [Monolith API] → [PostgreSQL]
+                ↓
+         [Redis Cache]
+                ↓
+         [Stripe API] (external)
+                ↓
+         [SendGrid] (external)
+
+Single Points of Failure:
+- PostgreSQL (primary): All writes fail
+- Monolith API (single instance): Complete outage
+- DNS: Nothing reachable
+
+Failure Impact:
+- PostgreSQL: Fatal - everything stops
+- Redis: Degraded - slow but works
+- Stripe: Payment fails, orders can queue
+- SendGrid: Emails delayed, not critical
+
+Next Steps:
+- Add PostgreSQL replica
+- Run multiple API instances behind LB
+- Add circuit breakers for external services</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 12.2: Twelve-Factor Audit</h4>
+                <p>Audit an application against the twelve factors. Which does it follow? Which does it violate? What would it take to fix?</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Go through each factor systematically. Common violations: config in code, logs to files, state in local filesystem, long startup times.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Audit</summary>
+                    <div class="solution-content">
+                        <pre><code>Application: Internal Admin Tool
+
+✅ I. Codebase: Single repo, deploys to staging/prod
+✅ II. Dependencies: package.json, npm install
+❌ III. Config: Database URL hardcoded in config.js
+   Fix: Move to environment variables
+✅ IV. Backing services: Uses connection strings
+❌ V. Build/Release/Run: No clear separation
+   Fix: Add CI/CD pipeline with stages
+❌ VI. Processes: Stores sessions on local disk
+   Fix: Use Redis for sessions
+✅ VII. Port binding: Runs on PORT env var
+❌ VIII. Concurrency: Single process only
+   Fix: Add cluster mode or container replicas
+❌ IX. Disposability: 30+ second startup
+   Fix: Defer heavy initialization
+✅ X. Dev/prod parity: Docker for all envs
+❌ XI. Logs: Writes to /var/log/app.log
+   Fix: Write to stdout, let platform handle
+✅ XII. Admin: One-off scripts exist
+
+Score: 6/12 - Needs work!</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 12.3: Design a System</h4>
+                <p>Design a URL shortener (like bit.ly). Consider:</p>
+                <ol>
+                    <li>How to generate short URLs?</li>
+                    <li>How to handle high read traffic?</li>
+                    <li>How to store the mappings?</li>
+                    <li>How to handle analytics?</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Think about: read vs write ratio (100:1?), collision handling, cache hit rate, async processing for analytics.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution Design</summary>
+                    <div class="solution-content">
+                        <pre><code>1. SHORT URL GENERATION
+   - Use base62 encoding (a-z, A-Z, 0-9)
+   - 7 characters = 62^7 = 3.5 trillion URLs
+   - Option A: Hash long URL + take first 7 chars (handle collisions)
+   - Option B: Auto-increment ID + encode (no collisions, predictable)
+   - Option C: Pre-generate random codes (best: unique, unpredictable)
+
+2. HIGH READ TRAFFIC
+   - CDN for redirect (301/302 cached at edge)
+   - Redis cache: short_code → long_url
+   - Cache hit rate should be 90%+
+   - Read replicas for database
+
+3. STORAGE
+   - PostgreSQL: urls(short_code PK, long_url, created_at, user_id)
+   - Partition by created_at for old data
+   - ~100 bytes per URL × 1B URLs = 100GB
+
+4. ANALYTICS
+   - Async! Don't slow down redirects
+   - On redirect: push event to Kafka
+   - Consumer aggregates: clicks, referrers, geo
+   - Store in time-series DB (InfluxDB, TimescaleDB)
+
+ARCHITECTURE:
+User → CDN → [API Gateway]
+                  ↓
+              [URL Service] ← Redis
+                  ↓
+              PostgreSQL
+                  ↓ (async)
+              Kafka → Analytics Service → TimescaleDB</code></pre>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="project">
+            <h3>🏗️ Final Project: System Design Document</h3>
+            <p>Create a comprehensive design document for a system you want to build or improve:</p>
+            <ol>
+                <li>Requirements (functional and non-functional)</li>
+                <li>Architecture diagram</li>
+                <li>Data model</li>
+                <li>API design</li>
+                <li>Scaling strategy</li>
+                <li>Failure modes and mitigations</li>
+                <li>Observability approach</li>
+                <li>Security considerations</li>
+            </ol>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Further Reading</h2>
+
+            <h4>System Design Primer (Free)</h4>
+            <ul>
+                <li><a href="https://github.com/donnemartin/system-design-primer" target="_blank">System Design Primer</a> — Start here. Covers scaling, databases, caching, load balancing</li>
+                <li><a href="https://github.com/donnemartin/system-design-primer#how-to-approach-a-system-design-interview-question" target="_blank">How to approach system design</a> — Framework for thinking through designs</li>
+            </ul>
+
+            <h4>The Twelve-Factor App (Essential)</h4>
+            <ul>
+                <li><a href="https://12factor.net/" target="_blank">12factor.net</a> — Read all 12, it's short (~15 min total)</li>
+                <li><a href="https://www.redhat.com/en/blog/12-factor-app" target="_blank">An illustrated guide to 12 Factor Apps</a> — Visual summary</li>
+            </ul>
+
+            <h4>DDIA: Architecture Chapters</h4>
+            <ul>
+                <li><strong>Designing Data-Intensive Applications</strong>:</li>
+                <li style="margin-left: 2em">Chapter 1: Reliability, Scalability, Maintainability — The "why" of architecture</li>
+                <li style="margin-left: 2em">Chapter 4: Encoding and Evolution — API versioning, schema changes</li>
+                <li style="margin-left: 2em">Chapter 11: Stream Processing — Event-driven architecture</li>
+            </ul>
+
+            <h4>Microservices (When Ready)</h4>
+            <ul>
+                <li><strong>Building Microservices</strong> 2nd Ed by Sam Newman — Chapter 1 "What Are Microservices?" and Chapter 3 "How to Model Microservices"</li>
+                <li><a href="https://news.ycombinator.com/item?id=38232930" target="_blank">HN: SW architecture books that don't sell snake oil</a> — Good discussion on practical vs. hype</li>
+            </ul>
+
+            <h4>Patterns Reference</h4>
+            <ul>
+                <li><a href="https://microservices.io/patterns/index.html" target="_blank">microservices.io/patterns</a> — Pattern catalog: API Gateway, Circuit Breaker, Saga, etc.</li>
+                <li><a href="https://github.com/binhnguyennus/awesome-scalability" target="_blank">Awesome Scalability</a> — Curated articles on scaling</li>
+            </ul>
+        </section>
+    </main>
+
+    <nav class="module-nav">
+        <a href="11-security.html">← Previous: Security</a>
+        <a href="../index.html">Back to Course Overview →</a>
+    </nav>
+
+    <footer>
+        <p>Module 12 of 12 — CS for DevOps Engineers</p>
+        <p><strong>Congratulations on completing the course!</strong></p>
+    </footer>
+</body>
+</html>
+

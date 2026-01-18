@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 0: How to Think About Problems</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+
+    <header>
+        <span class="module-number">Module 00</span>
+        <h1>How to Think About Problems</h1>
+        <p class="subtitle">The meta-skill nobody teaches explicitly</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>The Real Problem</h2>
+            <p>You know the syntax. You can write functions, use data structures, read documentation. But you sit down to solve something and feel paralyzed:</p>
+            <ul>
+                <li>"Where do I even start?"</li>
+                <li>"How do I know which approach to take?"</li>
+                <li>"How do I know if I'm going the right direction?"</li>
+            </ul>
+            <p>This isn't a gap in your language knowledge. It's a gap in <strong>how to think about problems</strong> — the meta-skill that connects "I understand the tools" to "I can build things."</p>
+            <p>This module gives you frameworks from mathematicians, physicists, and engineers who've spent decades thinking about how to think. No code here — just mental tools you'll use before you ever open an editor.</p>
+        </section>
+
+        <section>
+            <h2>Pólya's Framework</h2>
+            <p>In 1945, mathematician George Pólya published <em>How to Solve It</em> — a book about mathematical problem-solving that applies to any kind of thinking. His four-step framework:</p>
+
+            <h3>1. Understand the Problem</h3>
+            <p>What is the unknown? What are the data? What is the condition? Can you restate the problem in your own words?</p>
+            <p>Most people skip this. They see a problem and immediately start doing something. But if you don't understand what you're solving, you'll solve the wrong thing.</p>
+
+            <h3>2. Devise a Plan</h3>
+            <p>Have you seen this problem before? Or a similar one? Do you know a related problem you've already solved? Can you use that method here?</p>
+            <p>If you can't find a connection, try these:</p>
+            <ul>
+                <li>Can you solve a <em>part</em> of the problem?</li>
+                <li>Can you solve a <em>simpler</em> version?</li>
+                <li>Can you solve a <em>related</em> problem?</li>
+            </ul>
+
+            <h3>3. Carry Out the Plan</h3>
+            <p>Execute your plan. Check each step. Can you see clearly that the step is correct?</p>
+
+            <h3>4. Look Back</h3>
+            <p>Can you check the result? Can you derive it differently? Can you use the result or method for some other problem?</p>
+
+            <div class="callout">
+                <h4>📖 The Key Insight</h4>
+                <p>Pólya's framework is really about asking the right questions. Experts don't have magic intuition — they've internalized a set of questions that guide their thinking. This module is about giving you those questions.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>The Five Questions</h2>
+            <p>Here's Pólya adapted for practical problem-solving. Before you do anything, answer these:</p>
+
+            <h3>1. What are my inputs?</h3>
+            <p>Not "some data" — exactly what. Write down a concrete example. If you can't write a specific example, you don't understand the problem yet.</p>
+
+            <h3>2. What are my outputs?</h3>
+            <p>What does success look like? Be specific. "It works" isn't an answer. What exactly should be produced?</p>
+
+            <h3>3. Can I work through an example by hand?</h3>
+            <p>Pen and paper. No computer. If you can't do it manually, you can't tell a computer how to do it. This step reveals gaps in your understanding faster than anything else.</p>
+
+            <h3>4. What are the edge cases?</h3>
+            <p>Before you solve the normal case, list the weird ones. Empty input? One item? Duplicates? Missing data? Invalid data? Knowing these upfront saves you from nasty surprises later.</p>
+
+            <h3>5. What's the simplest version?</h3>
+            <p>Strip away complexity. Solve the dumbest, most basic case first. Make it work, then make it handle more. This is how professionals actually work — not by solving the whole thing at once.</p>
+        </section>
+
+        <section>
+            <h2>Recognizing Problem Shapes</h2>
+            <p>Most problems are combinations of a few fundamental operations. Once you recognize the shape, the approach becomes obvious.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Shape</th>
+                        <th>What You're Doing</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Transform</strong></td>
+                        <td>Turn each thing into something else</td>
+                        <td>Convert temperatures from Celsius to Fahrenheit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Filter</strong></td>
+                        <td>Keep only things that match a condition</td>
+                        <td>Find all servers that are unhealthy</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Search</strong></td>
+                        <td>Find one specific thing</td>
+                        <td>Find the first error in a log file</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Accumulate</strong></td>
+                        <td>Combine many things into one</td>
+                        <td>Sum all the request times to get total latency</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Group</strong></td>
+                        <td>Organize things by some property</td>
+                        <td>Group requests by status code</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><strong>The insight:</strong> A problem that looks complex is often just 2-3 shapes chained together. "Find the IP address with the most requests" is: Transform (extract IP from each line) → Group (count by IP) → Search (find the max). Breaking problems into shapes makes them tractable.</p>
+        </section>
+
+        <section>
+            <h2>The Feynman Technique</h2>
+            <p>Richard Feynman, the physicist, had a method for understanding anything deeply:</p>
+            <ol>
+                <li><strong>Write down the concept</strong> you're trying to understand</li>
+                <li><strong>Explain it in plain language</strong>, as if teaching it to someone who knows nothing</li>
+                <li><strong>Identify gaps</strong> where your explanation breaks down or gets vague</li>
+                <li><strong>Go back to the source</strong> and fill those gaps</li>
+                <li><strong>Simplify further</strong> — if you can't explain it simply, you don't understand it</li>
+            </ol>
+            <p>When you're stuck on a problem, try explaining it out loud. To a rubber duck, a plant, the wall. Your brain processes differently when speaking than when thinking silently. The moment you say "and then it... wait, how does it..." — you've found your gap.</p>
+
+            <div class="callout">
+                <h4>🦆 Rubber Duck Debugging</h4>
+                <p>This sounds absurd. It works remarkably well. The act of articulating forces you to be precise. Vague understanding in your head becomes exposed when you have to put it into words.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Working Backwards</h2>
+            <p>Sometimes you can't see the path forward. Try starting from the end.</p>
+            <ul>
+                <li>What does "done" look like?</li>
+                <li>What's the step immediately before "done"?</li>
+                <li>What enables that step?</li>
+                <li>Keep going until you reach something you know how to do</li>
+            </ul>
+            <p>This is particularly useful for complex multi-step problems where the starting point isn't obvious. Instead of asking "what's first?", ask "what's last?" and work backwards.</p>
+        </section>
+
+        <section>
+            <h2>Decomposition</h2>
+            <p>Every complex problem is made of smaller problems. The skill is learning to see the pieces.</p>
+            <p>When a problem feels overwhelming, ask:</p>
+            <ul>
+                <li>What are the <em>independent</em> parts? (Things I can solve separately)</li>
+                <li>What are the <em>dependencies</em>? (What needs to happen before what)</li>
+                <li>What's the <em>smallest useful thing</em> I can build first?</li>
+            </ul>
+            <p>Build the smallest piece. Test it. Then build the next piece. This is how professionals actually work — not by solving everything at once.</p>
+        </section>
+
+        <section>
+            <h2>When You're Stuck</h2>
+            <p>You've done the Five Questions. You understand the problem. You still can't see the solution. Try these:</p>
+
+            <h3>Solve a Simpler Version</h3>
+            <p>Can't solve it for a list? Solve it for one item. Can't handle nested data? Flatten it first. Reduce the problem until it becomes trivial, solve that, then add complexity back piece by piece.</p>
+
+            <h3>Change the Representation</h3>
+            <p>Sometimes the way you're looking at the data is the problem. Can you draw it? Can you represent it differently? A graph instead of a list? A table instead of nested objects?</p>
+
+            <h3>Sleep On It</h3>
+            <p>Seriously. There's research on this. Your brain continues processing problems during sleep. Come back tomorrow.</p>
+
+            <h3>Take a Walk</h3>
+            <p>Step away from the screen. Many famous breakthroughs came during walks. Your diffuse-mode thinking often solves problems your focused-mode thinking can't crack.</p>
+        </section>
+
+        <section>
+            <h2>The Debugging Mindset</h2>
+            <p>The same thinking applies when things break.</p>
+
+            <h3>Read The Error Message</h3>
+            <p>Actually read it. The whole thing. Most people see "Error" and immediately start Googling. The message often tells you exactly what's wrong.</p>
+
+            <h3>Binary Search The Problem</h3>
+            <p>Something broke. Narrow it down. Remove half the code — still broken? Remove the other half. Each step cuts your search space in half. This is O(log n) debugging.</p>
+
+            <h3>Change One Thing At A Time</h3>
+            <p>When debugging, don't change 5 things at once. If it works after, you don't know which change fixed it. If it still breaks, you've made the problem worse.</p>
+
+            <h3>Reproduce Before You Fix</h3>
+            <p>If you can't reliably reproduce the bug, you can't know if you've fixed it. Getting a consistent reproduction is often half the battle.</p>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+            <div class="exercise">
+                <h4>Exercise 0.1: Five Questions Practice</h4>
+                <p>Take this problem and write out the Five Questions <em>without</em> writing any code:</p>
+                <p><em>"Given a list of file paths, find all duplicates (files with the same content)."</em></p>
+                <p>Write your answers on paper. What are the inputs, exactly? What are the outputs, exactly? How would you do this by hand? What edge cases exist? What's the simplest version?</p>
+                <details>
+                    <summary>✅ Example Answers</summary>
+                    <div class="solution-content">
+                        <p><strong>1. Inputs:</strong> A list of file paths — e.g., three files: /a.txt, /b.txt, /c.txt</p>
+                        <p><strong>2. Outputs:</strong> Groups of files with identical content. Maybe /a.txt and /c.txt are the same.</p>
+                        <p><strong>3. By hand:</strong> I'd compute a checksum (md5sum) of each file. Files with matching checksums are duplicates. Much faster than comparing every pair byte-by-byte.</p>
+                        <p><strong>4. Edge cases:</strong> Empty files (all have the same content — nothing!). Files that don't exist. Permission denied. Huge files that don't fit in memory.</p>
+                        <p><strong>5. Simplest version:</strong> Assume all files exist, are small, and we just need to find any groups with the same checksum.</p>
+                        <p><strong>Shapes identified:</strong> Transform (path → checksum), Group (by checksum), Filter (keep groups with more than one file).</p>
+                    </div>
+                </details>
+            </div>
+            <div class="exercise">
+                <h4>Exercise 0.2: Identify the Shapes</h4>
+                <p>For each problem below, identify which shapes apply (Transform, Filter, Search, Accumulate, Group). Don't write code — just identify the operations.</p>
+                <ol>
+                    <li>Find all servers that are unhealthy</li>
+                    <li>Calculate total memory usage across all containers</li>
+                    <li>Get a list of unique namespaces from a list of resources</li>
+                    <li>Organize log entries by date</li>
+                </ol>
+                <details>
+                    <summary>✅ Answers</summary>
+                    <div class="solution-content">
+                        <ol>
+                            <li><strong>Filter</strong> — Keep only items matching a condition</li>
+                            <li><strong>Transform + Accumulate</strong> — Extract memory from each container, sum them up</li>
+                            <li><strong>Transform + Accumulate</strong> — Extract namespace from each resource, collect into a set (deduplication is accumulation into a set)</li>
+                            <li><strong>Group</strong> — Organize items by a key (the date)</li>
+                        </ol>
+                    </div>
+                </details>
+            </div>
+            <div class="exercise">
+                <h4>Exercise 0.3: Rubber Duck a Real Problem</h4>
+                <p>Take a problem you're currently working on (or recently solved). Set a timer for 5 minutes. Explain it out loud — to an object, an imaginary person, or just the air. Notice where you get vague or say "and then it just..." — those are your gaps.</p>
+                <p>Write down: What gaps did you discover? What do you need to understand better?</p>
+            </div>
+            <div class="exercise">
+                <h4>Exercise 0.4: Work Backwards</h4>
+                <p>Problem: "Build a system that alerts when a service is unhealthy."</p>
+                <p>Start from the end: What does "alert" mean concretely? What comes right before an alert? And before that? Work backwards until you hit something you know how to do. Write out the chain.</p>
+                <details>
+                    <summary>✅ Example Chain</summary>
+                    <div class="solution-content">
+                        <p>Working backwards:</p>
+                        <ul>
+                            <li><strong>Alert sent</strong> ← need to send a message (Slack? Email? PagerDuty?)</li>
+                            <li><strong>Message sent</strong> ← need to decide it's alert-worthy (how many failures? How long?)</li>
+                            <li><strong>Decide it's alert-worthy</strong> ← need to track failure state over time</li>
+                            <li><strong>Track failure state</strong> ← need to receive health check results</li>
+                            <li><strong>Receive health check results</strong> ← need to run health checks</li>
+                            <li><strong>Run health checks</strong> ← need to know what endpoints to check</li>
+                            <li><strong>Know what endpoints to check</strong> ← need a config file listing services</li>
+                        </ul>
+                        <p>Now you have a chain from "read config" to "send alert." Each step is smaller and more tractable than "build an alerting system."</p>
+                    </div>
+                </details>
+            </div>
+            <div class="exercise">
+                <h4>Exercise 0.5: Read a Postmortem</h4>
+                <p>Read one postmortem from <a href="https://github.com/danluu/post-mortems" target="_blank">Dan Luu's collection</a>. As you read, identify:</p>
+                <ol>
+                    <li>What was the root cause?</li>
+                    <li>How did they find it? (What debugging techniques?)</li>
+                    <li>What could have caught it earlier?</li>
+                </ol>
+                <p>Good ones to start with: Cloudflare regex outage, GitLab database deletion, AWS S3 2017.</p>
+            </div>
+        </section>
+    </main>
+
+    <section class="resources">
+        <h2>📚 Further Reading</h2>
+
+        <h4>Books on Thinking</h4>
+        <ul>
+            <li><strong>How to Solve It</strong> by George Pólya — The classic. Read Part I "In the Classroom" (30 pages). Mathematical in examples but universal in application.</li>
+            <li><strong>Thinking, Fast and Slow</strong> by Daniel Kahneman — Chapters 1-4 on System 1 vs System 2 thinking. Explains why we jump to solutions before understanding problems.</li>
+            <li><strong>A Mind for Numbers</strong> by Barbara Oakley — Chapter 2 on focused vs diffuse thinking. Why walking away actually helps.</li>
+        </ul>
+
+        <h4>Talks & Lectures</h4>
+        <ul>
+            <li><a href="https://www.youtube.com/watch?v=IlU-zDU6aQ0" target="_blank">Richard Hamming: "You and Your Research"</a> — On how to work on important problems. 45 min that might change how you think.</li>
+            <li><a href="https://www.youtube.com/watch?v=f84n5oFoZBc" target="_blank">Hammock Driven Development</a> — Rich Hickey on thinking away from the computer. 40 min.</li>
+        </ul>
+
+        <h4>On Debugging</h4>
+        <ul>
+            <li><a href="https://jvns.ca/blog/2022/08/30/a-way-to-categorize-debugging-skills/" target="_blank">Some ways to get better at debugging</a> — Julia Evans breaks debugging into learnable skills</li>
+            <li><a href="https://wizardzines.com/zines/debugging-guide/" target="_blank">The Pocket Guide to Debugging</a> — Julia Evans' zine, extremely practical</li>
+            <li><strong>Debugging</strong> by David Agans — Chapter 2 "Quit Thinking and Look" is the most actionable</li>
+        </ul>
+
+        <h4>Postmortems to Study</h4>
+        <ul>
+            <li><a href="https://github.com/danluu/post-mortems" target="_blank">Dan Luu's Post-Mortem Collection</a> — Real incidents from real companies</li>
+            <li><a href="https://sre.google/sre-book/example-postmortem/" target="_blank">Google SRE Book: Example Postmortem</a> — Template and real example</li>
+        </ul>
+    </section>
+
+    <nav class="module-nav">
+        <a href="../index.html">← Course Home</a>
+        <a href="01-programming-fluency.html">Next: Programming Fluency →</a>
+    </nav>
+
+    <footer>
+        <p>Module 0 of 12 — CS for DevOps Engineers</p>
+    </footer>
+</body>
+</html>
+

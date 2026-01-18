@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 4: Data Structures</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+    
+    <header>
+        <span class="module-number">Module 04</span>
+        <h1>Data Structures</h1>
+        <p class="subtitle">The building blocks of all software</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why Data Structures Matter</h2>
+            <p>Every piece of software is just data structures + algorithms operating on them. Choose the wrong structure and your fast API becomes a slow one. Choose the right one and hard problems become easy.</p>
+            <p>This module covers the structures you'll actually use and encounter — with DevOps examples.</p>
+        </section>
+
+        <section>
+            <h2>Part 1: Arrays and Lists</h2>
+            
+            <h3>1.1 Arrays</h3>
+            <p>Contiguous block of memory. Elements accessed by index.</p>
+            <pre><code># Python list (dynamic array under the hood)
+servers = ["web1", "web2", "web3"]
+print(servers[0])  # O(1) - instant access by index
+servers.append("web4")  # O(1) amortized</code></pre>
+
+            <table>
+                <tr><th>Operation</th><th>Time</th><th>Why</th></tr>
+                <tr><td>Access by index</td><td>O(1)</td><td>Direct memory calculation</td></tr>
+                <tr><td>Append</td><td>O(1)*</td><td>Add to end (amortized)</td></tr>
+                <tr><td>Insert at start</td><td>O(n)</td><td>Must shift everything</td></tr>
+                <tr><td>Search (unsorted)</td><td>O(n)</td><td>Must check each element</td></tr>
+                <tr><td>Search (sorted)</td><td>O(log n)</td><td>Binary search</td></tr>
+            </table>
+
+            <div class="callout">
+                <h4>🔧 DevOps Example: Round-Robin Load Balancing</h4>
+                <p>An array of servers + a counter. Access is O(1): <code>next_server = servers[counter % len(servers)]</code></p>
+            </div>
+
+            <h3>1.2 Linked Lists</h3>
+            <p>Each element points to the next. Not contiguous in memory.</p>
+            <pre><code>Node1 → Node2 → Node3 → None
+ ↓        ↓        ↓
+data    data    data</code></pre>
+
+            <table>
+                <tr><th>Operation</th><th>Time</th><th>Why</th></tr>
+                <tr><td>Access by index</td><td>O(n)</td><td>Must traverse from start</td></tr>
+                <tr><td>Insert at start</td><td>O(1)</td><td>Just update pointers</td></tr>
+                <tr><td>Insert in middle</td><td>O(1)*</td><td>If you have the reference</td></tr>
+            </table>
+
+            <p><strong>When to use:</strong> When you need frequent insertions/deletions at arbitrary positions. Rare in practice — arrays usually win due to cache locality.</p>
+        </section>
+
+        <section>
+            <h2>Part 2: Hash Tables (Dictionaries/Maps)</h2>
+            <p>The most important data structure in practical programming. O(1) average lookup, insert, delete.</p>
+
+            <h3>2.1 How They Work</h3>
+            <pre><code>Key: "web1" → hash("web1") → 7 → bucket[7] → Value: "10.0.0.1"
+
+Buckets:  [0] [1] [2] [3] [4] [5] [6] [7:web1→10.0.0.1] [8] [9]</code></pre>
+
+            <ol>
+                <li>Compute hash of key (converts key → number)</li>
+                <li>Use number to find bucket</li>
+                <li>Store/retrieve value in bucket</li>
+            </ol>
+
+            <h3>2.2 Hash Collisions</h3>
+            <p>What if two keys hash to same bucket? Two strategies:</p>
+            <ul>
+                <li><strong>Chaining:</strong> Each bucket holds a list. Walk the list on collision.</li>
+                <li><strong>Open addressing:</strong> Try next bucket if occupied.</li>
+            </ul>
+            <p>With good hash function and enough buckets, collisions are rare → O(1) average.</p>
+
+            <pre><code># Python dict
+pod_ips = {
+    "nginx-abc123": "10.0.1.5",
+    "redis-def456": "10.0.1.6",
+}
+print(pod_ips["nginx-abc123"])  # O(1) lookup
+
+# Check if key exists
+if "nginx-abc123" in pod_ips:  # O(1)
+    print("Found")</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Examples</h4>
+                <ul style="margin-bottom:0">
+                    <li>Kubernetes labels/selectors — fast pod lookup</li>
+                    <li>Environment variables — <code>os.environ["DB_HOST"]</code></li>
+                    <li>DNS cache — domain → IP mapping</li>
+                    <li>Redis/Memcached — literally distributed hash tables</li>
+                </ul>
+            </div>
+
+            <h3>2.3 When Hash Tables Fail</h3>
+            <ul>
+                <li><strong>Too many collisions:</strong> Degrades to O(n)</li>
+                <li><strong>Need sorted order:</strong> Hash tables are unordered</li>
+                <li><strong>Need range queries:</strong> "All keys between A and M"</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Part 3: Sets</h2>
+            <p>Like a hash table but only keys, no values. Perfect for tracking unique items.</p>
+
+            <pre><code># Python set
+seen_ips = set()
+seen_ips.add("10.0.0.1")  # O(1)
+seen_ips.add("10.0.0.1")  # No duplicate
+print("10.0.0.1" in seen_ips)  # O(1) lookup
+
+# Set operations
+admins = {"alice", "bob"}
+developers = {"bob", "charlie"}
+print(admins & developers)  # Intersection: {"bob"}
+print(admins | developers)  # Union: {"alice", "bob", "charlie"}
+print(admins - developers)  # Difference: {"alice"}</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Example: Rate Limiting</h4>
+                <p>Track unique IPs that hit your endpoint in the last minute. Set gives O(1) "have we seen this IP?" check.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 4: Stacks and Queues</h2>
+
+            <h3>4.1 Stack (LIFO)</h3>
+            <p>Last In, First Out. Like a stack of plates.</p>
+            <pre><code># Python - use a list
+stack = []
+stack.append("task1")  # push
+stack.append("task2")
+task = stack.pop()  # "task2" - last in, first out</code></pre>
+
+            <p><strong>DevOps uses:</strong> Undo operations, parsing nested structures (YAML/JSON), function call stack (literally).</p>
+
+            <h3>4.2 Queue (FIFO)</h3>
+            <p>First In, First Out. Like a line at a store.</p>
+            <pre><code># Python - use deque for O(1) operations on both ends
+from collections import deque
+queue = deque()
+queue.append("job1")  # enqueue
+queue.append("job2")
+job = queue.popleft()  # "job1" - first in, first out</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Examples</h4>
+                <ul style="margin-bottom:0">
+                    <li>Message queues (RabbitMQ, SQS) — job processing in order</li>
+                    <li>Kubernetes work queue — scheduling pods</li>
+                    <li>CI/CD build queue — builds processed in order</li>
+                </ul>
+            </div>
+
+            <h3>4.3 Priority Queue (Heap)</h3>
+            <p>Like a queue but items come out by priority, not order.</p>
+            <pre><code>import heapq
+
+tasks = []
+heapq.heappush(tasks, (1, "critical_alert"))  # (priority, item)
+heapq.heappush(tasks, (3, "log_rotation"))
+heapq.heappush(tasks, (2, "backup"))
+
+next_task = heapq.heappop(tasks)  # (1, "critical_alert")</code></pre>
+
+            <p><strong>DevOps uses:</strong> Alert prioritization, job scheduling by importance, Dijkstra's algorithm (network routing).</p>
+        </section>
+
+        <section>
+            <h2>Part 5: Trees</h2>
+
+            <h3>5.1 Binary Trees</h3>
+            <p>Each node has at most 2 children.</p>
+            <pre><code>       4
+      / \
+     2   6
+    / \ / \
+   1  3 5  7</code></pre>
+
+            <h3>5.2 Binary Search Trees (BST)</h3>
+            <p>Left child &lt; parent &lt; right child. Enables O(log n) search.</p>
+            <pre><code># Finding 5 in the tree above:
+# Start at 4: 5 > 4, go right
+# At 6: 5 < 6, go left
+# At 5: found! (3 comparisons, not 7)</code></pre>
+
+            <h3>5.3 B-Trees</h3>
+            <p>Generalized BST with many children per node. Optimized for disk access.</p>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p><strong>Every database index is a B-tree</strong> (or variant). When you add an index to Postgres, you're building a B-tree. When <code>EXPLAIN</code> says "Index Scan", it's walking a B-tree.</p>
+            </div>
+
+            <h3>5.4 Tree Traversal</h3>
+            <pre><code># Three ways to visit all nodes:
+
+# In-order (left, root, right): 1,2,3,4,5,6,7 - sorted!
+# Pre-order (root, left, right): 4,2,1,3,6,5,7
+# Post-order (left, right, root): 1,3,2,5,7,6,4
+
+# BFS (level by level): 4,2,6,1,3,5,7</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 6: Graphs</h2>
+            <p>Nodes connected by edges. Trees are just graphs without cycles.</p>
+
+            <h3>6.1 Representation</h3>
+            <pre><code># Adjacency list (most common)
+graph = {
+    "web1": ["db1", "cache1"],
+    "web2": ["db1", "cache1"],
+    "db1": [],
+    "cache1": ["db1"],
+}
+
+# Read as: web1 connects to db1 and cache1</code></pre>
+
+            <h3>6.2 Graph Traversal</h3>
+            <pre><code># BFS - explore level by level (find shortest path)
+from collections import deque
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+    while queue:
+        node = queue.popleft()
+        if node not in visited:
+            visited.add(node)
+            print(node)
+            queue.extend(graph[node])
+
+# DFS - explore depth first (find any path)
+def dfs(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(start)
+    print(start)
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Examples</h4>
+                <ul style="margin-bottom:0">
+                    <li>Service mesh topology — which services talk to which</li>
+                    <li>Terraform dependency graph — what to create first</li>
+                    <li>Network routing — shortest path between hosts</li>
+                    <li>CI/CD pipeline stages — DAG of jobs</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 7: Choosing the Right Structure</h2>
+
+            <div class="decision-tree">
+What do you need to do?
+│
+├─ Look up by key → Hash Table (dict)
+│
+├─ Maintain sorted order →
+│   ├─ Need range queries? → B-Tree / Sorted Array
+│   └─ Just need min/max? → Heap (Priority Queue)
+│
+├─ Track unique items → Set
+│
+├─ Process in order →
+│   ├─ FIFO? → Queue
+│   └─ LIFO? → Stack
+│
+├─ Model relationships →
+│   ├─ Hierarchical? → Tree
+│   └─ Networked? → Graph
+│
+└─ Just need ordered collection → Array/List
+            </div>
+
+            <h3>Quick Reference</h3>
+            <table>
+                <tr><th>Structure</th><th>Best For</th><th>Watch Out For</th></tr>
+                <tr><td>Array</td><td>Index access, iteration</td><td>Insert/delete in middle</td></tr>
+                <tr><td>Hash Table</td><td>Key lookup</td><td>Ordering, range queries</td></tr>
+                <tr><td>Set</td><td>Unique items, membership</td><td>No values, no order</td></tr>
+                <tr><td>Queue</td><td>Task processing</td><td>No random access</td></tr>
+                <tr><td>Heap</td><td>Priority processing</td><td>Only access to min/max</td></tr>
+                <tr><td>Tree</td><td>Hierarchical data</td><td>Balancing complexity</td></tr>
+                <tr><td>Graph</td><td>Relationships</td><td>Memory for dense graphs</td></tr>
+            </table>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+
+            <div class="exercise">
+                <h4>Exercise 4.1: Choose the Structure</h4>
+                <p>For each scenario, pick the best data structure:</p>
+                <ol>
+                    <li>Track which alerts have already been sent (no duplicates)</li>
+                    <li>Store pod name → IP mappings</li>
+                    <li>Process deployment tasks in order received</li>
+                    <li>Find the highest-priority alert to handle next</li>
+                    <li>Track Terraform resource dependencies</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Think about the main operations: lookup? ordering? key-value? uniqueness? priority? relationships?</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <ol>
+                            <li><strong>Set</strong> — Fast O(1) check for "have I seen this?", automatic deduplication</li>
+                            <li><strong>Hash Table (Dict)</strong> — Key-value lookup, <code>{"nginx-pod-abc": "10.0.0.5"}</code></li>
+                            <li><strong>Queue</strong> — FIFO order, process oldest first</li>
+                            <li><strong>Heap / Priority Queue</strong> — Always get highest priority in O(log n)</li>
+                            <li><strong>Graph (DAG)</strong> — Dependencies are relationships between nodes, use adjacency list</li>
+                        </ol>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 4.2: Implement a LRU Cache</h4>
+                <p>Build a cache that evicts the Least Recently Used item when full. Hint: Combine a hash table (O(1) lookup) with a doubly-linked list (track order).</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>The hash table maps key → node in the linked list. On access, move node to front. On insert when full, remove from back. This gives O(1) for all operations.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution (Python)</summary>
+                    <div class="solution-content">
+                        <pre><code>from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity):
+        self.cache = OrderedDict()
+        self.capacity = capacity
+
+    def get(self, key):
+        if key not in self.cache:
+            return None
+        # Move to end (most recently used)
+        self.cache.move_to_end(key)
+        return self.cache[key]
+
+    def put(self, key, value):
+        if key in self.cache:
+            self.cache.move_to_end(key)
+        self.cache[key] = value
+        if len(self.cache) > self.capacity:
+            # Remove oldest (first item)
+            self.cache.popitem(last=False)
+
+# Usage
+cache = LRUCache(3)
+cache.put("a", 1)
+cache.put("b", 2)
+cache.put("c", 3)
+cache.get("a")      # Access a, now order: b, c, a
+cache.put("d", 4)   # Evicts b (least recently used)</code></pre>
+                        <p>Python's OrderedDict makes this easy. In production, use <code>functools.lru_cache</code> or Redis.</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 4.3: Graph the Service Mesh</h4>
+                <p>Draw your application's service dependencies as a graph. Implement it as an adjacency list. Write a function to find all services that depend on a given service.</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Build a "reverse" adjacency list where each service maps to services that depend on it. Then traverse from the target service.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code># Service dependencies (service -> what it depends on)
+dependencies = {
+    "frontend": ["api", "auth"],
+    "api": ["database", "cache", "auth"],
+    "auth": ["database"],
+    "worker": ["database", "queue"],
+}
+
+# Build reverse graph (service -> what depends on it)
+def build_dependents(deps):
+    dependents = {s: [] for s in deps}
+    for service, needs in deps.items():
+        for needed in needs:
+            if needed not in dependents:
+                dependents[needed] = []
+            dependents[needed].append(service)
+    return dependents
+
+# Find all services affected if 'database' goes down
+def find_all_dependents(service, dependents, visited=None):
+    if visited is None:
+        visited = set()
+    if service in visited:
+        return visited
+    visited.add(service)
+    for dependent in dependents.get(service, []):
+        find_all_dependents(dependent, dependents, visited)
+    return visited
+
+dependents = build_dependents(dependencies)
+affected = find_all_dependents("database", dependents)
+# Returns: {database, api, auth, frontend, worker}</code></pre>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="project">
+            <h3>🏗️ Project: Build a Simple In-Memory Cache</h3>
+            <p>Implement a cache (like a mini Redis) with:</p>
+            <ol>
+                <li>SET key value [ttl_seconds] — store a value</li>
+                <li>GET key — retrieve a value (return nil if expired)</li>
+                <li>DELETE key — remove a value</li>
+                <li>KEYS pattern — list all keys matching pattern</li>
+            </ol>
+            <p>Think about: What data structure for storage? How to handle expiration efficiently?</p>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Further Reading</h2>
+
+            <h4>Visual Learning</h4>
+            <ul>
+                <li><a href="https://visualgo.net/en/list" target="_blank">VisuAlgo: Linked Lists</a> — Watch operations animate step by step</li>
+                <li><a href="https://visualgo.net/en/hashtable" target="_blank">VisuAlgo: Hash Tables</a> — See how collisions are handled</li>
+                <li><a href="https://www.cs.usfca.edu/~galles/visualization/BTree.html" target="_blank">B-Tree Visualization</a> — Critical for understanding database indexes</li>
+            </ul>
+
+            <h4>Quick Reference</h4>
+            <ul>
+                <li><a href="https://www.bigocheatsheet.com/" target="_blank">Big-O Cheat Sheet</a> — Print this out and put it on your wall</li>
+            </ul>
+
+            <h4>Real-World Applications</h4>
+            <ul>
+                <li><a href="https://redis.io/docs/data-types/" target="_blank">Redis Data Types Tutorial</a> — Strings, Lists, Sets, Hashes, Sorted Sets in practice</li>
+                <li><a href="https://news.ycombinator.com/item?id=30489354" target="_blank">HN: Practical guide to solving hard problems</a> — When simple data structures are enough</li>
+            </ul>
+
+            <h4>Books (Specific Chapters)</h4>
+            <ul>
+                <li><strong>The Algorithm Design Manual</strong> by Skiena — Part I "Practical Algorithm Design" (Chapters 1-8) is more practical than CLRS</li>
+                <li><strong>Grokking Algorithms</strong> by Bhargava — Visual, beginner-friendly. Chapters 1-6 cover the essentials</li>
+            </ul>
+
+            <h4>Practice</h4>
+            <ul>
+                <li><a href="https://leetcode.com/tag/hash-table/" target="_blank">LeetCode: Hash Table problems</a> — Start with "Easy", focus on patterns not memorization</li>
+            </ul>
+        </section>
+    </main>
+
+    <nav class="module-nav">
+        <a href="03-computer-architecture.html">← Previous: Computer Architecture</a>
+        <a href="05-algorithms.html">Next: Algorithms →</a>
+    </nav>
+
+    <footer>
+        <p>Module 4 of 12 — CS for DevOps Engineers</p>
+    </footer>
+</body>
+</html>
+

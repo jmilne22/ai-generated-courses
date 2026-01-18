@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5: Algorithms</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+    
+    <header>
+        <span class="module-number">Module 05</span>
+        <h1>Algorithms</h1>
+        <p class="subtitle">Patterns, complexity, and practical problem solving</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>The DevOps Approach to Algorithms</h2>
+            <p>Most algorithm resources focus on LeetCode-style problems. We're taking a different approach:</p>
+            <ol>
+                <li>Understand <strong>Big O</strong> so you can evaluate trade-offs</li>
+                <li>Learn <strong>common patterns</strong> you'll actually encounter</li>
+                <li>Practice with <strong>DevOps-relevant problems</strong></li>
+            </ol>
+            <p>You're not trying to become a competitive programmer. You're trying to make better engineering decisions.</p>
+        </section>
+
+        <section>
+            <h2>Part 1: Big O Notation</h2>
+            <p>Big O describes how performance scales with input size. It's the language of trade-offs.</p>
+
+            <h3>1.1 Common Complexities</h3>
+            <table>
+                <tr><th>Notation</th><th>Name</th><th>Example</th><th>1000 items</th></tr>
+                <tr><td>O(1)</td><td>Constant</td><td>Hash table lookup</td><td>1 op</td></tr>
+                <tr><td>O(log n)</td><td>Logarithmic</td><td>Binary search</td><td>10 ops</td></tr>
+                <tr><td>O(n)</td><td>Linear</td><td>Loop through array</td><td>1,000 ops</td></tr>
+                <tr><td>O(n log n)</td><td>Linearithmic</td><td>Good sorting</td><td>10,000 ops</td></tr>
+                <tr><td>O(n²)</td><td>Quadratic</td><td>Nested loops</td><td>1,000,000 ops</td></tr>
+                <tr><td>O(2ⁿ)</td><td>Exponential</td><td>Brute force subsets</td><td>🔥</td></tr>
+            </table>
+
+            <div class="callout">
+                <h4>💡 Intuition</h4>
+                <p>If your input doubles:</p>
+                <ul style="margin-bottom:0">
+                    <li>O(1): Same time</li>
+                    <li>O(log n): Tiny increase</li>
+                    <li>O(n): Double the time</li>
+                    <li>O(n²): 4x the time</li>
+                </ul>
+            </div>
+
+            <h3>1.2 Reading Big O</h3>
+            <pre><code># O(n) - one loop through items
+for item in items:
+    process(item)
+
+# O(n²) - nested loops (every item vs every item)
+for item1 in items:
+    for item2 in items:
+        compare(item1, item2)
+
+# O(log n) - halving each step
+def binary_search(arr, target):
+    low, high = 0, len(arr) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1</code></pre>
+
+            <h3>1.3 Space Complexity</h3>
+            <p>Same notation, but for memory instead of time.</p>
+            <pre><code># O(1) space - just a counter
+def count_errors(logs):
+    count = 0
+    for log in logs:
+        if "ERROR" in log:
+            count += 1
+    return count
+
+# O(n) space - storing all results
+def filter_errors(logs):
+    errors = []  # Could be as big as logs
+    for log in logs:
+        if "ERROR" in log:
+            errors.append(log)
+    return errors</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 2: Searching Algorithms</h2>
+
+            <h3>2.1 Linear Search</h3>
+            <p>Check each element. O(n). Simple but slow.</p>
+            <pre><code>def find_pod(pods, target_name):
+    for pod in pods:
+        if pod.name == target_name:
+            return pod
+    return None</code></pre>
+
+            <h3>2.2 Binary Search</h3>
+            <p>Works on sorted data. O(log n). Much faster for large datasets.</p>
+            <pre><code>def find_log_entry(sorted_logs, target_timestamp):
+    """Find log entry by timestamp in sorted log file."""
+    low, high = 0, len(sorted_logs) - 1
+    
+    while low <= high:
+        mid = (low + high) // 2
+        if sorted_logs[mid].timestamp == target_timestamp:
+            return sorted_logs[mid]
+        elif sorted_logs[mid].timestamp < target_timestamp:
+            low = mid + 1
+        else:
+            high = mid - 1
+    
+    return None  # Not found</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Example: git bisect</h4>
+                <p><code>git bisect</code> is binary search! You have a bug now, it worked before. Bisect finds the commit that broke it in O(log n) commits. 1000 commits = ~10 tests.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 3: Sorting Algorithms</h2>
+
+            <h3>3.1 Why Care About Sorting?</h3>
+            <ul>
+                <li>Enables binary search (O(log n) instead of O(n))</li>
+                <li>Helps find duplicates (adjacent after sort)</li>
+                <li>Required for many algorithms</li>
+            </ul>
+
+            <h3>3.2 The Sorts You Should Know</h3>
+            <table>
+                <tr><th>Algorithm</th><th>Time</th><th>Space</th><th>When to use</th></tr>
+                <tr><td>Built-in sort</td><td>O(n log n)</td><td>O(n)</td><td>Almost always — just use this</td></tr>
+                <tr><td>Quicksort</td><td>O(n log n)*</td><td>O(log n)</td><td>Understanding, not implementing</td></tr>
+                <tr><td>Mergesort</td><td>O(n log n)</td><td>O(n)</td><td>Stable sort needed</td></tr>
+                <tr><td>Counting sort</td><td>O(n)</td><td>O(k)</td><td>Small range of integers</td></tr>
+            </table>
+
+            <pre><code># Python: just use sorted() or .sort()
+pods = get_all_pods()
+by_age = sorted(pods, key=lambda p: p.age)
+by_name = sorted(pods, key=lambda p: p.name)
+
+# Sort in place (mutates the list)
+pods.sort(key=lambda p: p.restart_count, reverse=True)</code></pre>
+
+            <div class="callout success">
+                <h4>💡 Practical Advice</h4>
+                <p>Never implement your own sort. Use the built-in. It's optimized, tested, and probably faster than anything you'll write. Know that it's O(n log n) so you can reason about performance.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 4: Algorithm Patterns</h2>
+            <p>Most problems fit a few patterns. Learn to recognize them.</p>
+
+            <h3>4.1 Two Pointers</h3>
+            <p>Use two indices moving through an array. Great for sorted arrays or finding pairs.</p>
+            <pre><code># Find if any two numbers sum to target
+def has_pair_sum(sorted_arr, target):
+    left, right = 0, len(sorted_arr) - 1
+    while left < right:
+        current_sum = sorted_arr[left] + sorted_arr[right]
+        if current_sum == target:
+            return True
+        elif current_sum < target:
+            left += 1
+        else:
+            right -= 1
+    return False</code></pre>
+
+            <h3>4.2 Sliding Window</h3>
+            <p>Track a "window" of elements as you iterate. Great for subarrays.</p>
+            <pre><code># Max sum of k consecutive elements
+def max_sum_window(arr, k):
+    if len(arr) < k:
+        return None
+    
+    window_sum = sum(arr[:k])  # Initial window
+    max_sum = window_sum
+    
+    for i in range(k, len(arr)):
+        window_sum += arr[i] - arr[i-k]  # Slide window
+        max_sum = max(max_sum, window_sum)
+    
+    return max_sum</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Example: Rolling Metrics</h4>
+                <p>"Average request latency over the last 5 minutes" is a sliding window. Prometheus's <code>rate()</code> function uses this pattern.</p>
+            </div>
+
+            <h3>4.3 Hash Map for O(1) Lookup</h3>
+            <p>Trade space for time. Store computed values for instant lookup.</p>
+            <pre><code># Find two numbers that sum to target - O(n) instead of O(n²)
+def two_sum(arr, target):
+    seen = {}  # value -> index
+    for i, num in enumerate(arr):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return None</code></pre>
+
+            <h3>4.4 Recursion and Divide & Conquer</h3>
+            <p>Break problem into smaller subproblems. Solve each, combine results.</p>
+            <pre><code># Merge sort - divide array, sort halves, merge
+def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result</code></pre>
+
+            <h3>4.5 Greedy Algorithms</h3>
+            <p>Make the locally optimal choice at each step. Sometimes gives global optimum.</p>
+            <pre><code># Schedule maximum non-overlapping jobs
+def max_jobs(jobs):
+    """Each job is (start, end). Return max non-overlapping jobs."""
+    # Greedy: always pick job that ends earliest
+    sorted_jobs = sorted(jobs, key=lambda j: j[1])
+
+    result = []
+    last_end = 0
+
+    for start, end in sorted_jobs:
+        if start >= last_end:
+            result.append((start, end))
+            last_end = end
+
+    return result</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Example: Bin Packing</h4>
+                <p>Scheduling pods onto nodes is a bin packing problem. Kubernetes uses greedy heuristics — not optimal, but fast and good enough.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 5: Graph Algorithms</h2>
+
+            <h3>5.1 BFS: Shortest Path (Unweighted)</h3>
+            <pre><code>from collections import deque
+
+def shortest_path(graph, start, end):
+    """Find shortest path in unweighted graph."""
+    queue = deque([(start, [start])])
+    visited = {start}
+
+    while queue:
+        node, path = queue.popleft()
+        if node == end:
+            return path
+
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append((neighbor, path + [neighbor]))
+
+    return None  # No path</code></pre>
+
+            <h3>5.2 Topological Sort</h3>
+            <p>Order nodes so all dependencies come first. Essential for build systems.</p>
+            <pre><code>def topological_sort(graph):
+    """Return nodes in dependency order."""
+    in_degree = {node: 0 for node in graph}
+    for node in graph:
+        for neighbor in graph[node]:
+            in_degree[neighbor] += 1
+
+    queue = deque([n for n in in_degree if in_degree[n] == 0])
+    result = []
+
+    while queue:
+        node = queue.popleft()
+        result.append(node)
+        for neighbor in graph[node]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                queue.append(neighbor)
+
+    if len(result) != len(graph):
+        raise ValueError("Cycle detected!")
+    return result</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Examples</h4>
+                <ul style="margin-bottom:0">
+                    <li>Terraform: <code>terraform graph</code> shows dependency order</li>
+                    <li>Docker: Multi-stage builds have dependencies</li>
+                    <li>CI/CD: Job dependencies form a DAG</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 6: Dynamic Programming (Briefly)</h2>
+            <p>DP is about breaking problems into overlapping subproblems and caching results.</p>
+
+            <pre><code># Fibonacci - naive recursion is O(2^n)
+def fib_slow(n):
+    if n <= 1:
+        return n
+    return fib_slow(n-1) + fib_slow(n-2)
+
+# With memoization - O(n)
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def fib_fast(n):
+    if n <= 1:
+        return n
+    return fib_fast(n-1) + fib_fast(n-2)</code></pre>
+
+            <p>DP is less common in DevOps work, but the concept of caching computed results is everywhere (Redis, CDNs, build caches).</p>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+
+            <div class="exercise">
+                <h4>Exercise 5.1: Complexity Analysis</h4>
+                <p>What's the Big O of these operations?</p>
+                <ol>
+                    <li>Finding a pod by name in an unsorted list of 1000 pods</li>
+                    <li>Finding a pod by name in a dict keyed by name</li>
+                    <li>Sorting 1000 pods by restart count</li>
+                    <li>Checking if any two pods have the same IP (naive approach)</li>
+                    <li>Checking if any two pods have the same IP (using a set)</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>For each, think: How many operations in the worst case? Does doubling the input double the time, quadruple it, or barely change it?</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <ol>
+                            <li><strong>O(n)</strong> — Must check each pod until found, up to all 1000</li>
+                            <li><strong>O(1)</strong> — Hash lookup, constant time regardless of size</li>
+                            <li><strong>O(n log n)</strong> — Standard comparison sort complexity</li>
+                            <li><strong>O(n²)</strong> — Compare each pod to every other pod: 1000 × 1000 comparisons</li>
+                            <li><strong>O(n)</strong> — One pass: add to set, check for collision. Set lookup is O(1)</li>
+                        </ol>
+                        <p>Notice how choosing the right approach (set vs nested loops) changes O(n²) to O(n) — from 1,000,000 operations to 1,000!</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 5.2: Implement Binary Search</h4>
+                <p>Write a function that finds the first log entry after a given timestamp in a sorted log file. Handle the case where no such entry exists.</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>This is "find first element greater than target" — a variant of binary search. Track the best candidate found so far.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code>def find_first_after(logs, target_timestamp):
+    """Find first log entry with timestamp > target.
+    logs is list of (timestamp, message) tuples, sorted by timestamp.
+    """
+    left, right = 0, len(logs) - 1
+    result = None
+
+    while left <= right:
+        mid = (left + right) // 2
+        if logs[mid][0] > target_timestamp:
+            result = logs[mid]  # Candidate found
+            right = mid - 1     # Look for earlier one
+        else:
+            left = mid + 1      # Need later entry
+
+    return result  # None if no entry after target
+
+# Example
+logs = [
+    (1000, "start"),
+    (1005, "processing"),
+    (1010, "complete"),
+]
+find_first_after(logs, 1003)  # Returns (1005, "processing")</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 5.3: Sliding Window</h4>
+                <p>Given a list of request latencies, find the maximum average latency over any 5-minute window.</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Keep a running sum. When the window slides, add the new value and subtract the old one. Don't recalculate the entire sum each time.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code>def max_avg_latency(latencies, window_size):
+    """Find max average over any window of window_size elements."""
+    if len(latencies) < window_size:
+        return sum(latencies) / len(latencies) if latencies else 0
+
+    # Calculate first window
+    window_sum = sum(latencies[:window_size])
+    max_avg = window_sum / window_size
+
+    # Slide the window
+    for i in range(window_size, len(latencies)):
+        window_sum += latencies[i]           # Add new element
+        window_sum -= latencies[i - window_size]  # Remove old element
+        avg = window_sum / window_size
+        max_avg = max(max_avg, avg)
+
+    return max_avg
+
+# Example: latencies per second, 5-second window
+latencies = [10, 15, 20, 100, 150, 20, 15, 10]
+max_avg_latency(latencies, 5)  # Returns 61.0 (from [20, 100, 150, 20, 15])</code></pre>
+                        <p>This is O(n) instead of O(n × window_size). The sliding window technique is crucial for time-series analysis.</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 5.4: Topological Sort</h4>
+                <p>Given a list of Terraform resources and their dependencies, output the order they should be created.</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Build a graph. Use Kahn's algorithm: repeatedly find nodes with no incoming edges (no dependencies), remove them, repeat.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code>from collections import deque
+
+def topo_sort(resources):
+    """
+    resources: dict of resource -> list of dependencies
+    Returns: list of resources in creation order
+    """
+    # Count incoming edges
+    in_degree = {r: 0 for r in resources}
+    for deps in resources.values():
+        for dep in deps:
+            in_degree[dep] = in_degree.get(dep, 0)
+    for resource, deps in resources.items():
+        in_degree[resource] = len(deps)
+
+    # Start with resources that have no dependencies
+    queue = deque([r for r, d in in_degree.items() if d == 0])
+    result = []
+
+    while queue:
+        resource = queue.popleft()
+        result.append(resource)
+
+        # Reduce in-degree of dependents
+        for r, deps in resources.items():
+            if resource in deps:
+                in_degree[r] -= 1
+                if in_degree[r] == 0:
+                    queue.append(r)
+
+    if len(result) != len(in_degree):
+        raise ValueError("Cycle detected!")
+    return result
+
+# Example
+resources = {
+    "ec2": ["vpc", "security_group"],
+    "security_group": ["vpc"],
+    "vpc": [],
+    "rds": ["vpc", "security_group"],
+}
+topo_sort(resources)
+# Returns: ['vpc', 'security_group', 'ec2', 'rds']</code></pre>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="project">
+            <h3>🏗️ Project: Log Analysis Tool</h3>
+            <p>Build a tool that analyzes log files efficiently:</p>
+            <ol>
+                <li>Parse timestamps and sort entries</li>
+                <li>Binary search to find entries in a time range</li>
+                <li>Sliding window to find "hot" periods (most errors)</li>
+                <li>Hash map to count errors by type</li>
+            </ol>
+            <p>Analyze the complexity of each operation.</p>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Further Reading</h2>
+
+            <h4>Pattern-Based Learning (Recommended)</h4>
+            <ul>
+                <li><a href="https://neetcode.io/roadmap" target="_blank">NeetCode Roadmap</a> — Organized by pattern: Two Pointers, Sliding Window, Binary Search, etc.</li>
+                <li><a href="https://www.techinterviewhandbook.org/algorithms/study-cheatsheet/" target="_blank">Tech Interview Handbook: Algorithms</a> — Patterns with time/space complexity cheatsheet</li>
+            </ul>
+
+            <h4>Visual Learning</h4>
+            <ul>
+                <li><a href="https://www.youtube.com/watch?v=kPRA0W1kECg" target="_blank">15 Sorting Algorithms in 6 Minutes</a> — Visualize how different sorts compare (6 min)</li>
+                <li><a href="https://visualgo.net/en/sorting" target="_blank">VisuAlgo: Sorting</a> — Step through each algorithm</li>
+            </ul>
+
+            <h4>Books (Specific Focus)</h4>
+            <ul>
+                <li><strong>Grokking Algorithms</strong> — Chapters 1-4 for core concepts, Chapter 6 for BFS, Chapter 9 for dynamic programming</li>
+                <li><strong>The Algorithm Design Manual</strong> — Chapter 3 "Data Structures" and Chapter 4 "Sorting and Searching" are most practical</li>
+            </ul>
+
+            <h4>For DevOps Specifically</h4>
+            <ul>
+                <li><a href="https://www.bigocheatsheet.com/" target="_blank">Big-O Cheat Sheet</a> — Know when your kubectl/terraform is O(n²)</li>
+                <li>Focus on: Binary Search (debugging), BFS/DFS (dependency graphs), Sorting (log analysis), Hashing (caching)</li>
+            </ul>
+        </section>
+    </main>
+
+    <nav class="module-nav">
+        <a href="04-data-structures.html">← Previous: Data Structures</a>
+        <a href="06-operating-systems.html">Next: Operating Systems →</a>
+    </nav>
+
+    <footer>
+        <p>Module 5 of 12 — CS for DevOps Engineers</p>
+    </footer>
+</body>
+</html>
+

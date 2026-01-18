@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 8: Databases & Storage</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+    
+    <header>
+        <span class="module-number">Module 08</span>
+        <h1>Databases & Storage</h1>
+        <p class="subtitle">How databases actually work under the hood</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why Understand Database Internals?</h2>
+            <p>You don't need to build a database. But when queries are slow, when replication lags, when you're choosing between Postgres and DynamoDB — understanding internals helps you make better decisions.</p>
+        </section>
+
+        <section>
+            <h2>Part 1: Storage Engines</h2>
+
+            <h3>1.1 The Fundamental Problem</h3>
+            <p>Databases need to:</p>
+            <ol>
+                <li>Store data durably (survive crashes)</li>
+                <li>Retrieve data quickly (even with billions of rows)</li>
+                <li>Handle concurrent access (many readers/writers)</li>
+            </ol>
+            <p>These goals conflict. Storage engines are different trade-offs.</p>
+
+            <h3>1.2 B-Trees (Most Relational DBs)</h3>
+            <p>A B-tree is a self-balancing tree optimized for disk access.</p>
+            <pre><code>                    [50]
+                   /    \
+            [20,30]      [70,80]
+           /   |   \    /   |   \
+        [10] [25] [35] [60] [75] [90]</code></pre>
+
+            <p>Properties:</p>
+            <ul>
+                <li>Nodes contain multiple keys (fits disk block size)</li>
+                <li>All leaves at same depth (balanced)</li>
+                <li>O(log n) for search, insert, delete</li>
+            </ul>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>When you <code>CREATE INDEX</code> in Postgres, you're building a B-tree. When <code>EXPLAIN</code> shows "Index Scan", it's walking this tree. Index size matters because it needs to fit in RAM for fast access.</p>
+            </div>
+
+            <h3>1.3 LSM Trees (Cassandra, RocksDB, LevelDB)</h3>
+            <p>Log-Structured Merge trees optimize for writes.</p>
+            <pre><code>Write path:
+1. Write to in-memory buffer (memtable)
+2. When full, flush to disk as sorted file (SSTable)
+3. Background: merge SSTables to reduce read overhead
+
+Read path:
+1. Check memtable
+2. Check each SSTable (newest first)
+3. Bloom filters help skip SSTables that don't have the key</code></pre>
+
+            <table>
+                <tr><th>Aspect</th><th>B-Tree</th><th>LSM Tree</th></tr>
+                <tr><td>Write speed</td><td>Moderate</td><td>Fast (sequential)</td></tr>
+                <tr><td>Read speed</td><td>Fast</td><td>Moderate (may check multiple files)</td></tr>
+                <tr><td>Space</td><td>Some overhead</td><td>More overhead (duplicates during compaction)</td></tr>
+                <tr><td>Use case</td><td>General purpose</td><td>Write-heavy workloads</td></tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Part 2: Indexing</h2>
+
+            <h3>2.1 What is an Index?</h3>
+            <p>An index is a separate data structure that speeds up lookups. Like a book's index — instead of reading every page, jump to the right one.</p>
+
+            <pre><code>-- Without index: scan all rows (O(n))
+SELECT * FROM users WHERE email = 'alice@example.com';
+
+-- With index on email: B-tree lookup (O(log n))
+CREATE INDEX idx_users_email ON users(email);
+SELECT * FROM users WHERE email = 'alice@example.com';</code></pre>
+
+            <h3>2.2 Types of Indexes</h3>
+            <table>
+                <tr><th>Type</th><th>Best for</th><th>Example</th></tr>
+                <tr><td>B-tree</td><td>Equality, range queries</td><td><code>WHERE age > 30</code></td></tr>
+                <tr><td>Hash</td><td>Equality only</td><td><code>WHERE id = 123</code></td></tr>
+                <tr><td>GIN</td><td>Full-text, arrays, JSONB</td><td><code>WHERE tags @> '{urgent}'</code></td></tr>
+                <tr><td>GiST</td><td>Geometric, range types</td><td><code>WHERE location <-> point</code></td></tr>
+            </table>
+
+            <h3>2.3 Composite Indexes</h3>
+            <pre><code>-- Index on (a, b) can be used for:
+-- WHERE a = 1
+-- WHERE a = 1 AND b = 2
+-- WHERE a = 1 ORDER BY b
+
+-- But NOT efficiently for:
+-- WHERE b = 2  (wrong order!)
+
+CREATE INDEX idx_orders_user_date ON orders(user_id, created_at);</code></pre>
+
+            <div class="callout warning">
+                <h4>⚠️ Index Trade-offs</h4>
+                <p>Indexes speed up reads but slow down writes (must update index too). They also use disk space. Don't index everything — index what you query.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 3: Query Execution</h2>
+
+            <h3>3.1 Reading EXPLAIN</h3>
+            <pre><code>EXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = 123;
+
+-- Output:
+-- Index Scan using idx_orders_user on orders
+--   Index Cond: (user_id = 123)
+--   Rows Removed by Filter: 0
+--   Planning Time: 0.1 ms
+--   Execution Time: 0.05 ms</code></pre>
+
+            <p>Key things to look for:</p>
+            <ul>
+                <li><strong>Seq Scan:</strong> Reading entire table (often bad)</li>
+                <li><strong>Index Scan:</strong> Using an index (usually good)</li>
+                <li><strong>Rows:</strong> Estimated vs actual — big difference means stale statistics</li>
+                <li><strong>Loops:</strong> Nested loop joins can be expensive</li>
+            </ul>
+
+            <h3>3.2 Common Query Problems</h3>
+            <pre><code>-- Problem: Function on indexed column prevents index use
+SELECT * FROM users WHERE LOWER(email) = 'alice@example.com';
+-- Fix: Create functional index
+CREATE INDEX idx_users_email_lower ON users(LOWER(email));
+
+-- Problem: OR can prevent index use
+SELECT * FROM orders WHERE user_id = 1 OR status = 'pending';
+-- Fix: Use UNION or separate queries
+
+-- Problem: LIKE with leading wildcard
+SELECT * FROM users WHERE name LIKE '%smith';
+-- Fix: Full-text search or trigram index</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 4: Transactions and ACID</h2>
+
+            <h3>4.1 ACID Properties</h3>
+            <table>
+                <tr><th>Property</th><th>Meaning</th><th>Example</th></tr>
+                <tr><td><strong>A</strong>tomicity</td><td>All or nothing</td><td>Transfer fails → both accounts unchanged</td></tr>
+                <tr><td><strong>C</strong>onsistency</td><td>Valid state to valid state</td><td>Constraints always satisfied</td></tr>
+                <tr><td><strong>I</strong>solation</td><td>Transactions don't interfere</td><td>Concurrent reads see consistent data</td></tr>
+                <tr><td><strong>D</strong>urability</td><td>Committed = permanent</td><td>Survives crash after commit</td></tr>
+            </table>
+
+            <h3>4.2 Isolation Levels</h3>
+            <table>
+                <tr><th>Level</th><th>Dirty Read</th><th>Non-repeatable Read</th><th>Phantom</th></tr>
+                <tr><td>Read Uncommitted</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Read Committed</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Repeatable Read</td><td>No</td><td>No</td><td>Yes</td></tr>
+                <tr><td>Serializable</td><td>No</td><td>No</td><td>No</td></tr>
+            </table>
+
+            <p>Higher isolation = more correctness, less concurrency. Most apps use Read Committed.</p>
+
+            <h3>4.3 Write-Ahead Logging (WAL)</h3>
+            <p>How databases ensure durability:</p>
+            <ol>
+                <li>Write change to WAL (sequential, fast)</li>
+                <li>Return success to client</li>
+                <li>Later: apply changes to actual data files</li>
+            </ol>
+            <p>If crash happens, replay WAL to recover.</p>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>WAL is why Postgres replication works — replicas replay the primary's WAL. It's also why <code>pg_dump</code> during heavy writes can cause WAL to grow — changes accumulate faster than they're archived.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 5: Replication</h2>
+
+            <h3>5.1 Why Replicate?</h3>
+            <ul>
+                <li><strong>High availability:</strong> Failover if primary dies</li>
+                <li><strong>Read scaling:</strong> Distribute read load</li>
+                <li><strong>Geographic distribution:</strong> Data closer to users</li>
+            </ul>
+
+            <h3>5.2 Replication Strategies</h3>
+            <table>
+                <tr><th>Strategy</th><th>Consistency</th><th>Latency</th><th>Availability</th></tr>
+                <tr><td>Synchronous</td><td>Strong</td><td>Higher</td><td>Lower (waits for replica)</td></tr>
+                <tr><td>Asynchronous</td><td>Eventual</td><td>Lower</td><td>Higher</td></tr>
+                <tr><td>Semi-synchronous</td><td>Compromise</td><td>Medium</td><td>Medium</td></tr>
+            </table>
+
+            <h3>5.3 Replication Lag</h3>
+            <pre><code>-- Check replication lag in Postgres
+SELECT
+    client_addr,
+    state,
+    sent_lsn - write_lsn as write_lag,
+    write_lsn - flush_lsn as flush_lag,
+    flush_lsn - replay_lsn as replay_lag
+FROM pg_stat_replication;</code></pre>
+
+            <div class="callout warning">
+                <h4>⚠️ Read-After-Write Consistency</h4>
+                <p>User writes to primary, reads from replica, doesn't see their write. Solutions: read from primary for recent writes, or use synchronous replication.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 6: NoSQL Databases</h2>
+
+            <h3>6.1 Types of NoSQL</h3>
+            <table>
+                <tr><th>Type</th><th>Examples</th><th>Best for</th></tr>
+                <tr><td>Key-Value</td><td>Redis, DynamoDB</td><td>Caching, sessions, simple lookups</td></tr>
+                <tr><td>Document</td><td>MongoDB, CouchDB</td><td>Flexible schemas, nested data</td></tr>
+                <tr><td>Wide-Column</td><td>Cassandra, HBase</td><td>Time series, write-heavy</td></tr>
+                <tr><td>Graph</td><td>Neo4j, Neptune</td><td>Relationships, social networks</td></tr>
+            </table>
+
+            <h3>6.2 When to Use What</h3>
+            <div class="decision-tree">
+Need ACID transactions across tables?
+├─ YES → Relational (Postgres, MySQL)
+└─ NO → Continue...
+
+Need flexible schema?
+├─ YES → Document (MongoDB) or Key-Value
+└─ NO → Continue...
+
+Write-heavy with simple queries?
+├─ YES → Wide-column (Cassandra)
+└─ NO → Continue...
+
+Complex relationships?
+├─ YES → Graph (Neo4j)
+└─ NO → Probably relational is fine
+            </div>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+
+            <div class="exercise">
+                <h4>Exercise 8.1: EXPLAIN Analysis</h4>
+                <p>Take a slow query from your application. Run <code>EXPLAIN ANALYZE</code> and identify:</p>
+                <ol>
+                    <li>Is it using indexes?</li>
+                    <li>Where is time being spent?</li>
+                    <li>What index would help?</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Look for: "Seq Scan" (bad for large tables), "actual time" (where time goes), "rows" vs "rows removed by filter" (selectivity).</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Analysis</summary>
+                    <div class="solution-content">
+                        <pre><code>EXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = 123;
+
+-- Bad output:
+Seq Scan on orders  (cost=0..1234 rows=100 width=50) (actual time=0.01..150.00 rows=100 loops=1)
+  Filter: (user_id = 123)
+  Rows Removed by Filter: 999900
+-- Scanning all 1M rows to find 100! Needs index on user_id.
+
+-- After CREATE INDEX idx_orders_user ON orders(user_id):
+Index Scan using idx_orders_user on orders  (actual time=0.01..0.50 rows=100 loops=1)
+  Index Cond: (user_id = 123)
+-- 300x faster!</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 8.2: Index Design</h4>
+                <p>Given this query pattern, design the optimal index:</p>
+                <pre><code>SELECT * FROM events
+WHERE user_id = ?
+  AND event_type = ?
+  AND created_at > ?
+ORDER BY created_at DESC
+LIMIT 100;</code></pre>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Composite index column order matters. Put equality conditions first, then range/sort columns. Consider: can the index satisfy the ORDER BY?</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code>-- Optimal index:
+CREATE INDEX idx_events_lookup ON events(user_id, event_type, created_at DESC);
+
+-- Why this order:
+-- 1. user_id (equality) - narrows to one user's events
+-- 2. event_type (equality) - narrows further
+-- 3. created_at DESC - already sorted! No extra sort step.
+
+-- The index can:
+-- ✅ Filter by user_id and event_type (exact match)
+-- ✅ Range scan created_at > ? (B-tree efficient)
+-- ✅ Return rows in ORDER BY order (no sort needed)
+-- ✅ LIMIT 100 stops after 100 rows from index
+
+-- Alternative for multiple event_types:
+CREATE INDEX idx_events_user_time ON events(user_id, created_at DESC);
+-- Then filter event_type in-memory (if cardinality is low)</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 8.3: Replication Lag</h4>
+                <p>Set up Postgres with a replica. Generate write load and observe replication lag. What happens when you increase write rate?</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Use <code>pg_stat_replication</code> on primary and <code>pg_last_wal_receive_lsn()</code> on replica. Use pgbench to generate load.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code>-- On primary: check replication status
+SELECT client_addr, state,
+       pg_wal_lsn_diff(sent_lsn, replay_lsn) AS lag_bytes
+FROM pg_stat_replication;
+
+-- Generate write load
+pgbench -c 10 -j 2 -T 60 mydb
+
+-- Watch lag grow (in another terminal):
+watch -n1 "psql -c \"SELECT pg_wal_lsn_diff(sent_lsn, replay_lsn) FROM pg_stat_replication;\""
+
+-- Observations:
+-- - Light load: lag stays near 0
+-- - Heavy load: lag grows (replica can't keep up)
+-- - Network issues: lag spikes
+-- - Replica I/O bottleneck: consistent lag</code></pre>
+                        <p>This is why you shouldn't read-after-write from replicas without waiting for sync.</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="project">
+            <h3>🏗️ Project: Database Performance Audit</h3>
+            <p>Audit a database you operate:</p>
+            <ol>
+                <li>Identify the top 5 slowest queries</li>
+                <li>Analyze each with EXPLAIN</li>
+                <li>Propose index changes</li>
+                <li>Measure before/after performance</li>
+                <li>Document the trade-offs (index size, write overhead)</li>
+            </ol>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Further Reading</h2>
+
+            <h4>DDIA: Key Chapters (The Essential Book)</h4>
+            <ul>
+                <li><strong>Designing Data-Intensive Applications</strong> by Martin Kleppmann:</li>
+                <li style="margin-left: 2em">Chapter 3: Storage and Retrieval — B-trees, LSM-trees, how databases store data</li>
+                <li style="margin-left: 2em">Chapter 5: Replication — Leader/follower, conflict resolution</li>
+                <li style="margin-left: 2em">Chapter 7: Transactions — ACID, isolation levels</li>
+                <li><a href="https://news.ycombinator.com/item?id=17517335" target="_blank">HN: Why DDIA is essential</a> — Discussion on which chapters matter most</li>
+            </ul>
+
+            <h4>Indexing Deep Dives</h4>
+            <ul>
+                <li><a href="https://use-the-index-luke.com/" target="_blank">Use The Index, Luke</a> — Free, comprehensive. Start with "Anatomy of an Index"</li>
+                <li><a href="http://www.louisemeta.com/blog/intro-to-indexes/" target="_blank">Introduction to PostgreSQL's Indexes</a> — B-tree internals with visuals</li>
+                <li><a href="https://pganalyze.com/blog/gin-index" target="_blank">Understanding Postgres GIN Indexes</a> — For JSONB and full-text search</li>
+            </ul>
+
+            <h4>Query Analysis</h4>
+            <ul>
+                <li><a href="https://www.postgresql.org/docs/current/using-explain.html" target="_blank">PostgreSQL EXPLAIN Documentation</a> — Official reference</li>
+                <li><a href="https://explain.depesz.com/" target="_blank">explain.depesz.com</a> — Paste your EXPLAIN output for visual analysis</li>
+            </ul>
+
+            <h4>Replication & Operations</h4>
+            <ul>
+                <li><a href="https://www.citusdata.com/blog/2018/02/15/when-postgresql-blocks-itself/" target="_blank">When PostgreSQL Blocks Itself</a> — Understanding locks</li>
+            </ul>
+        </section>
+    </main>
+
+    <nav class="module-nav">
+        <a href="07-operating-systems.html">← Previous: Operating Systems</a>
+        <a href="09-networking.html">Next: Networking →</a>
+    </nav>
+
+    <footer>
+        <p>Module 8 of 12 — CS for DevOps Engineers</p>
+    </footer>
+</body>
+</html>
+

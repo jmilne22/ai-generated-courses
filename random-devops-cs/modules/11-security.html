@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 11: Security</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+    
+    <header>
+        <span class="module-number">Module 11</span>
+        <h1>Security</h1>
+        <p class="subtitle">Cryptography, TLS, and security fundamentals</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why Security Fundamentals Matter</h2>
+            <p>You don't need to be a security expert, but you need to understand the basics. When you configure TLS, manage secrets, or set up authentication — you're making security decisions. Bad ones have consequences.</p>
+        </section>
+
+        <section>
+            <h2>Part 1: Cryptographic Primitives</h2>
+
+            <h3>1.1 Hashing</h3>
+            <p>A hash function takes input of any size and produces fixed-size output. Properties:</p>
+            <ul>
+                <li><strong>Deterministic:</strong> Same input → same output</li>
+                <li><strong>One-way:</strong> Can't reverse to get input</li>
+                <li><strong>Collision-resistant:</strong> Hard to find two inputs with same hash</li>
+                <li><strong>Avalanche effect:</strong> Small input change → completely different hash</li>
+            </ul>
+
+            <pre><code># Common hash functions
+echo -n "hello" | sha256sum
+# 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+
+echo -n "hello!" | sha256sum  # One character different
+# ce06092fb948d9ffac7d1a376e404b26b7575bcc11ee05a4615fef4fec3a308b</code></pre>
+
+            <table>
+                <tr><th>Algorithm</th><th>Output Size</th><th>Status</th></tr>
+                <tr><td>MD5</td><td>128 bits</td><td>❌ Broken, don't use for security</td></tr>
+                <tr><td>SHA-1</td><td>160 bits</td><td>❌ Broken, being phased out</td></tr>
+                <tr><td>SHA-256</td><td>256 bits</td><td>✅ Current standard</td></tr>
+                <tr><td>SHA-3</td><td>Variable</td><td>✅ Newer alternative</td></tr>
+            </table>
+
+            <div class="callout">
+                <h4>🔧 DevOps Uses</h4>
+                <ul style="margin-bottom:0">
+                    <li>Docker image digests: <code>sha256:abc123...</code></li>
+                    <li>Git commit hashes</li>
+                    <li>File integrity verification</li>
+                    <li>Password storage (with proper algorithms)</li>
+                </ul>
+            </div>
+
+            <h3>1.2 Password Hashing</h3>
+            <p>Regular hashes are too fast for passwords. Use slow, salted algorithms:</p>
+            <pre><code># WRONG: Plain hash (can be rainbow-tabled)
+sha256("password123")
+
+# RIGHT: Purpose-built password hash
+bcrypt("password123", salt, cost=12)
+argon2("password123", salt, memory=65536, iterations=3)</code></pre>
+
+            <p><strong>Salt:</strong> Random data added to password before hashing. Prevents rainbow table attacks.</p>
+            <p><strong>Cost factor:</strong> Makes hashing intentionally slow (100ms+). Slows down brute force.</p>
+
+            <h3>1.3 Symmetric Encryption</h3>
+            <p>Same key encrypts and decrypts. Fast, used for bulk data.</p>
+            <pre><code>plaintext + key → ciphertext
+ciphertext + key → plaintext
+
+# AES-256-GCM is the current standard
+# GCM provides both encryption and authentication</code></pre>
+
+            <div class="callout warning">
+                <h4>⚠️ Never Roll Your Own Crypto</h4>
+                <p>Use established libraries (OpenSSL, libsodium). Crypto is easy to get wrong in subtle ways that aren't obvious until you're breached.</p>
+            </div>
+
+            <h3>1.4 Asymmetric Encryption</h3>
+            <p>Two keys: public (share freely) and private (keep secret).</p>
+            <pre><code># Encryption: Anyone can encrypt with public key
+plaintext + public_key → ciphertext
+
+# Decryption: Only private key holder can decrypt
+ciphertext + private_key → plaintext
+
+# Signing: Prove you have the private key
+message + private_key → signature
+signature + public_key → verified (or not)</code></pre>
+
+            <table>
+                <tr><th>Algorithm</th><th>Use</th><th>Status</th></tr>
+                <tr><td>RSA</td><td>Encryption, signing</td><td>✅ Use 2048+ bits</td></tr>
+                <tr><td>ECDSA</td><td>Signing</td><td>✅ Smaller keys, same security</td></tr>
+                <tr><td>Ed25519</td><td>Signing</td><td>✅ Modern, fast, recommended</td></tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Part 2: TLS (Transport Layer Security)</h2>
+
+            <h3>2.1 What TLS Provides</h3>
+            <ul>
+                <li><strong>Confidentiality:</strong> Data encrypted in transit</li>
+                <li><strong>Integrity:</strong> Data can't be modified undetected</li>
+                <li><strong>Authentication:</strong> Server (and optionally client) identity verified</li>
+            </ul>
+
+            <h3>2.2 The TLS Handshake</h3>
+            <pre><code>Client                              Server
+   |                                   |
+   |--- ClientHello (supported ciphers) -->|
+   |                                   |
+   |<-- ServerHello (chosen cipher) ---|
+   |<-- Certificate (server's cert) ---|
+   |<-- ServerHelloDone ---------------|
+   |                                   |
+   |--- ClientKeyExchange ------------>|
+   |--- ChangeCipherSpec ------------->|
+   |--- Finished (encrypted) --------->|
+   |                                   |
+   |<-- ChangeCipherSpec --------------|
+   |<-- Finished (encrypted) ----------|
+   |                                   |
+   |<== Encrypted Application Data ===>|</code></pre>
+
+            <h3>2.3 Certificates</h3>
+            <p>A certificate binds a public key to an identity, signed by a Certificate Authority (CA).</p>
+            <pre><code># View certificate details
+openssl s_client -connect example.com:443 -servername example.com
+openssl x509 -in cert.pem -text -noout
+
+# Certificate chain:
+# Root CA (trusted, in browser/OS)
+#   └── Intermediate CA
+#         └── Your certificate</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>Let's Encrypt provides free certificates. Cert-manager automates this in Kubernetes. Always check certificate expiry — expired certs cause outages.</p>
+            </div>
+
+            <h3>2.4 mTLS (Mutual TLS)</h3>
+            <p>Both client and server present certificates. Used in service meshes.</p>
+            <pre><code># Regular TLS: Server proves identity to client
+# mTLS: Both prove identity to each other
+
+# Istio, Linkerd use mTLS for service-to-service auth</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 3: Authentication and Authorization</h2>
+
+            <h3>3.1 Authentication vs Authorization</h3>
+            <ul>
+                <li><strong>Authentication (AuthN):</strong> Who are you?</li>
+                <li><strong>Authorization (AuthZ):</strong> What can you do?</li>
+            </ul>
+
+            <h3>3.2 Tokens and JWTs</h3>
+            <pre><code># JWT structure: header.payload.signature
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMTIzIn0.signature
+
+# Header: {"alg": "HS256"}
+# Payload: {"sub": "user123", "exp": 1234567890}
+# Signature: HMAC(header + payload, secret)</code></pre>
+
+            <div class="callout warning">
+                <h4>⚠️ JWT Pitfalls</h4>
+                <ul style="margin-bottom:0">
+                    <li>JWTs are signed, not encrypted (payload is base64, readable)</li>
+                    <li>Can't be revoked (use short expiry + refresh tokens)</li>
+                    <li>Verify the algorithm (alg:none attack)</li>
+                </ul>
+            </div>
+
+            <h3>3.3 OAuth 2.0 and OIDC</h3>
+            <p><strong>OAuth 2.0:</strong> Authorization framework. "Allow app X to access my data on service Y."</p>
+            <p><strong>OpenID Connect (OIDC):</strong> Identity layer on OAuth. "Who is this user?"</p>
+            <pre><code># OAuth flow (simplified):
+1. User clicks "Login with Google"
+2. Redirect to Google with client_id
+3. User authenticates with Google
+4. Google redirects back with authorization code
+5. Your server exchanges code for access token
+6. Use access token to call Google APIs</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 4: Secrets Management</h2>
+
+            <h3>4.1 The Problem</h3>
+            <p>Secrets (API keys, passwords, certificates) need to be:</p>
+            <ul>
+                <li>Available to applications</li>
+                <li>Not in source code</li>
+                <li>Rotatable without downtime</li>
+                <li>Auditable (who accessed what)</li>
+            </ul>
+
+            <h3>4.2 Solutions</h3>
+            <table>
+                <tr><th>Solution</th><th>Pros</th><th>Cons</th></tr>
+                <tr><td>Environment variables</td><td>Simple</td><td>Visible in process list, logs</td></tr>
+                <tr><td>Kubernetes Secrets</td><td>Native, easy</td><td>Base64 (not encrypted at rest by default)</td></tr>
+                <tr><td>HashiCorp Vault</td><td>Full-featured, dynamic secrets</td><td>Complexity, another service to run</td></tr>
+                <tr><td>AWS Secrets Manager</td><td>Managed, rotation</td><td>AWS-specific, cost</td></tr>
+            </table>
+
+            <pre><code># Vault example
+vault kv get secret/myapp/database
+# Returns: username=admin, password=s3cr3t
+
+# Dynamic secrets (Vault generates temporary credentials)
+vault read database/creds/my-role
+# Returns: username=v-token-my-role-xyz, password=abc123
+# Credentials auto-expire after TTL</code></pre>
+
+            <div class="callout">
+                <h4>🔧 DevOps Best Practices</h4>
+                <ul style="margin-bottom:0">
+                    <li>Never commit secrets to git (use git-secrets, pre-commit hooks)</li>
+                    <li>Rotate secrets regularly</li>
+                    <li>Use short-lived credentials when possible</li>
+                    <li>Audit secret access</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 5: Common Vulnerabilities</h2>
+
+            <h3>5.1 OWASP Top 10 (Highlights)</h3>
+            <table>
+                <tr><th>Vulnerability</th><th>Description</th><th>Prevention</th></tr>
+                <tr><td>Injection</td><td>SQL, command injection</td><td>Parameterized queries, input validation</td></tr>
+                <tr><td>Broken Auth</td><td>Weak passwords, session issues</td><td>MFA, secure session handling</td></tr>
+                <tr><td>Sensitive Data Exposure</td><td>Unencrypted data</td><td>Encrypt at rest and in transit</td></tr>
+                <tr><td>XXE</td><td>XML external entities</td><td>Disable external entities</td></tr>
+                <tr><td>Broken Access Control</td><td>Missing authorization checks</td><td>Check permissions on every request</td></tr>
+            </table>
+
+            <h3>5.2 Infrastructure Security</h3>
+            <pre><code># Principle of least privilege
+# - Pods shouldn't run as root
+# - Use read-only file systems where possible
+# - Network policies to restrict traffic
+
+# Example: Kubernetes security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]</code></pre>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+
+            <div class="exercise">
+                <h4>Exercise 11.1: Certificate Inspection</h4>
+                <p>For a site you manage:</p>
+                <ol>
+                    <li>View the certificate chain with <code>openssl s_client</code></li>
+                    <li>Check expiry date</li>
+                    <li>Identify the CA</li>
+                    <li>Check what cipher suites are supported</li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Commands: <code>openssl s_client -connect host:443 -servername host</code>, pipe to <code>openssl x509 -text</code>, use <code>nmap --script ssl-enum-ciphers</code> for ciphers.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example</summary>
+                    <div class="solution-content">
+                        <pre><code># View certificate
+echo | openssl s_client -connect example.com:443 -servername example.com 2>/dev/null | openssl x509 -text
+
+# Key fields to find:
+Issuer: C = US, O = DigiCert Inc, CN = DigiCert TLS RSA SHA256 2020 CA1
+Validity:
+    Not Before: Jan 15 00:00:00 2024 GMT
+    Not After : Feb 15 23:59:59 2025 GMT
+Subject: CN = example.com
+X509v3 Subject Alternative Name:
+    DNS:example.com, DNS:www.example.com
+
+# Check ciphers
+nmap --script ssl-enum-ciphers -p 443 example.com
+# Look for: TLSv1.3, strong ciphers (AES-GCM, ChaCha20)
+# Avoid: TLSv1.0, TLSv1.1, RC4, 3DES</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 11.2: Hash Comparison</h4>
+                <p>Download a file and verify its hash. Try modifying one byte and see how the hash changes.</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Use <code>sha256sum</code> on Linux or <code>shasum -a 256</code> on Mac. Compare expected hash from download page.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example</summary>
+                    <div class="solution-content">
+                        <pre><code># Download and verify
+curl -O https://example.com/file.tar.gz
+sha256sum file.tar.gz
+# Compare with published hash on website
+
+# Demonstrate avalanche effect
+echo "hello world" > test.txt
+sha256sum test.txt
+# a948904f2f0f479b8f8564cbf12daea3c4e99d8b8c8e2bb...
+
+echo "hello world!" > test.txt  # Added one character
+sha256sum test.txt
+# 7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab...
+# Completely different hash!</code></pre>
+                        <p>This is why hashes are used for integrity — any change is detectable.</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 11.3: JWT Decode</h4>
+                <p>Take a JWT from an application you use. Decode it (jwt.io) and understand each field. What's in the payload?</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Find a JWT in browser DevTools (Application tab, cookies/localStorage). JWTs have three base64 parts separated by dots. You can decode locally with base64 command.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Decode</summary>
+                    <div class="solution-content">
+                        <pre><code># JWT structure: header.payload.signature
+# Each part is base64url encoded
+
+# Decode header
+echo "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9" | base64 -d
+# {"alg":"RS256","typ":"JWT"}
+
+# Decode payload
+echo "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4iLCJpYXQiOjE1MTYyMzkwMjJ9" | base64 -d
+# {"sub":"1234567890","name":"John","iat":1516239022}
+
+# Common payload fields:
+# sub: Subject (user ID)
+# exp: Expiration time (Unix timestamp)
+# iat: Issued at time
+# iss: Issuer
+# aud: Audience (intended recipient)
+
+# The signature cannot be decoded (it's a cryptographic signature)</code></pre>
+                        <p>Remember: JWTs are signed, not encrypted. Anyone can read the payload!</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="project">
+            <h3>🏗️ Project: Security Audit</h3>
+            <p>Audit a system you operate:</p>
+            <ol>
+                <li>How are secrets managed? Any in git history?</li>
+                <li>Are certificates valid and not expiring soon?</li>
+                <li>What TLS versions/ciphers are supported?</li>
+                <li>Are containers running as root?</li>
+                <li>What network policies exist?</li>
+            </ol>
+            <p>Document findings and remediation steps.</p>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Further Reading</h2>
+
+            <h4>OWASP (Free, Essential)</h4>
+            <ul>
+                <li><a href="https://owasp.org/Top10/" target="_blank">OWASP Top 10 (2021)</a> — Know these vulnerabilities</li>
+                <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" target="_blank">Authentication Cheat Sheet</a> — Session handling, password storage</li>
+                <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html" target="_blank">Secrets Management Cheat Sheet</a> — Vault, rotation, best practices</li>
+                <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html" target="_blank">Docker Security Cheat Sheet</a> — Container hardening</li>
+            </ul>
+
+            <h4>TLS & Certificates</h4>
+            <ul>
+                <li><a href="https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/" target="_blank">What happens in a TLS handshake?</a> — Clear Cloudflare explanation</li>
+                <li><a href="https://badssl.com/" target="_blank">badssl.com</a> — Test your browser/tools against various TLS issues</li>
+                <li><a href="https://www.ssllabs.com/ssltest/" target="_blank">SSL Labs Server Test</a> — Grade your TLS configuration</li>
+            </ul>
+
+            <h4>HN Discussions</h4>
+            <ul>
+                <li><a href="https://news.ycombinator.com/item?id=14290114" target="_blank">Things to Use Instead of JSON Web Tokens</a> — JWT pitfalls discussed</li>
+                <li><a href="https://news.ycombinator.com/item?id=42895332" target="_blank">Hell is overconfident developers writing encryption code</a> — Why to use libraries</li>
+            </ul>
+
+            <h4>Books (Specific Chapters)</h4>
+            <ul>
+                <li><strong>Cryptography Engineering</strong> — Chapter 1 "The Context of Cryptography" and Chapter 22 "Storing Secrets" are most practical for DevOps</li>
+                <li><strong>Bulletproof TLS and PKI</strong> — Chapter 9 "Deployment" for practical TLS configuration</li>
+            </ul>
+
+            <h4>Tools</h4>
+            <ul>
+                <li><a href="https://jwt.io/" target="_blank">jwt.io</a> — Decode JWTs (don't paste production tokens!)</li>
+            </ul>
+        </section>
+    </main>
+
+    <nav class="module-nav">
+        <a href="10-concurrency.html">← Previous: Concurrency</a>
+        <a href="12-software-architecture.html">Next: Software Architecture →</a>
+    </nav>
+
+    <footer>
+        <p>Module 11 of 12 — CS for DevOps Engineers</p>
+    </footer>
+</body>
+</html>
+

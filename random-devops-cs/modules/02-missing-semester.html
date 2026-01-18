@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: The Missing Semester</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+    <script src="../bionic.js" defer></script>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Course</a></nav>
+    
+    <header>
+        <span class="module-number">Module 02</span>
+        <h1>The Missing Semester</h1>
+        <p class="subtitle">The practical tools CS programs don't teach</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is This?</h2>
+            <p>This module is heavily inspired by MIT's <a href="https://missing.csail.mit.edu/" target="_blank">Missing Semester</a> course. It covers the practical tools you use every day but probably learned through trial and error.</p>
+            <p>As a DevOps engineer, you might already know some of this. But do you know it <em>deeply</em>? Do you know <em>why</em> git works the way it does?</p>
+        </section>
+
+        <section>
+            <h2>Part 1: Shell Mastery</h2>
+            <p>You use the shell every day. Let's go from "I can cd around" to "I understand what's happening."</p>
+
+            <h3>1.1 What Actually Happens When You Run a Command</h3>
+            <pre><code>$ ls -la /etc</code></pre>
+            <ol>
+                <li>Shell parses the input: command = <code>ls</code>, args = <code>["-la", "/etc"]</code></li>
+                <li>Shell searches <code>$PATH</code> for an executable named <code>ls</code></li>
+                <li>Shell calls <code>fork()</code> to create a child process</li>
+                <li>Child process calls <code>exec()</code> to replace itself with <code>ls</code></li>
+                <li><code>ls</code> runs, writes to stdout (file descriptor 1)</li>
+                <li>Shell waits for child to exit, gets exit code</li>
+            </ol>
+
+            <div class="callout">
+                <h4>🔧 DevOps Connection</h4>
+                <p>This is why environment variables are inherited by child processes — <code>fork()</code> copies the parent's environment. It's also why <code>exec</code> in Dockerfile replaces the shell with your app (for signal handling).</p>
+            </div>
+
+            <h3>1.2 Pipes and Redirection</h3>
+            <p>Every process has three standard streams:</p>
+            <table>
+                <tr><th>Name</th><th>FD</th><th>Default</th><th>Purpose</th></tr>
+                <tr><td>stdin</td><td>0</td><td>keyboard</td><td>Input</td></tr>
+                <tr><td>stdout</td><td>1</td><td>terminal</td><td>Normal output</td></tr>
+                <tr><td>stderr</td><td>2</td><td>terminal</td><td>Error output</td></tr>
+            </table>
+
+            <pre><code># Redirect stdout to file
+ls > files.txt
+
+# Redirect stderr to file
+command 2> errors.txt
+
+# Redirect both
+command > output.txt 2>&1
+
+# Pipe: stdout of left → stdin of right
+cat /var/log/syslog | grep error | wc -l
+
+# The above is equivalent to:
+# 1. cat reads file, writes to stdout
+# 2. grep reads from stdin, filters, writes matches to stdout
+# 3. wc reads from stdin, counts lines</code></pre>
+
+            <h3>1.3 Job Control</h3>
+            <pre><code># Run in background
+long_command &
+
+# See running jobs
+jobs
+
+# Bring job to foreground
+fg %1
+
+# Suspend current job (Ctrl+Z), then background it
+bg %1
+
+# Keep running after logout
+nohup long_command &
+# or better:
+long_command &amp; disown</code></pre>
+
+            <h3>1.4 Shell Scripting Essentials</h3>
+            <pre><code>#!/bin/bash
+set -euo pipefail  # ALWAYS USE THIS
+
+# -e: Exit on error
+# -u: Error on undefined variable  
+# -o pipefail: Pipe fails if any command fails
+
+# Variables
+NAME="production"
+echo "Deploying to $NAME"
+
+# Command substitution
+PODS=$(kubectl get pods -o name)
+COUNT=$(echo "$PODS" | wc -l)
+
+# Conditionals
+if [[ "$COUNT" -gt 0 ]]; then
+    echo "Found $COUNT pods"
+fi
+
+# Loops
+for pod in $PODS; do
+    kubectl describe "$pod"
+done
+
+# Functions
+deploy() {
+    local env=$1  # local variable
+    echo "Deploying to $env"
+}</code></pre>
+
+            <div class="callout warning">
+                <h4>⚠️ Common Shell Gotchas</h4>
+                <ul style="margin-bottom:0">
+                    <li><code>[ ]</code> vs <code>[[ ]]</code> — Use <code>[[ ]]</code> in bash, it's safer</li>
+                    <li>Always quote variables: <code>"$VAR"</code> not <code>$VAR</code></li>
+                    <li><code>==</code> for strings, <code>-eq</code> for numbers in <code>[ ]</code></li>
+                    <li>Spaces matter: <code>if [[ $x == "y" ]]</code> not <code>if [[$x=="y"]]</code></li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 2: Git Internals</h2>
+            <p>You use git. But do you know what's actually in <code>.git</code>?</p>
+
+            <h3>2.1 Git's Data Model</h3>
+            <p>Git is a content-addressable filesystem with a VCS built on top. Everything is an object:</p>
+            
+            <table>
+                <tr><th>Object</th><th>What it stores</th><th>Identified by</th></tr>
+                <tr><td><strong>blob</strong></td><td>File contents (no filename!)</td><td>SHA-1 of content</td></tr>
+                <tr><td><strong>tree</strong></td><td>Directory: list of blobs/trees + names</td><td>SHA-1 of tree</td></tr>
+                <tr><td><strong>commit</strong></td><td>Tree pointer + parent + message + author</td><td>SHA-1 of commit</td></tr>
+            </table>
+
+            <pre><code># See what's in a commit
+git cat-file -p HEAD
+
+# Output:
+# tree 4b825dc642cb6eb9a060e54bf8d69288fbee4904
+# parent 7b6a0a8c7e4a3f2d1e0f9a8b7c6d5e4f3a2b1c0d
+# author James &lt;james@example.com&gt; 1234567890 +0000
+# committer James &lt;james@example.com&gt; 1234567890 +0000
+#
+# My commit message</code></pre>
+
+            <div class="callout success">
+                <h4>💡 Key Insight</h4>
+                <p>A branch is just a file containing a commit SHA. That's it. <code>cat .git/refs/heads/main</code> shows you the commit hash. Branches are cheap because they're just 40-byte files.</p>
+            </div>
+
+            <h3>2.2 What Happens During Common Operations</h3>
+            <pre><code># git add file.txt
+# 1. Creates blob object from file contents
+# 2. Adds entry to staging area (.git/index)
+
+# git commit
+# 1. Creates tree object from staging area
+# 2. Creates commit object pointing to tree
+# 3. Updates current branch to point to new commit
+
+# git checkout branch
+# 1. Reads commit SHA from .git/refs/heads/branch
+# 2. Reads tree from that commit
+# 3. Updates working directory to match tree
+# 4. Updates HEAD to point to branch</code></pre>
+
+            <h3>2.3 Rebase vs Merge</h3>
+            <p><strong>Merge:</strong> Creates a new commit with two parents. History shows the branch.</p>
+            <p><strong>Rebase:</strong> Replays your commits on top of target. Creates NEW commits (new SHAs). Linear history.</p>
+
+            <pre><code># Before rebase:
+# main:    A---B---C
+#               \
+# feature:       D---E
+
+# After rebase (git rebase main):
+# main:    A---B---C
+#                   \
+# feature:           D'---E'  (D' and E' are NEW commits)</code></pre>
+
+            <div class="callout warning">
+                <h4>⚠️ Never rebase public branches</h4>
+                <p>Rebase rewrites history. If others have commits based on your old commits, you'll create a mess. Only rebase local, unpushed work.</p>
+            </div>
+
+            <h3>2.4 Undoing Things</h3>
+            <pre><code># Undo last commit, keep changes staged
+git reset --soft HEAD~1
+
+# Undo last commit, keep changes unstaged
+git reset --mixed HEAD~1  # (default)
+
+# Undo last commit, DESTROY changes
+git reset --hard HEAD~1  # ⚠️ Dangerous
+
+# Create new commit that undoes a previous commit
+git revert &lt;commit-sha&gt;  # Safe for shared branches
+
+# Get back "lost" commits (they're rarely truly lost)
+git reflog  # Shows all HEAD movements</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 3: Debugging and Profiling Tools</h2>
+
+            <h3>3.1 Debugging Tools</h3>
+            <pre><code># Trace system calls (what files/network is this touching?)
+strace -f command
+strace -e open,read ls  # Only these syscalls
+
+# Trace library calls
+ltrace command
+
+# Watch file access in real-time
+inotifywait -m /path/to/dir
+
+# Debug network issues
+tcpdump -i any port 80
+ss -tlnp  # What's listening where</code></pre>
+
+            <h3>3.2 Performance Profiling</h3>
+            <pre><code># CPU profiling
+perf record ./my_program
+perf report
+
+# Time breakdown
+time command
+# real = wall clock, user = CPU in user mode, sys = CPU in kernel
+
+# Memory usage over time
+/usr/bin/time -v command
+
+# Python profiling
+python -m cProfile -s cumulative script.py
+
+# Go profiling (built-in!)
+go test -cpuprofile=cpu.prof -bench .
+go tool pprof cpu.prof</code></pre>
+
+            <h3>3.3 Log Analysis</h3>
+            <pre><code># Follow logs in real-time
+tail -f /var/log/app.log
+
+# Search with context
+grep -B 3 -A 3 "error" app.log
+
+# Extract and count patterns
+cat access.log | awk '{print $1}' | sort | uniq -c | sort -rn
+
+# Parse JSON logs
+cat log.json | jq '.level' | sort | uniq -c
+
+# Multi-file search
+grep -r "pattern" /path/to/logs/
+rg "pattern" /path  # ripgrep is faster</code></pre>
+        </section>
+
+        <section>
+            <h2>Part 4: Advanced Shell Tools</h2>
+
+            <h3>4.1 Finding Things</h3>
+            <pre><code># Find files by name
+find /etc -name "*.conf"
+
+# Find recently modified
+find . -mtime -1  # Modified in last day
+
+# Find and execute
+find . -name "*.log" -exec rm {} \;
+
+# Fast alternative (fd)
+fd "\.yaml$"  # Faster, respects .gitignore</code></pre>
+
+            <h3>4.2 Text Processing</h3>
+            <pre><code># sed: stream editor
+sed 's/old/new/g' file.txt  # Replace all occurrences
+sed -i 's/old/new/g' file.txt  # In-place
+
+# awk: column processing
+awk '{print $1, $3}' file.txt  # Print columns 1 and 3
+awk -F: '{print $1}' /etc/passwd  # Custom delimiter
+
+# jq: JSON processing
+cat data.json | jq '.items[] | .name'
+kubectl get pods -o json | jq '.items[].metadata.name'
+
+# yq: YAML processing
+yq '.spec.replicas = 3' deployment.yaml</code></pre>
+
+            <h3>4.3 Multiplexing (tmux)</h3>
+            <pre><code># Start new session
+tmux new -s work
+
+# Detach: Ctrl+b, then d
+
+# List sessions
+tmux ls
+
+# Attach
+tmux attach -t work
+
+# Split panes: Ctrl+b, then % (vertical) or " (horizontal)
+# Switch panes: Ctrl+b, then arrow keys
+# New window: Ctrl+b, then c
+# Switch windows: Ctrl+b, then number</code></pre>
+        </section>
+
+        <section class="exercises">
+            <h2>Exercises</h2>
+
+            <div class="exercise">
+                <h4>Exercise 2.1: Shell Pipeline Challenge</h4>
+                <p>Write a one-liner that finds the top 10 most common error messages in a log file, sorted by frequency. Test with: <code>journalctl --since "1 hour ago"</code></p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Pipeline structure: filter for errors → extract message → sort → count unique → sort by count → take top 10. Tools: <code>grep</code>, <code>cut</code> or <code>awk</code>, <code>sort</code>, <code>uniq -c</code>, <code>head</code></p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code># Basic version
+journalctl --since "1 hour ago" | grep -i error | sort | uniq -c | sort -rn | head -10
+
+# Better: extract just the message (field after timestamp/process)
+journalctl --since "1 hour ago" | grep -i error | awk '{$1=$2=$3=$4=$5=""; print $0}' | sort | uniq -c | sort -rn | head -10
+
+# With generic log file
+cat /var/log/syslog | grep -i error | cut -d: -f4- | sort | uniq -c | sort -rn | head -10</code></pre>
+                        <p><code>uniq -c</code> counts consecutive identical lines (that's why we sort first). <code>sort -rn</code> sorts numerically in reverse (highest first).</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 2.2: Git Internals Exploration</h4>
+                <p>In a git repo, run these commands and explain what you see:</p>
+                <ol>
+                    <li><code>cat .git/HEAD</code></li>
+                    <li><code>cat .git/refs/heads/main</code></li>
+                    <li><code>git cat-file -p &lt;that-sha&gt;</code></li>
+                    <li><code>git cat-file -p &lt;tree-sha-from-above&gt;</code></li>
+                </ol>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>HEAD points to a branch. The branch file contains a SHA. That SHA is a commit object. The commit object contains a tree SHA. The tree is your directory listing.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="solution-content">
+                        <pre><code># 1. HEAD is a symbolic reference to current branch
+$ cat .git/HEAD
+ref: refs/heads/main
+
+# 2. The branch file contains the commit SHA
+$ cat .git/refs/heads/main
+a1b2c3d4e5f6...  (40-char SHA)
+
+# 3. The commit object shows author, message, tree, parent
+$ git cat-file -p a1b2c3d4e5f6
+tree 9f8e7d6c5b4a...
+parent 1234abcd...
+author Name &lt;email&gt; timestamp
+committer Name &lt;email&gt; timestamp
+
+Your commit message here
+
+# 4. The tree object shows the directory contents
+$ git cat-file -p 9f8e7d6c5b4a
+100644 blob abc123... README.md
+040000 tree def456... src</code></pre>
+                        <p>This is git's object model: commits → trees → blobs. Everything is content-addressed by SHA.</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 2.3: Debug a Slow Process</h4>
+                <p>Find a slow script or command. Use <code>strace</code> and <code>time</code> to figure out where the time is going. Is it CPU? Disk I/O? Network?</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Use <code>time</code> first: if "real" >> "user" + "sys", it's waiting on I/O. Use <code>strace -c</code> to see syscall summary. Use <code>strace -T</code> to see time per call.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ Example Analysis</summary>
+                    <div class="solution-content">
+                        <pre><code># Step 1: Get overall timing
+$ time slow_script.sh
+real    0m5.234s
+user    0m0.089s  # CPU time in user space
+sys     0m0.156s  # CPU time in kernel
+# Real >> user+sys means waiting on something (I/O, network)
+
+# Step 2: See syscall summary
+$ strace -c slow_script.sh
+% time     seconds  calls  syscall
+------  ----------  -----  --------
+ 89.5%   4.500000     50  read
+  5.2%   0.260000    150  write
+# Most time in read syscalls - disk or network I/O
+
+# Step 3: Find the slow specific calls
+$ strace -T slow_script.sh 2>&1 | grep -E '= .* <[0-9]+\.[0-9]+'
+read(3, "data...", 4096) = 4096 <2.345123>
+# This read took 2.3 seconds - found it!</code></pre>
+                    </div>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercise 2.4: Complete the MIT Course</h4>
+                <p>Work through at least lectures 1-5 of <a href="https://missing.csail.mit.edu/" target="_blank">MIT Missing Semester</a>. Do the exercises.</p>
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        <p>Lectures 1-5 cover: Shell, Shell Tools, Editors, Data Wrangling, Command-line Environment. Budget about 2 hours per lecture including exercises.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>✅ What to focus on</summary>
+                    <div class="solution-content">
+                        <p>Key takeaways to ensure you got:</p>
+                        <ul>
+                            <li><strong>Lecture 1:</strong> Navigation, redirects, pipes, shebang</li>
+                            <li><strong>Lecture 2:</strong> find, grep, xargs, shell scripting basics</li>
+                            <li><strong>Lecture 3:</strong> Pick one editor (vim or emacs) and learn it well</li>
+                            <li><strong>Lecture 4:</strong> sed, awk, sort, uniq, regex</li>
+                            <li><strong>Lecture 5:</strong> Job control, tmux, ssh, dotfiles</li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="project">
+            <h3>🏗️ Project: Write a Bash Script That Doesn't Suck</h3>
+            <p>Write a deployment script that:</p>
+            <ol>
+                <li>Uses <code>set -euo pipefail</code></li>
+                <li>Has proper logging with timestamps</li>
+                <li>Validates inputs before running</li>
+                <li>Has a dry-run mode</li>
+                <li>Handles cleanup on failure (trap)</li>
+                <li>Is actually readable by someone else</li>
+            </ol>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Further Reading</h2>
+
+            <h4>MIT Missing Semester (Priority Lectures)</h4>
+            <ul>
+                <li><a href="https://missing.csail.mit.edu/2020/course-shell/" target="_blank">Lecture 1: The Shell</a> — Start here if new to command line</li>
+                <li><a href="https://missing.csail.mit.edu/2020/shell-tools/" target="_blank">Lecture 2: Shell Tools</a> — find, grep, xargs essentials</li>
+                <li><a href="https://missing.csail.mit.edu/2020/data-wrangling/" target="_blank">Lecture 4: Data Wrangling</a> — sed, awk, the real power tools</li>
+                <li><a href="https://missing.csail.mit.edu/2020/version-control/" target="_blank">Lecture 6: Version Control</a> — Git internals explained well</li>
+            </ul>
+
+            <h4>Git Deep Dives</h4>
+            <ul>
+                <li><a href="https://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain" target="_blank">Pro Git: Chapter 10 - Git Internals</a> — Objects, refs, packfiles explained</li>
+                <li><a href="https://wizardzines.com/zines/git/" target="_blank">How Git Works (zine)</a> — Julia Evans' visual guide, $12</li>
+                <li><a href="https://news.ycombinator.com/item?id=22226380" target="_blank">HN: Missing Semester discussion</a> — Tips from experienced devs on what to focus on</li>
+            </ul>
+
+            <h4>Shell & CLI</h4>
+            <ul>
+                <li><a href="https://explainshell.com/" target="_blank">ExplainShell</a> — Paste any command to understand it</li>
+                <li><a href="https://www.brendangregg.com/blog/2024-03-24/linux-crisis-tools.html" target="_blank">Linux Crisis Tools</a> — Brendan Gregg's list of what to install before you need it</li>
+                <li><a href="https://github.com/jlevy/the-art-of-command-line" target="_blank">The Art of Command Line</a> — One-page reference, print it out</li>
+            </ul>
+
+            <h4>Dotfiles & Setup</h4>
+            <ul>
+                <li><a href="https://dotfiles.github.io/" target="_blank">GitHub Dotfiles Guide</a> — Examples from other developers</li>
+            </ul>
+        </section>
+    </main>
+
+    <nav class="module-nav">
+        <a href="01-programming-fluency.html">← Previous: Programming Fluency</a>
+        <a href="03-computer-architecture.html">Next: Computer Architecture →</a>
+    </nav>
+
+    <footer>
+        <p>Module 2 of 12 — CS for DevOps Engineers</p>
+    </footer>
+</body>
+</html>
+
