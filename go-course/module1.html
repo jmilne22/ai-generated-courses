@@ -657,8 +657,140 @@ FizzBuzz</pre>
             </div>
 
             <div class="exercise">
-                <h4>Challenge 4: Reverse a Slice</h4>
-                <p>Write a function <code>func reverseSlice(nums []int) []int</code> that returns a new slice with elements in reverse order.</p>
+                <h4>Challenge 4: Find Maximum</h4>
+                <p>Write a function <code>func max(nums []int) int</code> that returns the largest number in a slice.</p>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Start by assuming the first element is the max. Then loop through the rest and update if you find a bigger number.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func max(nums []int) int {
+    maxNum := nums[0]  // Start with first element
+    for _, num := range nums {
+        if num > maxNum {
+            maxNum = num  // Found a bigger one!
+        }
+    }
+    return maxNum
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>max([]int{3, 7, 2, 9, 1}) → 9
+max([]int{-5, -2, -10}) → -2</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Challenge 5: Swap Elements</h4>
+                <p>Write a function <code>func swapElements(nums []int, i int, j int)</code> that swaps the elements at positions i and j in the slice.</p>
+                
+                <details>
+                    <summary>💡 New Concept: Simultaneous Assignment</summary>
+                    <div class="hint-content">
+                        Go lets you swap two variables in one line without a temp variable:<br>
+                        <code>a, b = b, a</code><br><br>
+                        This works because Go evaluates the right side first, then assigns to the left side.<br><br>
+                        For arrays: <code>nums[i], nums[j] = nums[j], nums[i]</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint</summary>
+                    <div class="hint-content">
+                        Use Go's simultaneous assignment to swap the values at the two positions in one line.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>func swapElements(nums []int, i int, j int) {
+    nums[i], nums[j] = nums[j], nums[i]
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Behavior</div>
+                    <pre>nums := []int{1, 2, 3, 4, 5}
+swapElements(nums, 0, 4)
+fmt.Println(nums) → [5, 2, 3, 4, 1]</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Challenge 6: Two Pointers Moving</h4>
+                <p>Given a slice of length 5, print pairs of indices starting from opposite ends: (0, 4), (1, 3), (2, 2). Use two variables <code>i</code> and <code>j</code> that start at opposite ends and move toward each other.</p>
+                
+                <details>
+                    <summary>💡 New Concept: Multiple Variable Initialization</summary>
+                    <div class="hint-content">
+                        You can declare multiple variables in a for loop:<br>
+                        <code>for i, j := startValue1, startValue2; condition; update { }</code><br><br>
+                        This is useful when you need two counters moving in different directions.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint 1: Starting positions</summary>
+                    <div class="hint-content">
+                        Think about where <code>i</code> and <code>j</code> should start:<br>
+                        • <code>i</code> should start at the beginning (what index?)<br>
+                        • <code>j</code> should start at the end (what index for a slice of length 5?)<br><br>
+                        Remember: last index is <code>len(nums) - 1</code> because we start counting at 0!
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint 2: Loop condition</summary>
+                    <div class="hint-content">
+                        When should the loop stop?<br>
+                        • When <code>i</code> and <code>j</code> meet or cross each other<br>
+                        • Think: should you use <code>i < j</code> or <code>i <= j</code>?<br>
+                        • Try both and see what happens! (For this exercise, we want to include the middle)
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint 3: Moving both variables</summary>
+                    <div class="hint-content">
+                        In the update section of the for loop, you need to move both variables:<br>
+                        • <code>i</code> should move forward (increase by 1)<br>
+                        • <code>j</code> should move backward (decrease by 1)<br><br>
+                        You can update both at once: <code>i, j = newValueForI, newValueForJ</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content">
+<pre>nums := []int{10, 20, 30, 40, 50}
+for i, j := 0, len(nums)-1; i <= j; i, j = i+1, j-1 {
+    fmt.Printf("(%d, %d)\n", i, j)
+}</pre>
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>(0, 4)
+(1, 3)
+(2, 2)</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Challenge 7: Reverse a Slice</h4>
+                <p>Write a function <code>func reverseSlice(nums []int) []int</code> that returns a new slice with elements in reverse order. Now combine everything you learned in challenges 4-6!</p>
                 
                 <details>
                     <summary>📖 Pre-reading: The Two-Pointer Technique</summary>
@@ -680,8 +812,11 @@ FizzBuzz</pre>
                 <details>
                     <summary>💡 Hint</summary>
                     <div class="hint-content">
-                        Use the two-pointer technique: start with <code>i</code> at the beginning (0) and <code>j</code> at the end (<code>len(nums)-1</code>).<br>
-                        Swap elements and move pointers toward each other until they meet.
+                        Combine what you learned:<br>
+                        • Challenge 4: Create a result slice with <code>make([]int, len(nums))</code><br>
+                        • Challenge 5: Use the swap syntax<br>
+                        • Challenge 6: Use two pointers moving toward each other<br><br>
+                        The loop should stop when <code>i < j</code> (when they meet in the middle).
                     </div>
                 </details>
                 
@@ -693,7 +828,7 @@ FizzBuzz</pre>
     result := make([]int, len(nums))
     copy(result, nums)
     
-    // Step 2: Two-pointer swap
+    // Step 2: Two-pointer swap (combines Challenges 5 & 6)
     // i starts at beginning, j starts at end
     for i, j := 0, len(result)-1; i < j; i, j = i+1, j-1 {
         // Swap elements at positions i and j
@@ -724,7 +859,7 @@ reverseSlice([]int{10, 20}) → [20, 10]</pre>
             </div>
 
             <h3 style="color: var(--purple); margin-top: 2rem;">🚀 Advanced</h3>
-            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">These combine many concepts and introduce new Go features. Complete intermediate challenges first!</p>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">These combine many concepts and introduce new Go features. Complete challenges first!</p>
 
             <div class="exercise">
                 <h4>Advanced 1: Understanding Runes</h4>
@@ -817,7 +952,7 @@ runes[2] = '🎉' (value: 127881)</pre>
                     <div class="hint-content">
                         <strong>This exercise combines:</strong><br>
                         1. Runes (from Advanced 1) - handle Unicode properly<br>
-                        2. Two-pointer reversal (from Challenge 4) - swap elements<br>
+                        2. Two-pointer reversal (from Challenge 7) - swap elements<br>
                         3. Type conversions - string ↔ []rune<br><br>
                         
                         <strong>Why you can't just reverse bytes:</strong><br>
@@ -832,7 +967,7 @@ runes[2] = '🎉' (value: 127881)</pre>
                     <div class="hint-content">
                         Combine what you learned:<br>
                         1. Convert string to <code>[]rune</code> (from Advanced 1)<br>
-                        2. Use the two-pointer reversal technique (from Challenge 4)<br>
+                        2. Use the two-pointer reversal technique (from Challenge 7)<br>
                         3. Convert back to string with <code>string(runes)</code>
                     </div>
                 </details>
@@ -845,19 +980,6 @@ runes[2] = '🎉' (value: 127881)</pre>
     runes := []rune(s)
     
     // Step 2: Two-pointer reversal
-    // Break down: for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1
-    //
-    // INITIALIZATION (before loop starts):
-    //   i := 0              → i starts at first position
-    //   j := len(runes)-1   → j starts at last position
-    //
-    // CONDITION (checked each iteration):
-    //   i < j               → continue while pointers haven't crossed
-    //
-    // UPDATE (after each iteration):
-    //   i, j = i+1, j-1     → move i forward AND j backward
-    //                          (simultaneous assignment!)
-    
     for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
         // Swap characters at positions i and j
         runes[i], runes[j] = runes[j], runes[i]
@@ -1053,8 +1175,9 @@ twoSum([]int{3, 3}, 6) → [0, 1]</pre>
                 <div class="tip-title">Learning Path</div>
                 <p><strong>Warmups</strong> → master basic syntax<br>
                 <strong>Intermediate</strong> → learn one new concept at a time<br>
-                <strong>Challenges</strong> → combine what you know<br>
+                <strong>Challenges</strong> → combine what you know in small steps<br>
                 <strong>Advanced</strong> → tackle algorithms with proper scaffolding<br><br>
+                The new bridge challenges (4-6) specifically prepare you for the reverse slice problem by teaching each piece separately before you combine them!<br><br>
                 Stuck? Check the hint. Still stuck after 5 minutes? Check the solution and study it!</p>
             </div>
         </div>
@@ -1068,6 +1191,8 @@ twoSum([]int{3, 3}, 6) → [0, 1]</pre>
                 <li><strong>Multiple returns:</strong> <span class="inline-code">func f() (int, error)</span></li>
                 <li><strong>Slices:</strong> <span class="inline-code">[]Type{}</span></li>
                 <li><strong>Maps:</strong> <span class="inline-code">map[KeyType]ValueType{}</span></li>
+                <li><strong>Two-pointer technique:</strong> Use two variables moving from opposite ends</li>
+                <li><strong>Simultaneous assignment:</strong> <span class="inline-code">a, b = b, a</span> swaps without temp variable</li>
             </ul>
         </div>
 
