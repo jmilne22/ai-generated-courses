@@ -836,10 +836,10 @@ isPalindrome([]int{7}) → true</pre>
                     <summary>💡 Hint</summary>
                     <div class="hint-content">
                         Combine what you learned:<br>
-                        • Create a result slice with <code>make([]int, len(nums))</code> and <code>copy(result, nums)</code><br>
-                        • Use the two-pointer loop from Challenge 6<br>
-                        • Use the swap syntax from Challenge 5<br><br>
-                        The key difference from palindrome checking: instead of <strong>comparing</strong>, you <strong>swap</strong>!
+                        • Use the two-pointer loop from Challenge 6: <code>for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1</code><br>
+                        • Use the swap syntax from Challenge 5: <code>nums[i], nums[j] = nums[j], nums[i]</code><br><br>
+                        The key difference from palindrome checking: instead of <strong>comparing</strong>, you <strong>swap</strong>!<br>
+                        You can modify the slice in place - no need to create a copy.
                     </div>
                 </details>
                 
@@ -847,26 +847,24 @@ isPalindrome([]int{7}) → true</pre>
                     <summary>✅ Solution with Explanation</summary>
                     <div class="hint-content">
 <pre>func reverseSlice(nums []int) []int {
-    // Step 1: Create a copy so we don't modify the original
-    result := make([]int, len(nums))
-    copy(result, nums)
-    
-    // Step 2: Two-pointer swap (like Challenge 6 loop + Challenge 5 swap)
-    // i starts at beginning, j starts at end
-    for i, j := 0, len(result)-1; i < j; i, j = i+1, j-1 {
+    // Two-pointer swap - reverse in place
+    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {
         // Swap elements at positions i and j
-        result[i], result[j] = result[j], result[i]
+        nums[i], nums[j] = nums[j], nums[i]
     }
-    return result
+    return nums
 }</pre>
                         <strong>Breaking down the for loop:</strong><br>
-                        <code>i, j := 0, len(result)-1</code> - Initialize TWO variables at once<br>
+                        <code>i, j := 0, len(nums)-1</code> - Initialize TWO variables at once<br>
                         <code>i < j</code> - Continue while pointers haven't crossed<br>
                         <code>i, j = i+1, j-1</code> - Move BOTH pointers (i forward, j backward)<br><br>
                         
                         <strong>The swap:</strong><br>
-                        <code>result[i], result[j] = result[j], result[i]</code><br>
+                        <code>nums[i], nums[j] = nums[j], nums[i]</code><br>
                         This is Go's simultaneous assignment - it swaps values in one line!<br><br>
+                        
+                        <strong>Why this works:</strong><br>
+                        We reverse the slice <strong>in place</strong> by swapping elements from both ends moving toward the middle. No need to create a copy!<br><br>
                         
                         📚 <strong>Learn more:</strong><br>
                         • <a href="https://go.dev/tour/moretypes/7" target="_blank" style="color: var(--green-bright);">Go slices (official tour)</a><br>
