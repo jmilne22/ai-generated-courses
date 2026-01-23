@@ -883,8 +883,235 @@ reverseSlice([]int{10, 20}) → [20, 10]</pre>
             <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">These combine many concepts and introduce new Go features. Complete challenges first!</p>
 
             <div class="exercise">
-                <h4>Advanced 1: Understanding Runes</h4>
-                <p>Write a function <code>func explainRunes(s string) []rune</code> that converts a string to a slice of runes and returns it. Print each rune and its numeric value.</p>
+                <h4>Advanced 1: Contains Duplicate</h4>
+                <p>Write a function <code>func containsDuplicate(nums []int) bool</code> that returns <code>true</code> if any number appears more than once in the slice, <code>false</code> if all numbers are unique.</p>
+                
+                <details>
+                    <summary>📖 Pre-reading: The "Have I Seen This?" Pattern</summary>
+                    <div class="hint-content">
+                        <strong>The Problem:</strong> How do you know if you've seen something before?<br><br>
+                        
+                        <strong>Naive approach (slow):</strong><br>
+                        For each number, check every other number to see if it matches → O(n²)<br>
+                        For 1000 numbers, that's 1,000,000 comparisons! 🐌<br><br>
+                        
+                        <strong>Smart approach (fast):</strong><br>
+                        Use a map to remember what you've seen → O(n)<br>
+                        For 1000 numbers, that's just 1000 operations! 🚀<br><br>
+                        
+                        <strong>The Pattern:</strong><br>
+                        1. Create an empty map to track what you've seen<br>
+                        2. For each element, check: "Have I seen this before?"<br>
+                        3. If yes → found a duplicate!<br>
+                        4. If no → remember it and continue
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint 1: What to track</summary>
+                    <div class="hint-content">
+                        You need a map to remember which numbers you've already seen.<br><br>
+                        
+                        What should the map store?<br>
+                        • <strong>Key:</strong> the number itself (<code>int</code>)<br>
+                        • <strong>Value:</strong> we just need to know it exists... so <code>bool</code> works!<br><br>
+                        
+                        Create it with: <code>seen := make(map[int]bool)</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint 2: Checking if you've seen it</summary>
+                    <div class="hint-content">
+                        Remember the "comma ok" pattern from maps?<br>
+                        <code>value, ok := myMap[key]</code><br><br>
+                        
+                        For each number in the slice:<br>
+                        • Check if it's in the map using "comma ok"<br>
+                        • If <code>ok</code> is <code>true</code>, you've seen it before → return <code>true</code><br>
+                        • If <code>ok</code> is <code>false</code>, add it to the map: <code>seen[num] = true</code>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint 3: What to return</summary>
+                    <div class="hint-content">
+                        If you make it through the entire loop without finding a duplicate, what does that mean?<br><br>
+                        
+                        All numbers are unique! Return <code>false</code> at the end.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution with Explanation</summary>
+                    <div class="hint-content">
+<pre>func containsDuplicate(nums []int) bool {
+    // Map to track what we've seen
+    seen := make(map[int]bool)
+    
+    // Check each number
+    for _, num := range nums {
+        // Have we seen this before?
+        if seen[num] {
+            // Yes! Found a duplicate
+            return true
+        }
+        // No, remember it for later
+        seen[num] = true
+    }
+    
+    // Made it through - no duplicates
+    return false
+}</pre>
+                        <strong>Why this works:</strong><br>
+                        The map acts as our "memory". Each time we see a number, we check our memory. If it's already there, we found a duplicate!<br><br>
+                        
+                        <strong>Note:</strong> We can simplify <code>if seen[num]</code> instead of <code>if _, ok := seen[num]; ok</code> because:<br>
+                        • If the key exists, <code>seen[num]</code> returns <code>true</code><br>
+                        • If the key doesn't exist, <code>seen[num]</code> returns <code>false</code> (the zero value for bool)<br>
+                        • This works perfectly for our use case!<br><br>
+                        
+                        <strong>Time complexity:</strong> O(n) - we only loop through once<br>
+                        <strong>Space complexity:</strong> O(n) - worst case, store all unique numbers in map
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>containsDuplicate([]int{1, 2, 3, 1}) → true
+containsDuplicate([]int{1, 2, 3, 4}) → false
+containsDuplicate([]int{1, 1, 1, 1}) → true</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Advanced 2: Remove Duplicates from Sorted Array</h4>
+                <p>Write a function <code>func removeDuplicates(nums []int) int</code> that removes duplicates from a sorted slice <strong>in-place</strong>. Return the number of unique elements. The first part of the slice should contain the unique elements.</p>
+                
+                <details>
+                    <summary>📖 Pre-reading: The Slow/Fast Pointer Pattern</summary>
+                    <div class="hint-content">
+                        <strong>The Problem:</strong> Given <code>[1,1,2,2,3]</code>, modify it to <code>[1,2,3,_,_]</code> and return <code>3</code><br><br>
+                        
+                        <strong>Key insight:</strong> The array is <strong>sorted</strong>, so duplicates are next to each other!<br><br>
+                        
+                        <strong>The Slow/Fast Pattern:</strong><br>
+                        This is a variant of the two-pointer technique you learned:<br>
+                        • <strong>Fast pointer:</strong> reads through the array<br>
+                        • <strong>Slow pointer:</strong> tracks where to write unique values<br><br>
+                        
+                        <strong>Example walkthrough:</strong> [1,1,2,2,3]<br>
+                        • slow=0 (points to first unique spot), fast=1 (reads ahead)<br>
+                        • nums[1]=1 same as nums[0]? Yes, skip (fast++)<br>
+                        • nums[2]=2 different from nums[0]? Yes! Write it at nums[1], slow++<br>
+                        • nums[3]=2 same as nums[1]? Yes, skip<br>
+                        • nums[4]=3 different from nums[1]? Yes! Write it at nums[2], slow++<br>
+                        • Result: [1,2,3,2,3], return slow+1 = 3
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint 1: Starting positions</summary>
+                    <div class="hint-content">
+                        If the array is empty or has one element, what should you return?<br><br>
+                        
+                        For arrays with 2+ elements:<br>
+                        • <code>slow</code> starts at index 0 (first element is always unique)<br>
+                        • <code>fast</code> starts at index 1 (compare from second element onward)
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint 2: When to write</summary>
+                    <div class="hint-content">
+                        Loop while <code>fast < len(nums)</code><br><br>
+                        
+                        At each step, compare <code>nums[fast]</code> with <code>nums[slow]</code>:<br>
+                        • If they're <strong>different</strong>: found a new unique value!<br>
+                          - Increment <code>slow</code><br>
+                          - Write <code>nums[fast]</code> to <code>nums[slow]</code><br>
+                        • If they're the <strong>same</strong>: it's a duplicate, skip it<br>
+                        • Always increment <code>fast</code> to keep reading
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>💡 Hint 3: What to return</summary>
+                    <div class="hint-content">
+                        After the loop, <code>slow</code> points to the last unique element's index.<br><br>
+                        
+                        How many unique elements are there?<br>
+                        Return <code>slow + 1</code> (because indices start at 0!)
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>✅ Solution with Explanation</summary>
+                    <div class="hint-content">
+<pre>func removeDuplicates(nums []int) int {
+    // Handle edge cases
+    if len(nums) == 0 {
+        return 0
+    }
+    
+    // slow tracks where to write next unique value
+    slow := 0
+    
+    // fast reads through the array
+    for fast := 1; fast < len(nums); fast++ {
+        // Found a new unique value?
+        if nums[fast] != nums[slow] {
+            slow++                    // Move write position
+            nums[slow] = nums[fast]   // Write the unique value
+        }
+        // If same, just skip (fast++ happens automatically)
+    }
+    
+    // slow points to last unique element
+    // Number of unique elements is slow + 1
+    return slow + 1
+}</pre>
+                        <strong>Visual walkthrough for [1,1,2,2,3]:</strong><br><br>
+                        
+                        <strong>Start:</strong> slow=0, fast=1<br>
+                        Array: [<strong>1</strong>,1,2,2,3]<br><br>
+                        
+                        <strong>Step 1:</strong> nums[1]=1, nums[0]=1 → same, skip<br>
+                        slow=0, fast=2<br><br>
+                        
+                        <strong>Step 2:</strong> nums[2]=2, nums[0]=1 → different!<br>
+                        slow++ → slow=1<br>
+                        nums[1] = nums[2] → nums[1] = 2<br>
+                        Array: [1,<strong>2</strong>,2,2,3]<br>
+                        fast=3<br><br>
+                        
+                        <strong>Step 3:</strong> nums[3]=2, nums[1]=2 → same, skip<br>
+                        slow=1, fast=4<br><br>
+                        
+                        <strong>Step 4:</strong> nums[4]=3, nums[1]=2 → different!<br>
+                        slow++ → slow=2<br>
+                        nums[2] = nums[4] → nums[2] = 3<br>
+                        Array: [1,2,<strong>3</strong>,2,3]<br><br>
+                        
+                        <strong>Done:</strong> return slow+1 = 3<br>
+                        First 3 elements are unique: [1,2,3]<br><br>
+                        
+                        <strong>Time complexity:</strong> O(n) - one pass through array<br>
+                        <strong>Space complexity:</strong> O(1) - only use two pointers
+                    </div>
+                </details>
+                
+                <div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>removeDuplicates([]int{1, 1, 2}) → 2 (array becomes [1, 2, _])
+removeDuplicates([]int{0, 0, 1, 1, 2, 2, 3}) → 4 (array becomes [0, 1, 2, 3, _, _, _])
+removeDuplicates([]int{1, 2, 3}) → 3 (no duplicates)</pre>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Advanced 3: Reverse a String</h4>
+                <p>Now write <code>func reverse(s string) string</code> that reverses any string, including Unicode characters like emojis.</p>
                 
                 <details>
                     <summary>📖 Pre-reading: Strings vs Runes in Go</summary>
@@ -903,83 +1130,13 @@ reverseSlice([]int{10, 20}) → [20, 10]</pre>
                         A <code>rune</code> is Go's type for a Unicode character (actually an <code>int32</code>).<br>
                         Converting to <code>[]rune</code> splits the string into actual characters, not bytes.<br><br>
                         
-                        📚 <strong>Learn more:</strong><br>
-                        • <a href="https://go.dev/blog/strings" target="_blank" style="color: var(--green-bright);">Strings, bytes, runes (Go blog)</a><br>
-                        • <a href="https://www.youtube.com/watch?v=MijG1ZYT6z0" target="_blank" style="color: var(--green-bright);">Understanding UTF-8 encoding</a>
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>💡 What are runes?</summary>
-                    <div class="hint-content">
-                        In Go, strings are sequences of bytes, not characters. For Unicode (emojis, Chinese, Arabic, etc.), you need <code>rune</code>.<br>
-                        A <code>rune</code> is an alias for <code>int32</code> and represents a Unicode code point.<br>
-                        Convert: <code>runes := []rune("Hello")</code>
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Convert the string with <code>[]rune(s)</code>, then loop through and print each rune and its value using <code>%c</code> and <code>%d</code>.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution with Explanation</summary>
-                    <div class="hint-content">
-<pre>func explainRunes(s string) []rune {
-    // Convert string to slice of runes (actual characters)
-    runes := []rune(s)
-    
-    // Loop through and print each character
-    for i, r := range runes {
-        // %c = print as character, %d = print as number
-        fmt.Printf("runes[%d] = '%c' (value: %d)\n", i, r, r)
-    }
-    return runes
-}
-
-// Test it:
-explainRunes("Hi🎉")</pre>
-                        <strong>Why this matters:</strong><br>
-                        • <code>len("Hi🎉")</code> returns 6 (bytes) not 3 (characters)!<br>
-                        • <code>len([]rune("Hi🎉"))</code> returns 3 (correct!)✅<br>
-                        • When reversing strings with emojis/Unicode, you MUST use runes<br><br>
-                        
-                        <strong>Format verbs used:</strong><br>
-                        <code>%c</code> - Print as a character ('H')<br>
-                        <code>%d</code> - Print as a decimal number (72)<br><br>
-                        
-                        📚 <strong>Learn more:</strong><br>
-                        • <a href="https://pkg.go.dev/fmt" target="_blank" style="color: var(--green-bright);">fmt package (Printf formatting)</a>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output for "Hi🎉"</div>
-                    <pre>runes[0] = 'H' (value: 72)
-runes[1] = 'i' (value: 105)
-runes[2] = '🎉' (value: 127881)</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Advanced 2: Reverse a String</h4>
-                <p>Now write <code>func reverse(s string) string</code> that reverses any string, including Unicode characters like emojis.</p>
-                
-                <details>
-                    <summary>📖 Pre-reading: Combining Concepts</summary>
-                    <div class="hint-content">
-                        <strong>This exercise combines:</strong><br>
-                        1. Runes (from Advanced 1) - handle Unicode properly<br>
-                        2. Two-pointer reversal (from Challenge 7) - swap elements<br>
-                        3. Type conversions - string ↔ []rune<br><br>
-                        
                         <strong>Why you can't just reverse bytes:</strong><br>
                         "Hi🎉" as bytes = [72, 105, 240, 159, 142, 137]<br>
                         Reverse bytes = [137, 142, 159, 240, 105, 72] = gibberish! ❌<br>
-                        Must reverse as runes = ['🎉', 'i', 'H'] = "🎉iH" ✅
+                        Must reverse as runes = ['🎉', 'i', 'H'] = "🎉iH" ✅<br><br>
+                        
+                        📚 <strong>Learn more:</strong><br>
+                        • <a href="https://go.dev/blog/strings" target="_blank" style="color: var(--green-bright);">Strings, bytes, runes (Go blog)</a>
                     </div>
                 </details>
                 
@@ -987,9 +1144,10 @@ runes[2] = '🎉' (value: 127881)</pre>
                     <summary>💡 Hint</summary>
                     <div class="hint-content">
                         Combine what you learned:<br>
-                        1. Convert string to <code>[]rune</code> (from Advanced 1)<br>
-                        2. Use the two-pointer reversal technique (from Challenge 7)<br>
-                        3. Convert back to string with <code>string(runes)</code>
+                        1. Convert string to <code>[]rune</code> with <code>[]rune(s)</code> - this handles Unicode properly<br>
+                        2. Use the two-pointer reversal technique from Challenge 7: <code>for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1</code><br>
+                        3. Swap elements: <code>runes[i], runes[j] = runes[j], runes[i]</code><br>
+                        4. Convert back to string with <code>string(runes)</code>
                     </div>
                 </details>
                 
@@ -1039,7 +1197,7 @@ reverse("Go🚀") → "🚀oG"</pre>
             </div>
 
             <div class="exercise">
-                <h4>Advanced 3: Word Counter</h4>
+                <h4>Advanced 4: Word Counter</h4>
                 <p>Write <code>func wordCount(s string) map[string]int</code> that counts how many times each word appears in a string.</p>
                 
                 <details>
@@ -1084,7 +1242,7 @@ func wordCount(s string) map[string]int {
             </div>
 
             <div class="exercise">
-                <h4>Advanced 4: Two Sum</h4>
+                <h4>Advanced 5: Two Sum</h4>
                 <p>Given a slice of ints and a target, return indices of two numbers that add up to the target. <code>func twoSum(nums []int, target int) []int</code></p>
                 
                 <details>
