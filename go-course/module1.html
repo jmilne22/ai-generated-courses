@@ -729,7 +729,7 @@ fmt.Println(nums) → [5, 2, 3, 4, 1]</pre>
 
             <div class="exercise">
                 <h4>Challenge 6: Two Pointers Moving</h4>
-                <p>Given a slice of length 5, print pairs of indices starting from opposite ends: (0, 4), (1, 3), (2, 2). Use two variables <code>i</code> and <code>j</code> that start at opposite ends and move toward each other.</p>
+                <p>Write a function <code>func printPairs(nums []int)</code> that prints pairs of indices starting from opposite ends of the slice. For a slice of length 5, it should print: (0, 4), (1, 3), (2, 2).</p>
                 
                 <details>
                     <summary>💡 New Concept: Multiple Variable Initialization</summary>
@@ -773,16 +773,21 @@ fmt.Println(nums) → [5, 2, 3, 4, 1]</pre>
                 <details>
                     <summary>✅ Solution</summary>
                     <div class="hint-content">
-<pre>nums := []int{10, 20, 30, 40, 50}
-for i, j := 0, len(nums)-1; i <= j; i, j = i+1, j-1 {
-    fmt.Printf("(%d, %d)\n", i, j)
+<pre>func printPairs(nums []int) {
+    for i, j := 0, len(nums)-1; i <= j; i, j = i+1, j-1 {
+        fmt.Printf("(%d, %d)\n", i, j)
+    }
 }</pre>
                     </div>
                 </details>
                 
                 <div class="expected">
                     <div class="expected-title">Expected Output</div>
-                    <pre>(0, 4)
+                    <pre>nums := []int{10, 20, 30, 40, 50}
+printPairs(nums)
+
+Output:
+(0, 4)
 (1, 3)
 (2, 2)</pre>
                 </div>
