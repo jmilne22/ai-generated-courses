@@ -734,14 +734,27 @@ fmt.Println(nums) → [5, 2, 3, 4, 1]</pre>
                 <details>
                     <summary>📖 What's a palindrome?</summary>
                     <div class="hint-content">
-                        <strong>Examples of palindromes:</strong><br>
-                        • Words: "racecar", "level", "noon"<br>
-                        • Numbers: 121, 12321<br>
-                        • Slices: [1, 2, 3, 2, 1], [5, 5], [7]<br><br>
+                        A <strong>palindrome</strong> is something that reads the same forwards and backwards.<br><br>
                         
-                        <strong>Not palindromes:</strong><br>
-                        • "hello" (reads "olleh" backwards)<br>
-                        • [1, 2, 3] (reads [3, 2, 1] backwards)<br><br>
+                        <strong>String examples (most common):</strong><br>
+                        • "racecar" → reads the same both ways ✅<br>
+                        • "level" → palindrome ✅<br>
+                        • "noon" → palindrome ✅<br>
+                        • "A man a plan a canal Panama" → if you ignore spaces/capitals ✅<br>
+                        • "hello" → reads "olleh" backwards ❌<br><br>
+                        
+                        <strong>Number examples:</strong><br>
+                        • 121 → palindrome ✅<br>
+                        • 12321 → palindrome ✅<br>
+                        • 123 → reads 321 backwards ❌<br><br>
+                        
+                        <strong>Slice examples (what we're doing):</strong><br>
+                        • [1, 2, 3, 2, 1] → palindrome ✅<br>
+                        • [5, 5] → palindrome ✅<br>
+                        • [7] → single element is always a palindrome ✅<br>
+                        • [1, 2, 3] → reads [3, 2, 1] backwards ❌<br><br>
+                        
+                        <strong>Note:</strong> Palindromes are usually words or phrases, but for this exercise we're using a slice of integers to keep it simple. You'll learn how to work with string palindromes in the Advanced section!<br><br>
                         
                         <strong>How to check:</strong><br>
                         Compare elements from both ends moving inward. If they're all equal, it's a palindrome!
@@ -995,28 +1008,58 @@ containsDuplicate([]int{1, 1, 1, 1}) → true</pre>
                         <strong>Key insight:</strong> The array is <strong>sorted</strong>, so duplicates are next to each other!<br><br>
                         
                         <strong>The Slow/Fast Pattern:</strong><br>
-                        This is a variant of the two-pointer technique you learned:<br>
-                        • <strong>Fast pointer:</strong> reads through the array<br>
-                        • <strong>Slow pointer:</strong> tracks where to write unique values<br><br>
+                        This is a NEW variant of two-pointers you haven't seen yet:<br>
+                        • <strong>Both pointers start at different positions</strong> (unlike i/j starting at opposite ends)<br>
+                        • <strong>They move at different speeds</strong> (unlike i/j both moving every iteration)<br>
+                        • One pointer <strong>reads</strong>, the other <strong>writes</strong><br><br>
+                        
+                        <strong>Code structure pattern:</strong><br>
+<pre>slow := 0  // Initialize OUTSIDE loop (write position)
+
+for fast := 1; fast < len(nums); fast++ {  // Initialize IN loop (read position)
+    // Compare nums[fast] with nums[slow]
+    // If different: move slow, write value
+    // If same: do nothing
+    // fast moves automatically every iteration
+}</pre>
+                        
+                        <strong>Why this structure?</strong><br>
+                        • <code>slow</code> only moves when we find something to write (conditional)<br>
+                        • <code>fast</code> always moves to keep reading (automatic)<br>
+                        • This is different from <code>i, j</code> in challenges where both moved together!<br><br>
                         
                         <strong>Example walkthrough:</strong> [1,1,2,2,3]<br>
-                        • slow=0 (points to first unique spot), fast=1 (reads ahead)<br>
-                        • nums[1]=1 same as nums[0]? Yes, skip (fast++)<br>
-                        • nums[2]=2 different from nums[0]? Yes! Write it at nums[1], slow++<br>
-                        • nums[3]=2 same as nums[1]? Yes, skip<br>
-                        • nums[4]=3 different from nums[1]? Yes! Write it at nums[2], slow++<br>
+                        • Start: slow=0, fast=1<br>
+                        • nums[1]=1 same as nums[0]=1? Yes → skip (only fast moves)<br>
+                        • fast=2: nums[2]=2 different from nums[0]=1? Yes → slow++, write nums[2] to nums[1]<br>
+                        • fast=3: nums[3]=2 same as nums[1]=2? Yes → skip<br>
+                        • fast=4: nums[4]=3 different from nums[1]=2? Yes → slow++, write nums[4] to nums[2]<br>
                         • Result: [1,2,3,2,3], return slow+1 = 3
                     </div>
                 </details>
                 
                 <details>
-                    <summary>💡 Hint 1: Starting positions</summary>
+                    <summary>💡 Hint 1: Loop structure</summary>
                     <div class="hint-content">
-                        If the array is empty or has one element, what should you return?<br><br>
+                        <strong>Edge case first:</strong> If the array is empty or has one element, what should you return?<br>
+                        Handle this at the start: <code>if len(nums) == 0 { return 0 }</code><br><br>
                         
-                        For arrays with 2+ elements:<br>
-                        • <code>slow</code> starts at index 0 (first element is always unique)<br>
-                        • <code>fast</code> starts at index 1 (compare from second element onward)
+                        <strong>The loop structure:</strong><br>
+<pre>slow := 0  // Write position (initialized OUTSIDE)
+
+for fast := 1; fast < len(nums); fast++ {
+    // Your logic here comparing nums[fast] and nums[slow]
+}</pre>
+                        
+                        <strong>Key differences from previous two-pointer patterns:</strong><br>
+                        • <code>slow</code> is initialized <strong>outside</strong> the loop (at index 0)<br>
+                        • <code>fast</code> is initialized <strong>in</strong> the loop header (at index 1)<br>
+                        • Only <code>fast</code> increments automatically each iteration<br>
+                        • <code>slow</code> only moves when you find a unique value (conditional)<br><br>
+                        
+                        Why start at these positions?<br>
+                        • First element (index 0) is always unique, so <code>slow</code> points there<br>
+                        • <code>fast</code> starts at 1 to compare with the first element
                     </div>
                 </details>
                 
@@ -1362,16 +1405,65 @@ twoSum([]int{3, 3}, 6) → [0, 1]</pre>
 
         <div class="lesson">
             <h2>Module 1 Summary</h2>
+            <h3>Core Concepts</h3>
             <ul>
                 <li><strong>:=</strong> for declaration + assignment inside functions</li>
-                <li><strong>Types:</strong> string, int, float64, bool</li>
+                <li><strong>Types:</strong> string, int, float64, bool (statically typed!)</li>
                 <li><strong>Functions:</strong> <span class="inline-code">func name(params) returnType { }</span></li>
                 <li><strong>Multiple returns:</strong> <span class="inline-code">func f() (int, error)</span></li>
-                <li><strong>Slices:</strong> <span class="inline-code">[]Type{}</span></li>
-                <li><strong>Maps:</strong> <span class="inline-code">map[KeyType]ValueType{}</span></li>
-                <li><strong>Two-pointer technique:</strong> Use two variables moving from opposite ends to compare or swap</li>
-                <li><strong>Simultaneous assignment:</strong> <span class="inline-code">a, b = b, a</span> swaps without temp variable</li>
+                <li><strong>Slices:</strong> <span class="inline-code">[]Type{}</span> - dynamic arrays</li>
+                <li><strong>Maps:</strong> <span class="inline-code">map[KeyType]ValueType{}</span> - like dictionaries</li>
             </ul>
+            
+            <h3>Key Patterns You Learned</h3>
+            <ul>
+                <li><strong>The "comma ok" idiom:</strong> <span class="inline-code">value, ok := map[key]</span> - check if a map key exists</li>
+                <li><strong>Simultaneous assignment:</strong> <span class="inline-code">a, b = b, a</span> - swap without temp variable</li>
+            </ul>
+            
+            <h3>Algorithm Patterns & When to Use Them</h3>
+            <ul>
+                <li><strong>Two-pointer (opposite ends):</strong> When you need to work from both ends toward the middle
+                    <ul style="margin-top: 0.5rem;">
+                        <li>Palindrome checking</li>
+                        <li>Reversing arrays/strings</li>
+                        <li>Pattern: <span class="inline-code">for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1</span></li>
+                    </ul>
+                </li>
+                <li><strong>Slow/fast pointers:</strong> When one pointer reads and another writes, moving at different speeds
+                    <ul style="margin-top: 0.5rem;">
+                        <li>Removing duplicates from sorted arrays</li>
+                        <li>In-place array modifications</li>
+                        <li>Pattern: <span class="inline-code">slow := 0</span> outside, <span class="inline-code">for fast := 1; ...</span> inside</li>
+                    </ul>
+                </li>
+                <li><strong>Map for tracking:</strong> When you need to remember "have I seen this before?"
+                    <ul style="margin-top: 0.5rem;">
+                        <li>Finding duplicates</li>
+                        <li>Counting occurrences</li>
+                        <li>Two Sum (storing complements)</li>
+                        <li>Pattern: Check map first, then add to map if not found</li>
+                    </ul>
+                </li>
+                <li><strong>Building slices with append:</strong> When you need to filter or transform data
+                    <ul style="margin-top: 0.5rem;">
+                        <li>Filtering even numbers</li>
+                        <li>Collecting results dynamically</li>
+                        <li>Pattern: Start with <span class="inline-code">result := []Type{}</span>, then <span class="inline-code">result = append(result, item)</span></li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <h3>Common Gotchas</h3>
+            <ul>
+                <li><strong>Missing map keys return zero values</strong> - use "comma ok" to check if key exists</li>
+                <li><strong>Strings are bytes, not characters</strong> - use <span class="inline-code">[]rune(s)</span> for Unicode</li>
+                <li><strong>Slices are references</strong> - modifying a slice modifies the original</li>
+                <li><strong>:= only works inside functions</strong> - use <span class="inline-code">var</span> at package level</li>
+            </ul>
+            
+            <h3>Next Steps</h3>
+            <p style="color: var(--text-dim);">You now have the fundamentals to solve many LeetCode Easy problems! Module 2 will cover pointers, structs, and methods - the building blocks for more complex programs.</p>
         </div>
 
         <div class="nav-buttons">
@@ -1380,4 +1472,4 @@ twoSum([]int{3, 3}, 6) → [0, 1]</pre>
         </div>
     </div>
 </body>
-</html> 
+</html>
