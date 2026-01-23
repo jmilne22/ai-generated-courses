@@ -728,74 +728,92 @@ fmt.Println(nums) → [5, 2, 3, 4, 1]</pre>
             </div>
 
             <div class="exercise">
-                <h4>Challenge 6: Two Pointers Moving</h4>
-                <p>Write a function <code>func printPairs(nums []int)</code> that prints pairs of indices starting from opposite ends of the slice. For a slice of length 5, it should print: (0, 4), (1, 3), (2, 2).</p>
+                <h4>Challenge 6: Palindrome Checker</h4>
+                <p>A <strong>palindrome</strong> is something that reads the same forwards and backwards (like "racecar" or [1, 2, 3, 2, 1]). Write a function <code>func isPalindrome(nums []int) bool</code> that checks if a slice is a palindrome using two pointers.</p>
                 
                 <details>
-                    <summary>💡 New Concept: Multiple Variable Initialization</summary>
+                    <summary>📖 What's a palindrome?</summary>
                     <div class="hint-content">
-                        You can declare multiple variables in a for loop:<br>
-                        <code>for i, j := startValue1, startValue2; condition; update { }</code><br><br>
-                        This is useful when you need two counters moving in different directions.
+                        <strong>Examples of palindromes:</strong><br>
+                        • Words: "racecar", "level", "noon"<br>
+                        • Numbers: 121, 12321<br>
+                        • Slices: [1, 2, 3, 2, 1], [5, 5], [7]<br><br>
+                        
+                        <strong>Not palindromes:</strong><br>
+                        • "hello" (reads "olleh" backwards)<br>
+                        • [1, 2, 3] (reads [3, 2, 1] backwards)<br><br>
+                        
+                        <strong>How to check:</strong><br>
+                        Compare elements from both ends moving inward. If they're all equal, it's a palindrome!
                     </div>
                 </details>
                 
                 <details>
-                    <summary>💡 Hint 1: Starting positions</summary>
+                    <summary>💡 New Concept: Two-Pointer Comparison</summary>
                     <div class="hint-content">
-                        Think about where <code>i</code> and <code>j</code> should start:<br>
-                        • <code>i</code> should start at the beginning (what index?)<br>
-                        • <code>j</code> should start at the end (what index for a slice of length 5?)<br><br>
-                        Remember: last index is <code>len(nums) - 1</code> because we start counting at 0!
+                        Instead of swapping (like Challenge 5), we <strong>compare</strong> elements from both ends.<br><br>
+                        
+                        <strong>The pattern:</strong><br>
+                        1. Start with <code>i</code> at the beginning, <code>j</code> at the end<br>
+                        2. If <code>nums[i] != nums[j]</code>, return <code>false</code> (not a palindrome!)<br>
+                        3. Move pointers toward middle: <code>i++</code>, <code>j--</code><br>
+                        4. If we make it through the whole loop, return <code>true</code><br><br>
+                        
+                        <strong>Example:</strong> [1, 2, 3, 2, 1]<br>
+                        • Compare nums[0] and nums[4]: 1 == 1 ✓<br>
+                        • Compare nums[1] and nums[3]: 2 == 2 ✓<br>
+                        • Middle element nums[2] = 3 (no need to compare with itself)<br>
+                        • It's a palindrome! ✅
                     </div>
                 </details>
                 
                 <details>
-                    <summary>💡 Hint 2: Loop condition</summary>
+                    <summary>💡 Hint 1: Loop structure</summary>
                     <div class="hint-content">
-                        When should the loop stop?<br>
-                        • When <code>i</code> and <code>j</code> meet or cross each other<br>
-                        • Think: should you use <code>i < j</code> or <code>i <= j</code>?<br>
-                        • Try both and see what happens! (For this exercise, we want to include the middle)
+                        Use the same two-pointer loop as Challenge 5's swap:<br>
+                        <code>for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1</code><br><br>
+                        But instead of swapping, you'll <strong>compare</strong> the values.
                     </div>
                 </details>
                 
                 <details>
-                    <summary>💡 Hint 3: Moving both variables</summary>
+                    <summary>💡 Hint 2: When to return false</summary>
                     <div class="hint-content">
-                        In the update section of the for loop, you need to move both variables:<br>
-                        • <code>i</code> should move forward (increase by 1)<br>
-                        • <code>j</code> should move backward (decrease by 1)<br><br>
-                        You can update both at once: <code>i, j = newValueForI, newValueForJ</code>
+                        Inside the loop, check: <code>if nums[i] != nums[j]</code><br>
+                        If they don't match, immediately return <code>false</code> - it's not a palindrome!<br><br>
+                        If the loop completes without returning false, return <code>true</code> at the end.
                     </div>
                 </details>
                 
                 <details>
                     <summary>✅ Solution</summary>
                     <div class="hint-content">
-<pre>func printPairs(nums []int) {
-    for i, j := 0, len(nums)-1; i <= j; i, j = i+1, j-1 {
-        fmt.Printf("(%d, %d)\n", i, j)
+<pre>func isPalindrome(nums []int) bool {
+    // Two pointers: start from both ends
+    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {
+        // If any pair doesn't match, not a palindrome
+        if nums[i] != nums[j] {
+            return false
+        }
     }
+    // Made it through - it's a palindrome!
+    return true
 }</pre>
                     </div>
                 </details>
                 
                 <div class="expected">
                     <div class="expected-title">Expected Output</div>
-                    <pre>nums := []int{10, 20, 30, 40, 50}
-printPairs(nums)
-
-Output:
-(0, 4)
-(1, 3)
-(2, 2)</pre>
+                    <pre>isPalindrome([]int{1, 2, 3, 2, 1}) → true
+isPalindrome([]int{1, 2, 3, 4, 5}) → false
+isPalindrome([]int{5, 5}) → true
+isPalindrome([]int{7}) → true</pre>
                 </div>
             </div>
 
             <div class="exercise">
                 <h4>Challenge 7: Reverse a Slice</h4>
-                <p>Write a function <code>func reverseSlice(nums []int) []int</code> that returns a new slice with elements in reverse order. Now combine everything you learned in challenges 4-6!</p>
+                <p>Write a function <code>func reverseSlice(nums []int) []int</code> that returns a new slice with elements in reverse order. This combines the two-pointer technique from Challenge 6 with swapping from Challenge 5!</p>
                 
                 <details>
                     <summary>📖 Pre-reading: The Two-Pointer Technique</summary>
@@ -818,10 +836,10 @@ Output:
                     <summary>💡 Hint</summary>
                     <div class="hint-content">
                         Combine what you learned:<br>
-                        • Challenge 4: Create a result slice with <code>make([]int, len(nums))</code><br>
-                        • Challenge 5: Use the swap syntax<br>
-                        • Challenge 6: Use two pointers moving toward each other<br><br>
-                        The loop should stop when <code>i < j</code> (when they meet in the middle).
+                        • Create a result slice with <code>make([]int, len(nums))</code> and <code>copy(result, nums)</code><br>
+                        • Use the two-pointer loop from Challenge 6<br>
+                        • Use the swap syntax from Challenge 5<br><br>
+                        The key difference from palindrome checking: instead of <strong>comparing</strong>, you <strong>swap</strong>!
                     </div>
                 </details>
                 
@@ -833,7 +851,7 @@ Output:
     result := make([]int, len(nums))
     copy(result, nums)
     
-    // Step 2: Two-pointer swap (combines Challenges 5 & 6)
+    // Step 2: Two-pointer swap (like Challenge 6 loop + Challenge 5 swap)
     // i starts at beginning, j starts at end
     for i, j := 0, len(result)-1; i < j; i, j = i+1, j-1 {
         // Swap elements at positions i and j
@@ -1182,7 +1200,7 @@ twoSum([]int{3, 3}, 6) → [0, 1]</pre>
                 <strong>Intermediate</strong> → learn one new concept at a time<br>
                 <strong>Challenges</strong> → combine what you know in small steps<br>
                 <strong>Advanced</strong> → tackle algorithms with proper scaffolding<br><br>
-                The new bridge challenges (4-6) specifically prepare you for the reverse slice problem by teaching each piece separately before you combine them!<br><br>
+                Challenge 6 (palindrome) teaches you the two-pointer <strong>comparison</strong> pattern, then Challenge 7 (reverse) uses the same pattern but with <strong>swapping</strong> instead. This builds understanding step by step!<br><br>
                 Stuck? Check the hint. Still stuck after 5 minutes? Check the solution and study it!</p>
             </div>
         </div>
@@ -1196,7 +1214,7 @@ twoSum([]int{3, 3}, 6) → [0, 1]</pre>
                 <li><strong>Multiple returns:</strong> <span class="inline-code">func f() (int, error)</span></li>
                 <li><strong>Slices:</strong> <span class="inline-code">[]Type{}</span></li>
                 <li><strong>Maps:</strong> <span class="inline-code">map[KeyType]ValueType{}</span></li>
-                <li><strong>Two-pointer technique:</strong> Use two variables moving from opposite ends</li>
+                <li><strong>Two-pointer technique:</strong> Use two variables moving from opposite ends to compare or swap</li>
                 <li><strong>Simultaneous assignment:</strong> <span class="inline-code">a, b = b, a</span> swaps without temp variable</li>
             </ul>
         </div>
