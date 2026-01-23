@@ -1039,27 +1039,15 @@ for fast := 1; fast < len(nums); fast++ {  // Initialize IN loop (read position)
                 </details>
                 
                 <details>
-                    <summary>💡 Hint 1: Loop structure</summary>
+                    <summary>💡 Hint 1: Edge cases and setup</summary>
                     <div class="hint-content">
-                        <strong>Edge case first:</strong> If the array is empty or has one element, what should you return?<br>
-                        Handle this at the start: <code>if len(nums) == 0 { return 0 }</code><br><br>
+                        <strong>Handle edge cases first:</strong><br>
+                        What if the array is empty? Add this at the start:<br>
+                        <code>if len(nums) == 0 { return 0 }</code><br><br>
                         
-                        <strong>The loop structure:</strong><br>
-<pre>slow := 0  // Write position (initialized OUTSIDE)
-
-for fast := 1; fast < len(nums); fast++ {
-    // Your logic here comparing nums[fast] and nums[slow]
-}</pre>
-                        
-                        <strong>Key differences from previous two-pointer patterns:</strong><br>
-                        • <code>slow</code> is initialized <strong>outside</strong> the loop (at index 0)<br>
-                        • <code>fast</code> is initialized <strong>in</strong> the loop header (at index 1)<br>
-                        • Only <code>fast</code> increments automatically each iteration<br>
-                        • <code>slow</code> only moves when you find a unique value (conditional)<br><br>
-                        
-                        Why start at these positions?<br>
-                        • First element (index 0) is always unique, so <code>slow</code> points there<br>
-                        • <code>fast</code> starts at 1 to compare with the first element
+                        <strong>Setup:</strong><br>
+                        Initialize <code>slow := 0</code> before the loop (first element is always unique)<br>
+                        Start your loop with <code>fast := 1</code> (compare from second element onward)
                     </div>
                 </details>
                 
