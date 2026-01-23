@@ -923,13 +923,12 @@ reverseSlice([]int{10, 20}) → [20, 10]</pre>
                 <details>
                     <summary>💡 Hint 2: Checking if you've seen it</summary>
                     <div class="hint-content">
-                        Remember the "comma ok" pattern from maps?<br>
-                        <code>value, ok := myMap[key]</code><br><br>
-                        
                         For each number in the slice:<br>
-                        • Check if it's in the map using "comma ok"<br>
-                        • If <code>ok</code> is <code>true</code>, you've seen it before → return <code>true</code><br>
-                        • If <code>ok</code> is <code>false</code>, add it to the map: <code>seen[num] = true</code>
+                        • Check: <code>if seen[num]</code> - is it in the map?<br>
+                        • If <code>true</code>, you've seen it before → return <code>true</code> (found duplicate!)<br>
+                        • If <code>false</code>, mark it as seen: <code>seen[num] = true</code><br><br>
+                        
+                        This works because when a key doesn't exist in a map, Go returns the zero value for that type. For <code>bool</code>, the zero value is <code>false</code>.
                     </div>
                 </details>
                 
@@ -1381,4 +1380,4 @@ twoSum([]int{3, 3}, 6) → [0, 1]</pre>
         </div>
     </div>
 </body>
-</html>
+</html> 
