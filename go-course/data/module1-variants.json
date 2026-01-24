@@ -1,4 +1,713 @@
 {
+  "intermediate": [
+    {
+      "id": "intermediate_1",
+      "concept": "make() Function",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Make and Append to Slice",
+          "description": "Create an empty slice using <code>make([]int, 0)</code>, add three numbers with <code>append</code>, then print its length.",
+          "hints": ["<code>make([]int, 0)</code> creates an empty int slice", "<code>nums = append(nums, value)</code> adds to the slice"],
+          "solution": "nums := make([]int, 0)\nnums = append(nums, 10)\nnums = append(nums, 20)\nnums = append(nums, 30)\nfmt.Println(len(nums))  // 3",
+          "expected": "3"
+        },
+        {
+          "id": "v2",
+          "title": "Make an Empty Map",
+          "description": "Create an empty map using <code>make(map[string]int)</code>, add three key-value pairs, then print its length.",
+          "hints": ["<code>make(map[string]int)</code> creates an empty map", "<code>scores[\"alice\"] = 100</code> adds a key-value pair"],
+          "solution": "scores := make(map[string]int)\nscores[\"alice\"] = 100\nscores[\"bob\"] = 85\nscores[\"carol\"] = 92\nfmt.Println(len(scores))  // 3",
+          "expected": "3"
+        },
+        {
+          "id": "v3",
+          "title": "Append Multiple Values",
+          "description": "Create an empty string slice, then use <code>append</code> to add multiple values at once. Print the slice.",
+          "hints": ["<code>append</code> can take multiple values: <code>append(slice, a, b, c)</code>"],
+          "solution": "words := make([]string, 0)\nwords = append(words, \"go\", \"is\", \"fun\")\nfmt.Println(words)  // [go is fun]",
+          "expected": "[go is fun]"
+        }
+      ]
+    },
+    {
+      "id": "intermediate_2",
+      "concept": "Comma-Ok Pattern",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Check Map Key Exists",
+          "description": "Create a map of fruit prices. Check if \"banana\" exists using the <code>value, ok := map[key]</code> pattern.",
+          "hints": ["<code>price, ok := prices[\"banana\"]</code>", "<code>ok</code> is true if key exists, false otherwise"],
+          "solution": "prices := map[string]float64{\n    \"apple\":  1.50,\n    \"orange\": 2.00,\n}\n\nif price, ok := prices[\"banana\"]; ok {\n    fmt.Printf(\"Banana: $%.2f\\n\", price)\n} else {\n    fmt.Println(\"Banana not found\")\n}",
+          "expected": "Banana not found"
+        },
+        {
+          "id": "v2",
+          "title": "Safe Map Lookup",
+          "description": "Create a map of user ages. Safely look up a user that exists AND one that doesn't, printing appropriate messages.",
+          "hints": ["Use <code>if age, ok := ages[name]; ok { ... } else { ... }</code>"],
+          "solution": "ages := map[string]int{\"alice\": 30, \"bob\": 25}\n\nif age, ok := ages[\"alice\"]; ok {\n    fmt.Printf(\"Alice is %d\\n\", age)\n}\n\nif age, ok := ages[\"charlie\"]; ok {\n    fmt.Printf(\"Charlie is %d\\n\", age)\n} else {\n    fmt.Println(\"Charlie not found\")\n}",
+          "expected": "Alice is 30\nCharlie not found"
+        },
+        {
+          "id": "v3",
+          "title": "Default Value Pattern",
+          "description": "Create a map of stock counts. If an item doesn't exist, print \"Out of stock\" instead of 0.",
+          "hints": ["Check with comma-ok before using the value", "The zero value for int is 0, which could be misleading"],
+          "solution": "stock := map[string]int{\"apple\": 5, \"banana\": 0}\n\nitem := \"orange\"\nif count, ok := stock[item]; ok {\n    fmt.Printf(\"%s: %d in stock\\n\", item, count)\n} else {\n    fmt.Printf(\"%s: Out of stock\\n\", item)\n}",
+          "expected": "orange: Out of stock"
+        }
+      ]
+    },
+    {
+      "id": "intermediate_3",
+      "concept": "Range with Index",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Print Index and Value",
+          "description": "Create a slice of your favorite foods. Loop through and print both index and value: \"0: pizza\", \"1: tacos\", etc.",
+          "hints": ["<code>for i, food := range foods</code> gives you both index and value"],
+          "solution": "foods := []string{\"pizza\", \"tacos\", \"sushi\"}\nfor i, food := range foods {\n    fmt.Printf(\"%d: %s\\n\", i, food)\n}",
+          "expected": "0: pizza\n1: tacos\n2: sushi"
+        },
+        {
+          "id": "v2",
+          "title": "Numbered List",
+          "description": "Create a slice of task names. Print them as a numbered list starting from 1: \"1. Buy milk\", \"2. Walk dog\", etc.",
+          "hints": ["Use <code>i+1</code> to start numbering from 1 instead of 0"],
+          "solution": "tasks := []string{\"Buy milk\", \"Walk dog\", \"Code\"}\nfor i, task := range tasks {\n    fmt.Printf(\"%d. %s\\n\", i+1, task)\n}",
+          "expected": "1. Buy milk\n2. Walk dog\n3. Code"
+        },
+        {
+          "id": "v3",
+          "title": "Find Element Index",
+          "description": "Create a slice of colors. Find and print the index of \"green\" (or -1 if not found).",
+          "hints": ["Loop with index, check if element matches, return/print the index"],
+          "solution": "colors := []string{\"red\", \"blue\", \"green\", \"yellow\"}\ntarget := \"green\"\nresult := -1\n\nfor i, color := range colors {\n    if color == target {\n        result = i\n        break\n    }\n}\nfmt.Printf(\"Index of %s: %d\\n\", target, result)",
+          "expected": "Index of green: 2"
+        }
+      ]
+    },
+    {
+      "id": "intermediate_4",
+      "concept": "Building Slices",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Collect Even Numbers",
+          "description": "Create an empty slice, then loop 1-10 and append only even numbers. Print the result.",
+          "hints": ["Check <code>if i%2 == 0</code>", "Use <code>append</code> inside the if block"],
+          "solution": "evens := []int{}\nfor i := 1; i <= 10; i++ {\n    if i%2 == 0 {\n        evens = append(evens, i)\n    }\n}\nfmt.Println(evens)",
+          "expected": "[2 4 6 8 10]"
+        },
+        {
+          "id": "v2",
+          "title": "Filter Long Words",
+          "description": "Given <code>[]string{\"go\", \"python\", \"js\", \"rust\"}</code>, collect only words with 3+ characters into a new slice.",
+          "hints": ["Check <code>if len(word) >= 3</code>"],
+          "solution": "words := []string{\"go\", \"python\", \"js\", \"rust\"}\nlong := []string{}\nfor _, word := range words {\n    if len(word) >= 3 {\n        long = append(long, word)\n    }\n}\nfmt.Println(long)",
+          "expected": "[python rust]"
+        },
+        {
+          "id": "v3",
+          "title": "Collect Multiples of 3",
+          "description": "Create an empty slice, loop 1-15, and append only numbers divisible by 3. Print the result.",
+          "hints": ["Check <code>if i%3 == 0</code>"],
+          "solution": "multiples := []int{}\nfor i := 1; i <= 15; i++ {\n    if i%3 == 0 {\n        multiples = append(multiples, i)\n    }\n}\nfmt.Println(multiples)",
+          "expected": "[3 6 9 12 15]"
+        }
+      ]
+    }
+  ],
+  "warmups": [
+    {
+      "id": "warmup_1",
+      "concept": "For Loops",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Print 1 to 10",
+          "description": "Write a program that prints the numbers 1 to 10, one per line.",
+          "hints": ["Use <code>for i := 1; i <= 10; i++</code>"],
+          "solution": "for i := 1; i <= 10; i++ {\n    fmt.Println(i)\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Countdown from 5",
+          "description": "Write a program that counts down from 5 to 1, then prints \"Go!\"",
+          "hints": ["Use <code>for i := 5; i >= 1; i--</code>", "Print \"Go!\" after the loop"],
+          "solution": "for i := 5; i >= 1; i-- {\n    fmt.Println(i)\n}\nfmt.Println(\"Go!\")"
+        },
+        {
+          "id": "v3",
+          "title": "Print Even Numbers",
+          "description": "Write a program that prints even numbers from 2 to 10.",
+          "hints": ["Use <code>for i := 2; i <= 10; i += 2</code>"],
+          "solution": "for i := 2; i <= 10; i += 2 {\n    fmt.Println(i)\n}"
+        }
+      ]
+    },
+    {
+      "id": "warmup_2",
+      "concept": "If/Else",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Check Number Sign",
+          "description": "Write <code>func checkSign(n int) string</code> that returns \"positive\", \"negative\", or \"zero\".",
+          "hints": ["Use <code>if n > 0</code>, then <code>else if n < 0</code>, then <code>else</code>"],
+          "solution": "func checkSign(n int) string {\n    if n > 0 {\n        return \"positive\"\n    } else if n < 0 {\n        return \"negative\"\n    }\n    return \"zero\"\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Pass or Fail",
+          "description": "Write <code>func passOrFail(score int) string</code> that returns \"pass\" if score >= 60, else \"fail\".",
+          "hints": ["Simple if/else: <code>if score >= 60 { return \"pass\" }</code>"],
+          "solution": "func passOrFail(score int) string {\n    if score >= 60 {\n        return \"pass\"\n    }\n    return \"fail\"\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Age Category",
+          "description": "Write <code>func ageCategory(age int) string</code> that returns \"child\" (< 13), \"teen\" (13-19), or \"adult\" (20+).",
+          "hints": ["Chain if/else if/else based on age ranges"],
+          "solution": "func ageCategory(age int) string {\n    if age < 13 {\n        return \"child\"\n    } else if age < 20 {\n        return \"teen\"\n    }\n    return \"adult\"\n}"
+        }
+      ]
+    },
+    {
+      "id": "warmup_3",
+      "concept": "Slices & Range",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Iterate Numbers",
+          "description": "Create a slice with three numbers, then print each using <code>for range</code>.",
+          "hints": ["Create: <code>nums := []int{7, 42, 99}</code>", "Loop: <code>for _, num := range nums</code>"],
+          "solution": "nums := []int{7, 42, 99}\nfor _, num := range nums {\n    fmt.Println(num)\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Iterate with Index",
+          "description": "Create a slice of colors, then print each with its index: \"0: red\", \"1: blue\", etc.",
+          "hints": ["Loop with index: <code>for i, color := range colors</code>", "Use <code>fmt.Printf(\"%d: %s\\n\", i, color)</code>"],
+          "solution": "colors := []string{\"red\", \"blue\", \"green\"}\nfor i, color := range colors {\n    fmt.Printf(\"%d: %s\\n\", i, color)\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Iterate Strings",
+          "description": "Create a slice of your favorite foods, print each on its own line.",
+          "hints": ["Create: <code>foods := []string{\"pizza\", \"sushi\", \"tacos\"}</code>"],
+          "solution": "foods := []string{\"pizza\", \"sushi\", \"tacos\"}\nfor _, food := range foods {\n    fmt.Println(food)\n}"
+        }
+      ]
+    },
+    {
+      "id": "warmup_4",
+      "concept": "Maps",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Ages Map",
+          "description": "Create a map of names to ages, then print each person's name and age.",
+          "hints": ["Map syntax: <code>map[string]int{\"alice\": 30}</code>", "Loop: <code>for name, age := range ages</code>"],
+          "solution": "ages := map[string]int{\n    \"alice\": 30,\n    \"bob\":   25,\n}\nfor name, age := range ages {\n    fmt.Printf(\"%s is %d\\n\", name, age)\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Prices Map",
+          "description": "Create a map of items to prices (float64), then print each item and price.",
+          "hints": ["Map syntax: <code>map[string]float64{\"apple\": 1.50}</code>"],
+          "solution": "prices := map[string]float64{\n    \"apple\":  1.50,\n    \"banana\": 0.75,\n}\nfor item, price := range prices {\n    fmt.Printf(\"%s: $%.2f\\n\", item, price)\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Capitals Map",
+          "description": "Create a map of countries to their capitals, then print each pair.",
+          "hints": ["Map syntax: <code>map[string]string{\"France\": \"Paris\"}</code>"],
+          "solution": "capitals := map[string]string{\n    \"France\": \"Paris\",\n    \"Japan\":  \"Tokyo\",\n}\nfor country, capital := range capitals {\n    fmt.Printf(\"%s: %s\\n\", country, capital)\n}"
+        }
+      ]
+    }
+  ],
+  "challenges": [
+    {
+      "id": "challenge_1",
+      "block": 1,
+      "concept": "Accumulator Pattern",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Sum of Slice",
+          "description": "Write a function <code>func sum(numbers []int) int</code> that returns the sum of all numbers in a slice.",
+          "functionSignature": "func sum(numbers []int) int",
+          "testCases": [
+            { "input": "[]int{1, 2, 3, 4, 5}", "output": "15" },
+            { "input": "[]int{10, 20}", "output": "30" }
+          ],
+          "hints": ["Create accumulator: <code>total := 0</code>", "Loop and add: <code>for _, num := range numbers { total += num }</code>"],
+          "solution": "func sum(numbers []int) int {\n    total := 0\n    for _, num := range numbers {\n        total += num\n    }\n    return total\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Join Words",
+          "description": "Write a function <code>func joinWords(words []string) string</code> that joins all words with spaces between them.",
+          "functionSignature": "func joinWords(words []string) string",
+          "testCases": [
+            { "input": "[]string{\"go\", \"is\", \"fun\"}", "output": "\"go is fun\"" },
+            { "input": "[]string{\"hello\"}", "output": "\"hello\"" }
+          ],
+          "hints": ["Create string accumulator: <code>result := \"\"</code>", "Handle spacing: first word has no leading space, others do"],
+          "solution": "func joinWords(words []string) string {\n    result := \"\"\n    for i, word := range words {\n        if i > 0 {\n            result += \" \"\n        }\n        result += word\n    }\n    return result\n}"
+        },
+        {
+          "id": "v3",
+          "title": "String Length Sum",
+          "description": "Write a function <code>func totalLength(words []string) int</code> that returns the total length of all strings combined.",
+          "functionSignature": "func totalLength(words []string) int",
+          "testCases": [
+            { "input": "[]string{\"go\", \"is\", \"fun\"}", "output": "7" },
+            { "input": "[]string{\"hello\", \"world\"}", "output": "10" }
+          ],
+          "hints": ["Create accumulator: <code>total := 0</code>", "Loop and add length: <code>total += len(word)</code>"],
+          "solution": "func totalLength(words []string) int {\n    total := 0\n    for _, word := range words {\n        total += len(word)\n    }\n    return total\n}"
+        }
+      ]
+    },
+    {
+      "id": "challenge_2",
+      "block": 1,
+      "concept": "Counting with Condition",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Count Evens",
+          "description": "Write a function <code>func countEvens(nums []int) int</code> that returns how many even numbers are in the slice.",
+          "functionSignature": "func countEvens(nums []int) int",
+          "testCases": [
+            { "input": "[]int{1, 2, 3, 4, 5, 6}", "output": "3" },
+            { "input": "[]int{1, 3, 5}", "output": "0" }
+          ],
+          "hints": ["Create counter: <code>count := 0</code>", "Check even: <code>if num%2 == 0 { count++ }</code>"],
+          "solution": "func countEvens(nums []int) int {\n    count := 0\n    for _, num := range nums {\n        if num%2 == 0 {\n            count++\n        }\n    }\n    return count\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Count Negatives",
+          "description": "Write a function <code>func countNegatives(nums []int) int</code> that returns how many negative numbers are in the slice.",
+          "functionSignature": "func countNegatives(nums []int) int",
+          "testCases": [
+            { "input": "[]int{-1, 2, -3, 4, -5}", "output": "3" },
+            { "input": "[]int{1, 2, 3}", "output": "0" }
+          ],
+          "hints": ["Create counter: <code>count := 0</code>", "Check negative: <code>if num < 0 { count++ }</code>"],
+          "solution": "func countNegatives(nums []int) int {\n    count := 0\n    for _, num := range nums {\n        if num < 0 {\n            count++\n        }\n    }\n    return count\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Count Long Words",
+          "description": "Write a function <code>func countLongWords(words []string, minLen int) int</code> that counts words with length >= minLen.",
+          "functionSignature": "func countLongWords(words []string, minLen int) int",
+          "testCases": [
+            { "input": "[]string{\"go\", \"python\", \"javascript\"}, 4", "output": "2" },
+            { "input": "[]string{\"a\", \"bb\", \"ccc\"}, 2", "output": "2" }
+          ],
+          "hints": ["Create counter: <code>count := 0</code>", "Check length: <code>if len(word) >= minLen { count++ }</code>"],
+          "solution": "func countLongWords(words []string, minLen int) int {\n    count := 0\n    for _, word := range words {\n        if len(word) >= minLen {\n            count++\n        }\n    }\n    return count\n}"
+        }
+      ]
+    },
+    {
+      "id": "challenge_3",
+      "block": 1,
+      "concept": "Multiple Conditionals",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "FizzBuzz",
+          "description": "Print numbers 1-20. For multiples of 3 print \"Fizz\", multiples of 5 print \"Buzz\", multiples of both print \"FizzBuzz\".",
+          "functionSignature": "// No function - just a loop",
+          "testCases": [
+            { "input": "i = 3", "output": "Fizz" },
+            { "input": "i = 5", "output": "Buzz" },
+            { "input": "i = 15", "output": "FizzBuzz" }
+          ],
+          "hints": ["Check 15 first (or 3 AND 5)", "Use <code>%</code> for divisibility: <code>i%3 == 0</code>"],
+          "solution": "for i := 1; i <= 20; i++ {\n    if i%15 == 0 {\n        fmt.Println(\"FizzBuzz\")\n    } else if i%3 == 0 {\n        fmt.Println(\"Fizz\")\n    } else if i%5 == 0 {\n        fmt.Println(\"Buzz\")\n    } else {\n        fmt.Println(i)\n    }\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Grade Classifier",
+          "description": "Write a function <code>func grade(score int) string</code> that returns \"A\" (90+), \"B\" (80-89), \"C\" (70-79), \"D\" (60-69), or \"F\" (below 60).",
+          "functionSignature": "func grade(score int) string",
+          "testCases": [
+            { "input": "95", "output": "\"A\"" },
+            { "input": "73", "output": "\"C\"" },
+            { "input": "45", "output": "\"F\"" }
+          ],
+          "hints": ["Check highest first: <code>if score >= 90</code>", "Chain with else if for each grade"],
+          "solution": "func grade(score int) string {\n    if score >= 90 {\n        return \"A\"\n    } else if score >= 80 {\n        return \"B\"\n    } else if score >= 70 {\n        return \"C\"\n    } else if score >= 60 {\n        return \"D\"\n    }\n    return \"F\"\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Number Sign",
+          "description": "Write a function <code>func sign(n int) string</code> that returns \"positive\", \"negative\", or \"zero\".",
+          "functionSignature": "func sign(n int) string",
+          "testCases": [
+            { "input": "5", "output": "\"positive\"" },
+            { "input": "-3", "output": "\"negative\"" },
+            { "input": "0", "output": "\"zero\"" }
+          ],
+          "hints": ["Three cases: <code>n > 0</code>, <code>n < 0</code>, <code>n == 0</code>"],
+          "solution": "func sign(n int) string {\n    if n > 0 {\n        return \"positive\"\n    } else if n < 0 {\n        return \"negative\"\n    }\n    return \"zero\"\n}"
+        }
+      ]
+    },
+    {
+      "id": "challenge_4",
+      "block": 1,
+      "concept": "Finding Extrema",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Find Maximum",
+          "description": "Write a function <code>func max(nums []int) int</code> that returns the largest number in a slice.",
+          "functionSignature": "func max(nums []int) int",
+          "testCases": [
+            { "input": "[]int{3, 7, 2, 9, 1}", "output": "9" },
+            { "input": "[]int{-5, -2, -10}", "output": "-2" }
+          ],
+          "hints": ["Start with first: <code>maxNum := nums[0]</code>", "Update if bigger: <code>if num > maxNum { maxNum = num }</code>"],
+          "solution": "func max(nums []int) int {\n    maxNum := nums[0]\n    for _, num := range nums {\n        if num > maxNum {\n            maxNum = num\n        }\n    }\n    return maxNum\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Find Minimum",
+          "description": "Write a function <code>func min(nums []int) int</code> that returns the smallest number in a slice.",
+          "functionSignature": "func min(nums []int) int",
+          "testCases": [
+            { "input": "[]int{3, 7, 2, 9, 1}", "output": "1" },
+            { "input": "[]int{-5, -2, -10}", "output": "-10" }
+          ],
+          "hints": ["Start with first: <code>minNum := nums[0]</code>", "Update if smaller: <code>if num < minNum { minNum = num }</code>"],
+          "solution": "func min(nums []int) int {\n    minNum := nums[0]\n    for _, num := range nums {\n        if num < minNum {\n            minNum = num\n        }\n    }\n    return minNum\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Longest String",
+          "description": "Write a function <code>func longest(words []string) string</code> that returns the longest string in a slice.",
+          "functionSignature": "func longest(words []string) string",
+          "testCases": [
+            { "input": "[]string{\"go\", \"python\", \"c\"}", "output": "\"python\"" },
+            { "input": "[]string{\"a\", \"bb\"}", "output": "\"bb\"" }
+          ],
+          "hints": ["Start with first: <code>result := words[0]</code>", "Compare lengths: <code>if len(word) > len(result)</code>"],
+          "solution": "func longest(words []string) string {\n    result := words[0]\n    for _, word := range words {\n        if len(word) > len(result) {\n            result = word\n        }\n    }\n    return result\n}"
+        }
+      ]
+    },
+    {
+      "id": "challenge_5",
+      "block": 2,
+      "concept": "Filter with Append",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Filter Positives",
+          "description": "Write a function <code>func filterPositives(nums []int) []int</code> that returns only positive numbers.",
+          "functionSignature": "func filterPositives(nums []int) []int",
+          "testCases": [
+            { "input": "[]int{-2, 3, -1, 5, 0}", "output": "[3, 5]" },
+            { "input": "[]int{1, 2, 3}", "output": "[1, 2, 3]" }
+          ],
+          "hints": ["Create result: <code>result := []int{}</code>", "Append if positive: <code>if num > 0 { result = append(result, num) }</code>"],
+          "solution": "func filterPositives(nums []int) []int {\n    result := []int{}\n    for _, num := range nums {\n        if num > 0 {\n            result = append(result, num)\n        }\n    }\n    return result\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Filter Evens",
+          "description": "Write a function <code>func filterEvens(nums []int) []int</code> that returns only even numbers.",
+          "functionSignature": "func filterEvens(nums []int) []int",
+          "testCases": [
+            { "input": "[]int{1, 2, 3, 4, 5, 6}", "output": "[2, 4, 6]" },
+            { "input": "[]int{1, 3, 5}", "output": "[]" }
+          ],
+          "hints": ["Create result: <code>result := []int{}</code>", "Append if even: <code>if num%2 == 0 { result = append(result, num) }</code>"],
+          "solution": "func filterEvens(nums []int) []int {\n    result := []int{}\n    for _, num := range nums {\n        if num%2 == 0 {\n            result = append(result, num)\n        }\n    }\n    return result\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Filter Short Words",
+          "description": "Write a function <code>func filterShort(words []string, maxLen int) []string</code> that returns words with length <= maxLen.",
+          "functionSignature": "func filterShort(words []string, maxLen int) []string",
+          "testCases": [
+            { "input": "[]string{\"go\", \"python\", \"c\", \"rust\"}, 3", "output": "[\"go\", \"c\"]" },
+            { "input": "[]string{\"hello\", \"hi\"}, 2", "output": "[\"hi\"]" }
+          ],
+          "hints": ["Create result: <code>result := []string{}</code>", "Append if short enough: <code>if len(word) <= maxLen</code>"],
+          "solution": "func filterShort(words []string, maxLen int) []string {\n    result := []string{}\n    for _, word := range words {\n        if len(word) <= maxLen {\n            result = append(result, word)\n        }\n    }\n    return result\n}"
+        }
+      ]
+    },
+    {
+      "id": "challenge_6",
+      "block": 2,
+      "concept": "Find Index",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Find Index",
+          "description": "Write a function <code>func findIndex(nums []int, target int) int</code> that returns the index of target, or -1 if not found.",
+          "functionSignature": "func findIndex(nums []int, target int) int",
+          "testCases": [
+            { "input": "[]int{10, 20, 30, 40}, 30", "output": "2" },
+            { "input": "[]int{10, 20, 30, 40}, 50", "output": "-1" }
+          ],
+          "hints": ["Loop with index: <code>for i, num := range nums</code>", "Return index when found: <code>if num == target { return i }</code>"],
+          "solution": "func findIndex(nums []int, target int) int {\n    for i, num := range nums {\n        if num == target {\n            return i\n        }\n    }\n    return -1\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Find String Index",
+          "description": "Write a function <code>func findWord(words []string, target string) int</code> that returns the index of target word, or -1.",
+          "functionSignature": "func findWord(words []string, target string) int",
+          "testCases": [
+            { "input": "[]string{\"go\", \"python\", \"rust\"}, \"python\"", "output": "1" },
+            { "input": "[]string{\"go\", \"python\"}, \"java\"", "output": "-1" }
+          ],
+          "hints": ["Loop with index: <code>for i, word := range words</code>", "Return index when found: <code>if word == target { return i }</code>"],
+          "solution": "func findWord(words []string, target string) int {\n    for i, word := range words {\n        if word == target {\n            return i\n        }\n    }\n    return -1\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Find First Negative",
+          "description": "Write a function <code>func firstNegativeIndex(nums []int) int</code> that returns the index of the first negative number, or -1.",
+          "functionSignature": "func firstNegativeIndex(nums []int) int",
+          "testCases": [
+            { "input": "[]int{5, 3, -2, 4, -1}", "output": "2" },
+            { "input": "[]int{1, 2, 3}", "output": "-1" }
+          ],
+          "hints": ["Loop with index: <code>for i, num := range nums</code>", "Return index when negative: <code>if num < 0 { return i }</code>"],
+          "solution": "func firstNegativeIndex(nums []int) int {\n    for i, num := range nums {\n        if num < 0 {\n            return i\n        }\n    }\n    return -1\n}"
+        }
+      ]
+    },
+    {
+      "id": "challenge_7",
+      "block": 2,
+      "concept": "Map Counting",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Count Occurrences",
+          "description": "Write a function <code>func countOccurrences(nums []int) map[int]int</code> that counts how many times each number appears.",
+          "functionSignature": "func countOccurrences(nums []int) map[int]int",
+          "testCases": [
+            { "input": "[]int{1, 2, 2, 3, 3, 3}", "output": "map[1:1 2:2 3:3]" },
+            { "input": "[]int{5, 5, 5, 5}", "output": "map[5:4]" }
+          ],
+          "hints": ["Create map: <code>counts := make(map[int]int)</code>", "Increment: <code>counts[num]++</code>"],
+          "solution": "func countOccurrences(nums []int) map[int]int {\n    counts := make(map[int]int)\n    for _, num := range nums {\n        counts[num]++\n    }\n    return counts\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Count Characters",
+          "description": "Write a function <code>func countChars(s string) map[rune]int</code> that counts how many times each character appears.",
+          "functionSignature": "func countChars(s string) map[rune]int",
+          "testCases": [
+            { "input": "\"hello\"", "output": "map[e:1 h:1 l:2 o:1]" },
+            { "input": "\"aaa\"", "output": "map[a:3]" }
+          ],
+          "hints": ["Create map: <code>counts := make(map[rune]int)</code>", "Loop string: <code>for _, char := range s</code>"],
+          "solution": "func countChars(s string) map[rune]int {\n    counts := make(map[rune]int)\n    for _, char := range s {\n        counts[char]++\n    }\n    return counts\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Word Frequency",
+          "description": "Write a function <code>func wordFreq(words []string) map[string]int</code> that counts how many times each word appears.",
+          "functionSignature": "func wordFreq(words []string) map[string]int",
+          "testCases": [
+            { "input": "[]string{\"go\", \"go\", \"python\"}", "output": "map[go:2 python:1]" },
+            { "input": "[]string{\"a\", \"b\", \"a\", \"a\"}", "output": "map[a:3 b:1]" }
+          ],
+          "hints": ["Create map: <code>counts := make(map[string]int)</code>", "Increment: <code>counts[word]++</code>"],
+          "solution": "func wordFreq(words []string) map[string]int {\n    counts := make(map[string]int)\n    for _, word := range words {\n        counts[word]++\n    }\n    return counts\n}"
+        }
+      ]
+    },
+    {
+      "id": "challenge_8",
+      "block": 3,
+      "concept": "Swap Pattern",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Swap Elements",
+          "description": "Write a function <code>func swapElements(nums []int, i, j int)</code> that swaps elements at positions i and j.",
+          "functionSignature": "func swapElements(nums []int, i, j int)",
+          "testCases": [
+            { "input": "[]int{1, 2, 3, 4, 5}, 0, 4", "output": "[5, 2, 3, 4, 1]" },
+            { "input": "[]int{10, 20}, 0, 1", "output": "[20, 10]" }
+          ],
+          "hints": ["Use simultaneous assignment: <code>nums[i], nums[j] = nums[j], nums[i]</code>"],
+          "solution": "func swapElements(nums []int, i, j int) {\n    nums[i], nums[j] = nums[j], nums[i]\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Swap First Last",
+          "description": "Write a function <code>func swapFirstLast(nums []int)</code> that swaps the first and last elements.",
+          "functionSignature": "func swapFirstLast(nums []int)",
+          "testCases": [
+            { "input": "[]int{1, 2, 3, 4, 5}", "output": "[5, 2, 3, 4, 1]" },
+            { "input": "[]int{10, 20}", "output": "[20, 10]" }
+          ],
+          "hints": ["Last index: <code>len(nums)-1</code>", "Swap: <code>nums[0], nums[len(nums)-1] = nums[len(nums)-1], nums[0]</code>"],
+          "solution": "func swapFirstLast(nums []int) {\n    nums[0], nums[len(nums)-1] = nums[len(nums)-1], nums[0]\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Swap Variables",
+          "description": "Given two variables <code>a := 5</code> and <code>b := 10</code>, swap their values and print them.",
+          "functionSignature": "// No function - just swap",
+          "testCases": [
+            { "input": "a=5, b=10", "output": "a=10, b=5" }
+          ],
+          "hints": ["Use simultaneous assignment: <code>a, b = b, a</code>"],
+          "solution": "a := 5\nb := 10\na, b = b, a\nfmt.Println(a, b)  // 10 5"
+        }
+      ]
+    },
+    {
+      "id": "challenge_9",
+      "block": 3,
+      "concept": "Two-Pointer Comparison",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Palindrome Checker",
+          "description": "Write a function <code>func isPalindrome(nums []int) bool</code> that checks if a slice reads the same forwards and backwards.",
+          "functionSignature": "func isPalindrome(nums []int) bool",
+          "testCases": [
+            { "input": "[]int{1, 2, 3, 2, 1}", "output": "true" },
+            { "input": "[]int{1, 2, 3}", "output": "false" }
+          ],
+          "hints": ["Two pointers: <code>for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1</code>", "Compare: <code>if nums[i] != nums[j] { return false }</code>"],
+          "solution": "func isPalindrome(nums []int) bool {\n    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n        if nums[i] != nums[j] {\n            return false\n        }\n    }\n    return true\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Is Symmetric",
+          "description": "Write a function <code>func isSymmetric(s string) bool</code> that checks if a string is symmetric (palindrome).",
+          "functionSignature": "func isSymmetric(s string) bool",
+          "testCases": [
+            { "input": "\"racecar\"", "output": "true" },
+            { "input": "\"hello\"", "output": "false" }
+          ],
+          "hints": ["Convert to runes: <code>runes := []rune(s)</code>", "Two-pointer comparison on runes"],
+          "solution": "func isSymmetric(s string) bool {\n    runes := []rune(s)\n    for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {\n        if runes[i] != runes[j] {\n            return false\n        }\n    }\n    return true\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Ends Match",
+          "description": "Write a function <code>func endsMatch(nums []int) bool</code> that returns true if first equals last element.",
+          "functionSignature": "func endsMatch(nums []int) bool",
+          "testCases": [
+            { "input": "[]int{5, 2, 3, 5}", "output": "true" },
+            { "input": "[]int{1, 2, 3}", "output": "false" }
+          ],
+          "hints": ["Simple comparison: <code>nums[0] == nums[len(nums)-1]</code>"],
+          "solution": "func endsMatch(nums []int) bool {\n    return nums[0] == nums[len(nums)-1]\n}"
+        }
+      ]
+    },
+    {
+      "id": "challenge_10",
+      "block": 4,
+      "concept": "Two-Pointer Swap",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Reverse Slice",
+          "description": "Write a function <code>func reverseSlice(nums []int) []int</code> that reverses a slice in place.",
+          "functionSignature": "func reverseSlice(nums []int) []int",
+          "testCases": [
+            { "input": "[]int{1, 2, 3, 4, 5}", "output": "[5, 4, 3, 2, 1]" },
+            { "input": "[]int{10, 20}", "output": "[20, 10]" }
+          ],
+          "hints": ["Combine palindrome loop + swap: swap instead of compare"],
+          "solution": "func reverseSlice(nums []int) []int {\n    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n        nums[i], nums[j] = nums[j], nums[i]\n    }\n    return nums\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Rotate Left",
+          "description": "Write a function <code>func rotateLeft(nums []int) []int</code> that moves the first element to the end.",
+          "functionSignature": "func rotateLeft(nums []int) []int",
+          "testCases": [
+            { "input": "[]int{1, 2, 3, 4}", "output": "[2, 3, 4, 1]" },
+            { "input": "[]int{10, 20, 30}", "output": "[20, 30, 10]" }
+          ],
+          "hints": ["Save first: <code>first := nums[0]</code>", "Shift left, put first at end"],
+          "solution": "func rotateLeft(nums []int) []int {\n    first := nums[0]\n    for i := 0; i < len(nums)-1; i++ {\n        nums[i] = nums[i+1]\n    }\n    nums[len(nums)-1] = first\n    return nums\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Rotate Right",
+          "description": "Write a function <code>func rotateRight(nums []int) []int</code> that moves the last element to the front.",
+          "functionSignature": "func rotateRight(nums []int) []int",
+          "testCases": [
+            { "input": "[]int{1, 2, 3, 4}", "output": "[4, 1, 2, 3]" },
+            { "input": "[]int{10, 20, 30}", "output": "[30, 10, 20]" }
+          ],
+          "hints": ["Save last: <code>last := nums[len(nums)-1]</code>", "Shift right, put last at front"],
+          "solution": "func rotateRight(nums []int) []int {\n    last := nums[len(nums)-1]\n    for i := len(nums)-1; i > 0; i-- {\n        nums[i] = nums[i-1]\n    }\n    nums[0] = last\n    return nums\n}"
+        }
+      ]
+    },
+    {
+      "id": "challenge_11",
+      "block": 4,
+      "concept": "Map Lookup + Early Return",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "First Duplicate Index",
+          "description": "Write a function <code>func firstDuplicateIndex(nums []int) int</code> that returns the index of the first number that appeared before, or -1.",
+          "functionSignature": "func firstDuplicateIndex(nums []int) int",
+          "testCases": [
+            { "input": "[]int{1, 2, 3, 2}", "output": "3" },
+            { "input": "[]int{1, 2, 3}", "output": "-1" }
+          ],
+          "hints": ["Map to track seen: <code>seen := make(map[int]bool)</code>", "Check then add: <code>if seen[num] { return i }</code>"],
+          "solution": "func firstDuplicateIndex(nums []int) int {\n    seen := make(map[int]bool)\n    for i, num := range nums {\n        if seen[num] {\n            return i\n        }\n        seen[num] = true\n    }\n    return -1\n}"
+        },
+        {
+          "id": "v2",
+          "title": "First Repeat Char",
+          "description": "Write a function <code>func firstRepeatChar(s string) rune</code> that returns the first character that appeared before, or 0.",
+          "functionSignature": "func firstRepeatChar(s string) rune",
+          "testCases": [
+            { "input": "\"abcab\"", "output": "'a'" },
+            { "input": "\"abc\"", "output": "0" }
+          ],
+          "hints": ["Map to track seen: <code>seen := make(map[rune]bool)</code>", "Check then add: <code>if seen[char] { return char }</code>"],
+          "solution": "func firstRepeatChar(s string) rune {\n    seen := make(map[rune]bool)\n    for _, char := range s {\n        if seen[char] {\n            return char\n        }\n        seen[char] = true\n    }\n    return 0\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Has Duplicate",
+          "description": "Write a function <code>func hasDuplicate(nums []int) bool</code> that returns true if any number appears twice.",
+          "functionSignature": "func hasDuplicate(nums []int) bool",
+          "testCases": [
+            { "input": "[]int{1, 2, 3, 2}", "output": "true" },
+            { "input": "[]int{1, 2, 3}", "output": "false" }
+          ],
+          "hints": ["Same pattern as firstDuplicateIndex, but return true/false"],
+          "solution": "func hasDuplicate(nums []int) bool {\n    seen := make(map[int]bool)\n    for _, num := range nums {\n        if seen[num] {\n            return true\n        }\n        seen[num] = true\n    }\n    return false\n}"
+        }
+      ]
+    }
+  ],
   "advanced": [
     {
       "id": "advanced_1",
@@ -224,6 +933,50 @@
           "solution": "func findComplement(scores []int, target int) []int {\n    seen := make(map[int]int)\n    for i, score := range scores {\n        complement := target - score\n        if j, ok := seen[complement]; ok {\n            return []int{j, i}\n        }\n        seen[score] = i\n    }\n    return nil\n}"
         }
       ]
+    },
+    {
+      "id": "advanced_6",
+      "title": "Sliding Window Maximum",
+      "pattern": "Sliding Window",
+      "leetcodeRef": "Similar to LeetCode 209, 3, 76",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Maximum Sum Subarray of Size K",
+          "description": "Given an array of integers and a number k, find the maximum sum of any contiguous subarray of size k. <code>func maxSumSubarray(nums []int, k int) int</code>",
+          "functionSignature": "func maxSumSubarray(nums []int, k int) int",
+          "testCases": [
+            { "input": "[]int{2, 1, 5, 1, 3, 2}, 3", "output": "9", "note": "subarray [5,1,3]" },
+            { "input": "[]int{2, 3, 4, 1, 5}, 2", "output": "7", "note": "subarray [3,4]" },
+            { "input": "[]int{1, 1, 1, 1}, 2", "output": "2" }
+          ],
+          "solution": "func maxSumSubarray(nums []int, k int) int {\n    if len(nums) < k {\n        return 0\n    }\n    // Calculate sum of first window\n    windowSum := 0\n    for i := 0; i < k; i++ {\n        windowSum += nums[i]\n    }\n    maxSum := windowSum\n    \n    // Slide the window\n    for i := k; i < len(nums); i++ {\n        windowSum += nums[i] - nums[i-k]  // Add new, remove old\n        if windowSum > maxSum {\n            maxSum = windowSum\n        }\n    }\n    return maxSum\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Longest Substring Without Repeating",
+          "description": "Find the length of the longest substring without repeating characters. <code>func lengthOfLongestSubstring(s string) int</code>",
+          "functionSignature": "func lengthOfLongestSubstring(s string) int",
+          "testCases": [
+            { "input": "\"abcabcbb\"", "output": "3", "note": "\"abc\"" },
+            { "input": "\"bbbbb\"", "output": "1", "note": "\"b\"" },
+            { "input": "\"pwwkew\"", "output": "3", "note": "\"wke\"" }
+          ],
+          "solution": "func lengthOfLongestSubstring(s string) int {\n    seen := make(map[byte]int)  // char -> last index\n    maxLen := 0\n    left := 0\n    \n    for right := 0; right < len(s); right++ {\n        char := s[right]\n        if lastIdx, ok := seen[char]; ok && lastIdx >= left {\n            left = lastIdx + 1  // Shrink window\n        }\n        seen[char] = right\n        if right - left + 1 > maxLen {\n            maxLen = right - left + 1\n        }\n    }\n    return maxLen\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Minimum Size Subarray Sum",
+          "description": "Find the minimal length of a contiguous subarray whose sum is >= target. Return 0 if no such subarray. <code>func minSubarrayLen(target int, nums []int) int</code>",
+          "functionSignature": "func minSubarrayLen(target int, nums []int) int",
+          "testCases": [
+            { "input": "7, []int{2, 3, 1, 2, 4, 3}", "output": "2", "note": "[4,3] sums to 7" },
+            { "input": "4, []int{1, 4, 4}", "output": "1", "note": "[4] alone >= 4" },
+            { "input": "11, []int{1, 1, 1, 1}", "output": "0", "note": "can't reach 11" }
+          ],
+          "solution": "func minSubarrayLen(target int, nums []int) int {\n    minLen := len(nums) + 1  // Impossible value\n    left := 0\n    sum := 0\n    \n    for right := 0; right < len(nums); right++ {\n        sum += nums[right]\n        \n        // Shrink window while sum >= target\n        for sum >= target {\n            if right - left + 1 < minLen {\n                minLen = right - left + 1\n            }\n            sum -= nums[left]\n            left++\n        }\n    }\n    \n    if minLen == len(nums) + 1 {\n        return 0\n    }\n    return minLen\n}"
+        }
+      ]
     }
   ],
   "preExercises": {
@@ -274,6 +1027,190 @@
           "solution": "letters := make(map[rune]bool)\n\nfor _, char := range \"banana\" {\n    letters[char] = true\n}\n\nfmt.Printf(\"Unique letters: %d\\n\", len(letters))  // 3: b, a, n",
           "expectedOutput": "Unique letters: 3",
           "keyInsight": "A map automatically handles duplicates - you can set the same key multiple times and it just overwrites. This is why <code>len(map)</code> gives you the count of unique keys!"
+        }
+      ]
+    },
+    "advanced_2": {
+      "title": "Pre-exercise: Slow/Fast Pointer Prep",
+      "description": "Before the in-place algorithm, let's practice the core logic of detecting duplicates in sorted arrays.",
+      "exercises": [
+        {
+          "id": "pre2a",
+          "title": "Copy Unique to New Slice",
+          "problem": "Given the sorted slice <code>[]int{1, 1, 2, 2, 3}</code>, create a NEW slice containing only the unique values <code>[1, 2, 3]</code>. Don't modify the original - just build a new one with <code>append</code>.",
+          "hints": [
+            {
+              "title": "Step 1: Setup",
+              "content": "<pre>nums := []int{1, 1, 2, 2, 3}\nresult := []int{nums[0]}  // First element is always unique</pre>"
+            },
+            {
+              "title": "Step 2: Loop starting from index 1",
+              "content": "<pre>for i := 1; i < len(nums); i++ {\n    // Compare current with previous\n}</pre>"
+            },
+            {
+              "title": "Step 3: Append when different",
+              "content": "<pre>if nums[i] != nums[i-1] {\n    result = append(result, nums[i])\n}</pre>"
+            }
+          ],
+          "solution": "nums := []int{1, 1, 2, 2, 3}\nresult := []int{nums[0]}  // First element always unique\n\nfor i := 1; i < len(nums); i++ {\n    if nums[i] != nums[i-1] {\n        result = append(result, nums[i])\n    }\n}\n\nfmt.Println(result)  // [1 2 3]",
+          "expectedOutput": "[1 2 3]",
+          "keyInsight": "In a sorted array, duplicates are always adjacent! So we only need to compare each element with the one before it. This same logic powers the in-place algorithm - we'll just write to the array instead of appending."
+        },
+        {
+          "id": "pre2b",
+          "title": "Count Consecutive Groups",
+          "problem": "Given the sorted slice <code>[]int{1, 1, 2, 2, 2, 3}</code>, count how many distinct groups there are. Answer: 3 (the 1s, the 2s, and the 3).",
+          "hints": [
+            {
+              "title": "Step 1: Initialize counter",
+              "content": "<pre>nums := []int{1, 1, 2, 2, 2, 3}\ngroups := 1  // First element starts the first group</pre>"
+            },
+            {
+              "title": "Step 2: Loop and count transitions",
+              "content": "<pre>for i := 1; i < len(nums); i++ {\n    if nums[i] != nums[i-1] {\n        groups++  // New value = new group\n    }\n}</pre>"
+            }
+          ],
+          "solution": "nums := []int{1, 1, 2, 2, 2, 3}\ngroups := 1  // First element starts the first group\n\nfor i := 1; i < len(nums); i++ {\n    if nums[i] != nums[i-1] {\n        groups++  // New value = new group\n    }\n}\n\nfmt.Printf(\"Groups: %d\\n\", groups)",
+          "expectedOutput": "Groups: 3",
+          "keyInsight": "This is exactly what the slow/fast algorithm returns! The slow pointer ends up at the last unique position, so slow+1 = number of unique elements = number of groups."
+        }
+      ]
+    },
+    "advanced_4": {
+      "title": "Pre-exercise: Map Counting Prep",
+      "description": "Before counting words, let's practice the building blocks: splitting strings and incrementing map values.",
+      "exercises": [
+        {
+          "id": "pre4a",
+          "title": "Explore strings.Fields",
+          "problem": "Use <code>strings.Fields</code> to split the string <code>\"hello world go\"</code> into words and print each word on its own line.",
+          "hints": [
+            {
+              "title": "Step 1: Import and split",
+              "content": "<pre>import \"strings\"\n\nwords := strings.Fields(\"hello world go\")</pre>"
+            },
+            {
+              "title": "Step 2: Loop and print",
+              "content": "<pre>for _, word := range words {\n    fmt.Println(word)\n}</pre>"
+            }
+          ],
+          "solution": "import \"strings\"\n\nwords := strings.Fields(\"hello world go\")\nfor _, word := range words {\n    fmt.Println(word)\n}",
+          "expectedOutput": "hello\nworld\ngo",
+          "keyInsight": "<code>strings.Fields</code> splits on any whitespace (spaces, tabs, newlines) and returns a <code>[]string</code>. It's smarter than <code>strings.Split(s, \" \")</code> because it handles multiple spaces correctly."
+        },
+        {
+          "id": "pre4b",
+          "title": "Count Letters (Simpler)",
+          "problem": "Count how many times each letter appears in <code>\"hello\"</code>. Store in a <code>map[rune]int</code> and print the counts.",
+          "hints": [
+            {
+              "title": "Step 1: Create the map",
+              "content": "<pre>counts := make(map[rune]int)</pre>"
+            },
+            {
+              "title": "Step 2: Loop through string",
+              "content": "<pre>for _, char := range \"hello\" {\n    counts[char]++\n}</pre>"
+            },
+            {
+              "title": "Step 3: Print results",
+              "content": "<pre>for char, count := range counts {\n    fmt.Printf(\"%c: %d\\n\", char, count)\n}</pre>"
+            }
+          ],
+          "solution": "counts := make(map[rune]int)\n\nfor _, char := range \"hello\" {\n    counts[char]++\n}\n\nfor char, count := range counts {\n    fmt.Printf(\"%c: %d\\n\", char, count)\n}",
+          "expectedOutput": "h: 1\ne: 1\nl: 2\no: 1",
+          "keyInsight": "The <code>++</code> operator works on map values! When the key doesn't exist, Go returns 0 (the zero value for int), then increments to 1. So <code>counts[char]++</code> handles both first-time and repeat cases."
+        }
+      ]
+    },
+    "advanced_5": {
+      "title": "Pre-exercise: Two Sum Building Blocks",
+      "description": "Before the full algorithm, let's practice the two key operations: looking up complements and building index maps.",
+      "exercises": [
+        {
+          "id": "pre5a",
+          "title": "Find Complement in Map",
+          "problem": "Given this pre-built map <code>map[int]int{2: 0, 7: 1, 11: 2}</code> (value to index), target=9, and current number=7: calculate the complement and check if it exists in the map. Print the result.",
+          "hints": [
+            {
+              "title": "Step 1: Setup",
+              "content": "<pre>seen := map[int]int{2: 0, 7: 1, 11: 2}\ntarget := 9\nnum := 7</pre>"
+            },
+            {
+              "title": "Step 2: Calculate complement",
+              "content": "<pre>complement := target - num  // 9 - 7 = 2</pre>"
+            },
+            {
+              "title": "Step 3: Check map with comma-ok",
+              "content": "<pre>if idx, ok := seen[complement]; ok {\n    fmt.Printf(\"Found! %d is at index %d\\n\", complement, idx)\n}</pre>"
+            }
+          ],
+          "solution": "seen := map[int]int{2: 0, 7: 1, 11: 2}\ntarget := 9\nnum := 7\n\ncomplement := target - num  // 9 - 7 = 2\n\nif idx, ok := seen[complement]; ok {\n    fmt.Printf(\"Found %d at index %d\\n\", complement, idx)\n} else {\n    fmt.Println(\"Not found\")\n}",
+          "expectedOutput": "Found 2 at index 0",
+          "keyInsight": "The complement is <code>target - current</code>. If we're looking for two numbers that sum to 9, and we have 7, we need to find 2. The map tells us WHERE we saw the 2 (at index 0)."
+        },
+        {
+          "id": "pre5b",
+          "title": "Build Value-to-Index Map",
+          "problem": "Given <code>[]int{2, 7, 11}</code>, build a map that maps each value to its index: <code>map[int]int{2: 0, 7: 1, 11: 2}</code>.",
+          "hints": [
+            {
+              "title": "Step 1: Create empty map",
+              "content": "<pre>nums := []int{2, 7, 11}\nvalueToIndex := make(map[int]int)</pre>"
+            },
+            {
+              "title": "Step 2: Loop with index",
+              "content": "<pre>for i, num := range nums {\n    valueToIndex[num] = i\n}</pre>"
+            }
+          ],
+          "solution": "nums := []int{2, 7, 11}\nvalueToIndex := make(map[int]int)\n\nfor i, num := range nums {\n    valueToIndex[num] = i\n}\n\nfmt.Println(valueToIndex)",
+          "expectedOutput": "map[2:0 7:1 11:2]",
+          "keyInsight": "The Two Sum algorithm builds this map AS it loops - checking for the complement first, then adding the current number. This ensures we don't match a number with itself!"
+        }
+      ]
+    },
+    "advanced_6": {
+      "title": "Pre-exercise: Sliding Window Fundamentals",
+      "description": "Before tackling sliding window problems, let's practice the core mechanics: managing a window and efficiently updating its state.",
+      "exercises": [
+        {
+          "id": "pre6a",
+          "title": "Fixed Window Sum",
+          "problem": "Given <code>[]int{1, 2, 3, 4, 5}</code> and window size k=3, calculate the sum of the first window [1,2,3], then slide it one position and calculate the new sum [2,3,4] WITHOUT re-summing all elements.",
+          "hints": [
+            {
+              "title": "Step 1: Calculate first window sum",
+              "content": "<pre>nums := []int{1, 2, 3, 4, 5}\nk := 3\n\n// Sum first k elements\nwindowSum := 0\nfor i := 0; i < k; i++ {\n    windowSum += nums[i]\n}\nfmt.Println(windowSum)  // 6</pre>"
+            },
+            {
+              "title": "Step 2: Slide the window",
+              "content": "<pre>// The trick: add new element, subtract old element\n// New element is at index k (which is 3)\n// Old element is at index 0\nwindowSum = windowSum + nums[k] - nums[0]</pre>"
+            },
+            {
+              "title": "Step 3: General formula",
+              "content": "When sliding from position i-1 to i:<pre>windowSum = windowSum + nums[i+k-1] - nums[i-1]</pre>Or equivalently, when the right edge moves to index i:<pre>windowSum = windowSum + nums[i] - nums[i-k]</pre>"
+            }
+          ],
+          "solution": "nums := []int{1, 2, 3, 4, 5}\nk := 3\n\n// Sum first window\nwindowSum := 0\nfor i := 0; i < k; i++ {\n    windowSum += nums[i]\n}\nfmt.Printf(\"Window [0:3] sum: %d\\n\", windowSum)  // 6\n\n// Slide window: add nums[3], remove nums[0]\nwindowSum = windowSum + nums[3] - nums[0]\nfmt.Printf(\"Window [1:4] sum: %d\\n\", windowSum)  // 9\n\n// Slide again: add nums[4], remove nums[1]\nwindowSum = windowSum + nums[4] - nums[1]\nfmt.Printf(\"Window [2:5] sum: %d\\n\", windowSum)  // 12",
+          "expectedOutput": "Window [0:3] sum: 6\nWindow [1:4] sum: 9\nWindow [2:5] sum: 12",
+          "keyInsight": "The sliding window trick: instead of recalculating the entire sum (O(k)), just add the new element and subtract the leaving element (O(1)). This makes processing all windows O(n) instead of O(n*k)!"
+        },
+        {
+          "id": "pre6b",
+          "title": "Variable Window with Map",
+          "problem": "Track characters in a variable-size window. Given string \"abca\", add characters one by one to a <code>map[byte]int</code> (tracking counts), then simulate shrinking by decrementing counts.",
+          "hints": [
+            {
+              "title": "Step 1: Setup and expand",
+              "content": "<pre>s := \"abca\"\nseen := make(map[byte]int)\n\n// Add each character (expanding window)\nfor i := 0; i < len(s); i++ {\n    seen[s[i]]++\n    fmt.Printf(\"Added %c, counts: %v\\n\", s[i], seen)\n}</pre>"
+            },
+            {
+              "title": "Step 2: Shrink from left",
+              "content": "<pre>// Remove the first character (shrink)\nseen[s[0]]--\nif seen[s[0]] == 0 {\n    delete(seen, s[0])  // Clean up zero counts\n}\nfmt.Printf(\"After removing %c: %v\\n\", s[0], seen)</pre>"
+            }
+          ],
+          "solution": "s := \"abca\"\nseen := make(map[byte]int)\n\n// Expand: add all characters\nfor i := 0; i < len(s); i++ {\n    seen[s[i]]++\n}\nfmt.Printf(\"Full window: %v\\n\", seen)  // a:2, b:1, c:1\n\n// Shrink: remove from left (index 0 = 'a')\nseen[s[0]]--\nif seen[s[0]] == 0 {\n    delete(seen, s[0])\n}\nfmt.Printf(\"After removing s[0]: %v\\n\", seen)  // a:1, b:1, c:1\n\n// Shrink more: remove s[1] = 'b'\nseen[s[1]]--\nif seen[s[1]] == 0 {\n    delete(seen, s[1])\n}\nfmt.Printf(\"After removing s[1]: %v\\n\", seen)  // a:1, c:1",
+          "expectedOutput": "Full window: map[97:2 98:1 99:1]\nAfter removing s[0]: map[97:1 98:1 99:1]\nAfter removing s[1]: map[97:1 99:1]",
+          "keyInsight": "Variable sliding windows use a map to track what's in the window. When expanding (right pointer moves), increment counts. When shrinking (left pointer moves), decrement counts. Delete keys when count hits 0 to keep the map clean."
         }
       ]
     }
