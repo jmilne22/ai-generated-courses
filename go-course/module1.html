@@ -57,6 +57,8 @@
         .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
         details { margin-top: 0.75rem; }
         details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
+        .concept-link { font-size: 0.75rem; text-decoration: none; transition: all 0.2s; }
+        .concept-link:hover { text-decoration: underline; opacity: 1 !important; }
         details summary:hover { color: var(--green-bright); }
         details[open] summary { color: var(--green-bright); }
         .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
@@ -195,7 +197,7 @@ result, err := divide(<span class="number">10</span>, <span class="number">2</sp
 
         <div class="lesson">
             <h2>Control Flow</h2>
-            <h3>If Statements</h3>
+            <h3 id="lesson-if">If Statements</h3>
             <div class="code-compare">
                 <div class="code-block" style="margin:0">
                     <div class="code-header python">Python</div>
@@ -217,7 +219,7 @@ result, err := divide(<span class="number">10</span>, <span class="number">2</sp
 }</pre>
                 </div>
             </div>
-            <h3>For Loops (The Only Loop)</h3>
+            <h3 id="lesson-loops">For Loops (The Only Loop)</h3>
             <div class="code-compare">
                 <div class="code-block" style="margin:0">
                     <div class="code-header python">Python</div>
@@ -242,7 +244,7 @@ result, err := divide(<span class="number">10</span>, <span class="number">2</sp
 
         <div class="lesson">
             <h2>Slices & Maps</h2>
-            <h3>Slices (Dynamic Arrays)</h3>
+            <h3 id="lesson-slices">Slices (Dynamic Arrays)</h3>
             <div class="code-block">
                 <div class="code-header go">Slices</div>
                 <pre>nums := []<span class="type">int</span>{<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>}
@@ -251,7 +253,7 @@ fmt.<span class="func">Println</span>(nums[<span class="number">0</span>])     <
 fmt.<span class="func">Println</span>(<span class="func">len</span>(nums))  <span class="comment">// 4</span>
 fmt.<span class="func">Println</span>(nums[<span class="number">1</span>:<span class="number">3</span>])   <span class="comment">// [2 3]</span></pre>
             </div>
-            <h3>Maps (Dictionaries)</h3>
+            <h3 id="lesson-maps">Maps (Dictionaries)</h3>
             <div class="code-block">
                 <div class="code-header go">Creating and using maps</div>
                 <pre>ages := <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span>{
@@ -262,7 +264,7 @@ ages[<span class="string">"charlie"</span>] = <span class="number">35</span>  <s
 
 fmt.<span class="func">Println</span>(ages[<span class="string">"alice"</span>])  <span class="comment">// 30</span></pre>
             </div>
-            <div class="warning">
+            <div class="warning" id="lesson-comma-ok">
                 <div class="warning-title">The Missing Key Problem</div>
                 <p>In Python, accessing a missing key raises <span class="inline-code">KeyError</span>. In Go, it returns the <strong>zero value</strong> (0 for int, "" for string, etc). This means you can't tell if a key is missing or just has a zero value!</p>
             </div>
@@ -1692,6 +1694,18 @@ maxSumSubarray([]int{1, 1, 1, 1}, 2) → 2</pre>
     let currentWarmupVariants = {};  // For warmups
     let currentIntermediateVariants = {};  // For intermediate
 
+    // Links from concept names to lesson sections
+    const conceptLinks = {
+        "For Loops": "#lesson-loops",
+        "If/Else": "#lesson-if",
+        "Slices & Range": "#lesson-slices",
+        "Maps": "#lesson-maps",
+        "make() Function": "#lesson-slices",
+        "Comma-Ok Pattern": "#lesson-comma-ok",
+        "Range with Index": "#lesson-loops",
+        "Building Slices": "#lesson-slices"
+    };
+
     // Shared hints/pre-reading for each exercise type (these are the same across variants)
     const sharedContent = {
         advanced_1: {
@@ -2784,8 +2798,13 @@ for right := 0; right < len(nums); right++ {
             const variant = currentWarmupVariants[warmup.id];
             const num = idx + 1;
 
+            const conceptLink = conceptLinks[warmup.concept];
+            const conceptHtml = conceptLink
+                ? `<a href="${conceptLink}" class="concept-link" style="color: var(--green-dim); opacity: 0.8;">(${warmup.concept} ↗)</a>`
+                : `<span style="font-size: 0.75rem; opacity: 0.6; color: var(--text-dim);">(${warmup.concept})</span>`;
+
             html += `<div class="exercise">
-                <h4>Warmup ${num}: ${variant.title} <span style="font-size: 0.75rem; opacity: 0.6; color: var(--text-dim);">(${warmup.concept})</span></h4>
+                <h4>Warmup ${num}: ${variant.title} ${conceptHtml}</h4>
                 <p>${variant.description}</p>`;
 
             // Add hints
@@ -2847,8 +2866,13 @@ for right := 0; right < len(nums); right++ {
             const variant = currentIntermediateVariants[exercise.id];
             const num = idx + 1;
 
+            const conceptLink = conceptLinks[exercise.concept];
+            const conceptHtml = conceptLink
+                ? `<a href="${conceptLink}" class="concept-link" style="color: var(--cyan); opacity: 0.8;">(${exercise.concept} ↗)</a>`
+                : `<span style="font-size: 0.75rem; opacity: 0.6; color: var(--text-dim);">(${exercise.concept})</span>`;
+
             html += `<div class="exercise">
-                <h4>Intermediate ${num}: ${variant.title} <span style="font-size: 0.75rem; opacity: 0.6; color: var(--text-dim);">(${exercise.concept})</span></h4>
+                <h4>Intermediate ${num}: ${variant.title} ${conceptHtml}</h4>
                 <p>${variant.description}</p>`;
 
             // Add hints
