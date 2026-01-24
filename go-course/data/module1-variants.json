@@ -1,0 +1,281 @@
+{
+  "advanced": [
+    {
+      "id": "advanced_1",
+      "baseTitle": "Contains Duplicate",
+      "concept": "Map as Set - Have I Seen This?",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Contains Duplicate",
+          "description": "Write a function <code>func containsDuplicate(nums []int) bool</code> that returns <code>true</code> if any number appears more than once in the slice, <code>false</code> if all numbers are unique.",
+          "functionSignature": "func containsDuplicate(nums []int) bool",
+          "testCases": [
+            { "input": "[]int{1, 2, 3, 1}", "output": "true" },
+            { "input": "[]int{1, 2, 3, 4}", "output": "false" },
+            { "input": "[]int{1, 1, 1, 1}", "output": "true" }
+          ],
+          "solution": "func containsDuplicate(nums []int) bool {\n    seen := make(map[int]bool)\n    for _, num := range nums {\n        if seen[num] {\n            return true\n        }\n        seen[num] = true\n    }\n    return false\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Has Repeated Character",
+          "description": "Write a function <code>func hasRepeatedChar(s string) bool</code> that returns <code>true</code> if any character appears more than once in the string, <code>false</code> if all characters are unique.",
+          "functionSignature": "func hasRepeatedChar(s string) bool",
+          "testCases": [
+            { "input": "\"hello\"", "output": "true", "note": "l appears twice" },
+            { "input": "\"world\"", "output": "false" },
+            { "input": "\"aaa\"", "output": "true" }
+          ],
+          "solution": "func hasRepeatedChar(s string) bool {\n    seen := make(map[rune]bool)\n    for _, char := range s {\n        if seen[char] {\n            return true\n        }\n        seen[char] = true\n    }\n    return false\n}",
+          "solutionNotes": "Note: We use <code>rune</code> instead of <code>byte</code> to handle Unicode properly. When you range over a string, Go gives you runes (characters), not bytes."
+        },
+        {
+          "id": "v3",
+          "title": "Has Duplicate Word",
+          "description": "Write a function <code>func hasDuplicateWord(words []string) bool</code> that returns <code>true</code> if any word appears more than once in the slice, <code>false</code> if all words are unique.",
+          "functionSignature": "func hasDuplicateWord(words []string) bool",
+          "testCases": [
+            { "input": "[]string{\"go\", \"is\", \"go\"}", "output": "true" },
+            { "input": "[]string{\"hello\", \"world\"}", "output": "false" },
+            { "input": "[]string{\"test\", \"test\", \"test\"}", "output": "true" }
+          ],
+          "solution": "func hasDuplicateWord(words []string) bool {\n    seen := make(map[string]bool)\n    for _, word := range words {\n        if seen[word] {\n            return true\n        }\n        seen[word] = true\n    }\n    return false\n}"
+        },
+        {
+          "id": "v4",
+          "title": "All Unique Ages",
+          "description": "Write a function <code>func allUniqueAges(ages []int) bool</code> that returns <code>true</code> if everyone has a different age, <code>false</code> if any two people share the same age.",
+          "functionSignature": "func allUniqueAges(ages []int) bool",
+          "testCases": [
+            { "input": "[]int{25, 30, 25, 40}", "output": "false", "note": "two people are 25" },
+            { "input": "[]int{21, 22, 23, 24}", "output": "true" },
+            { "input": "[]int{18}", "output": "true" }
+          ],
+          "solution": "func allUniqueAges(ages []int) bool {\n    seen := make(map[int]bool)\n    for _, age := range ages {\n        if seen[age] {\n            return false  // found a duplicate!\n        }\n        seen[age] = true\n    }\n    return true  // all unique\n}",
+          "solutionNotes": "Notice this returns the OPPOSITE boolean - <code>true</code> means unique, <code>false</code> means duplicate. Same pattern, just inverted logic!"
+        }
+      ]
+    },
+    {
+      "id": "advanced_2",
+      "baseTitle": "Remove Duplicates from Sorted Array",
+      "concept": "Slow/Fast Pointer Pattern",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Remove Duplicates from Sorted Array",
+          "description": "Write a function <code>func removeDuplicates(nums []int) int</code> that removes duplicates from a sorted slice <strong>in-place</strong>. Return the number of unique elements. The first part of the slice should contain the unique elements.",
+          "functionSignature": "func removeDuplicates(nums []int) int",
+          "testCases": [
+            { "input": "[]int{1, 1, 2}", "output": "2", "note": "array becomes [1, 2, _]" },
+            { "input": "[]int{0, 0, 1, 1, 2, 2, 3}", "output": "4", "note": "array becomes [0, 1, 2, 3, _, _, _]" },
+            { "input": "[]int{1, 2, 3}", "output": "3", "note": "no duplicates" }
+          ],
+          "solution": "func removeDuplicates(nums []int) int {\n    if len(nums) == 0 {\n        return 0\n    }\n    slow := 0\n    for fast := 1; fast < len(nums); fast++ {\n        if nums[fast] != nums[slow] {\n            slow++\n            nums[slow] = nums[fast]\n        }\n    }\n    return slow + 1\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Compact Sorted Prices",
+          "description": "Write a function <code>func compactPrices(prices []float64) int</code> that removes duplicate prices from a sorted price list <strong>in-place</strong>. Return how many unique prices remain.",
+          "functionSignature": "func compactPrices(prices []float64) int",
+          "testCases": [
+            { "input": "[]float64{9.99, 9.99, 19.99}", "output": "2" },
+            { "input": "[]float64{5.00, 10.00, 10.00, 15.00, 15.00}", "output": "3" },
+            { "input": "[]float64{}", "output": "0" }
+          ],
+          "solution": "func compactPrices(prices []float64) int {\n    if len(prices) == 0 {\n        return 0\n    }\n    slow := 0\n    for fast := 1; fast < len(prices); fast++ {\n        if prices[fast] != prices[slow] {\n            slow++\n            prices[slow] = prices[fast]\n        }\n    }\n    return slow + 1\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Dedupe Sorted Scores",
+          "description": "Write a function <code>func dedupeScores(scores []int) int</code> that removes duplicate scores from a sorted leaderboard <strong>in-place</strong>. Return the count of unique scores.",
+          "functionSignature": "func dedupeScores(scores []int) int",
+          "testCases": [
+            { "input": "[]int{100, 100, 95, 95, 90}", "output": "3" },
+            { "input": "[]int{50, 60, 70, 80}", "output": "4" },
+            { "input": "[]int{100}", "output": "1" }
+          ],
+          "solution": "func dedupeScores(scores []int) int {\n    if len(scores) == 0 {\n        return 0\n    }\n    slow := 0\n    for fast := 1; fast < len(scores); fast++ {\n        if scores[fast] != scores[slow] {\n            slow++\n            scores[slow] = scores[fast]\n        }\n    }\n    return slow + 1\n}"
+        }
+      ]
+    },
+    {
+      "id": "advanced_3",
+      "baseTitle": "Reverse a String",
+      "concept": "Runes + Two-Pointer Swap",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Reverse a String",
+          "description": "Write <code>func reverse(s string) string</code> that reverses any string, including Unicode characters like emojis.",
+          "functionSignature": "func reverse(s string) string",
+          "testCases": [
+            { "input": "\"hello\"", "output": "\"olleh\"" },
+            { "input": "\"世界\"", "output": "\"界世\"" },
+            { "input": "\"Go🚀\"", "output": "\"🚀oG\"" }
+          ],
+          "solution": "func reverse(s string) string {\n    runes := []rune(s)\n    for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {\n        runes[i], runes[j] = runes[j], runes[i]\n    }\n    return string(runes)\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Mirror Text",
+          "description": "Write <code>func mirror(text string) string</code> that mirrors any text (reverses it), handling Unicode properly.",
+          "functionSignature": "func mirror(text string) string",
+          "testCases": [
+            { "input": "\"racecar\"", "output": "\"racecar\"", "note": "palindrome stays same" },
+            { "input": "\"Hello, 世界!\"", "output": "\"!界世 ,olleH\"" },
+            { "input": "\"🎉Party🎉\"", "output": "\"🎉ytraP🎉\"" }
+          ],
+          "solution": "func mirror(text string) string {\n    runes := []rune(text)\n    for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {\n        runes[i], runes[j] = runes[j], runes[i]\n    }\n    return string(runes)\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Flip Message",
+          "description": "Write <code>func flipMessage(msg string) string</code> that flips a message backwards, supporting all Unicode characters.",
+          "functionSignature": "func flipMessage(msg string) string",
+          "testCases": [
+            { "input": "\"Go is fun\"", "output": "\"nuf si oG\"" },
+            { "input": "\"café\"", "output": "\"éfac\"" },
+            { "input": "\"12345\"", "output": "\"54321\"" }
+          ],
+          "solution": "func flipMessage(msg string) string {\n    runes := []rune(msg)\n    for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {\n        runes[i], runes[j] = runes[j], runes[i]\n    }\n    return string(runes)\n}"
+        }
+      ]
+    },
+    {
+      "id": "advanced_4",
+      "baseTitle": "Word Counter",
+      "concept": "Map Counting Pattern",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Word Counter",
+          "description": "Write <code>func wordCount(s string) map[string]int</code> that counts how many times each word appears in a string.",
+          "functionSignature": "func wordCount(s string) map[string]int",
+          "testCases": [
+            { "input": "\"the quick brown fox jumps over the lazy dog\"", "output": "map[brown:1 dog:1 fox:1 jumps:1 lazy:1 over:1 quick:1 the:2]" }
+          ],
+          "solution": "import \"strings\"\n\nfunc wordCount(s string) map[string]int {\n    counts := make(map[string]int)\n    for _, word := range strings.Fields(s) {\n        counts[word]++\n    }\n    return counts\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Character Frequency",
+          "description": "Write <code>func charFrequency(s string) map[rune]int</code> that counts how many times each character appears in a string (ignore spaces).",
+          "functionSignature": "func charFrequency(s string) map[rune]int",
+          "testCases": [
+            { "input": "\"hello\"", "output": "map[e:1 h:1 l:2 o:1]" },
+            { "input": "\"aaa bbb\"", "output": "map[a:3 b:3]", "note": "spaces ignored" }
+          ],
+          "solution": "func charFrequency(s string) map[rune]int {\n    counts := make(map[rune]int)\n    for _, char := range s {\n        if char != ' ' {\n            counts[char]++\n        }\n    }\n    return counts\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Vote Counter",
+          "description": "Write <code>func countVotes(votes []string) map[string]int</code> that counts how many votes each candidate received.",
+          "functionSignature": "func countVotes(votes []string) map[string]int",
+          "testCases": [
+            { "input": "[]string{\"alice\", \"bob\", \"alice\", \"alice\", \"bob\"}", "output": "map[alice:3 bob:2]" },
+            { "input": "[]string{\"eve\"}", "output": "map[eve:1]" }
+          ],
+          "solution": "func countVotes(votes []string) map[string]int {\n    counts := make(map[string]int)\n    for _, vote := range votes {\n        counts[vote]++\n    }\n    return counts\n}"
+        }
+      ]
+    },
+    {
+      "id": "advanced_5",
+      "baseTitle": "Two Sum",
+      "concept": "Hash Map Complement Pattern",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Two Sum",
+          "description": "Given a slice of ints and a target, return indices of two numbers that add up to the target. <code>func twoSum(nums []int, target int) []int</code>",
+          "functionSignature": "func twoSum(nums []int, target int) []int",
+          "testCases": [
+            { "input": "[]int{2, 7, 11, 15}, 9", "output": "[0, 1]" },
+            { "input": "[]int{3, 2, 4}, 6", "output": "[1, 2]" },
+            { "input": "[]int{3, 3}, 6", "output": "[0, 1]" }
+          ],
+          "solution": "func twoSum(nums []int, target int) []int {\n    seen := make(map[int]int)\n    for i, num := range nums {\n        complement := target - num\n        if j, ok := seen[complement]; ok {\n            return []int{j, i}\n        }\n        seen[num] = i\n    }\n    return nil\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Find Pair with Sum",
+          "description": "Given prices and a budget, find two items whose prices add up to exactly the budget. Return their indices. <code>func findPairWithSum(prices []int, budget int) []int</code>",
+          "functionSignature": "func findPairWithSum(prices []int, budget int) []int",
+          "testCases": [
+            { "input": "[]int{10, 20, 30, 40}, 50", "output": "[0, 3]", "note": "10 + 40 = 50" },
+            { "input": "[]int{5, 5, 10}, 10", "output": "[0, 1]", "note": "5 + 5 = 10" },
+            { "input": "[]int{100, 200}, 500", "output": "nil", "note": "no valid pair" }
+          ],
+          "solution": "func findPairWithSum(prices []int, budget int) []int {\n    seen := make(map[int]int)\n    for i, price := range prices {\n        complement := budget - price\n        if j, ok := seen[complement]; ok {\n            return []int{j, i}\n        }\n        seen[price] = i\n    }\n    return nil\n}"
+        },
+        {
+          "id": "v3",
+          "title": "Complement Finder",
+          "description": "Given scores and a target total, find two scores that add up to the target. Return their indices. <code>func findComplement(scores []int, target int) []int</code>",
+          "functionSignature": "func findComplement(scores []int, target int) []int",
+          "testCases": [
+            { "input": "[]int{45, 55, 30, 70}, 100", "output": "[0, 1]", "note": "45 + 55 = 100" },
+            { "input": "[]int{25, 25, 50}, 50", "output": "[0, 1]" },
+            { "input": "[]int{10, 20, 30}, 100", "output": "nil" }
+          ],
+          "solution": "func findComplement(scores []int, target int) []int {\n    seen := make(map[int]int)\n    for i, score := range scores {\n        complement := target - score\n        if j, ok := seen[complement]; ok {\n            return []int{j, i}\n        }\n        seen[score] = i\n    }\n    return nil\n}"
+        }
+      ]
+    }
+  ],
+  "preExercises": {
+    "advanced_1": {
+      "title": "Pre-exercise: Map as a Set",
+      "description": "Before tackling the algorithm, let's practice the core pattern: using a map to track what you've seen.",
+      "exercises": [
+        {
+          "id": "pre1",
+          "title": "Track Visited Pages",
+          "problem": "You're building a browser history tracker. Write code that creates a <code>map[string]bool</code> called <code>visited</code>, marks three pages as visited, then checks if \"google.com\" has been visited.",
+          "hints": [
+            {
+              "title": "Creating the map",
+              "content": "Create with: <code>visited := make(map[string]bool)</code><br>This creates an empty map where keys are strings and values are booleans."
+            },
+            {
+              "title": "Marking as visited",
+              "content": "To mark a page as visited: <code>visited[\"google.com\"] = true</code><br>Do this for three different pages."
+            },
+            {
+              "title": "Checking if visited",
+              "content": "The simple way: <code>if visited[\"google.com\"]</code><br>This works because if the key doesn't exist, Go returns <code>false</code> (the zero value for bool)!"
+            }
+          ],
+          "solution": "visited := make(map[string]bool)\n\n// Mark pages as visited\nvisited[\"google.com\"] = true\nvisited[\"github.com\"] = true\nvisited[\"go.dev\"] = true\n\n// Check if google.com was visited\nif visited[\"google.com\"] {\n    fmt.Println(\"You've been to google.com\")\n}\n\n// Check something NOT visited\nif visited[\"facebook.com\"] {\n    fmt.Println(\"You've been to facebook.com\")\n} else {\n    fmt.Println(\"Never visited facebook.com\")\n}",
+          "expectedOutput": "You've been to google.com\nNever visited facebook.com",
+          "keyInsight": "When you access a key that doesn't exist in a <code>map[T]bool</code>, Go returns <code>false</code>. This makes <code>if visited[key]</code> a clean way to check membership - no need for the comma-ok pattern here!"
+        },
+        {
+          "id": "pre2",
+          "title": "Unique Letter Collector",
+          "problem": "Write code that loops through the string \"banana\" and collects each unique letter into a <code>map[rune]bool</code>. Print how many unique letters there are.",
+          "hints": [
+            {
+              "title": "Setup",
+              "content": "Create the map: <code>letters := make(map[rune]bool)</code><br>Loop with: <code>for _, char := range \"banana\"</code>"
+            },
+            {
+              "title": "Collecting",
+              "content": "For each character, just mark it as seen: <code>letters[char] = true</code><br>Maps automatically handle duplicates - setting the same key twice just overwrites."
+            },
+            {
+              "title": "Counting",
+              "content": "The number of unique letters is: <code>len(letters)</code>"
+            }
+          ],
+          "solution": "letters := make(map[rune]bool)\n\nfor _, char := range \"banana\" {\n    letters[char] = true\n}\n\nfmt.Printf(\"Unique letters: %d\\n\", len(letters))  // 3: b, a, n",
+          "expectedOutput": "Unique letters: 3",
+          "keyInsight": "A map automatically handles duplicates - you can set the same key multiple times and it just overwrites. This is why <code>len(map)</code> gives you the count of unique keys!"
+        }
+      ]
+    }
+  }
+}
