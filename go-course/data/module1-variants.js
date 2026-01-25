@@ -1,4 +1,6 @@
-{
+// Auto-generated from module1-variants.json - do not edit directly
+// Edit module1-variants.json and run: node build.js
+window.moduleData = {
   "conceptLinks": {
     "For Loops": "#lesson-loops",
     "If/Else": "#lesson-if",
@@ -3259,4 +3261,4 @@
       }
     }
   }
-}
+};

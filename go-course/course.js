@@ -445,8 +445,18 @@
         return html;
     }
 
-    // Load variants on page load
-    document.addEventListener('DOMContentLoaded', loadVariants);
+    // Load variants when module data is ready
+    // If data is already loaded (sync script), load immediately
+    // Otherwise wait for the moduleDataLoaded event (async loader)
+    function initWhenReady() {
+        if (window.variantsDataEmbedded) {
+            loadVariants();
+        } else {
+            window.addEventListener('moduleDataLoaded', loadVariants, { once: true });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', initWhenReady);
 
     // Style the shuffle buttons hover
     document.addEventListener('DOMContentLoaded', () => {
