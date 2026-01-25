@@ -51,6 +51,11 @@ for _, num := range nums {
 }
 return false  // All unique</pre>`
             }
+        ],
+        docLinks: [
+            { url: "https://go.dev/blog/maps", title: "Go Blog: Go maps in action", note: "comprehensive guide to maps" },
+            { url: "https://go.dev/ref/spec#Map_types", title: "Go Spec: Map types", note: "official language specification" },
+            { url: "https://go.dev/ref/spec#Making_slices_maps_and_channels", title: "Go Spec: make()", note: "how make() initializes maps" }
         ]
     },
     advanced_2: {
@@ -92,6 +97,11 @@ for fast := 1; fast < len(nums); fast++ {
 }
 return slow + 1</pre>`
             }
+        ],
+        docLinks: [
+            { url: "https://go.dev/ref/spec#For_statements", title: "Go Spec: For statements", note: "loop syntax and semantics" },
+            { url: "https://go.dev/ref/spec#Slice_types", title: "Go Spec: Slice types", note: "understanding slices" },
+            { url: "https://go.dev/blog/slices-intro", title: "Go Blog: Arrays, slices, and strings", note: "in-depth slice mechanics" }
         ]
     },
     advanced_3: {
@@ -125,6 +135,11 @@ for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
 }
 return string(runes)</pre>`
             }
+        ],
+        docLinks: [
+            { url: "https://go.dev/blog/strings", title: "Go Blog: Strings, bytes, runes and characters", note: "essential reading for Go strings" },
+            { url: "https://go.dev/ref/spec#Rune_literals", title: "Go Spec: Rune literals", note: "what runes are" },
+            { url: "https://pkg.go.dev/unicode", title: "Package unicode", note: "unicode classification functions" }
         ]
     },
     advanced_4: {
@@ -146,6 +161,11 @@ for _, word := range words {
 }
 return counts</pre>`
             }
+        ],
+        docLinks: [
+            { url: "https://pkg.go.dev/strings", title: "Package strings", note: "Fields, Split, Join and more" },
+            { url: "https://go.dev/blog/maps", title: "Go Blog: Go maps in action", note: "map operations including increment" },
+            { url: "https://pkg.go.dev/fmt", title: "Package fmt", note: "printing maps and formatted output" }
         ]
     },
     advanced_5: {
@@ -180,6 +200,11 @@ for i, num := range nums {
     seen[num] = i
 }</pre>`
             }
+        ],
+        docLinks: [
+            { url: "https://go.dev/blog/maps", title: "Go Blog: Go maps in action", note: "storing values (indices) in maps" },
+            { url: "https://go.dev/ref/spec#Index_expressions", title: "Go Spec: Index expressions", note: "the comma-ok idiom for map access" },
+            { url: "https://pkg.go.dev/sort", title: "Package sort", note: "for sorted-input variants" }
         ]
     },
     advanced_6: {
@@ -224,6 +249,11 @@ for i := k; i < len(nums); i++ {
     }
 }</pre>`
             }
+        ],
+        docLinks: [
+            { url: "https://go.dev/ref/spec#For_statements", title: "Go Spec: For statements", note: "loop constructs" },
+            { url: "https://go.dev/blog/slices-intro", title: "Go Blog: Slices introduction", note: "slice indexing and sub-slicing" },
+            { url: "https://pkg.go.dev/builtin#len", title: "Builtin len()", note: "getting slice length" }
         ]
     }
 };
@@ -279,6 +309,10 @@ window.variantsDataEmbedded = {
   "challenges": [
     {
       "id": "challenge_1", "block": 1, "concept": "Accumulator Pattern",
+      "docLinks": [
+        { "url": "https://go.dev/ref/spec#For_statements", "title": "Go Spec: For statements", "note": "range loops" },
+        { "url": "https://go.dev/ref/spec#Arithmetic_operators", "title": "Go Spec: Arithmetic operators", "note": "+= syntax" }
+      ],
       "variants": [
         { "id": "v1", "title": "Sum of Slice", "description": "Write <code>func sum(numbers []int) int</code> that returns the sum of all numbers.", "functionSignature": "func sum(numbers []int) int", "testCases": [{ "input": "[]int{1, 2, 3, 4, 5}", "output": "15" }], "hints": [{ "title": "🤔 Think about it", "content": "As you process each element, you need to build up a result. What variable do you need to track this running total?" }, { "title": "💡 Hint", "content": "Create an accumulator variable (number for sums, string for joining). Loop through and combine each element with your accumulator." }, { "title": "👀 Show me", "content": "<pre>total := 0\nfor _, num := range numbers {\n    total += num\n}</pre>" }], "solution": "func sum(numbers []int) int {\n    total := 0\n    for _, num := range numbers {\n        total += num\n    }\n    return total\n}" },
         { "id": "v2", "title": "Join Words", "description": "Write <code>func joinWords(words []string) string</code> that joins all words with spaces.", "functionSignature": "func joinWords(words []string) string", "testCases": [{ "input": "[]string{\"go\", \"is\", \"fun\"}", "output": "\"go is fun\"" }], "hints": [{ "title": "🤔 Think about it", "content": "As you process each element, you need to build up a result. What variable do you need to track this running total?" }, { "title": "💡 Hint", "content": "Create an accumulator variable (number for sums, string for joining). Loop through and combine each element with your accumulator." }, { "title": "👀 Show me", "content": "<pre>result := \"\"\nfor i, word := range words {\n    if i > 0 {\n        result += \" \"\n    }\n    result += word\n}</pre>" }], "solution": "func joinWords(words []string) string {\n    result := \"\"\n    for i, word := range words {\n        if i > 0 {\n            result += \" \"\n        }\n        result += word\n    }\n    return result\n}" },
@@ -287,6 +321,10 @@ window.variantsDataEmbedded = {
     },
     {
       "id": "challenge_2", "block": 1, "concept": "Counting with Condition",
+      "docLinks": [
+        { "url": "https://go.dev/ref/spec#If_statements", "title": "Go Spec: If statements", "note": "conditionals" },
+        { "url": "https://go.dev/ref/spec#Arithmetic_operators", "title": "Go Spec: Arithmetic operators", "note": "% modulo operator" }
+      ],
       "variants": [
         { "id": "v1", "title": "Count Evens", "description": "Write <code>func countEvens(nums []int) int</code> that counts even numbers.", "functionSignature": "func countEvens(nums []int) int", "testCases": [{ "input": "[]int{1, 2, 3, 4, 5, 6}", "output": "3" }], "hints": [{ "title": "🤔 Think about it", "content": "You need to count things that meet a condition. What two pieces do you need: one to track the count, and one to check each element?" }, { "title": "💡 Hint", "content": "Start a counter at 0. For each element, check your condition - if true, increment the counter." }, { "title": "👀 Show me", "content": "<pre>count := 0\nfor _, num := range nums {\n    if num%2 == 0 {\n        count++\n    }\n}</pre>" }], "solution": "func countEvens(nums []int) int {\n    count := 0\n    for _, num := range nums {\n        if num%2 == 0 {\n            count++\n        }\n    }\n    return count\n}" },
         { "id": "v2", "title": "Count Negatives", "description": "Write <code>func countNegatives(nums []int) int</code> that counts negative numbers.", "functionSignature": "func countNegatives(nums []int) int", "testCases": [{ "input": "[]int{-1, 2, -3, 4}", "output": "2" }], "hints": [{ "title": "🤔 Think about it", "content": "You need to count things that meet a condition. What two pieces do you need: one to track the count, and one to check each element?" }, { "title": "💡 Hint", "content": "Start a counter at 0. For each element, check your condition - if true, increment the counter." }, { "title": "👀 Show me", "content": "<pre>count := 0\nfor _, num := range nums {\n    if num < 0 {\n        count++\n    }\n}</pre>" }], "solution": "func countNegatives(nums []int) int {\n    count := 0\n    for _, num := range nums {\n        if num < 0 {\n            count++\n        }\n    }\n    return count\n}" },
@@ -295,6 +333,10 @@ window.variantsDataEmbedded = {
     },
     {
       "id": "challenge_3", "block": 1, "concept": "Multiple Conditionals",
+      "docLinks": [
+        { "url": "https://go.dev/ref/spec#If_statements", "title": "Go Spec: If statements", "note": "else-if chains" },
+        { "url": "https://go.dev/ref/spec#Comparison_operators", "title": "Go Spec: Comparison operators", "note": ">=, <, == etc." }
+      ],
       "variants": [
         { "id": "v1", "title": "FizzBuzz", "description": "Print 1-20. Multiples of 3: \"Fizz\", 5: \"Buzz\", both: \"FizzBuzz\".", "functionSignature": "// loop", "testCases": [{ "input": "15", "output": "FizzBuzz" }], "hints": [{ "title": "🤔 Think about it", "content": "When you have overlapping conditions (like a number divisible by both 3 AND 5), which case should you check first?" }, { "title": "💡 Hint", "content": "Check the most specific condition first! For FizzBuzz, 15 is divisible by both 3 and 5, so check for 15 before checking 3 or 5 individually." }, { "title": "👀 Show me", "content": "<pre>if i%15 == 0 {\n    fmt.Println(\"FizzBuzz\")\n} else if i%3 == 0 {\n    fmt.Println(\"Fizz\")\n} else if i%5 == 0 {\n    fmt.Println(\"Buzz\")\n} else {\n    fmt.Println(i)\n}</pre>" }], "solution": "for i := 1; i <= 20; i++ {\n    if i%15 == 0 {\n        fmt.Println(\"FizzBuzz\")\n    } else if i%3 == 0 {\n        fmt.Println(\"Fizz\")\n    } else if i%5 == 0 {\n        fmt.Println(\"Buzz\")\n    } else {\n        fmt.Println(i)\n    }\n}" },
         { "id": "v2", "title": "Grade Classifier", "description": "Write <code>func grade(score int) string</code> returning A/B/C/D/F.", "functionSignature": "func grade(score int) string", "testCases": [{ "input": "85", "output": "\"B\"" }], "hints": [{ "title": "🤔 Think about it", "content": "When you have overlapping conditions (like a number divisible by both 3 AND 5), which case should you check first?" }, { "title": "💡 Hint", "content": "Check the most specific condition first! For FizzBuzz, 15 is divisible by both 3 and 5, so check for 15 before checking 3 or 5 individually." }, { "title": "👀 Show me", "content": "<pre>if score >= 90 { return \"A\" }\nif score >= 80 { return \"B\" }\nif score >= 70 { return \"C\" }\nif score >= 60 { return \"D\" }\nreturn \"F\"</pre>" }], "solution": "func grade(score int) string {\n    if score >= 90 { return \"A\" }\n    if score >= 80 { return \"B\" }\n    if score >= 70 { return \"C\" }\n    if score >= 60 { return \"D\" }\n    return \"F\"\n}" },
@@ -303,6 +345,10 @@ window.variantsDataEmbedded = {
     },
     {
       "id": "challenge_4", "block": 1, "concept": "Finding Extrema",
+      "docLinks": [
+        { "url": "https://go.dev/ref/spec#Index_expressions", "title": "Go Spec: Index expressions", "note": "accessing slice elements" },
+        { "url": "https://pkg.go.dev/builtin#len", "title": "Builtin len()", "note": "string and slice length" }
+      ],
       "variants": [
         { "id": "v1", "title": "Find Maximum", "description": "Write <code>func max(nums []int) int</code> that returns the largest number.", "functionSignature": "func max(nums []int) int", "testCases": [{ "input": "[]int{3, 7, 2, 9}", "output": "9" }], "hints": [{ "title": "🤔 Think about it", "content": "If you want to track the 'best so far', what's a reasonable starting value? Hint: what if the first element is the answer?" }, { "title": "💡 Hint", "content": "Initialize with the first element (not 0 or some arbitrary value). Compare each subsequent element - if it's better, update your best." }, { "title": "👀 Show me", "content": "<pre>best := nums[0]\nfor _, n := range nums {\n    if n > best { best = n }\n}\nreturn best</pre>" }], "solution": "func max(nums []int) int {\n    m := nums[0]\n    for _, n := range nums {\n        if n > m { m = n }\n    }\n    return m\n}" },
         { "id": "v2", "title": "Find Minimum", "description": "Write <code>func min(nums []int) int</code> that returns the smallest number.", "functionSignature": "func min(nums []int) int", "testCases": [{ "input": "[]int{3, 7, 2, 9}", "output": "2" }], "hints": [{ "title": "🤔 Think about it", "content": "If you want to track the 'best so far', what's a reasonable starting value? Hint: what if the first element is the answer?" }, { "title": "💡 Hint", "content": "Initialize with the first element (not 0 or some arbitrary value). Compare each subsequent element - if it's better, update your best." }, { "title": "👀 Show me", "content": "<pre>best := nums[0]\nfor _, n := range nums {\n    if n < best { best = n }\n}\nreturn best</pre>" }], "solution": "func min(nums []int) int {\n    m := nums[0]\n    for _, n := range nums {\n        if n < m { m = n }\n    }\n    return m\n}" },
@@ -311,6 +357,10 @@ window.variantsDataEmbedded = {
     },
     {
       "id": "challenge_5", "block": 2, "concept": "Filter with Append",
+      "docLinks": [
+        { "url": "https://pkg.go.dev/builtin#append", "title": "Builtin append()", "note": "growing slices dynamically" },
+        { "url": "https://go.dev/blog/slices-intro", "title": "Go Blog: Slices introduction", "note": "slice internals" }
+      ],
       "variants": [
         { "id": "v1", "title": "Filter Positives", "description": "Write <code>func filterPositives(nums []int) []int</code> returning only positive numbers.", "functionSignature": "func filterPositives(nums []int) []int", "testCases": [{ "input": "[]int{-2, 3, -1, 5}", "output": "[3, 5]" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to build a new collection containing only some elements. What do you start with, and how do you add elements that pass your test?" }, { "title": "💡 Hint", "content": "Start with an empty slice. Loop through, check your condition, and append elements that pass." }, { "title": "👀 Show me", "content": "<pre>result := []int{}\nfor _, n := range nums {\n    if n > 0 {\n        result = append(result, n)\n    }\n}</pre>" }], "solution": "func filterPositives(nums []int) []int {\n    r := []int{}\n    for _, n := range nums {\n        if n > 0 { r = append(r, n) }\n    }\n    return r\n}" },
         { "id": "v2", "title": "Filter Evens", "description": "Write <code>func filterEvens(nums []int) []int</code> returning only even numbers.", "functionSignature": "func filterEvens(nums []int) []int", "testCases": [{ "input": "[]int{1, 2, 3, 4}", "output": "[2, 4]" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to build a new collection containing only some elements. What do you start with, and how do you add elements that pass your test?" }, { "title": "💡 Hint", "content": "Start with an empty slice. Loop through, check your condition, and append elements that pass." }, { "title": "👀 Show me", "content": "<pre>result := []int{}\nfor _, n := range nums {\n    if n%2 == 0 {\n        result = append(result, n)\n    }\n}</pre>" }], "solution": "func filterEvens(nums []int) []int {\n    r := []int{}\n    for _, n := range nums {\n        if n%2 == 0 { r = append(r, n) }\n    }\n    return r\n}" },
@@ -319,6 +369,10 @@ window.variantsDataEmbedded = {
     },
     {
       "id": "challenge_6", "block": 2, "concept": "Find Index",
+      "docLinks": [
+        { "url": "https://go.dev/ref/spec#For_statements", "title": "Go Spec: For statements", "note": "range with index" },
+        { "url": "https://go.dev/ref/spec#Return_statements", "title": "Go Spec: Return statements", "note": "early returns" }
+      ],
       "variants": [
         { "id": "v1", "title": "Find Index", "description": "Write <code>func findIndex(nums []int, target int) int</code> returning index or -1.", "functionSignature": "func findIndex(nums []int, target int) int", "testCases": [{ "input": "[]int{10, 20, 30}, 20", "output": "1" }], "hints": [{ "title": "🤔 Think about it", "content": "If you're looking for something specific, when should you stop looking? What should you return if you never find it?" }, { "title": "💡 Hint", "content": "Loop with the index variable. When you find a match, return that index immediately (early return). If the loop completes without finding anything, return -1." }, { "title": "👀 Show me", "content": "<pre>for i, num := range nums {\n    if num == target {\n        return i\n    }\n}\nreturn -1</pre>" }], "solution": "func findIndex(nums []int, target int) int {\n    for i, n := range nums {\n        if n == target { return i }\n    }\n    return -1\n}" },
         { "id": "v2", "title": "Find Word", "description": "Write <code>func findWord(words []string, target string) int</code> returning index or -1.", "functionSignature": "func findWord(words []string, target string) int", "testCases": [{ "input": "[]string{\"go\", \"py\"}, \"py\"", "output": "1" }], "hints": [{ "title": "🤔 Think about it", "content": "If you're looking for something specific, when should you stop looking? What should you return if you never find it?" }, { "title": "💡 Hint", "content": "Loop with the index variable. When you find a match, return that index immediately (early return). If the loop completes without finding anything, return -1." }, { "title": "👀 Show me", "content": "<pre>for i, w := range words {\n    if w == target {\n        return i\n    }\n}\nreturn -1</pre>" }], "solution": "func findWord(words []string, target string) int {\n    for i, w := range words {\n        if w == target { return i }\n    }\n    return -1\n}" },
@@ -327,6 +381,10 @@ window.variantsDataEmbedded = {
     },
     {
       "id": "challenge_7", "block": 2, "concept": "Map Counting",
+      "docLinks": [
+        { "url": "https://go.dev/blog/maps", "title": "Go Blog: Go maps in action", "note": "map operations" },
+        { "url": "https://go.dev/ref/spec#Making_slices_maps_and_channels", "title": "Go Spec: make()", "note": "creating maps" }
+      ],
       "variants": [
         { "id": "v1", "title": "Count Occurrences", "description": "Write <code>func countOccurrences(nums []int) map[int]int</code>.", "functionSignature": "func countOccurrences(nums []int) map[int]int", "testCases": [{ "input": "[]int{1, 2, 2, 3, 3, 3}", "output": "map[1:1 2:2 3:3]" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to count how many times each element appears. What data structure maps 'thing' to 'count of that thing'?" }, { "title": "💡 Hint", "content": "Use a map where keys are the elements and values are counts. The magic: accessing a non-existent key returns 0, so you can just do counts[item]++ even for the first occurrence." }, { "title": "👀 Show me", "content": "<pre>counts := make(map[int]int)\ncounts[num]++</pre>" }], "solution": "func countOccurrences(nums []int) map[int]int {\n    c := make(map[int]int)\n    for _, n := range nums { c[n]++ }\n    return c\n}" },
         { "id": "v2", "title": "Count Characters", "description": "Write <code>func countChars(s string) map[rune]int</code>.", "functionSignature": "func countChars(s string) map[rune]int", "testCases": [{ "input": "\"hello\"", "output": "map[e:1 h:1 l:2 o:1]" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to count how many times each element appears. What data structure maps 'thing' to 'count of that thing'?" }, { "title": "💡 Hint", "content": "Use a map where keys are the elements and values are counts. The magic: accessing a non-existent key returns 0, so you can just do counts[item]++ even for the first occurrence." }, { "title": "👀 Show me", "content": "<pre>counts := make(map[rune]int)\ncounts[char]++</pre>" }], "solution": "func countChars(s string) map[rune]int {\n    c := make(map[rune]int)\n    for _, r := range s { c[r]++ }\n    return c\n}" },
@@ -335,6 +393,10 @@ window.variantsDataEmbedded = {
     },
     {
       "id": "challenge_8", "block": 3, "concept": "Swap Pattern",
+      "docLinks": [
+        { "url": "https://go.dev/ref/spec#Assignments", "title": "Go Spec: Assignments", "note": "tuple assignment (a, b = b, a)" },
+        { "url": "https://go.dev/ref/spec#Index_expressions", "title": "Go Spec: Index expressions", "note": "slice indexing" }
+      ],
       "variants": [
         { "id": "v1", "title": "Swap Elements", "description": "Write <code>func swap(nums []int, i, j int)</code> that swaps elements at i and j.", "functionSignature": "func swap(nums []int, i, j int)", "testCases": [{ "input": "[]int{1,2,3}, 0, 2", "output": "[3,2,1]" }], "hints": [{ "title": "🤔 Think about it", "content": "How do you swap two values without losing one of them? Think about what happens if you just write a = b." }, { "title": "💡 Hint", "content": "Go has a special syntax for simultaneous assignment: a, b = b, a. This evaluates the right side first, then assigns, so nothing is lost." }, { "title": "👀 Show me", "content": "<pre>nums[i], nums[j] = nums[j], nums[i]</pre>" }], "solution": "func swap(nums []int, i, j int) {\n    nums[i], nums[j] = nums[j], nums[i]\n}" },
         { "id": "v2", "title": "Swap First Last", "description": "Write <code>func swapEnds(nums []int)</code> that swaps first and last elements.", "functionSignature": "func swapEnds(nums []int)", "testCases": [{ "input": "[]int{1,2,3,4}", "output": "[4,2,3,1]" }], "hints": [{ "title": "🤔 Think about it", "content": "How do you swap two values without losing one of them? Think about what happens if you just write a = b." }, { "title": "💡 Hint", "content": "Go has a special syntax for simultaneous assignment: a, b = b, a. This evaluates the right side first, then assigns, so nothing is lost." }, { "title": "👀 Show me", "content": "<pre>nums[0], nums[len(nums)-1] = nums[len(nums)-1], nums[0]</pre>" }], "solution": "func swapEnds(nums []int) {\n    nums[0], nums[len(nums)-1] = nums[len(nums)-1], nums[0]\n}" },
@@ -343,6 +405,10 @@ window.variantsDataEmbedded = {
     },
     {
       "id": "challenge_9", "block": 3, "concept": "Two-Pointer Comparison",
+      "docLinks": [
+        { "url": "https://go.dev/ref/spec#For_statements", "title": "Go Spec: For statements", "note": "two-variable initialization (i, j := ...)" },
+        { "url": "https://go.dev/ref/spec#Comparison_operators", "title": "Go Spec: Comparison operators", "note": "!= for mismatch detection" }
+      ],
       "variants": [
         { "id": "v1", "title": "Palindrome Check", "description": "Write <code>func isPalindrome(nums []int) bool</code> - same forwards/backwards.", "functionSignature": "func isPalindrome(nums []int) bool", "testCases": [{ "input": "[]int{1,2,3,2,1}", "output": "true" }], "hints": [{ "title": "🤔 Think about it", "content": "To check if something reads the same forwards and backwards, where should you start comparing? Do you need to check every element?" }, { "title": "💡 Hint", "content": "Compare from both ends moving inward. Start with pointers at index 0 and len-1. If any pair doesn't match, it's not a palindrome. If you make it to the middle without mismatches, it is." }, { "title": "👀 Show me", "content": "<pre>for i, j := 0, len(items)-1; i < j; i, j = i+1, j-1 {\n    if items[i] != items[j] { return false }\n}</pre>" }], "solution": "func isPalindrome(nums []int) bool {\n    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n        if nums[i] != nums[j] { return false }\n    }\n    return true\n}" },
         { "id": "v2", "title": "String Palindrome", "description": "Write <code>func isSymmetric(s string) bool</code>.", "functionSignature": "func isSymmetric(s string) bool", "testCases": [{ "input": "\"racecar\"", "output": "true" }], "hints": [{ "title": "🤔 Think about it", "content": "To check if something reads the same forwards and backwards, where should you start comparing? Do you need to check every element?" }, { "title": "💡 Hint", "content": "Compare from both ends moving inward. Start with pointers at index 0 and len-1. If any pair doesn't match, it's not a palindrome. If you make it to the middle without mismatches, it is." }, { "title": "👀 Show me", "content": "<pre>runes := []rune(s)\nfor i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {\n    if runes[i] != runes[j] { return false }\n}</pre>" }], "solution": "func isSymmetric(s string) bool {\n    r := []rune(s)\n    for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {\n        if r[i] != r[j] { return false }\n    }\n    return true\n}" },
@@ -351,6 +417,10 @@ window.variantsDataEmbedded = {
     },
     {
       "id": "challenge_10", "block": 4, "concept": "Two-Pointer Swap",
+      "docLinks": [
+        { "url": "https://go.dev/ref/spec#Assignments", "title": "Go Spec: Assignments", "note": "simultaneous swap (a, b = b, a)" },
+        { "url": "https://go.dev/blog/slices", "title": "Go Blog: Slices", "note": "in-place modifications" }
+      ],
       "variants": [
         { "id": "v1", "title": "Reverse Slice", "description": "Write <code>func reverse(nums []int) []int</code> that reverses in place.", "functionSignature": "func reverse(nums []int) []int", "testCases": [{ "input": "[]int{1,2,3,4,5}", "output": "[5,4,3,2,1]" }], "hints": [{ "title": "🤔 Think about it", "content": "To reverse in-place, you swap elements from both ends working toward the middle. What pattern lets you walk two pointers toward each other?" }, { "title": "💡 Hint", "content": "Use the same two-pointer loop as palindrome check, but swap the elements instead of comparing them. Stop when the pointers meet or cross." }, { "title": "👀 Show me", "content": "<pre>for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n    nums[i], nums[j] = nums[j], nums[i]\n}</pre>" }], "solution": "func reverse(nums []int) []int {\n    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n        nums[i], nums[j] = nums[j], nums[i]\n    }\n    return nums\n}" },
         { "id": "v2", "title": "Rotate Left", "description": "Write <code>func rotateLeft(nums []int) []int</code> - first element goes to end.", "functionSignature": "func rotateLeft(nums []int) []int", "testCases": [{ "input": "[]int{1,2,3}", "output": "[2,3,1]" }], "hints": [{ "title": "🤔 Think about it", "content": "To reverse in-place, you swap elements from both ends working toward the middle. What pattern lets you walk two pointers toward each other?" }, { "title": "💡 Hint", "content": "Use the same two-pointer loop as palindrome check, but swap the elements instead of comparing them. Stop when the pointers meet or cross." }, { "title": "👀 Show me", "content": "<pre>for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n    nums[i], nums[j] = nums[j], nums[i]\n}</pre>" }], "solution": "func rotateLeft(nums []int) []int {\n    first := nums[0]\n    for i := 0; i < len(nums)-1; i++ { nums[i] = nums[i+1] }\n    nums[len(nums)-1] = first\n    return nums\n}" },
@@ -359,6 +429,10 @@ window.variantsDataEmbedded = {
     },
     {
       "id": "challenge_11", "block": 4, "concept": "Map Lookup + Early Return",
+      "docLinks": [
+        { "url": "https://go.dev/blog/maps", "title": "Go Blog: Go maps in action", "note": "map as a set pattern" },
+        { "url": "https://go.dev/ref/spec#Index_expressions", "title": "Go Spec: Index expressions", "note": "checking if key exists" }
+      ],
       "variants": [
         { "id": "v1", "title": "First Duplicate Index", "description": "Write <code>func firstDupIdx(nums []int) int</code> - index of first repeat, or -1.", "functionSignature": "func firstDupIdx(nums []int) int", "testCases": [{ "input": "[]int{1,2,3,2}", "output": "3" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to find the first element that appears twice. As you go through, how do you know if you've seen something before?" }, { "title": "💡 Hint", "content": "Use a map as a 'seen' set. For each element, first check if it's in the map - if yes, you found a duplicate! If no, add it to the map and continue." }, { "title": "👀 Show me", "content": "<pre>seen := make(map[int]bool)\nif seen[item] { return ... }\nseen[item] = true</pre>" }], "solution": "func firstDupIdx(nums []int) int {\n    seen := make(map[int]bool)\n    for i, n := range nums {\n        if seen[n] { return i }\n        seen[n] = true\n    }\n    return -1\n}" },
         { "id": "v2", "title": "First Repeat Char", "description": "Write <code>func firstRepeat(s string) rune</code> - first repeated char, or 0.", "functionSignature": "func firstRepeat(s string) rune", "testCases": [{ "input": "\"abcab\"", "output": "'a'" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to find the first element that appears twice. As you go through, how do you know if you've seen something before?" }, { "title": "💡 Hint", "content": "Use a map as a 'seen' set. For each element, first check if it's in the map - if yes, you found a duplicate! If no, add it to the map and continue." }, { "title": "👀 Show me", "content": "<pre>seen := make(map[rune]bool)\nif seen[r] { return r }\nseen[r] = true</pre>" }], "solution": "func firstRepeat(s string) rune {\n    seen := make(map[rune]bool)\n    for _, r := range s {\n        if seen[r] { return r }\n        seen[r] = true\n    }\n    return 0\n}" },

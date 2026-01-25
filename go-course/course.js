@@ -252,6 +252,21 @@
                 <div class="hint-content"><pre>${escapeHtml(variant.solution)}</pre></div>
             </details>`;
 
+            // Add documentation links if available (from challenge level)
+            if (challenge.docLinks && challenge.docLinks.length > 0) {
+                html += `<details>
+                    <summary>📚 Documentation</summary>
+                    <div class="hint-content">
+                        <p style="margin-bottom: 0.5rem; color: var(--text-dim);">Relevant Go docs for this challenge:</p>
+                        <ul style="margin: 0; padding-left: 1.5rem;">
+                            ${challenge.docLinks.map(link =>
+                                `<li><a href="${link.url}" target="_blank" rel="noopener" style="color: var(--cyan);">${link.title}</a>${link.note ? ` <span style="color: var(--text-dim);">— ${link.note}</span>` : ''}</li>`
+                            ).join('\n                            ')}
+                        </ul>
+                    </div>
+                </details>`;
+            }
+
             // Add expected output
             html += `<div class="expected">
                 <div class="expected-title">Expected Output</div>
@@ -342,6 +357,21 @@
                     ${variant.solutionNotes ? `<br>${variant.solutionNotes}` : ''}
                 </div>
             </details>`;
+
+            // Add documentation links if available
+            if (shared && shared.docLinks && shared.docLinks.length > 0) {
+                html += `<details>
+                    <summary>📚 Documentation</summary>
+                    <div class="hint-content">
+                        <p style="margin-bottom: 0.5rem; color: var(--text-dim);">Relevant Go docs to explore:</p>
+                        <ul style="margin: 0; padding-left: 1.5rem;">
+                            ${shared.docLinks.map(link =>
+                                `<li><a href="${link.url}" target="_blank" rel="noopener" style="color: var(--purple);">${link.title}</a>${link.note ? ` <span style="color: var(--text-dim);">— ${link.note}</span>` : ''}</li>`
+                            ).join('\n                            ')}
+                        </ul>
+                    </div>
+                </details>`;
+            }
 
             // Add expected output
             html += `<div class="expected">
