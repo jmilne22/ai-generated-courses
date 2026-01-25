@@ -125,6 +125,17 @@
         return div.innerHTML;
     }
 
+    // Convert difficulty number (1-5) to star string
+    function getDifficultyStars(difficulty) {
+        const stars = Math.min(Math.max(difficulty || 1, 1), 5);
+        return '⭐'.repeat(stars);
+    }
+
+    // Get difficulty from exercise, with fallback to block number
+    function getExerciseDifficulty(exercise) {
+        return exercise.difficulty || exercise.block || 1;
+    }
+
     // Thinking timer - adds a button to start timer that locks hints/solutions (not docs)
     function initThinkingTimer(container) {
         if (THINKING_TIME_SECONDS <= 0) return;
@@ -471,7 +482,6 @@
         let html = '';
         let currentBlock = 0;
         const blockNames = { 1: 'Core Patterns', 2: 'Building & Filtering', 3: 'Two-Pointer Foundation', 4: 'Two-Pointer Application' };
-        const blockDifficulty = { 1: '⭐', 2: '⭐⭐', 3: '⭐⭐', 4: '⭐⭐⭐' };
 
         if (challenges.length === 0) {
             html = '<p style="color: var(--text-dim); text-align: center;">No challenges match this filter.</p>';
@@ -484,8 +494,9 @@
             // Collect all variants with their challenge info
             const allVariants = [];
             challenges.forEach(challenge => {
+                const difficulty = getExerciseDifficulty(challenge);
                 challenge.variants.forEach(variant => {
-                    allVariants.push({ variant, challenge, difficulty: blockDifficulty[challenge.block] });
+                    allVariants.push({ variant, challenge, difficulty: getDifficultyStars(difficulty) });
                 });
             });
 
@@ -507,15 +518,16 @@
         challenges.forEach((challenge, idx) => {
             const variant = currentChallengeVariants[challenge.id];
             const num = idx + 1;
-            const difficulty = blockDifficulty[challenge.block];
+            const difficultyNum = getExerciseDifficulty(challenge);
+            const difficultyStars = getDifficultyStars(difficultyNum);
 
             // Add block header if new block
             if (challenge.block !== currentBlock) {
                 currentBlock = challenge.block;
-                html += `<p style="color: var(--cyan); font-size: 0.85rem; margin: 1.5rem 0 0.5rem; font-weight: 600;">Block ${currentBlock}: ${blockNames[currentBlock]} <span style="opacity: 0.7">${difficulty}</span></p>`;
+                html += `<p style="color: var(--cyan); font-size: 0.85rem; margin: 1.5rem 0 0.5rem; font-weight: 600;">Block ${currentBlock}: ${blockNames[currentBlock] || ''} <span style="opacity: 0.7">${difficultyStars}</span></p>`;
             }
 
-            html += renderSingleChallenge(num, variant, challenge, difficulty);
+            html += renderSingleChallenge(num, variant, challenge, difficultyStars);
         });
 
         container.innerHTML = html;
@@ -566,12 +578,13 @@
             const variant = currentVariants[exercise.id];
             const shared = window.sharedContent[exercise.id];
             const num = idx + 1;
+            const difficultyStars = getDifficultyStars(getExerciseDifficulty(exercise));
 
             // Render pre-exercises for this specific advanced exercise (if any)
             html += renderPreExercisesFor(exercise.id, num, variant.title);
 
             html += `<div class="exercise">
-                <h4>Advanced ${num}: ${variant.title}</h4>
+                <h4>Advanced ${num}: ${variant.title} <span style="font-size: 0.75rem; opacity: 0.6;">${difficultyStars}</span></h4>
                 <p>${variant.description}</p>`;
 
             // Add pre-reading if available
