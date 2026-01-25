@@ -506,6 +506,26 @@
 
             html += `<p style="color: var(--orange); font-size: 0.9rem; margin: 0 0 1rem; font-weight: 600;">Practicing: ${currentConceptFilter} (${selected.length} of ${allVariants.length} variants)</p>`;
 
+            // Add brute force example if available for this concept
+            const firstChallenge = challenges[0];
+            if (firstChallenge && firstChallenge.bruteForceExample) {
+                const bf = firstChallenge.bruteForceExample;
+                html += `<details style="border-left: 3px solid var(--orange); padding-left: 1rem; margin-bottom: 1.5rem;">
+                    <summary style="color: var(--orange); font-weight: 600; cursor: pointer;">${bf.title}</summary>
+                    <div class="hint-content">
+                        <div style="margin-bottom: 1rem;">
+                            ${bf.naive}
+                        </div>
+                        <div style="margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 4px;">
+                            <strong style="color: var(--red);">⏱️ Why it's slow:</strong> ${bf.whySlow}
+                        </div>
+                        <div style="padding: 0.75rem; background: var(--bg-dark); border-radius: 4px;">
+                            <strong style="color: var(--green-bright);">⚡ Better approach:</strong> ${bf.efficient}
+                        </div>
+                    </div>
+                </details>`;
+            }
+
             selected.forEach((item, idx) => {
                 html += renderSingleChallenge(idx + 1, item.variant, item.challenge, item.difficulty);
             });

@@ -1746,6 +1746,12 @@ window.moduleData = {
             "note": "creating maps"
           }
         ],
+        "bruteForceExample": {
+          "title": "🐌 Brute Force vs ⚡ Frequency Map",
+          "naive": "<strong>Counting with nested loops:</strong>\n<pre>// For each unique number, count how many times it appears\nfor each element:\n  count = 0\n  for each other element:\n    if same → count++\n  store count somewhere</pre>",
+          "whySlow": "O(n²) - For each element, we scan the entire array again to count it. With 1000 elements, that's 1,000,000 comparisons!",
+          "efficient": "<strong>Frequency Map approach:</strong> Single pass through the array, incrementing counts[element]++ as we go. O(n) - just 1000 operations for 1000 elements. Maps automatically track unique keys and their counts."
+        },
         "variants": [
           {
             "id": "v1",
@@ -2303,6 +2309,12 @@ window.moduleData = {
             "note": "!= for mismatch detection"
           }
         ],
+        "bruteForceExample": {
+          "title": "🐌 Brute Force vs ⚡ Two-Pointer Comparison",
+          "naive": "<strong>Copy and reverse, then compare:</strong>\n<pre>// Create a reversed copy of the array\nreversed := []int{}\nfor i := len-1; i >= 0; i--:\n  reversed = append(reversed, nums[i])\n\n// Compare original with reversed\nfor i := 0; i < len; i++:\n  if nums[i] != reversed[i]:\n    return false</pre>",
+          "whySlow": "O(n) time but O(n) extra space - we're creating an entire duplicate array just to compare. Wasteful!",
+          "efficient": "<strong>Two-pointer approach:</strong> Compare from both ends simultaneously, moving inward. O(n) time, O(1) space - no extra array needed. Stop as soon as we find a mismatch."
+        },
         "variants": [
           {
             "id": "v1",
@@ -2501,6 +2513,12 @@ window.moduleData = {
             "note": "in-place modifications"
           }
         ],
+        "bruteForceExample": {
+          "title": "🐌 Brute Force vs ⚡ Two-Pointer In-Place Swap",
+          "naive": "<strong>Create a new reversed array:</strong>\n<pre>// Build a new array with elements in reverse order\nresult := []int{}\nfor i := len(nums)-1; i >= 0; i--:\n  result = append(result, nums[i])\nreturn result</pre>",
+          "whySlow": "O(n) time, O(n) space - we're allocating a whole new array the same size as the input. For a million elements, that's allocating a million new slots!",
+          "efficient": "<strong>Two-pointer in-place swap:</strong> Start pointers at both ends, swap elements, move pointers inward. O(n) time, O(1) space - no extra memory needed. We reuse the existing array."
+        },
         "variants": [
           {
             "id": "v1",
@@ -2691,6 +2709,12 @@ window.moduleData = {
             "note": "checking if key exists"
           }
         ],
+        "bruteForceExample": {
+          "title": "🐌 Brute Force vs ⚡ Map Lookup + Early Return",
+          "naive": "<strong>Nested loops to check for duplicates:</strong>\n<pre>// For each element, check if it appears earlier\nfor i := 0; i < len; i++:\n  for j := 0; j < i; j++:\n    if nums[i] == nums[j]:\n      return i  // found duplicate</pre>",
+          "whySlow": "O(n²) - For every element, we scan all previous elements. With 10,000 elements, we might do 100 million comparisons!",
+          "efficient": "<strong>Hash map with early return:</strong> Track seen elements in a map. For each element, check map in O(1) time. If seen, return immediately. Total: O(n) time, O(n) space - just 10,000 operations for 10,000 elements."
+        },
         "variants": [
           {
             "id": "v1",
@@ -2870,6 +2894,338 @@ window.moduleData = {
               }
             ],
             "solution": "func firstNonRepeating(s string) rune {\n    counts := make(map[rune]int)\n    for _, r := range s { counts[r]++ }\n    for _, r := range s {\n        if counts[r] == 1 { return r }\n    }\n    return 0\n}"
+          }
+        ]
+      },
+      {
+        "id": "challenge_12",
+        "block": 1,
+        "difficulty": 1,
+        "concept": "Simple Tallying",
+        "docLinks": [
+          {
+            "url": "https://go.dev/blog/maps",
+            "title": "Go Blog: Go maps in action",
+            "note": "intro to maps"
+          }
+        ],
+        "variants": [
+          {
+            "id": "v1",
+            "title": "Count Specific Value",
+            "description": "Write <code>func countValue(nums []int, target int) int</code> that counts how many times target appears.",
+            "functionSignature": "func countValue(nums []int, target int) int",
+            "testCases": [
+              { "input": "[]int{1, 2, 2, 3, 2}, 2", "output": "3" },
+              { "input": "[]int{5, 5, 5}, 5", "output": "3" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Start with count = 0. Each time you see the target, increment count." },
+              { "title": "💡 Hint", "content": "Loop through the slice. If element == target, do count++." },
+              { "title": "🔧 Pattern", "content": "<pre>1. count := 0\n2. For each element:\n   - element == target? → count++\n3. Return count</pre>" }
+            ],
+            "solution": "func countValue(nums []int, target int) int {\n    count := 0\n    for _, n := range nums {\n        if n == target { count++ }\n    }\n    return count\n}"
+          },
+          {
+            "id": "v2",
+            "title": "Track Seen Values",
+            "description": "Write <code>func trackSeen(nums []int) map[int]bool</code> that returns a map marking which values were seen.",
+            "functionSignature": "func trackSeen(nums []int) map[int]bool",
+            "testCases": [
+              { "input": "[]int{1, 2, 2, 3}", "output": "map[1:true 2:true 3:true]" },
+              { "input": "[]int{5, 5}", "output": "map[5:true]" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Create a map, then mark each number as seen (true)." },
+              { "title": "💡 Hint", "content": "For each number, set seen[num] = true. Maps automatically handle duplicates." },
+              { "title": "🔧 Pattern", "content": "<pre>1. Create map[int]bool\n2. For each num:\n   - seen[num] = true\n3. Return map</pre>" }
+            ],
+            "solution": "func trackSeen(nums []int) map[int]bool {\n    seen := make(map[int]bool)\n    for _, n := range nums { seen[n] = true }\n    return seen\n}"
+          },
+          {
+            "id": "v3",
+            "title": "Count True Values",
+            "description": "Write <code>func countTrue(flags []bool) int</code> that counts how many true values are in the slice.",
+            "functionSignature": "func countTrue(flags []bool) int",
+            "testCases": [
+              { "input": "[]bool{true, false, true, true}", "output": "3" },
+              { "input": "[]bool{false, false}", "output": "0" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Same as counting any specific value - count when you see true." },
+              { "title": "💡 Hint", "content": "if flag { count++ }" },
+              { "title": "🔧 Pattern", "content": "<pre>1. count := 0\n2. For each flag:\n   - flag == true? → count++\n3. Return count</pre>" }
+            ],
+            "solution": "func countTrue(flags []bool) int {\n    count := 0\n    for _, f := range flags {\n        if f { count++ }\n    }\n    return count\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Tally by Type",
+            "description": "Write <code>func tallyTypes(words []string) map[string]int</code> that counts how many of each word type. Simple tallying intro!",
+            "functionSignature": "func tallyTypes(words []string) map[string]int",
+            "testCases": [
+              { "input": "[]string{\"cat\", \"dog\", \"cat\", \"bird\"}", "output": "map[cat:2 dog:1 bird:1]" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "For each word, increment its count in the map. Maps default to 0 when accessing non-existent keys." },
+              { "title": "💡 Hint", "content": "counts[word]++ works even if word isn't in the map yet (starts at 0)." },
+              { "title": "🔧 Pattern", "content": "<pre>1. Create map[string]int\n2. For each word:\n   - counts[word]++\n3. Return map</pre>" }
+            ],
+            "solution": "func tallyTypes(words []string) map[string]int {\n    counts := make(map[string]int)\n    for _, w := range words { counts[w]++ }\n    return counts\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Count Vowels and Consonants",
+            "description": "Write <code>func countVowelsConsonants(s string) (int, int)</code> that returns vowel count and consonant count.",
+            "functionSignature": "func countVowelsConsonants(s string) (int, int)",
+            "testCases": [
+              { "input": "\"hello\"", "output": "2, 3", "note": "e,o are vowels; h,l,l are consonants" },
+              { "input": "\"aaa\"", "output": "3, 0" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Check if each character is a vowel (a,e,i,o,u). Count separately." },
+              { "title": "💡 Hint", "content": "Create a helper check: isVowel := char == 'a' || char == 'e' || ..." },
+              { "title": "🔧 Pattern", "content": "<pre>1. vowels, consonants := 0, 0\n2. For each char:\n   - Is vowel? → vowels++\n   - Else → consonants++\n3. Return both</pre>" }
+            ],
+            "solution": "func countVowelsConsonants(s string) (int, int) {\n    vowels, consonants := 0, 0\n    for _, r := range s {\n        lower := strings.ToLower(string(r))\n        if lower == \"a\" || lower == \"e\" || lower == \"i\" || lower == \"o\" || lower == \"u\" {\n            vowels++\n        } else {\n            consonants++\n        }\n    }\n    return vowels, consonants\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Has Value",
+            "description": "Write <code>func hasValue(nums []int, target int) bool</code> that returns true if target is in the slice.",
+            "functionSignature": "func hasValue(nums []int, target int) bool",
+            "testCases": [
+              { "input": "[]int{1, 2, 3}, 2", "output": "true" },
+              { "input": "[]int{1, 2, 3}, 5", "output": "false" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "As soon as you find target, return true. If loop finishes, return false." },
+              { "title": "💡 Hint", "content": "This is early return pattern - return as soon as found." },
+              { "title": "🔧 Pattern", "content": "<pre>1. For each num:\n   - num == target? → return true\n2. Return false (not found)</pre>" }
+            ],
+            "solution": "func hasValue(nums []int, target int) bool {\n    for _, n := range nums {\n        if n == target { return true }\n    }\n    return false\n}"
+          }
+        ]
+      },
+      {
+        "id": "challenge_13",
+        "block": 1,
+        "difficulty": 1,
+        "concept": "Basic Swap Operations",
+        "docLinks": [
+          {
+            "url": "https://go.dev/ref/spec#Assignments",
+            "title": "Go Spec: Assignments",
+            "note": "simultaneous assignment"
+          }
+        ],
+        "variants": [
+          {
+            "id": "v1",
+            "title": "Swap Two Variables",
+            "description": "Write <code>func swapVars(a, b int) (int, int)</code> that returns the values swapped.",
+            "functionSignature": "func swapVars(a, b int) (int, int)",
+            "testCases": [
+              { "input": "3, 7", "output": "7, 3" },
+              { "input": "10, 20", "output": "20, 10" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Go's simultaneous assignment makes this trivial." },
+              { "title": "💡 Hint", "content": "return b, a - just return them in opposite order!" },
+              { "title": "🔧 Pattern", "content": "<pre>return b, a</pre>" }
+            ],
+            "solution": "func swapVars(a, b int) (int, int) {\n    return b, a\n}"
+          },
+          {
+            "id": "v2",
+            "title": "Swap First Two Elements",
+            "description": "Write <code>func swapFirstTwo(nums []int)</code> that swaps the first two elements in place. Assume at least 2 elements.",
+            "functionSignature": "func swapFirstTwo(nums []int)",
+            "testCases": [
+              { "input": "[]int{1, 2, 3}", "output": "[2, 1, 3]" },
+              { "input": "[]int{5, 10}", "output": "[10, 5]" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Use simultaneous assignment on slice indices." },
+              { "title": "💡 Hint", "content": "nums[0], nums[1] = nums[1], nums[0]" },
+              { "title": "🔧 Pattern", "content": "<pre>nums[0], nums[1] = nums[1], nums[0]</pre>" }
+            ],
+            "solution": "func swapFirstTwo(nums []int) {\n    nums[0], nums[1] = nums[1], nums[0]\n}"
+          },
+          {
+            "id": "v3",
+            "title": "Swap Ends",
+            "description": "Write <code>func swapEnds(nums []int)</code> that swaps first and last elements.",
+            "functionSignature": "func swapEnds(nums []int)",
+            "testCases": [
+              { "input": "[]int{1, 2, 3, 4}", "output": "[4, 2, 3, 1]" },
+              { "input": "[]int{5, 10}", "output": "[10, 5]" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Last element is at index len(nums)-1." },
+              { "title": "💡 Hint", "content": "Swap nums[0] with nums[len(nums)-1]." },
+              { "title": "🔧 Pattern", "content": "<pre>nums[0], nums[len(nums)-1] = nums[len(nums)-1], nums[0]</pre>" }
+            ],
+            "solution": "func swapEnds(nums []int) {\n    nums[0], nums[len(nums)-1] = nums[len(nums)-1], nums[0]\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Swap at Indices",
+            "description": "Write <code>func swapAt(nums []int, i, j int)</code> that swaps elements at positions i and j.",
+            "functionSignature": "func swapAt(nums []int, i, j int)",
+            "testCases": [
+              { "input": "[]int{1, 2, 3, 4}, 0, 2", "output": "[3, 2, 1, 4]" },
+              { "input": "[]int{5, 10, 15}, 1, 2", "output": "[5, 15, 10]" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Just swap the elements at the given indices." },
+              { "title": "💡 Hint", "content": "nums[i], nums[j] = nums[j], nums[i]" },
+              { "title": "🔧 Pattern", "content": "<pre>nums[i], nums[j] = nums[j], nums[i]</pre>" }
+            ],
+            "solution": "func swapAt(nums []int, i, j int) {\n    nums[i], nums[j] = nums[j], nums[i]\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Swap String Parts",
+            "description": "Write <code>func swapStrings(a, b string) (string, string)</code> that swaps two strings.",
+            "functionSignature": "func swapStrings(a, b string) (string, string)",
+            "testCases": [
+              { "input": "\"hello\", \"world\"", "output": "\"world\", \"hello\"" },
+              { "input": "\"go\", \"rust\"", "output": "\"rust\", \"go\"" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Same as swapping ints - just return in opposite order." },
+              { "title": "💡 Hint", "content": "return b, a" },
+              { "title": "🔧 Pattern", "content": "<pre>return b, a</pre>" }
+            ],
+            "solution": "func swapStrings(a, b string) (string, string) {\n    return b, a\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Conditional Swap",
+            "description": "Write <code>func swapIfGreater(a, b int) (int, int)</code> that swaps only if a > b, ensuring smaller comes first.",
+            "functionSignature": "func swapIfGreater(a, b int) (int, int)",
+            "testCases": [
+              { "input": "5, 2", "output": "2, 5", "note": "5 > 2, so swap" },
+              { "input": "3, 7", "output": "3, 7", "note": "3 < 7, no swap" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Check if a > b. If so, swap. Else, leave as-is." },
+              { "title": "💡 Hint", "content": "if a > b { return b, a } else { return a, b }" },
+              { "title": "🔧 Pattern", "content": "<pre>if a > b {\n    return b, a\n}\nreturn a, b</pre>" }
+            ],
+            "solution": "func swapIfGreater(a, b int) (int, int) {\n    if a > b {\n        return b, a\n    }\n    return a, b\n}"
+          }
+        ]
+      },
+      {
+        "id": "challenge_14",
+        "block": 2,
+        "difficulty": 2,
+        "concept": "Element Comparison",
+        "docLinks": [
+          {
+            "url": "https://go.dev/ref/spec#For_statements",
+            "title": "Go Spec: For statements",
+            "note": "iteration patterns"
+          }
+        ],
+        "variants": [
+          {
+            "id": "v1",
+            "title": "Are Equal",
+            "description": "Write <code>func areEqual(nums []int) bool</code> that returns true if all elements are the same.",
+            "functionSignature": "func areEqual(nums []int) bool",
+            "testCases": [
+              { "input": "[]int{5, 5, 5}", "output": "true" },
+              { "input": "[]int{5, 5, 6}", "output": "false" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "If all are equal, they all equal the first element." },
+              { "title": "💡 Hint", "content": "Compare each element to nums[0]. If any differs, return false." },
+              { "title": "🔧 Pattern", "content": "<pre>1. For each num:\n   - num != nums[0]? → return false\n2. Return true (all equal)</pre>" }
+            ],
+            "solution": "func areEqual(nums []int) bool {\n    for _, n := range nums {\n        if n != nums[0] { return false }\n    }\n    return true\n}"
+          },
+          {
+            "id": "v2",
+            "title": "Has Adjacent Equal",
+            "description": "Write <code>func hasAdjacentEqual(nums []int) bool</code> - true if any two adjacent elements are equal.",
+            "functionSignature": "func hasAdjacentEqual(nums []int) bool",
+            "testCases": [
+              { "input": "[]int{1, 2, 2, 3}", "output": "true" },
+              { "input": "[]int{1, 2, 3, 4}", "output": "false" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Loop through, comparing each element to the next one." },
+              { "title": "💡 Hint", "content": "for i := 0; i < len(nums)-1; i++ - compare nums[i] to nums[i+1]." },
+              { "title": "🔧 Pattern", "content": "<pre>1. For i from 0 to len-2:\n   - nums[i] == nums[i+1]? → return true\n2. Return false</pre>" }
+            ],
+            "solution": "func hasAdjacentEqual(nums []int) bool {\n    for i := 0; i < len(nums)-1; i++ {\n        if nums[i] == nums[i+1] { return true }\n    }\n    return false\n}"
+          },
+          {
+            "id": "v3",
+            "title": "Is Increasing",
+            "description": "Write <code>func isIncreasing(nums []int) bool</code> - true if each element is greater than the previous.",
+            "functionSignature": "func isIncreasing(nums []int) bool",
+            "testCases": [
+              { "input": "[]int{1, 2, 3, 4}", "output": "true" },
+              { "input": "[]int{1, 3, 2, 4}", "output": "false" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Compare adjacent elements - each should be > previous." },
+              { "title": "💡 Hint", "content": "If nums[i+1] <= nums[i], it's not strictly increasing." },
+              { "title": "🔧 Pattern", "content": "<pre>1. For i from 0 to len-2:\n   - nums[i+1] <= nums[i]? → return false\n2. Return true</pre>" }
+            ],
+            "solution": "func isIncreasing(nums []int) bool {\n    for i := 0; i < len(nums)-1; i++ {\n        if nums[i+1] <= nums[i] { return false }\n    }\n    return true\n}"
+          },
+          {
+            "id": "v4",
+            "title": "First Greater Index",
+            "description": "Write <code>func firstGreater(nums []int, threshold int) int</code> - index of first element > threshold, or -1.",
+            "functionSignature": "func firstGreater(nums []int, threshold int) int",
+            "testCases": [
+              { "input": "[]int{1, 3, 5, 7}, 4", "output": "2", "note": "5 is first > 4" },
+              { "input": "[]int{1, 2, 3}, 10", "output": "-1" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Loop through with index, return index when you find one > threshold." },
+              { "title": "💡 Hint", "content": "for i, n := range nums - if n > threshold return i." },
+              { "title": "🔧 Pattern", "content": "<pre>1. For i, num:\n   - num > threshold? → return i\n2. Return -1</pre>" }
+            ],
+            "solution": "func firstGreater(nums []int, threshold int) int {\n    for i, n := range nums {\n        if n > threshold { return i }\n    }\n    return -1\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Starts With Same",
+            "description": "Write <code>func startsWithSame(nums []int, k int) bool</code> - true if first k elements are all equal.",
+            "functionSignature": "func startsWithSame(nums []int, k int) bool",
+            "testCases": [
+              { "input": "[]int{5, 5, 5, 7}, 3", "output": "true" },
+              { "input": "[]int{5, 5, 6, 7}, 3", "output": "false" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Check if first k elements all equal nums[0]." },
+              { "title": "💡 Hint", "content": "Loop i from 0 to k-1, compare nums[i] to nums[0]." },
+              { "title": "🔧 Pattern", "content": "<pre>1. For i from 0 to k-1:\n   - nums[i] != nums[0]? → return false\n2. Return true</pre>" }
+            ],
+            "solution": "func startsWithSame(nums []int, k int) bool {\n    for i := 0; i < k; i++ {\n        if nums[i] != nums[0] { return false }\n    }\n    return true\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Longest Streak of Value",
+            "description": "Write <code>func longestStreak(nums []int, target int) int</code> - length of longest consecutive run of target.",
+            "functionSignature": "func longestStreak(nums []int, target int) int",
+            "testCases": [
+              { "input": "[]int{1, 2, 2, 2, 1, 2, 2}, 2", "output": "3", "note": "three 2's in a row" },
+              { "input": "[]int{1, 1, 3, 1}, 1", "output": "2" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Track current streak and max streak. When you see target, increment current. When you don't, reset current." },
+              { "title": "💡 Hint", "content": "Keep current and max variables. Update max whenever current > max." },
+              { "title": "🔧 Pattern", "content": "<pre>1. current, max := 0, 0\n2. For each num:\n   - num == target? → current++, update max\n   - else → current = 0\n3. Return max</pre>" }
+            ],
+            "solution": "func longestStreak(nums []int, target int) int {\n    current, max := 0, 0\n    for _, n := range nums {\n        if n == target {\n            current++\n            if current > max { max = current }\n        } else {\n            current = 0\n        }\n    }\n    return max\n}"
           }
         ]
       }
