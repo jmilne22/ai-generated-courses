@@ -1,0 +1,453 @@
+/**
+ * Shared Exercise Rendering System for Go Course
+ * 
+ * Expects these globals to be defined by module-specific data files:
+ * - window.conceptLinks - object mapping concept names to lesson section IDs
+ * - window.sharedContent - object with advanced exercise hints/pre-reading
+ * - window.variantsDataEmbedded - object with all exercise variants
+ */
+(function() {
+    'use strict';
+
+    // State for tracking current variants
+    let variantsData = null;
+    const currentVariants = {};
+    const currentWarmupVariants = {};
+    const currentIntermediateVariants = {};
+    const currentChallengeVariants = {};
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function loadVariants() {
+        variantsData = window.variantsDataEmbedded;
+        shuffleWarmups();
+        shuffleIntermediate();
+        shuffleChallenges();
+        shuffleVariants();
+    }
+
+    function shuffleWarmups() {
+        if (!variantsData || !variantsData.warmups) return;
+
+        // Pick a random variant for each warmup
+        variantsData.warmups.forEach(warmup => {
+            const current = currentWarmupVariants[warmup.id];
+            const available = warmup.variants.filter(v => !current || v.id !== current.id);
+            const pool = available.length > 0 ? available : warmup.variants;
+            currentWarmupVariants[warmup.id] = pool[Math.floor(Math.random() * pool.length)];
+        });
+
+        renderWarmups();
+
+        // Visual feedback
+        const btn = document.getElementById('shuffle-warmups-btn');
+        if (btn) {
+            btn.textContent = '✓ Shuffled!';
+            btn.style.background = 'var(--green-bright)';
+            btn.style.color = 'var(--bg-dark)';
+            setTimeout(() => {
+                btn.textContent = '🎲 Shuffle';
+                btn.style.background = 'var(--bg-card)';
+                btn.style.color = 'var(--green-bright)';
+            }, 800);
+        }
+    }
+
+    function renderWarmups() {
+        const container = document.getElementById('warmups-container');
+        if (!container || !variantsData || !variantsData.warmups) return;
+
+        let html = '';
+
+        variantsData.warmups.forEach((warmup, idx) => {
+            const variant = currentWarmupVariants[warmup.id];
+            const num = idx + 1;
+
+            const conceptLink = window.conceptLinks[warmup.concept];
+            const conceptHtml = conceptLink
+                ? `<a href="${conceptLink}" class="concept-link" style="color: var(--green-dim); opacity: 0.8;">(${warmup.concept} ↗)</a>`
+                : `<span style="font-size: 0.75rem; opacity: 0.6; color: var(--text-dim);">(${warmup.concept})</span>`;
+
+            html += `<div class="exercise">
+                <h4>Warmup ${num}: ${variant.title} ${conceptHtml}</h4>
+                <p>${variant.description}</p>`;
+
+            // Add hints
+            if (variant.hints) {
+                variant.hints.forEach((hint) => {
+                    // Support both old string format and new object format
+                    const title = typeof hint === 'object' ? hint.title : '💡 Hint';
+                    const content = typeof hint === 'object' ? hint.content : hint;
+                    html += `<details>
+                        <summary>${title}</summary>
+                        <div class="hint-content">${content}</div>
+                    </details>`;
+                });
+            }
+
+            // Add solution
+            html += `<details>
+                <summary>✅ Solution</summary>
+                <div class="hint-content"><pre>${escapeHtml(variant.solution)}</pre></div>
+            </details>`;
+
+            html += '</div>';
+        });
+
+        container.innerHTML = html;
+    }
+
+    function shuffleIntermediate() {
+        if (!variantsData || !variantsData.intermediate) return;
+
+        // Pick a random variant for each intermediate exercise
+        variantsData.intermediate.forEach(exercise => {
+            const current = currentIntermediateVariants[exercise.id];
+            const available = exercise.variants.filter(v => !current || v.id !== current.id);
+            const pool = available.length > 0 ? available : exercise.variants;
+            currentIntermediateVariants[exercise.id] = pool[Math.floor(Math.random() * pool.length)];
+        });
+
+        renderIntermediate();
+
+        // Visual feedback
+        const btn = document.getElementById('shuffle-intermediate-btn');
+        if (btn) {
+            btn.textContent = '✓ Shuffled!';
+            btn.style.background = 'var(--cyan)';
+            btn.style.color = 'var(--bg-dark)';
+            setTimeout(() => {
+                btn.textContent = '🎲 Shuffle';
+                btn.style.background = 'var(--bg-card)';
+                btn.style.color = 'var(--cyan)';
+            }, 800);
+        }
+    }
+
+    function renderIntermediate() {
+        const container = document.getElementById('intermediate-container');
+        if (!container || !variantsData || !variantsData.intermediate) return;
+
+        let html = '';
+
+        variantsData.intermediate.forEach((exercise, idx) => {
+            const variant = currentIntermediateVariants[exercise.id];
+            const num = idx + 1;
+
+            const conceptLink = window.conceptLinks[exercise.concept];
+            const conceptHtml = conceptLink
+                ? `<a href="${conceptLink}" class="concept-link" style="color: var(--cyan); opacity: 0.8;">(${exercise.concept} ↗)</a>`
+                : `<span style="font-size: 0.75rem; opacity: 0.6; color: var(--text-dim);">(${exercise.concept})</span>`;
+
+            html += `<div class="exercise">
+                <h4>Intermediate ${num}: ${variant.title} ${conceptHtml}</h4>
+                <p>${variant.description}</p>`;
+
+            // Add hints
+            if (variant.hints) {
+                variant.hints.forEach((hint) => {
+                    // Support both old string format and new object format
+                    const title = typeof hint === 'object' ? hint.title : '💡 Hint';
+                    const content = typeof hint === 'object' ? hint.content : hint;
+                    html += `<details>
+                        <summary>${title}</summary>
+                        <div class="hint-content">${content}</div>
+                    </details>`;
+                });
+            }
+
+            // Add solution
+            html += `<details>
+                <summary>✅ Solution</summary>
+                <div class="hint-content"><pre>${escapeHtml(variant.solution)}</pre></div>
+            </details>`;
+
+            // Add expected output if available
+            if (variant.expected) {
+                html += `<div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>${escapeHtml(variant.expected)}</pre>
+                </div>`;
+            }
+
+            html += '</div>';
+        });
+
+        container.innerHTML = html;
+    }
+
+    function shuffleChallenges() {
+        if (!variantsData || !variantsData.challenges) return;
+
+        // Pick a random variant for each challenge
+        variantsData.challenges.forEach(challenge => {
+            const current = currentChallengeVariants[challenge.id];
+            const available = challenge.variants.filter(v => !current || v.id !== current.id);
+            const pool = available.length > 0 ? available : challenge.variants;
+            currentChallengeVariants[challenge.id] = pool[Math.floor(Math.random() * pool.length)];
+        });
+
+        renderChallenges();
+
+        // Visual feedback
+        const btn = document.getElementById('shuffle-challenges-btn');
+        if (btn) {
+            btn.textContent = '✓ Shuffled!';
+            btn.style.background = 'var(--green-bright)';
+            btn.style.color = 'var(--bg-dark)';
+            btn.style.borderColor = 'var(--green-bright)';
+            setTimeout(() => {
+                btn.textContent = '🎲 Shuffle Challenges';
+                btn.style.background = 'var(--bg-card)';
+                btn.style.color = 'var(--orange)';
+                btn.style.borderColor = 'var(--orange)';
+            }, 800);
+        }
+    }
+
+    function renderChallenges() {
+        const container = document.getElementById('challenges-container');
+        if (!container || !variantsData || !variantsData.challenges) return;
+
+        let html = '';
+        let currentBlock = 0;
+        const blockNames = { 1: 'Core Patterns', 2: 'Building & Filtering', 3: 'Two-Pointer Foundation', 4: 'Two-Pointer Application' };
+        const blockDifficulty = { 1: '⭐', 2: '⭐⭐', 3: '⭐⭐', 4: '⭐⭐⭐' };
+
+        variantsData.challenges.forEach((challenge, idx) => {
+            const variant = currentChallengeVariants[challenge.id];
+            const num = idx + 1;
+            const difficulty = blockDifficulty[challenge.block];
+
+            // Add block header if new block
+            if (challenge.block !== currentBlock) {
+                currentBlock = challenge.block;
+                html += `<p style="color: var(--cyan); font-size: 0.85rem; margin: 1.5rem 0 0.5rem; font-weight: 600;">Block ${currentBlock}: ${blockNames[currentBlock]} <span style="opacity: 0.7">${difficulty}</span></p>`;
+            }
+
+            html += `<div class="exercise">
+                <h4>Challenge ${num}: ${variant.title} <span style="font-size: 0.75rem; opacity: 0.6;">${difficulty}</span></h4>
+                <p>${variant.description}</p>`;
+
+            // Add hints
+            if (variant.hints) {
+                variant.hints.forEach((hint) => {
+                    // Support both old string format and new object format
+                    const title = typeof hint === 'object' ? hint.title : '💡 Hint';
+                    const content = typeof hint === 'object' ? hint.content : hint;
+                    html += `<details>
+                        <summary>${title}</summary>
+                        <div class="hint-content">${content}</div>
+                    </details>`;
+                });
+            }
+
+            // Add solution
+            html += `<details>
+                <summary>✅ Solution</summary>
+                <div class="hint-content"><pre>${escapeHtml(variant.solution)}</pre></div>
+            </details>`;
+
+            // Add expected output
+            html += `<div class="expected">
+                <div class="expected-title">Expected Output</div>
+                <pre>${variant.testCases.map(tc =>
+                    `${tc.input} → ${tc.output}`
+                ).join('\n')}</pre>
+            </div></div>`;
+        });
+
+        container.innerHTML = html;
+    }
+
+    function shuffleVariants() {
+        if (!variantsData) return;
+
+        // Pick a DIFFERENT random variant for each exercise
+        variantsData.advanced.forEach(exercise => {
+            const currentVariant = currentVariants[exercise.id];
+            const availableVariants = exercise.variants.filter(v =>
+                !currentVariant || v.id !== currentVariant.id
+            );
+            // If all variants exhausted (only 1), just pick randomly
+            const pool = availableVariants.length > 0 ? availableVariants : exercise.variants;
+            const randomIndex = Math.floor(Math.random() * pool.length);
+            currentVariants[exercise.id] = pool[randomIndex];
+        });
+
+        renderExercises();
+
+        // Visual feedback - flash the button
+        const btn = document.getElementById('shuffle-btn');
+        if (btn) {
+            btn.textContent = '✓ Shuffled!';
+            btn.style.background = 'var(--green-bright)';
+            btn.style.color = 'var(--bg-dark)';
+            btn.style.borderColor = 'var(--green-bright)';
+            setTimeout(() => {
+                btn.textContent = '🎲 Shuffle Variants';
+                btn.style.background = 'var(--bg-card)';
+                btn.style.color = 'var(--purple)';
+                btn.style.borderColor = 'var(--purple)';
+            }, 800);
+        }
+    }
+
+    function renderExercises() {
+        const container = document.getElementById('advanced-exercises-container');
+        if (!container) return;
+
+        let html = '';
+
+        // Render each advanced exercise with its pre-exercises
+        variantsData.advanced.forEach((exercise, idx) => {
+            const variant = currentVariants[exercise.id];
+            const shared = window.sharedContent[exercise.id];
+            const num = idx + 1;
+
+            // Render pre-exercises for this specific advanced exercise (if any)
+            html += renderPreExercisesFor(exercise.id, num, variant.title);
+
+            html += `<div class="exercise">
+                <h4>Advanced ${num}: ${variant.title}</h4>
+                <p>${variant.description}</p>`;
+
+            // Add pre-reading if available
+            if (shared && shared.preReading) {
+                html += `<details>
+                    <summary>${shared.preReading.title}</summary>
+                    <div class="hint-content">${shared.preReading.content}</div>
+                </details>`;
+            }
+
+            // Add hints
+            if (shared && shared.hints) {
+                shared.hints.forEach(hint => {
+                    html += `<details>
+                        <summary>${hint.title}</summary>
+                        <div class="hint-content">${hint.content}</div>
+                    </details>`;
+                });
+            }
+
+            // Add solution
+            html += `<details>
+                <summary>✅ Solution with Explanation</summary>
+                <div class="hint-content">
+                    <pre>${escapeHtml(variant.solution)}</pre>
+                    ${variant.solutionNotes ? `<br>${variant.solutionNotes}` : ''}
+                </div>
+            </details>`;
+
+            // Add expected output
+            html += `<div class="expected">
+                <div class="expected-title">Expected Output</div>
+                <pre>${variant.testCases.map(tc =>
+                    `${variant.functionSignature.match(/func (\w+)/)[1]}(${tc.input}) → ${tc.output}${tc.note ? ` (${tc.note})` : ''}`
+                ).join('\n')}</pre>
+            </div>`;
+
+            html += '</div>';
+
+            // Add section divider (except after last exercise)
+            if (idx < variantsData.advanced.length - 1) {
+                html += `<hr style="border: none; border-top: 2px dashed var(--bg-lighter); margin: 3rem 0;">`;
+            }
+        });
+
+        container.innerHTML = html;
+    }
+
+    function renderPreExercisesFor(advancedId, advancedNum, advancedTitle) {
+        if (!variantsData.preExercises || !variantsData.preExercises[advancedId]) {
+            return '';
+        }
+
+        const preEx = variantsData.preExercises[advancedId];
+        let html = `
+            <div style="background: linear-gradient(135deg, rgba(157, 0, 255, 0.15), rgba(157, 0, 255, 0.05)); border: 2px solid var(--purple); border-radius: 8px; padding: 1.5rem; margin: 2rem 0 1rem 0;">
+                <div style="color: var(--purple); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">⬇️ Warm up for Advanced ${advancedNum}</div>
+                <div style="color: var(--text); font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">🎯 ${preEx.title}</div>
+                <p style="color: var(--text-dim); margin: 0;">${preEx.description}</p>
+            </div>`;
+
+        preEx.exercises.forEach((ex, idx) => {
+            html += `<div class="exercise" style="border-color: var(--purple); margin-bottom: 1.5rem;">
+                <h4 style="color: var(--purple);">Warm-up ${advancedNum}.${idx + 1}: ${ex.title}</h4>
+                <p>${ex.problem}</p>`;
+
+            // Add hints
+            ex.hints.forEach(hint => {
+                html += `<details>
+                    <summary>💡 ${hint.title}</summary>
+                    <div class="hint-content">${hint.content}</div>
+                </details>`;
+            });
+
+            // Add solution
+            html += `<details>
+                <summary>✅ Solution</summary>
+                <div class="hint-content">
+                    <pre>${escapeHtml(ex.solution)}</pre>
+                    <br><strong>Key insight:</strong> ${ex.keyInsight}
+                </div>
+            </details>`;
+
+            // Add expected output
+            html += `<div class="expected">
+                <div class="expected-title">Expected Output</div>
+                <pre>${escapeHtml(ex.expectedOutput)}</pre>
+            </div>`;
+
+            html += '</div>';
+        });
+
+        // Add transition to main exercise
+        html += `
+            <div style="text-align: center; margin: 1.5rem 0; color: var(--purple); font-weight: 600;">
+                ⬇️ Now try the full exercise ⬇️
+            </div>`;
+
+        return html;
+    }
+
+    // Load variants on page load
+    document.addEventListener('DOMContentLoaded', loadVariants);
+
+    // Style the shuffle buttons hover
+    document.addEventListener('DOMContentLoaded', () => {
+        const advBtn = document.getElementById('shuffle-btn');
+        if (advBtn) {
+            advBtn.addEventListener('mouseenter', () => {
+                advBtn.style.background = 'var(--purple)';
+                advBtn.style.color = 'white';
+            });
+            advBtn.addEventListener('mouseleave', () => {
+                advBtn.style.background = 'var(--bg-card)';
+                advBtn.style.color = 'var(--purple)';
+            });
+        }
+
+        const chalBtn = document.getElementById('shuffle-challenges-btn');
+        if (chalBtn) {
+            chalBtn.addEventListener('mouseenter', () => {
+                chalBtn.style.background = 'var(--orange)';
+                chalBtn.style.color = 'white';
+            });
+            chalBtn.addEventListener('mouseleave', () => {
+                chalBtn.style.background = 'var(--bg-card)';
+                chalBtn.style.color = 'var(--orange)';
+            });
+        }
+    });
+
+    // Expose functions globally for onclick handlers
+    window.shuffleWarmups = shuffleWarmups;
+    window.shuffleIntermediate = shuffleIntermediate;
+    window.shuffleChallenges = shuffleChallenges;
+    window.shuffleVariants = shuffleVariants;
+})();
