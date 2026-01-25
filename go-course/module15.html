@@ -5,53 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Module 15: Sets & Diffing | Go From Python</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg-dark: #0a0a0f; --bg-card: #12121a; --bg-code: #1a1a24; --green-bright: #00ff9d; --orange: #ff9d00; --purple: #9d00ff; --blue: #00b4ff; --red: #ff4757; --text-main: #e0e0e0; --text-dim: #888; --border: #2a2a3a; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
-        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
-        nav { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
-        nav a { color: var(--text-dim); text-decoration: none; font-family: 'JetBrains Mono', monospace; }
-        nav a:hover { color: var(--green-bright); }
-        .module-tag { font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
-        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
-        .module-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 3rem; }
-        .lesson { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
-        .lesson h2::before { content: '# '; color: var(--green-bright); font-family: 'JetBrains Mono', monospace; }
-        .lesson h2 { font-size: 1.5rem; margin-bottom: 1rem; }
-        .lesson h3 { color: var(--orange); margin: 1.5rem 0 1rem; }
-        .lesson p { color: var(--text-dim); margin-bottom: 1rem; }
-        .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
-        .code-header { background: var(--bg-dark); padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--blue); }
-        .code-header::before { content: '● '; }
-        pre { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
-        .keyword { color: var(--purple); } .string { color: var(--green-bright); } .comment { color: var(--text-dim); } .func { color: var(--blue); } .type { color: var(--orange); } .number { color: var(--red); }
-        .tip { background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--green-bright); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
-        .tip-title { font-weight: 600; color: var(--green-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
-        .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
-        .nav-btn { padding: 0.75rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); text-decoration: none; border-radius: 8px; }
-        .nav-btn:hover { border-color: var(--green-bright); }
-        .nav-btn.primary { background: var(--green-bright); color: var(--bg-dark); }
-        ul { margin: 1rem 0 1rem 1.5rem; color: var(--text-dim); } li { margin-bottom: 0.5rem; }
-        .inline-code { background: var(--bg-code); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); }
-        .exercise { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
-        .exercise h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1rem; }
-        .exercise > p { color: var(--text-dim); margin-bottom: 0.75rem; }
-        details { margin-top: 0.75rem; }
-        details summary { cursor: pointer; color: var(--blue); font-size: 0.85rem; padding: 0.3rem 0; user-select: none; }
-        details summary:hover { color: var(--green-bright); }
-        details[open] summary { color: var(--green-bright); }
-        .hint-content { margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 6px; font-size: 0.85rem; color: var(--text-dim); }
-        .hint-content code { background: var(--bg-code); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; color: var(--green-bright); font-size: 0.85rem; }
-        .hint-content pre { margin: 0.5rem 0; padding: 0.75rem; background: var(--bg-code); border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); }
-        .expected { margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 255, 157, 0.05); border: 1px dashed var(--green-bright); border-radius: 6px; }
-        .expected-title { font-size: 0.75rem; color: var(--green-bright); margin-bottom: 0.4rem; text-transform: uppercase; font-weight: 600; }
-        .expected pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
-
-        .diagram { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.4; white-space: pre; overflow-x: auto; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="scanlines"></div>
     <div class="container">
         <nav><a href="module14.html">← Module 14</a><a href="module16.html">Module 16 →</a></nav>
         <div class="module-tag">// MODULE 15</div>
@@ -437,5 +394,7 @@ banana</pre>
             <a href="index.html" class="nav-btn primary">Course Complete! 🎉</a>
         </div>
     </div>
+    <script src="theme.js"></script>
+    <script src="sidebar.js"></script>
 </body>
 </html>

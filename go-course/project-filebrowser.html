@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project: File Browser TUI | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="container">
+        <nav><a href="module8.html">← Module 8</a><a href="index.html">Course Home →</a></nav>
+        <div class="module-tag">// PROJECT</div>
+        <h1>🔨 File Browser TUI</h1>
+        <p class="module-desc">Build an interactive terminal file browser using Bubble Tea. Applies concepts from Module 8: Building TUIs.</p>
+
+        <div class="lesson">
+            <h2>Project Goals</h2>
+            <p>Build an interactive file browser:</p>
+            <ol>
+                <li>Navigate directories with arrow keys</li>
+                <li>Enter to go into directory / open file info</li>
+                <li>Backspace to go up a directory</li>
+                <li>Show file sizes and permissions</li>
+                <li>Syntax highlighting for different file types</li>
+            </ol>
+        </div>
+
+        <div class="lesson">
+            <h2>Components to Use</h2>
+            <ul>
+                <li><span class="inline-code">bubbles/list</span> — for the file list</li>
+                <li><span class="inline-code">lipgloss</span> — for styling</li>
+                <li><span class="inline-code">os.ReadDir</span> — for directory contents</li>
+            </ul>
+        </div>
+
+        <div class="lesson">
+            <h2>Suggested Structure</h2>
+            <div class="code-block">
+                <div class="code-header">Model structure</div>
+                <pre><span class="keyword">type</span> <span class="type">model</span> <span class="keyword">struct</span> {
+    currentDir  <span class="type">string</span>
+    files       []<span class="type">os.DirEntry</span>
+    cursor      <span class="type">int</span>
+    selected    <span class="type">string</span>
+    err         <span class="type">error</span>
+}
+
+<span class="keyword">func</span> (m <span class="type">model</span>) <span class="func">Init</span>() tea.<span class="type">Cmd</span> {
+    <span class="keyword">return</span> <span class="func">loadDir</span>(m.currentDir)
+}
+
+<span class="keyword">func</span> <span class="func">loadDir</span>(path <span class="type">string</span>) tea.<span class="type">Cmd</span> {
+    <span class="keyword">return</span> <span class="keyword">func</span>() tea.<span class="type">Msg</span> {
+        entries, err := os.<span class="func">ReadDir</span>(path)
+        <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+            <span class="keyword">return</span> <span class="type">errMsg</span>{err}
+        }
+        <span class="keyword">return</span> <span class="type">dirLoadedMsg</span>{entries}
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="tip">
+            <div class="tip-title">Skills Used</div>
+            <p>Bubble Tea architecture, lipgloss styling, file system operations, keyboard handling.</p>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module8.html" class="nav-btn">← Back to Module 8</a>
+            <a href="index.html" class="nav-btn primary">Course Home</a>
+        </div>
+    </div>
+    <script src="theme.js"></script>
+    <script src="sidebar.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project: Parallel Downloader | Go From Python</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="container">
+        <nav><a href="module12.html">← Module 12</a><a href="index.html">Course Home →</a></nav>
+        <div class="module-tag">// PROJECT</div>
+        <h1>🔨 Parallel Downloader</h1>
+        <p class="module-desc">Build a concurrent file downloader with progress tracking. Applies concepts from Module 12: Concurrency Patterns.</p>
+
+        <div class="lesson">
+            <h2>Project Goals</h2>
+            <p>Build a concurrent file downloader:</p>
+            <ol>
+                <li>Accept list of URLs from file or stdin</li>
+                <li>Download files in parallel (configurable workers)</li>
+                <li>Show progress bar for each download</li>
+                <li>Handle errors gracefully (retry failed downloads)</li>
+                <li>Support cancellation with Ctrl+C</li>
+            </ol>
+        </div>
+
+        <div class="lesson">
+            <h2>Components to Use</h2>
+            <ul>
+                <li><span class="inline-code">sync.WaitGroup</span> — coordinate workers</li>
+                <li><span class="inline-code">context.Context</span> — for cancellation</li>
+                <li><span class="inline-code">channels</span> — for progress updates</li>
+                <li><span class="inline-code">semaphore pattern</span> — limit concurrent downloads</li>
+            </ul>
+        </div>
+
+        <div class="lesson">
+            <h2>Suggested Structure</h2>
+            <div class="code-block">
+                <div class="code-header">Worker pattern</div>
+                <pre><span class="keyword">func</span> <span class="func">worker</span>(ctx context.<span class="type">Context</span>, urls <span class="keyword">chan</span> <span class="type">string</span>, results <span class="keyword">chan</span> <span class="type">Result</span>) {
+    <span class="keyword">for</span> url := <span class="keyword">range</span> urls {
+        <span class="keyword">select</span> {
+        <span class="keyword">case</span> <-ctx.<span class="func">Done</span>():
+            <span class="keyword">return</span>
+        <span class="keyword">default</span>:
+            result := <span class="func">download</span>(ctx, url)
+            results <- result
+        }
+    }
+}
+
+<span class="keyword">func</span> <span class="func">download</span>(ctx context.<span class="type">Context</span>, url <span class="type">string</span>) <span class="type">Result</span> {
+    req, _ := http.<span class="func">NewRequestWithContext</span>(ctx, <span class="string">"GET"</span>, url, <span class="keyword">nil</span>)
+    resp, err := http.DefaultClient.<span class="func">Do</span>(req)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="type">Result</span>{URL: url, Err: err}
+    }
+    <span class="keyword">defer</span> resp.Body.<span class="func">Close</span>()
+    
+    <span class="comment">// Download and track progress...</span>
+    <span class="keyword">return</span> <span class="type">Result</span>{URL: url, Size: size}
+}</pre>
+            </div>
+        </div>
+
+        <div class="lesson">
+            <h2>Example Usage</h2>
+            <div class="code-block">
+                <div class="code-header terminal">Terminal</div>
+                <pre>$ cat urls.txt | downloader -workers 5
+Downloading 10 files with 5 workers...
+[████████████████████] 100% file1.zip (15 MB)
+[████████████░░░░░░░░]  60% file2.tar.gz (8/13 MB)
+[████░░░░░░░░░░░░░░░░]  20% file3.iso (200/1000 MB)
+...</pre>
+            </div>
+        </div>
+
+        <div class="tip">
+            <div class="tip-title">Skills Used</div>
+            <p>Goroutines, channels, WaitGroups, context cancellation, HTTP streaming, progress tracking.</p>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="module12.html" class="nav-btn">← Back to Module 12</a>
+            <a href="index.html" class="nav-btn primary">Course Home</a>
+        </div>
+    </div>
+    <script src="theme.js"></script>
+    <script src="sidebar.js"></script>
+</body>
+</html>
+
