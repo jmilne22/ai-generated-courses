@@ -506,21 +506,21 @@
 
             html += `<p style="color: var(--orange); font-size: 0.9rem; margin: 0 0 1rem; font-weight: 600;">Practicing: ${currentConceptFilter} (${selected.length} of ${allVariants.length} variants)</p>`;
 
-            // Add brute force example if available for this concept
+            // Add pattern primer if available for this concept
             const firstChallenge = challenges[0];
-            if (firstChallenge && firstChallenge.bruteForceExample) {
-                const bf = firstChallenge.bruteForceExample;
-                html += `<details style="border-left: 3px solid var(--orange); padding-left: 1rem; margin-bottom: 1.5rem;">
-                    <summary style="color: var(--orange); font-weight: 600; cursor: pointer;">${bf.title}</summary>
-                    <div class="hint-content">
-                        <div style="margin-bottom: 1rem;">
-                            ${bf.naive}
+            if (firstChallenge && firstChallenge.patternPrimer) {
+                const pp = firstChallenge.patternPrimer;
+                html += `<details style="border: 2px solid var(--orange); border-radius: 6px; padding: 1rem; margin-bottom: 1.5rem;">
+                    <summary style="color: var(--orange); font-weight: 600; cursor: pointer;">Pattern Primer: ${currentConceptFilter} (brute force + best approach)</summary>
+                    <div class="hint-content" style="margin-top: 1rem;">
+                        <div style="margin-bottom: 0.75rem;">
+                            <strong>Brute force:</strong> ${pp.bruteForce}
                         </div>
-                        <div style="margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 4px;">
-                            <strong style="color: var(--red);">⏱️ Why it's slow:</strong> ${bf.whySlow}
+                        <div style="margin-bottom: 0.75rem;">
+                            <strong>Best approach:</strong> ${pp.bestApproach}
                         </div>
-                        <div style="padding: 0.75rem; background: var(--bg-dark); border-radius: 4px;">
-                            <strong style="color: var(--green-bright);">⚡ Better approach:</strong> ${bf.efficient}
+                        <div>
+                            <strong>Typical:</strong> ${pp.typical}
                         </div>
                     </div>
                 </details>`;

@@ -724,6 +724,11 @@ window.moduleData = {
             "note": "+= syntax"
           }
         ],
+        "patternPrimer": {
+          "bruteForce": "Loop and update a running result (sum/product/string).",
+          "bestApproach": "Initialize the identity value once, then update per element; sometimes early-return is possible.",
+          "typical": "Typically O(n) time, O(1) extra space"
+        },
         "variants": [
           {
             "id": "v1",
@@ -873,6 +878,11 @@ window.moduleData = {
             "note": "% modulo operator"
           }
         ],
+        "patternPrimer": {
+          "bruteForce": "Loop through, check condition for each element, increment counter.",
+          "bestApproach": "Same approach - this is already optimal! Just loop once and count matches.",
+          "typical": "Typically O(n) time, O(1) extra space"
+        },
         "variants": [
           {
             "id": "v1",
@@ -1180,6 +1190,11 @@ window.moduleData = {
             "note": "string and slice length"
           }
         ],
+        "patternPrimer": {
+          "bruteForce": "Track the current best value; update whenever you find a better one.",
+          "bestApproach": "Same approach - initialize to first element, then compare each subsequent element.",
+          "typical": "Typically O(n) time, O(1) extra space"
+        },
         "variants": [
           {
             "id": "v1",
@@ -1370,6 +1385,11 @@ window.moduleData = {
             "note": "slice internals"
           }
         ],
+        "patternPrimer": {
+          "bruteForce": "Create a new slice and append elements that pass the condition.",
+          "bestApproach": "Same approach - loop once, append conditionally. Can't do better than O(n).",
+          "typical": "Typically O(n) time, O(k) extra space where k = filtered elements"
+        },
         "variants": [
           {
             "id": "v1",
@@ -1552,6 +1572,11 @@ window.moduleData = {
             "note": "early returns"
           }
         ],
+        "patternPrimer": {
+          "bruteForce": "Loop through, return index immediately when found; return -1 if not found.",
+          "bestApproach": "Same approach - early return is already optimal! No need to continue after finding match.",
+          "typical": "Typically O(n) time worst case, O(1) if found early, O(1) extra space"
+        },
         "variants": [
           {
             "id": "v1",
@@ -1746,11 +1771,10 @@ window.moduleData = {
             "note": "creating maps"
           }
         ],
-        "bruteForceExample": {
-          "title": "🐌 Brute Force vs ⚡ Frequency Map",
-          "naive": "<strong>Counting with nested loops:</strong>\n<pre>// For each unique number, count how many times it appears\nfor each element:\n  count = 0\n  for each other element:\n    if same → count++\n  store count somewhere</pre>",
-          "whySlow": "O(n²) - For each element, we scan the entire array again to count it. With 1000 elements, that's 1,000,000 comparisons!",
-          "efficient": "<strong>Frequency Map approach:</strong> Single pass through the array, incrementing counts[element]++ as we go. O(n) - just 1000 operations for 1000 elements. Maps automatically track unique keys and their counts."
+        "patternPrimer": {
+          "bruteForce": "Nested loops: for each unique element, scan the entire array again to count occurrences.",
+          "bestApproach": "Single pass with a map, incrementing counts[element]++ as we go. Map automatically tracks unique keys.",
+          "typical": "Typically O(n) time, O(n) extra space"
         },
         "variants": [
           {
@@ -1968,6 +1992,11 @@ window.moduleData = {
             "note": "slice indexing"
           }
         ],
+        "patternPrimer": {
+          "bruteForce": "Use a temp variable: temp = a, a = b, b = temp (three operations).",
+          "bestApproach": "Go's simultaneous assignment: a, b = b, a (evaluates right side first, then assigns).",
+          "typical": "Typically O(1) time, O(1) extra space"
+        },
         "variants": [
           {
             "id": "v1",
@@ -2309,11 +2338,10 @@ window.moduleData = {
             "note": "!= for mismatch detection"
           }
         ],
-        "bruteForceExample": {
-          "title": "🐌 Brute Force vs ⚡ Two-Pointer Comparison",
-          "naive": "<strong>Copy and reverse, then compare:</strong>\n<pre>// Create a reversed copy of the array\nreversed := []int{}\nfor i := len-1; i >= 0; i--:\n  reversed = append(reversed, nums[i])\n\n// Compare original with reversed\nfor i := 0; i < len; i++:\n  if nums[i] != reversed[i]:\n    return false</pre>",
-          "whySlow": "O(n) time but O(n) extra space - we're creating an entire duplicate array just to compare. Wasteful!",
-          "efficient": "<strong>Two-pointer approach:</strong> Compare from both ends simultaneously, moving inward. O(n) time, O(1) space - no extra array needed. Stop as soon as we find a mismatch."
+        "patternPrimer": {
+          "bruteForce": "Create a reversed copy of the array, then compare element-by-element with the original.",
+          "bestApproach": "Compare from both ends simultaneously, moving inward; stop as soon as mismatch found.",
+          "typical": "Typically O(n) time, O(1) extra space"
         },
         "variants": [
           {
@@ -2513,11 +2541,10 @@ window.moduleData = {
             "note": "in-place modifications"
           }
         ],
-        "bruteForceExample": {
-          "title": "🐌 Brute Force vs ⚡ Two-Pointer In-Place Swap",
-          "naive": "<strong>Create a new reversed array:</strong>\n<pre>// Build a new array with elements in reverse order\nresult := []int{}\nfor i := len(nums)-1; i >= 0; i--:\n  result = append(result, nums[i])\nreturn result</pre>",
-          "whySlow": "O(n) time, O(n) space - we're allocating a whole new array the same size as the input. For a million elements, that's allocating a million new slots!",
-          "efficient": "<strong>Two-pointer in-place swap:</strong> Start pointers at both ends, swap elements, move pointers inward. O(n) time, O(1) space - no extra memory needed. We reuse the existing array."
+        "patternPrimer": {
+          "bruteForce": "Create a new array and build it by iterating backwards through the original.",
+          "bestApproach": "Start pointers at both ends, swap elements in place, move pointers inward until they meet.",
+          "typical": "Typically O(n) time, O(1) extra space"
         },
         "variants": [
           {
@@ -2709,11 +2736,10 @@ window.moduleData = {
             "note": "checking if key exists"
           }
         ],
-        "bruteForceExample": {
-          "title": "🐌 Brute Force vs ⚡ Map Lookup + Early Return",
-          "naive": "<strong>Nested loops to check for duplicates:</strong>\n<pre>// For each element, check if it appears earlier\nfor i := 0; i < len; i++:\n  for j := 0; j < i; j++:\n    if nums[i] == nums[j]:\n      return i  // found duplicate</pre>",
-          "whySlow": "O(n²) - For every element, we scan all previous elements. With 10,000 elements, we might do 100 million comparisons!",
-          "efficient": "<strong>Hash map with early return:</strong> Track seen elements in a map. For each element, check map in O(1) time. If seen, return immediately. Total: O(n) time, O(n) space - just 10,000 operations for 10,000 elements."
+        "patternPrimer": {
+          "bruteForce": "Nested loops: for each element, scan all previous elements to check if it appeared before.",
+          "bestApproach": "Track seen elements in a map; check map in O(1) time, return immediately when found.",
+          "typical": "Typically O(n) time, O(n) extra space"
         },
         "variants": [
           {
@@ -2909,6 +2935,11 @@ window.moduleData = {
             "note": "intro to maps"
           }
         ],
+        "patternPrimer": {
+          "bruteForce": "Loop through and increment a counter when condition matches.",
+          "bestApproach": "Same approach - single pass counting is already optimal.",
+          "typical": "Typically O(n) time, O(1) extra space"
+        },
         "variants": [
           {
             "id": "v1",
@@ -3019,6 +3050,11 @@ window.moduleData = {
             "note": "simultaneous assignment"
           }
         ],
+        "patternPrimer": {
+          "bruteForce": "Use a temp variable: temp = a, a = b, b = temp (works but verbose).",
+          "bestApproach": "Go's simultaneous assignment: a, b = b, a (cleaner, evaluates right side first).",
+          "typical": "Typically O(1) time, O(1) extra space"
+        },
         "variants": [
           {
             "id": "v1",
@@ -3130,6 +3166,11 @@ window.moduleData = {
             "note": "iteration patterns"
           }
         ],
+        "patternPrimer": {
+          "bruteForce": "Compare adjacent elements or compare all to first element; early return on mismatch.",
+          "bestApproach": "Same approach - single pass with comparisons is already optimal.",
+          "typical": "Typically O(n) time, O(1) extra space"
+        },
         "variants": [
           {
             "id": "v1",
