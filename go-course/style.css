@@ -370,6 +370,13 @@ pre {
 /* ============================================
    11. Exercises and Hints/Solutions
    ============================================ */
+.js-required {
+    color: var(--text-dim);
+    font-style: italic;
+    padding: 1rem;
+    text-align: center;
+}
+
 .exercise {
     background: var(--bg-card);
     border: 1px solid var(--border);

@@ -279,50 +279,7 @@ age = ages.get(<span class="string">"dave"</span>)  <span class="comment"># Retu
             <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Practice individual concepts you just learned.</p>
 
             <div id="warmups-container">
-            <noscript>
-            <div class="exercise">
-                <h4>Warmup 1: Print 1 to 10</h4>
-                <p>Write a program that prints the numbers 1 to 10, one per line.</p>
-                <details><summary>💡 Hint</summary><div class="hint-content">Use <code>for i := 1; i <= 10; i++</code></div></details>
-                <details><summary>✅ Solution</summary><div class="hint-content"><pre>for i := 1; i <= 10; i++ {
-    fmt.Println(i)
-}</pre></div></details>
-            </div>
-            <div class="exercise">
-                <h4>Warmup 2: Check Number Sign</h4>
-                <p>Write <code>func checkSign(n int) string</code> that returns "positive", "negative", or "zero".</p>
-                <details><summary>💡 Hint</summary><div class="hint-content">Use <code>if n > 0</code>, then <code>else if n < 0</code>, then <code>else</code></div></details>
-                <details><summary>✅ Solution</summary><div class="hint-content"><pre>func checkSign(n int) string {
-    if n > 0 {
-        return "positive"
-    } else if n < 0 {
-        return "negative"
-    }
-    return "zero"
-}</pre></div></details>
-            </div>
-            <div class="exercise">
-                <h4>Warmup 3: Iterate Numbers</h4>
-                <p>Create a slice with three numbers, then print each using <code>for range</code>.</p>
-                <details><summary>💡 Hint</summary><div class="hint-content">Create: <code>nums := []int{7, 42, 99}</code><br>Loop: <code>for _, num := range nums</code></div></details>
-                <details><summary>✅ Solution</summary><div class="hint-content"><pre>nums := []int{7, 42, 99}
-for _, num := range nums {
-    fmt.Println(num)
-}</pre></div></details>
-            </div>
-            <div class="exercise">
-                <h4>Warmup 4: Ages Map</h4>
-                <p>Create a map of names to ages, then print each person's name and age.</p>
-                <details><summary>💡 Hint</summary><div class="hint-content">Map syntax: <code>map[string]int{"alice": 30}</code><br>Loop: <code>for name, age := range ages</code></div></details>
-                <details><summary>✅ Solution</summary><div class="hint-content"><pre>ages := map[string]int{
-    "alice": 30,
-    "bob":   25,
-}
-for name, age := range ages {
-    fmt.Printf("%s is %d\n", name, age)
-}</pre></div></details>
-            </div>
-            </noscript>
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
 
             <div style="display: flex; align-items: center; gap: 1rem; margin-top: 2rem;">
@@ -332,60 +289,7 @@ for name, age := range ages {
             <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Each exercise introduces ONE new concept. Build your toolkit!</p>
 
             <div id="intermediate-container">
-            <noscript>
-            <div class="exercise">
-                <h4>Intermediate 1: Make and Append to Slice</h4>
-                <p>Create an empty slice using <code>make([]int, 0)</code>, add three numbers with <code>append</code>, then print its length.</p>
-                <details><summary>💡 Hint</summary><div class="hint-content"><code>make([]int, 0)</code> creates an empty int slice<br><code>nums = append(nums, value)</code> adds to the slice</div></details>
-                <details><summary>✅ Solution</summary><div class="hint-content"><pre>nums := make([]int, 0)
-nums = append(nums, 10)
-nums = append(nums, 20)
-nums = append(nums, 30)
-fmt.Println(len(nums))  // 3</pre></div></details>
-                <div class="expected"><div class="expected-title">Expected Output</div><pre>3</pre></div>
-            </div>
-            <div class="exercise">
-                <h4>Intermediate 2: Check Map Key Exists</h4>
-                <p>Create a map of fruit prices. Check if "banana" exists using the <code>value, ok := map[key]</code> pattern.</p>
-                <details><summary>💡 Hint</summary><div class="hint-content"><code>price, ok := prices["banana"]</code><br><code>ok</code> is true if key exists, false otherwise</div></details>
-                <details><summary>✅ Solution</summary><div class="hint-content"><pre>prices := map[string]float64{
-    "apple":  1.50,
-    "orange": 2.00,
-}
-
-if price, ok := prices["banana"]; ok {
-    fmt.Printf("Banana: $%.2f\n", price)
-} else {
-    fmt.Println("Banana not found")
-}</pre></div></details>
-                <div class="expected"><div class="expected-title">Expected Output</div><pre>Banana not found</pre></div>
-            </div>
-            <div class="exercise">
-                <h4>Intermediate 3: Print Index and Value</h4>
-                <p>Create a slice of your favorite foods. Loop through and print both index and value: "0: pizza", "1: tacos", etc.</p>
-                <details><summary>💡 Hint</summary><div class="hint-content"><code>for i, food := range foods</code> gives you both index and value</div></details>
-                <details><summary>✅ Solution</summary><div class="hint-content"><pre>foods := []string{"pizza", "tacos", "sushi"}
-for i, food := range foods {
-    fmt.Printf("%d: %s\n", i, food)
-}</pre></div></details>
-                <div class="expected"><div class="expected-title">Expected Output</div><pre>0: pizza
-1: tacos
-2: sushi</pre></div>
-            </div>
-            <div class="exercise">
-                <h4>Intermediate 4: Collect Even Numbers</h4>
-                <p>Create an empty slice, then loop 1-10 and append only even numbers. Print the result.</p>
-                <details><summary>💡 Hint</summary><div class="hint-content">Check <code>if i%2 == 0</code><br>Use <code>append</code> inside the if block</div></details>
-                <details><summary>✅ Solution</summary><div class="hint-content"><pre>evens := []int{}
-for i := 1; i <= 10; i++ {
-    if i%2 == 0 {
-        evens = append(evens, i)
-    }
-}
-fmt.Println(evens)</pre></div></details>
-                <div class="expected"><div class="expected-title">Expected Output</div><pre>[2 4 6 8 10]</pre></div>
-            </div>
-            </noscript>
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
 
             <h3 id="challenges" style="color: var(--orange); margin-top: 2rem;">💪 Challenges</h3>
@@ -399,533 +303,7 @@ fmt.Println(evens)</pre></div></details>
 
             <!-- Challenges will be dynamically loaded -->
             <div id="challenges-container">
-
-            <!-- Fallback for no JS -->
-            <noscript>
-            <p style="color: var(--cyan); font-size: 0.85rem; margin: 1.5rem 0 0.5rem; font-weight: 600;">Block 1: Core Patterns</p>
-
-            <div class="exercise">
-                <h4>Challenge 1: Sum of Slice</h4>
-                <p>Write a function <code>func sum(numbers []int) int</code> that returns the sum of all numbers in a slice.</p>
-
-                <details>
-                    <summary>💡 Step 1: Create accumulator</summary>
-                    <div class="hint-content">
-<pre>total := 0</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 2: Loop and accumulate</summary>
-                    <div class="hint-content">
-<pre>for _, num := range numbers {
-    total += num
-}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func sum(numbers []int) int {
-    total := 0
-    for _, num := range numbers {
-        total += num
-    }
-    return total
-}</pre>
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>sum([]int{1, 2, 3, 4, 5}) → 15
-sum([]int{10, 20}) → 30</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Challenge 2: Count Evens</h4>
-                <p>Write a function <code>func countEvens(nums []int) int</code> that returns how many even numbers are in the slice.</p>
-
-                <details>
-                    <summary>💡 Step 1: Create counter</summary>
-                    <div class="hint-content">
-<pre>count := 0</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 2: Check if even with modulo</summary>
-                    <div class="hint-content">
-<pre>for _, num := range nums {
-    if num%2 == 0 {
-        count++
-    }
-}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func countEvens(nums []int) int {
-    count := 0
-    for _, num := range nums {
-        if num%2 == 0 {
-            count++
-        }
-    }
-    return count
-}</pre>
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>countEvens([]int{1, 2, 3, 4, 5, 6}) → 3
-countEvens([]int{1, 3, 5}) → 0
-countEvens([]int{2, 4, 6}) → 3</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Challenge 3: FizzBuzz</h4>
-                <p>Print numbers 1-20. For multiples of 3 print "Fizz", multiples of 5 print "Buzz", multiples of both print "FizzBuzz".</p>
-
-                <details>
-                    <summary>💡 Step 1: Loop 1 to 20</summary>
-                    <div class="hint-content">
-<pre>for i := 1; i <= 20; i++ {
-    // check conditions here
-}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 2: Check divisibility (order matters!)</summary>
-                    <div class="hint-content">
-<pre>if i%15 == 0 {       // Check 15 first (or 3 AND 5)
-    fmt.Println("FizzBuzz")
-} else if i%3 == 0 {
-    fmt.Println("Fizz")
-} else if i%5 == 0 {
-    fmt.Println("Buzz")
-} else {
-    fmt.Println(i)
-}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>for i := 1; i <= 20; i++ {
-    if i%15 == 0 {
-        fmt.Println("FizzBuzz")
-    } else if i%3 == 0 {
-        fmt.Println("Fizz")
-    } else if i%5 == 0 {
-        fmt.Println("Buzz")
-    } else {
-        fmt.Println(i)
-    }
-}</pre>
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Output (partial)</div>
-                    <pre>1
-2
-Fizz
-4
-Buzz
-Fizz
-7
-...
-FizzBuzz</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Challenge 4: Find Maximum</h4>
-                <p>Write a function <code>func max(nums []int) int</code> that returns the largest number in a slice.</p>
-
-                <details>
-                    <summary>💡 Step 1: Start with first element</summary>
-                    <div class="hint-content">
-<pre>maxNum := nums[0]</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 2: Update if bigger found</summary>
-                    <div class="hint-content">
-<pre>for _, num := range nums {
-    if num > maxNum {
-        maxNum = num
-    }
-}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func max(nums []int) int {
-    maxNum := nums[0]
-    for _, num := range nums {
-        if num > maxNum {
-            maxNum = num
-        }
-    }
-    return maxNum
-}</pre>
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>max([]int{3, 7, 2, 9, 1}) → 9
-max([]int{-5, -2, -10}) → -2</pre>
-                </div>
-            </div>
-
-            <!-- Block 2: Building & Filtering (5-7) -->
-            <p style="color: var(--cyan); font-size: 0.85rem; margin: 1.5rem 0 0.5rem; font-weight: 600;">Block 2: Building & Filtering</p>
-
-            <div class="exercise">
-                <h4>Challenge 5: Filter Positives</h4>
-                <p>Write a function <code>func filterPositives(nums []int) []int</code> that returns a new slice containing only the positive numbers (greater than 0).</p>
-
-                <details>
-                    <summary>💡 Step 1: Create empty result slice</summary>
-                    <div class="hint-content">
-<pre>result := []int{}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 2: Append if positive</summary>
-                    <div class="hint-content">
-<pre>for _, num := range nums {
-    if num > 0 {
-        result = append(result, num)
-    }
-}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func filterPositives(nums []int) []int {
-    result := []int{}
-    for _, num := range nums {
-        if num > 0 {
-            result = append(result, num)
-        }
-    }
-    return result
-}</pre>
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>filterPositives([]int{-2, 3, -1, 5, 0}) → [3, 5]
-filterPositives([]int{1, 2, 3}) → [1, 2, 3]
-filterPositives([]int{-1, -2}) → []</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Challenge 6: Find Index</h4>
-                <p>Write a function <code>func findIndex(nums []int, target int) int</code> that returns the index of target in the slice, or -1 if not found.</p>
-
-                <details>
-                    <summary>💡 Step 1: Loop with index</summary>
-                    <div class="hint-content">
-<pre>for i, num := range nums {
-    // check and return index
-}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 2: Return index when found</summary>
-                    <div class="hint-content">
-<pre>if num == target {
-    return i  // Return the INDEX, not true!
-}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func findIndex(nums []int, target int) int {
-    for i, num := range nums {
-        if num == target {
-            return i
-        }
-    }
-    return -1
-}</pre>
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>findIndex([]int{10, 20, 30, 40}, 30) → 2
-findIndex([]int{10, 20, 30, 40}, 50) → -1
-findIndex([]int{5, 5, 5}, 5) → 0</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Challenge 7: Count Occurrences</h4>
-                <p>Write a function <code>func countOccurrences(nums []int) map[int]int</code> that returns a map where each key is a number from the slice and each value is how many times it appears.</p>
-
-                <details>
-                    <summary>📖 Why this matters</summary>
-                    <div class="hint-content">
-                        This "counting with maps" pattern is <strong>fundamental</strong> for the Advanced section!<br>
-                        You'll use this exact pattern in:<br>
-                        • <strong>Advanced 1:</strong> Contains Duplicate (map as set)<br>
-                        • <strong>Advanced 4:</strong> Word Counter (count words)<br>
-                        • <strong>Advanced 5:</strong> Two Sum (map for lookup)<br><br>
-                        Master this pattern now - it's worth the investment!
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 1: Create the map</summary>
-                    <div class="hint-content">
-<pre>counts := make(map[int]int)</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 2: Loop and increment</summary>
-                    <div class="hint-content">
-<pre>for _, num := range nums {
-    counts[num]++  // This works even for new keys!
-}</pre>
-                        When a key doesn't exist, Go returns 0 (the zero value for int), then <code>++</code> increments it to 1.
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func countOccurrences(nums []int) map[int]int {
-    counts := make(map[int]int)
-    for _, num := range nums {
-        counts[num]++
-    }
-    return counts
-}</pre>
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>countOccurrences([]int{1, 2, 2, 3, 3, 3}) → map[1:1 2:2 3:3]
-countOccurrences([]int{5, 5, 5, 5}) → map[5:4]
-countOccurrences([]int{1, 2, 3}) → map[1:1 2:1 3:1]</pre>
-                </div>
-            </div>
-
-            <!-- Block 3: Two-Pointer Foundation (8-9) -->
-            <p style="color: var(--cyan); font-size: 0.85rem; margin: 1.5rem 0 0.5rem; font-weight: 600;">Block 3: Two-Pointer Foundation</p>
-
-            <div class="exercise">
-                <h4>Challenge 8: Swap Elements</h4>
-                <p>Write a function <code>func swapElements(nums []int, i int, j int)</code> that swaps the elements at positions i and j in the slice.</p>
-
-                <details>
-                    <summary>💡 New Concept: Simultaneous Assignment</summary>
-                    <div class="hint-content">
-                        Go lets you swap two variables in one line without a temp variable:<br><br>
-                        <code>a, b = b, a</code><br><br>
-                        This works because Go evaluates the right side first, then assigns to the left side.<br><br>
-                        For arrays: <code>nums[i], nums[j] = nums[j], nums[i]</code>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 The one-liner</summary>
-                    <div class="hint-content">
-<pre>nums[i], nums[j] = nums[j], nums[i]</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func swapElements(nums []int, i int, j int) {
-    nums[i], nums[j] = nums[j], nums[i]
-}</pre>
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Behavior</div>
-                    <pre>nums := []int{1, 2, 3, 4, 5}
-swapElements(nums, 0, 4)
-fmt.Println(nums) → [5, 2, 3, 4, 1]</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Challenge 9: Palindrome Checker</h4>
-                <p>Write a function <code>func isPalindrome(nums []int) bool</code> that checks if a slice reads the same forwards and backwards using two pointers.</p>
-
-                <details>
-                    <summary>📖 What's a palindrome?</summary>
-                    <div class="hint-content">
-                        A <strong>palindrome</strong> reads the same forwards and backwards:<br>
-                        • [1, 2, 3, 2, 1] → palindrome ✅<br>
-                        • [5, 5] → palindrome ✅<br>
-                        • [1, 2, 3] → reads [3, 2, 1] backwards ❌
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 1: Two-pointer loop structure</summary>
-                    <div class="hint-content">
-<pre>for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {
-    // compare elements
-}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 2: Compare and return early if mismatch</summary>
-                    <div class="hint-content">
-<pre>if nums[i] != nums[j] {
-    return false  // Not a palindrome!
-}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func isPalindrome(nums []int) bool {
-    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {
-        if nums[i] != nums[j] {
-            return false
-        }
-    }
-    return true
-}</pre>
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>isPalindrome([]int{1, 2, 3, 2, 1}) → true
-isPalindrome([]int{1, 2, 3, 4, 5}) → false
-isPalindrome([]int{5, 5}) → true</pre>
-                </div>
-            </div>
-
-            <!-- Block 4: Two-Pointer Application (10-11) -->
-            <p style="color: var(--cyan); font-size: 0.85rem; margin: 1.5rem 0 0.5rem; font-weight: 600;">Block 4: Two-Pointer Application</p>
-
-            <div class="exercise">
-                <h4>Challenge 10: Reverse a Slice</h4>
-                <p>Write a function <code>func reverseSlice(nums []int) []int</code> that reverses a slice in place. Combines swap (Challenge 8) + two-pointer loop (Challenge 9)!</p>
-
-                <details>
-                    <summary>💡 Combine the patterns</summary>
-                    <div class="hint-content">
-                        Use the two-pointer loop from Challenge 9:<br>
-                        <code>for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1</code><br><br>
-                        But instead of comparing, <strong>swap</strong> like Challenge 8:<br>
-                        <code>nums[i], nums[j] = nums[j], nums[i]</code>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func reverseSlice(nums []int) []int {
-    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {
-        nums[i], nums[j] = nums[j], nums[i]
-    }
-    return nums
-}</pre>
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>reverseSlice([]int{1, 2, 3, 4, 5}) → [5, 4, 3, 2, 1]
-reverseSlice([]int{10, 20}) → [20, 10]</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Challenge 11: First Duplicate Index</h4>
-                <p>Write a function <code>func firstDuplicateIndex(nums []int) int</code> that returns the index of the first number that has appeared before, or -1 if all are unique.</p>
-
-                <details>
-                    <summary>📖 Why this matters</summary>
-                    <div class="hint-content">
-                        This is the <strong>critical bridge</strong> to Advanced exercises!<br><br>
-                        Pattern: Map lookup + early return with index<br>
-                        • <strong>Advanced 1:</strong> Same pattern, returns bool<br>
-                        • <strong>Advanced 5:</strong> Same pattern, looking for complement
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 1: Create map to track seen numbers</summary>
-                    <div class="hint-content">
-<pre>seen := make(map[int]bool)</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 2: Loop with index, check then add</summary>
-                    <div class="hint-content">
-<pre>for i, num := range nums {
-    if seen[num] {
-        return i  // Found duplicate, return its index!
-    }
-    seen[num] = true
-}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func firstDuplicateIndex(nums []int) int {
-    seen := make(map[int]bool)
-    for i, num := range nums {
-        if seen[num] {
-            return i
-        }
-        seen[num] = true
-    }
-    return -1
-}</pre>
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>firstDuplicateIndex([]int{1, 2, 3, 2}) → 3
-firstDuplicateIndex([]int{1, 1, 2, 3}) → 1
-firstDuplicateIndex([]int{1, 2, 3}) → -1</pre>
-                </div>
-            </div>
-            </noscript>
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div><!-- end challenges-container -->
 
             <h3 id="advanced" style="color: var(--purple); margin-top: 2rem;">🚀 Advanced</h3>
@@ -945,594 +323,7 @@ firstDuplicateIndex([]int{1, 2, 3}) → -1</pre>
 
             <!-- Advanced exercises will be dynamically loaded -->
             <div id="advanced-exercises-container">
-
-            <!-- Fallback: Static exercise shown if JS fails -->
-            <noscript>
-            <div class="exercise">
-                <h4>Advanced 1: Contains Duplicate</h4>
-                <p>Write a function <code>func containsDuplicate(nums []int) bool</code> that returns <code>true</code> if any number appears more than once in the slice, <code>false</code> if all numbers are unique.</p>
-                
-                <details>
-                    <summary>📖 Pre-reading: The "Have I Seen This?" Pattern</summary>
-                    <div class="hint-content">
-                        <strong>The Problem:</strong> How do you know if you've seen something before?<br><br>
-                        
-                        <strong>Naive approach (slow):</strong><br>
-                        For each number, check every other number to see if it matches → O(n²)<br>
-                        For 1000 numbers, that's 1,000,000 comparisons! 🐌<br><br>
-                        
-                        <strong>Smart approach (fast):</strong><br>
-                        Use a map to remember what you've seen → O(n)<br>
-                        For 1000 numbers, that's just 1000 operations! 🚀<br><br>
-                        
-                        <strong>The Pattern:</strong><br>
-                        1. Create an empty map to track what you've seen<br>
-                        2. For each element, check: "Have I seen this before?"<br>
-                        3. If yes → found a duplicate!<br>
-                        4. If no → remember it and continue
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>💡 Hint 1: What to track</summary>
-                    <div class="hint-content">
-                        You need a map to remember which numbers you've already seen.<br><br>
-                        
-                        What should the map store?<br>
-                        • <strong>Key:</strong> the number itself (<code>int</code>)<br>
-                        • <strong>Value:</strong> we just need to know it exists... so <code>bool</code> works!<br><br>
-                        
-                        Create it with: <code>seen := make(map[int]bool)</code>
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>💡 Hint 2: Checking if you've seen it</summary>
-                    <div class="hint-content">
-                        For each number in the slice:<br>
-                        • Check: <code>if seen[num]</code> - is it in the map?<br>
-                        • If <code>true</code>, you've seen it before → return <code>true</code> (found duplicate!)<br>
-                        • If <code>false</code>, mark it as seen: <code>seen[num] = true</code><br><br>
-                        
-                        This works because when a key doesn't exist in a map, Go returns the zero value for that type. For <code>bool</code>, the zero value is <code>false</code>.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>💡 Hint 3: What to return</summary>
-                    <div class="hint-content">
-                        If you make it through the entire loop without finding a duplicate, what does that mean?<br><br>
-                        
-                        All numbers are unique! Return <code>false</code> at the end.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution with Explanation</summary>
-                    <div class="hint-content">
-<pre>func containsDuplicate(nums []int) bool {
-    // Map to track what we've seen
-    seen := make(map[int]bool)
-    
-    // Check each number
-    for _, num := range nums {
-        // Have we seen this before?
-        if seen[num] {
-            // Yes! Found a duplicate
-            return true
-        }
-        // No, remember it for later
-        seen[num] = true
-    }
-    
-    // Made it through - no duplicates
-    return false
-}</pre>
-                        <strong>Why this works:</strong><br>
-                        The map acts as our "memory". Each time we see a number, we check our memory. If it's already there, we found a duplicate!<br><br>
-                        
-                        <strong>Note:</strong> We can simplify <code>if seen[num]</code> instead of <code>if _, ok := seen[num]; ok</code> because:<br>
-                        • If the key exists, <code>seen[num]</code> returns <code>true</code><br>
-                        • If the key doesn't exist, <code>seen[num]</code> returns <code>false</code> (the zero value for bool)<br>
-                        • This works perfectly for our use case!<br><br>
-                        
-                        <strong>Time complexity:</strong> O(n) - we only loop through once<br>
-                        <strong>Space complexity:</strong> O(n) - worst case, store all unique numbers in map
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>containsDuplicate([]int{1, 2, 3, 1}) → true
-containsDuplicate([]int{1, 2, 3, 4}) → false
-containsDuplicate([]int{1, 1, 1, 1}) → true</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Advanced 2: Remove Duplicates from Sorted Array</h4>
-                <p>Write a function <code>func removeDuplicates(nums []int) int</code> that removes duplicates from a sorted slice <strong>in-place</strong>. Return the number of unique elements. The first part of the slice should contain the unique elements.</p>
-                
-                <details>
-                    <summary>📖 Pre-reading: The Slow/Fast Pointer Pattern</summary>
-                    <div class="hint-content">
-                        <strong>The Problem:</strong> Given <code>[1,1,2,2,3]</code>, modify it to <code>[1,2,3,_,_]</code> and return <code>3</code><br><br>
-                        
-                        <strong>Key insight:</strong> The array is <strong>sorted</strong>, so duplicates are next to each other!<br><br>
-                        
-                        <strong>The Slow/Fast Pattern:</strong><br>
-                        This is a NEW variant of two-pointers you haven't seen yet:<br>
-                        • <strong>Both pointers start at different positions</strong> (unlike i/j starting at opposite ends)<br>
-                        • <strong>They move at different speeds</strong> (unlike i/j both moving every iteration)<br>
-                        • One pointer <strong>reads</strong>, the other <strong>writes</strong><br><br>
-                        
-                        <strong>Code structure pattern:</strong><br>
-<pre>slow := 0  // Initialize OUTSIDE loop (write position)
-
-for fast := 1; fast < len(nums); fast++ {  // Initialize IN loop (read position)
-    // Compare nums[fast] with nums[slow]
-    // If different: move slow, write value
-    // If same: do nothing
-    // fast moves automatically every iteration
-}</pre>
-                        
-                        <strong>Why this structure?</strong><br>
-                        • <code>slow</code> only moves when we find something to write (conditional)<br>
-                        • <code>fast</code> always moves to keep reading (automatic)<br>
-                        • This is different from <code>i, j</code> in challenges where both moved together!<br><br>
-                        
-                        <strong>Example walkthrough:</strong> [1,1,2,2,3]<br>
-                        • Start: slow=0, fast=1<br>
-                        • nums[1]=1 same as nums[0]=1? Yes → skip (only fast moves)<br>
-                        • fast=2: nums[2]=2 different from nums[0]=1? Yes → slow++, write nums[2] to nums[1]<br>
-                        • fast=3: nums[3]=2 same as nums[1]=2? Yes → skip<br>
-                        • fast=4: nums[4]=3 different from nums[1]=2? Yes → slow++, write nums[4] to nums[2]<br>
-                        • Result: [1,2,3,2,3], return slow+1 = 3
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>💡 Hint 1: Edge cases and setup</summary>
-                    <div class="hint-content">
-                        <strong>Handle edge cases first:</strong><br>
-                        What if the array is empty? Add this at the start:<br>
-                        <code>if len(nums) == 0 { return 0 }</code><br><br>
-                        
-                        <strong>Setup:</strong><br>
-                        Initialize <code>slow := 0</code> before the loop (first element is always unique)<br>
-                        Start your loop with <code>fast := 1</code> (compare from second element onward)
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>💡 Hint 2: When to write</summary>
-                    <div class="hint-content">
-                        Loop while <code>fast < len(nums)</code><br><br>
-                        
-                        At each step, compare <code>nums[fast]</code> with <code>nums[slow]</code>:<br>
-                        • If they're <strong>different</strong>: found a new unique value!<br>
-                          - Increment <code>slow</code><br>
-                          - Write <code>nums[fast]</code> to <code>nums[slow]</code><br>
-                        • If they're the <strong>same</strong>: it's a duplicate, skip it<br>
-                        • Always increment <code>fast</code> to keep reading
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>💡 Hint 3: What to return</summary>
-                    <div class="hint-content">
-                        After the loop, <code>slow</code> points to the last unique element's index.<br><br>
-                        
-                        How many unique elements are there?<br>
-                        Return <code>slow + 1</code> (because indices start at 0!)
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution with Explanation</summary>
-                    <div class="hint-content">
-<pre>func removeDuplicates(nums []int) int {
-    // Handle edge cases
-    if len(nums) == 0 {
-        return 0
-    }
-    
-    // slow tracks where to write next unique value
-    slow := 0
-    
-    // fast reads through the array
-    for fast := 1; fast < len(nums); fast++ {
-        // Found a new unique value?
-        if nums[fast] != nums[slow] {
-            slow++                    // Move write position
-            nums[slow] = nums[fast]   // Write the unique value
-        }
-        // If same, just skip (fast++ happens automatically)
-    }
-    
-    // slow points to last unique element
-    // Number of unique elements is slow + 1
-    return slow + 1
-}</pre>
-                        <strong>Visual walkthrough for [1,1,2,2,3]:</strong><br><br>
-                        
-                        <strong>Start:</strong> slow=0, fast=1<br>
-                        Array: [<strong>1</strong>,1,2,2,3]<br><br>
-                        
-                        <strong>Step 1:</strong> nums[1]=1, nums[0]=1 → same, skip<br>
-                        slow=0, fast=2<br><br>
-                        
-                        <strong>Step 2:</strong> nums[2]=2, nums[0]=1 → different!<br>
-                        slow++ → slow=1<br>
-                        nums[1] = nums[2] → nums[1] = 2<br>
-                        Array: [1,<strong>2</strong>,2,2,3]<br>
-                        fast=3<br><br>
-                        
-                        <strong>Step 3:</strong> nums[3]=2, nums[1]=2 → same, skip<br>
-                        slow=1, fast=4<br><br>
-                        
-                        <strong>Step 4:</strong> nums[4]=3, nums[1]=2 → different!<br>
-                        slow++ → slow=2<br>
-                        nums[2] = nums[4] → nums[2] = 3<br>
-                        Array: [1,2,<strong>3</strong>,2,3]<br><br>
-                        
-                        <strong>Done:</strong> return slow+1 = 3<br>
-                        First 3 elements are unique: [1,2,3]<br><br>
-                        
-                        <strong>Time complexity:</strong> O(n) - one pass through array<br>
-                        <strong>Space complexity:</strong> O(1) - only use two pointers
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>removeDuplicates([]int{1, 1, 2}) → 2 (array becomes [1, 2, _])
-removeDuplicates([]int{0, 0, 1, 1, 2, 2, 3}) → 4 (array becomes [0, 1, 2, 3, _, _, _])
-removeDuplicates([]int{1, 2, 3}) → 3 (no duplicates)</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Advanced 3: Reverse a String</h4>
-                <p>Now write <code>func reverse(s string) string</code> that reverses any string, including Unicode characters like emojis.</p>
-                
-                <details>
-                    <summary>📖 Pre-reading: Strings vs Runes in Go</summary>
-                    <div class="hint-content">
-                        <strong>The Problem:</strong> In Go, a <code>string</code> is a sequence of <strong>bytes</strong>, not characters!<br><br>
-                        
-                        For ASCII (a-z, 0-9), one character = one byte. Easy!<br>
-                        But for Unicode (emoji 🎉, Chinese 世界, Arabic, etc.), one character can be 2-4 bytes.<br><br>
-                        
-                        <strong>Example:</strong><br>
-                        <code>"Hello"</code> = 5 bytes = 5 characters ✅<br>
-                        <code>"世界"</code> = 6 bytes but only 2 characters! ⚠️<br>
-                        <code>"🎉"</code> = 4 bytes but only 1 character! ⚠️<br><br>
-                        
-                        <strong>The Solution: Runes</strong><br>
-                        A <code>rune</code> is Go's type for a Unicode character (actually an <code>int32</code>).<br>
-                        Converting to <code>[]rune</code> splits the string into actual characters, not bytes.<br><br>
-                        
-                        <strong>Why you can't just reverse bytes:</strong><br>
-                        "Hi🎉" as bytes = [72, 105, 240, 159, 142, 137]<br>
-                        Reverse bytes = [137, 142, 159, 240, 105, 72] = gibberish! ❌<br>
-                        Must reverse as runes = ['🎉', 'i', 'H'] = "🎉iH" ✅<br><br>
-                        
-                        📚 <strong>Learn more:</strong><br>
-                        • <a href="https://go.dev/blog/strings" target="_blank" style="color: var(--green-bright);">Strings, bytes, runes (Go blog)</a>
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Combine what you learned:<br>
-                        1. Convert string to <code>[]rune</code> with <code>[]rune(s)</code> - this handles Unicode properly<br>
-                        2. Use the two-pointer reversal technique from Challenge 7: <code>for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1</code><br>
-                        3. Swap elements: <code>runes[i], runes[j] = runes[j], runes[i]</code><br>
-                        4. Convert back to string with <code>string(runes)</code>
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution with Step-by-Step Explanation</summary>
-                    <div class="hint-content">
-<pre>func reverse(s string) string {
-    // Step 1: Convert to runes (handles Unicode properly)
-    runes := []rune(s)
-    
-    // Step 2: Two-pointer reversal
-    for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-        // Swap characters at positions i and j
-        runes[i], runes[j] = runes[j], runes[i]
-    }
-    
-    // Step 3: Convert back to string
-    return string(runes)
-}</pre>
-                        <strong>Visual walkthrough for "Go":</strong><br>
-                        Start: <code>['G', 'o']</code>, i=0, j=1<br>
-                        Swap: <code>['o', 'G']</code><br>
-                        Update: i=1, j=0 → i < j is false, stop ✅<br><br>
-                        
-                        <strong>Visual walkthrough for "Hi🎉":</strong><br>
-                        Start: <code>['H', 'i', '🎉']</code>, i=0, j=2<br>
-                        Iteration 1: Swap positions 0,2 → <code>['🎉', 'i', 'H']</code><br>
-                        Update: i=1, j=1 → i < j is false, stop ✅<br><br>
-                        
-                        <strong>Key Go syntax:</strong><br>
-                        • <code>for a, b := x, y</code> - declare multiple variables<br>
-                        • <code>a, b = b, a</code> - simultaneous swap (no temp variable needed!)<br>
-                        • <code>string(runes)</code> - convert []rune back to string<br><br>
-                        
-                        📚 <strong>Learn more:</strong><br>
-                        • <a href="https://go.dev/ref/spec#For_statements" target="_blank" style="color: var(--green-bright);">For loop syntax (Go spec)</a><br>
-                        • <a href="https://go.dev/ref/spec#Assignments" target="_blank" style="color: var(--green-bright);">Assignment statements</a>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>reverse("hello") → "olleh"
-reverse("世界") → "界世"
-reverse("Go🚀") → "🚀oG"</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Advanced 4: Word Counter</h4>
-                <p>Write <code>func wordCount(s string) map[string]int</code> that counts how many times each word appears in a string.</p>
-
-                <details>
-                    <summary>💡 Step 1: Import and create map</summary>
-                    <div class="hint-content">
-<pre>import "strings"
-
-counts := make(map[string]int)</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 2: Split string into words</summary>
-                    <div class="hint-content">
-<pre>words := strings.Fields(s)
-// "hello world" → ["hello", "world"]</pre>
-                        <code>strings.Fields</code> splits on any whitespace and handles multiple spaces.
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 3: Loop and count</summary>
-                    <div class="hint-content">
-<pre>for _, word := range words {
-    counts[word]++  // Increment count for this word
-}</pre>
-                        The <code>++</code> works even for new keys (Go returns 0, then increments to 1).
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>import "strings"
-
-func wordCount(s string) map[string]int {
-    counts := make(map[string]int)
-    for _, word := range strings.Fields(s) {
-        counts[word]++
-    }
-    return counts
-}</pre>
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>wordCount("the quick brown fox jumps over the lazy dog")
-→ map[brown:1 dog:1 fox:1 jumps:1 lazy:1 over:1 quick:1 the:2]</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Advanced 5: Two Sum</h4>
-                <p>Given a slice of ints and a target, return indices of two numbers that add up to the target. <code>func twoSum(nums []int, target int) []int</code></p>
-
-                <details>
-                    <summary>📖 Pre-reading: The Complement Pattern</summary>
-                    <div class="hint-content">
-                        <strong>The Key Insight:</strong><br>
-                        If target = 9 and current number = 2, we need to find 7 (the <em>complement</em>).<br>
-                        Instead of searching the whole array for 7, just ask: "Have I seen 7 before?"<br>
-                        Maps make this lookup instant!<br><br>
-
-                        <strong>Why O(n) instead of O(n²):</strong><br>
-                        • Naive: For each number, check every other number → n × n comparisons<br>
-                        • Smart: For each number, check map once → n lookups
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 1: Create the map</summary>
-                    <div class="hint-content">
-<pre>seen := make(map[int]int)  // value → index</pre>
-                        We store value→index because we need to return the INDEX, not just the value.
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 2: Loop with index</summary>
-                    <div class="hint-content">
-<pre>for i, num := range nums {
-    complement := target - num
-    // check and store here
-}</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 3: Check then store (order matters!)</summary>
-                    <div class="hint-content">
-<pre>// Check FIRST: have we seen the complement?
-if j, ok := seen[complement]; ok {
-    return []int{j, i}  // Found it!
-}
-// Store AFTER: remember this number
-seen[num] = i</pre>
-                        Check before storing to avoid matching a number with itself.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution with Visual Walkthrough</summary>
-                    <div class="hint-content">
-<pre>func twoSum(nums []int, target int) []int {
-    // Map to remember: number → its index
-    seen := make(map[int]int)
-    
-    // Loop through each number
-    for i, num := range nums {
-        // What number would complete the sum?
-        complement := target - num
-        
-        // Have we seen that number before?
-        if j, ok := seen[complement]; ok {
-            // Yes! Return both indices
-            return []int{j, i}
-        }
-        
-        // No, remember this number for later
-        seen[num] = i
-    }
-    
-    // No solution found
-    return nil
-}</pre>
-                        <strong>Visual walkthrough:</strong><br>
-                        Input: <code>nums = [2, 7, 11, 15]</code>, <code>target = 9</code><br><br>
-                        
-                        <strong>Iteration 1:</strong> i=0, num=2<br>
-                        • complement = 9 - 2 = 7<br>
-                        • Is 7 in seen? No<br>
-                        • Add to map: seen = {2: 0}<br><br>
-                        
-                        <strong>Iteration 2:</strong> i=1, num=7<br>
-                        • complement = 9 - 7 = 2<br>
-                        • Is 2 in seen? Yes! (at index 0) ✅<br>
-                        • Return [0, 1]<br><br>
-                        
-                        <strong>Why this works:</strong><br>
-                        When we're at 7, we look back and say "I've seen 2 before at index 0"<br>
-                        2 + 7 = 9, so we return indices [0, 1]!<br><br>
-                        
-                        <strong>Key concepts used:</strong><br>
-                        • <code>make(map[int]int)</code> - create empty map<br>
-                        • <code>if j, ok := map[key]; ok</code> - check if key exists<br>
-                        • <code>map[key] = value</code> - store in map<br>
-                        • <code>[]int{a, b}</code> - create slice literal<br><br>
-                        
-                        📚 <strong>Learn more:</strong><br>
-                        • <a href="https://go.dev/blog/maps" target="_blank" style="color: var(--green-bright);">Go maps in action</a><br>
-                        • <a href="https://pkg.go.dev/builtin#make" target="_blank" style="color: var(--green-bright);">The make function</a>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>twoSum([]int{2, 7, 11, 15}, 9) → [0, 1]
-twoSum([]int{3, 2, 4}, 6) → [1, 2]
-twoSum([]int{3, 3}, 6) → [0, 1]</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Advanced 6: Sliding Window Maximum</h4>
-                <p>Given an array of integers and a number k, find the maximum sum of any contiguous subarray of size k. <code>func maxSumSubarray(nums []int, k int) int</code></p>
-
-                <details>
-                    <summary>📖 Pre-reading: The Sliding Window Pattern</summary>
-                    <div class="hint-content">
-                        <strong>The Problem:</strong> Find something optimal in a contiguous subarray<br><br>
-                        <strong>Naive approach (slow):</strong><br>
-                        Check every possible subarray - O(n²) or worse 🐌<br><br>
-                        <strong>Smart approach (fast):</strong><br>
-                        Use a "window" that slides through the array - O(n) 🚀<br><br>
-                        <strong>Two Types:</strong><br>
-                        • <strong>Fixed-size:</strong> Window size k stays constant (add new, remove old)<br>
-                        • <strong>Variable-size:</strong> Window grows and shrinks based on conditions
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 1: Calculate first window</summary>
-                    <div class="hint-content">
-<pre>// Sum the first k elements
-windowSum := 0
-for i := 0; i < k; i++ {
-    windowSum += nums[i]
-}
-maxSum := windowSum</pre>
-                    </div>
-                </details>
-
-                <details>
-                    <summary>💡 Step 2: Slide the window</summary>
-                    <div class="hint-content">
-<pre>// For each new position, add the new element and remove the old
-for i := k; i < len(nums); i++ {
-    windowSum += nums[i] - nums[i-k]  // Add new, remove old
-    if windowSum > maxSum {
-        maxSum = windowSum
-    }
-}</pre>
-                        The key insight: we don't re-sum the whole window, just adjust it!
-                    </div>
-                </details>
-
-                <details>
-                    <summary>✅ Solution with Visual Walkthrough</summary>
-                    <div class="hint-content">
-<pre>func maxSumSubarray(nums []int, k int) int {
-    if len(nums) < k {
-        return 0
-    }
-
-    // Calculate sum of first window
-    windowSum := 0
-    for i := 0; i < k; i++ {
-        windowSum += nums[i]
-    }
-    maxSum := windowSum
-
-    // Slide the window
-    for i := k; i < len(nums); i++ {
-        windowSum += nums[i] - nums[i-k]  // Add new, remove old
-        if windowSum > maxSum {
-            maxSum = windowSum
-        }
-    }
-    return maxSum
-}</pre>
-                        <strong>Visual walkthrough:</strong><br>
-                        Input: <code>nums = [2, 1, 5, 1, 3, 2]</code>, <code>k = 3</code><br><br>
-
-                        <strong>Initial window [0:3]:</strong> [2, 1, 5] → sum = 8<br>
-                        <strong>Slide to [1:4]:</strong> [1, 5, 1] → 8 + 1 - 2 = 7<br>
-                        <strong>Slide to [2:5]:</strong> [5, 1, 3] → 7 + 3 - 1 = 9 ← max!<br>
-                        <strong>Slide to [3:6]:</strong> [1, 3, 2] → 9 + 2 - 5 = 6<br><br>
-
-                        <strong>Why O(n)?</strong><br>
-                        Each element is added once and removed once = 2n operations = O(n)
-                    </div>
-                </details>
-
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>maxSumSubarray([]int{2, 1, 5, 1, 3, 2}, 3) → 9 (subarray [5,1,3])
-maxSumSubarray([]int{2, 3, 4, 1, 5}, 2) → 7 (subarray [3,4])
-maxSumSubarray([]int{1, 1, 1, 1}, 2) → 2</pre>
-                </div>
-            </div>
-            </noscript>
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div><!-- end advanced-exercises-container -->
 
             <div class="tip">
@@ -1667,25 +458,24 @@ maxSumSubarray([]int{1, 1, 1, 1}, 2) → 2</pre>
             },
             hints: [
                 {
-                    title: '💡 Hint 1: What to track',
-                    content: `You need a map to remember which elements you've already seen.<br><br>
-                        What should the map store?<br>
-                        • <strong>Key:</strong> the element itself<br>
-                        • <strong>Value:</strong> we just need to know it exists... so <code>bool</code> works!<br><br>
-                        Create it with: <code>seen := make(map[T]bool)</code> where T is your element type`
+                    title: '🤔 Think about it',
+                    content: `As you go through the elements, how would you remember which ones you've already seen? What data structure gives you fast lookup to check "have I seen this before?"`
                 },
                 {
-                    title: '💡 Hint 2: Checking if you\'ve seen it',
-                    content: `For each element in the collection:<br>
-                        • Check: <code>if seen[element]</code> - is it in the map?<br>
-                        • If <code>true</code>, you've seen it before → found duplicate!<br>
-                        • If <code>false</code>, mark it as seen: <code>seen[element] = true</code><br><br>
-                        This works because when a key doesn't exist in a map, Go returns the zero value. For <code>bool</code>, that's <code>false</code>.`
+                    title: '💡 Hint',
+                    content: `Use a map as your "memory" - the key is the element, and you just need to know it exists (what simple type represents yes/no?). For each element: first check if it's in your memory, then add it if not. If you make it through all elements without finding a duplicate, they must all be unique.`
                 },
                 {
-                    title: '💡 Hint 3: What to return',
-                    content: `If you make it through the entire loop without finding a duplicate, what does that mean?<br><br>
-                        All elements are unique! Return the appropriate boolean based on what the function asks.`
+                    title: '👀 Show me',
+                    content: `<pre>seen := make(map[int]bool)
+
+for _, num := range nums {
+    if seen[num] {
+        return true  // Duplicate found!
+    }
+    seen[num] = true
+}
+return false  // All unique</pre>`
                 }
             ]
         },
@@ -1710,26 +500,23 @@ for fast := 1; fast < len(items); fast++ {  // Initialize IN loop (read position
             },
             hints: [
                 {
-                    title: '💡 Hint 1: Edge cases and setup',
-                    content: `<strong>Handle edge cases first:</strong><br>
-                        What if the collection is empty? Return 0<br><br>
-                        <strong>Setup:</strong><br>
-                        Initialize <code>slow := 0</code> before the loop (first element is always unique)<br>
-                        Start your loop with <code>fast := 1</code> (compare from second element onward)`
+                    title: '🤔 Think about it',
+                    content: `If the array is already sorted, where will duplicates be? If you're keeping track of the 'last unique' position, what do you do when you find a new unique value?`
                 },
                 {
-                    title: '💡 Hint 2: When to write',
-                    content: `At each step, compare the element at <code>fast</code> with element at <code>slow</code>:<br>
-                        • If they're <strong>different</strong>: found a new unique value!<br>
-                          - Increment <code>slow</code><br>
-                          - Write element at <code>fast</code> to position <code>slow</code><br>
-                        • If they're the <strong>same</strong>: it's a duplicate, skip it`
+                    title: '💡 Hint',
+                    content: `Use two pointers: 'slow' marks where to write the next unique value, 'fast' scans ahead. When fast finds something different from what slow points to, you've found a new unique value - increment slow and copy it there.`
                 },
                 {
-                    title: '💡 Hint 3: What to return',
-                    content: `After the loop, <code>slow</code> points to the last unique element's index.<br><br>
-                        How many unique elements are there?<br>
-                        Return <code>slow + 1</code> (because indices start at 0!)`
+                    title: '👀 Show me',
+                    content: `<pre>slow := 0
+for fast := 1; fast < len(nums); fast++ {
+    if nums[fast] != nums[slow] {
+        slow++
+        nums[slow] = nums[fast]
+    }
+}
+return slow + 1</pre>`
                 }
             ]
         },
@@ -1749,29 +536,41 @@ for fast := 1; fast < len(items); fast++ {  // Initialize IN loop (read position
             },
             hints: [
                 {
+                    title: '🤔 Think about it',
+                    content: `Why can't you just index a string directly with [i]? What's special about strings in Go when dealing with non-ASCII characters?`
+                },
+                {
                     title: '💡 Hint',
-                    content: `Combine what you learned:<br>
-                        1. Convert string to <code>[]rune</code> with <code>[]rune(s)</code> - this handles Unicode properly<br>
-                        2. Use the two-pointer reversal technique: <code>for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1</code><br>
-                        3. Swap elements: <code>runes[i], runes[j] = runes[j], runes[i]</code><br>
-                        4. Convert back to string with <code>string(runes)</code>`
+                    content: `Convert to []rune to handle Unicode properly. Then use the two-pointer swap pattern you learned - swap from both ends working inward.`
+                },
+                {
+                    title: '👀 Show me',
+                    content: `<pre>runes := []rune(s)
+for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+    runes[i], runes[j] = runes[j], runes[i]
+}
+return string(runes)</pre>`
                 }
             ]
         },
         advanced_4: {
             hints: [
                 {
-                    title: '💡 New Concept: strings.Fields()',
-                    content: `Go's <code>strings</code> package has useful functions. You need to import it:<br>
-                        <code>import "strings"</code><br><br>
-                        <code>strings.Fields(s)</code> splits a string on any whitespace and returns <code>[]string</code><br>
-                        Example: <code>strings.Fields("hello world")</code> → <code>["hello", "world"]</code>`
+                    title: '🤔 Think about it',
+                    content: `What's the pattern for counting things? What data structure lets you track 'how many of each thing' efficiently?`
                 },
                 {
                     title: '💡 Hint',
-                    content: `1. Create a map with the appropriate types<br>
-                        2. Loop through your collection<br>
-                        3. Increment the count: <code>counts[item]++</code>`
+                    content: `First split the string into words (check the strings package for a function that splits on whitespace). Then use a map where keys are words and values are counts - what operation increases a map value?`
+                },
+                {
+                    title: '👀 Show me',
+                    content: `<pre>words := strings.Fields(s)
+counts := make(map[string]int)
+for _, word := range words {
+    counts[word]++
+}
+return counts</pre>`
                 }
             ]
         },
@@ -1789,18 +588,23 @@ for fast := 1; fast < len(items); fast++ {  // Initialize IN loop (read position
             },
             hints: [
                 {
-                    title: '💡 Strategy: The Map Lookup Pattern',
-                    content: `For each element, ask: "Have I seen the element that would complete this sum?"<br>
-                        If target is 9 and current element is 2, look for 7 in your map.<br>
-                        If found → return both indices!<br>
-                        If not → remember this element and its index for later`
+                    title: '🤔 Think about it',
+                    content: `For each number, what other number would you need to find to reach the target? Instead of searching the whole array for it, how could you instantly check if you've seen it?`
                 },
                 {
                     title: '💡 Hint',
-                    content: `1. Create a map: <code>seen := make(map[int]int)</code> (element → index)<br>
-                        2. For each element, calculate: <code>complement := target - element</code><br>
-                        3. Check: <code>if j, ok := seen[complement]; ok { return []int{j, i} }</code><br>
-                        4. Store current: <code>seen[element] = i</code>`
+                    content: `The complement is <code>target - current</code>. Use a map to remember numbers you've seen AND their indices (since you need to return indices). Check for the complement before adding the current number to your map.`
+                },
+                {
+                    title: '👀 Show me',
+                    content: `<pre>seen := make(map[int]int)
+for i, num := range nums {
+    complement := target - num
+    if j, ok := seen[complement]; ok {
+        return []int{j, i}
+    }
+    seen[num] = i
+}</pre>`
                 }
             ]
         },
@@ -1822,31 +626,28 @@ for fast := 1; fast < len(items); fast++ {  // Initialize IN loop (read position
             },
             hints: [
                 {
-                    title: '💡 Fixed Window Pattern',
-                    content: `<strong>Step 1:</strong> Calculate initial window sum/state<br>
-<pre>for i := 0; i < k; i++ {
-    windowSum += nums[i]
-}</pre>
-                        <strong>Step 2:</strong> Slide the window<br>
-<pre>for i := k; i < len(nums); i++ {
-    windowSum += nums[i] - nums[i-k]  // Add new, remove old
-    // Update max/min as needed
-}</pre>`
+                    title: '🤔 Think about it',
+                    content: `If you've already calculated the sum for elements 0-3, do you really need to recalculate everything for elements 1-4? What operation can give you the new sum efficiently?`
                 },
                 {
-                    title: '💡 Variable Window Pattern',
-                    content: `<strong>Template:</strong><br>
-<pre>left := 0
-for right := 0; right < len(nums); right++ {
-    // Expand: add nums[right] to window state
+                    title: '💡 Hint',
+                    content: `For fixed windows: add the new element entering, subtract the element leaving. Think of it as the window 'sliding' right - one element comes in, one goes out. Track your max/min as you slide.`
+                },
+                {
+                    title: '👀 Show me',
+                    content: `<pre>// Initial window
+windowSum := 0
+for i := 0; i < k; i++ {
+    windowSum += nums[i]
+}
+maxSum := windowSum
 
-    // Shrink: while condition violated
-    for /* condition */ {
-        // Remove nums[left] from window state
-        left++
+// Slide the window
+for i := k; i < len(nums); i++ {
+    windowSum += nums[i] - nums[i-k]
+    if windowSum > maxSum {
+        maxSum = windowSum
     }
-
-    // Update answer (window is now valid)
 }</pre>`
                 }
             ]
@@ -1904,89 +705,89 @@ for right := 0; right < len(nums); right++ {
         {
           "id": "challenge_1", "block": 1, "concept": "Accumulator Pattern",
           "variants": [
-            { "id": "v1", "title": "Sum of Slice", "description": "Write <code>func sum(numbers []int) int</code> that returns the sum of all numbers.", "functionSignature": "func sum(numbers []int) int", "testCases": [{ "input": "[]int{1, 2, 3, 4, 5}", "output": "15" }], "hints": ["Create accumulator: <code>total := 0</code>", "Loop: <code>total += num</code>"], "solution": "func sum(numbers []int) int {\n    total := 0\n    for _, num := range numbers {\n        total += num\n    }\n    return total\n}" },
-            { "id": "v2", "title": "Join Words", "description": "Write <code>func joinWords(words []string) string</code> that joins all words with spaces.", "functionSignature": "func joinWords(words []string) string", "testCases": [{ "input": "[]string{\"go\", \"is\", \"fun\"}", "output": "\"go is fun\"" }], "hints": ["String accumulator: <code>result := \"\"</code>", "Handle spacing: first word has no leading space"], "solution": "func joinWords(words []string) string {\n    result := \"\"\n    for i, word := range words {\n        if i > 0 {\n            result += \" \"\n        }\n        result += word\n    }\n    return result\n}" },
-            { "id": "v3", "title": "Total String Length", "description": "Write <code>func totalLength(words []string) int</code> that returns total length of all strings.", "functionSignature": "func totalLength(words []string) int", "testCases": [{ "input": "[]string{\"go\", \"is\", \"fun\"}", "output": "7" }], "hints": ["Loop: <code>total += len(word)</code>"], "solution": "func totalLength(words []string) int {\n    total := 0\n    for _, word := range words {\n        total += len(word)\n    }\n    return total\n}" }
+            { "id": "v1", "title": "Sum of Slice", "description": "Write <code>func sum(numbers []int) int</code> that returns the sum of all numbers.", "functionSignature": "func sum(numbers []int) int", "testCases": [{ "input": "[]int{1, 2, 3, 4, 5}", "output": "15" }], "hints": [{ "title": "🤔 Think about it", "content": "As you process each element, you need to build up a result. What variable do you need to track this running total?" }, { "title": "💡 Hint", "content": "Create an accumulator variable (number for sums, string for joining). Loop through and combine each element with your accumulator." }, { "title": "👀 Show me", "content": "<pre>total := 0\nfor _, num := range numbers {\n    total += num\n}</pre>" }], "solution": "func sum(numbers []int) int {\n    total := 0\n    for _, num := range numbers {\n        total += num\n    }\n    return total\n}" },
+            { "id": "v2", "title": "Join Words", "description": "Write <code>func joinWords(words []string) string</code> that joins all words with spaces.", "functionSignature": "func joinWords(words []string) string", "testCases": [{ "input": "[]string{\"go\", \"is\", \"fun\"}", "output": "\"go is fun\"" }], "hints": [{ "title": "🤔 Think about it", "content": "As you process each element, you need to build up a result. What variable do you need to track this running total?" }, { "title": "💡 Hint", "content": "Create an accumulator variable (number for sums, string for joining). Loop through and combine each element with your accumulator." }, { "title": "👀 Show me", "content": "<pre>result := \"\"\nfor i, word := range words {\n    if i > 0 {\n        result += \" \"\n    }\n    result += word\n}</pre>" }], "solution": "func joinWords(words []string) string {\n    result := \"\"\n    for i, word := range words {\n        if i > 0 {\n            result += \" \"\n        }\n        result += word\n    }\n    return result\n}" },
+            { "id": "v3", "title": "Total String Length", "description": "Write <code>func totalLength(words []string) int</code> that returns total length of all strings.", "functionSignature": "func totalLength(words []string) int", "testCases": [{ "input": "[]string{\"go\", \"is\", \"fun\"}", "output": "7" }], "hints": [{ "title": "🤔 Think about it", "content": "As you process each element, you need to build up a result. What variable do you need to track this running total?" }, { "title": "💡 Hint", "content": "Create an accumulator variable (number for sums, string for joining). Loop through and combine each element with your accumulator." }, { "title": "👀 Show me", "content": "<pre>total := 0\nfor _, word := range words {\n    total += len(word)\n}</pre>" }], "solution": "func totalLength(words []string) int {\n    total := 0\n    for _, word := range words {\n        total += len(word)\n    }\n    return total\n}" }
           ]
         },
         {
           "id": "challenge_2", "block": 1, "concept": "Counting with Condition",
           "variants": [
-            { "id": "v1", "title": "Count Evens", "description": "Write <code>func countEvens(nums []int) int</code> that counts even numbers.", "functionSignature": "func countEvens(nums []int) int", "testCases": [{ "input": "[]int{1, 2, 3, 4, 5, 6}", "output": "3" }], "hints": ["Check: <code>if num%2 == 0 { count++ }</code>"], "solution": "func countEvens(nums []int) int {\n    count := 0\n    for _, num := range nums {\n        if num%2 == 0 {\n            count++\n        }\n    }\n    return count\n}" },
-            { "id": "v2", "title": "Count Negatives", "description": "Write <code>func countNegatives(nums []int) int</code> that counts negative numbers.", "functionSignature": "func countNegatives(nums []int) int", "testCases": [{ "input": "[]int{-1, 2, -3, 4}", "output": "2" }], "hints": ["Check: <code>if num < 0 { count++ }</code>"], "solution": "func countNegatives(nums []int) int {\n    count := 0\n    for _, num := range nums {\n        if num < 0 {\n            count++\n        }\n    }\n    return count\n}" },
-            { "id": "v3", "title": "Count Long Words", "description": "Write <code>func countLong(words []string, minLen int) int</code> that counts words >= minLen.", "functionSignature": "func countLong(words []string, minLen int) int", "testCases": [{ "input": "[]string{\"go\", \"python\", \"js\"}, 3", "output": "1" }], "hints": ["Check: <code>if len(word) >= minLen</code>"], "solution": "func countLong(words []string, minLen int) int {\n    count := 0\n    for _, word := range words {\n        if len(word) >= minLen {\n            count++\n        }\n    }\n    return count\n}" }
+            { "id": "v1", "title": "Count Evens", "description": "Write <code>func countEvens(nums []int) int</code> that counts even numbers.", "functionSignature": "func countEvens(nums []int) int", "testCases": [{ "input": "[]int{1, 2, 3, 4, 5, 6}", "output": "3" }], "hints": [{ "title": "🤔 Think about it", "content": "You need to count things that meet a condition. What two pieces do you need: one to track the count, and one to check each element?" }, { "title": "💡 Hint", "content": "Start a counter at 0. For each element, check your condition - if true, increment the counter." }, { "title": "👀 Show me", "content": "<pre>count := 0\nfor _, num := range nums {\n    if num%2 == 0 {\n        count++\n    }\n}</pre>" }], "solution": "func countEvens(nums []int) int {\n    count := 0\n    for _, num := range nums {\n        if num%2 == 0 {\n            count++\n        }\n    }\n    return count\n}" },
+            { "id": "v2", "title": "Count Negatives", "description": "Write <code>func countNegatives(nums []int) int</code> that counts negative numbers.", "functionSignature": "func countNegatives(nums []int) int", "testCases": [{ "input": "[]int{-1, 2, -3, 4}", "output": "2" }], "hints": [{ "title": "🤔 Think about it", "content": "You need to count things that meet a condition. What two pieces do you need: one to track the count, and one to check each element?" }, { "title": "💡 Hint", "content": "Start a counter at 0. For each element, check your condition - if true, increment the counter." }, { "title": "👀 Show me", "content": "<pre>count := 0\nfor _, num := range nums {\n    if num < 0 {\n        count++\n    }\n}</pre>" }], "solution": "func countNegatives(nums []int) int {\n    count := 0\n    for _, num := range nums {\n        if num < 0 {\n            count++\n        }\n    }\n    return count\n}" },
+            { "id": "v3", "title": "Count Long Words", "description": "Write <code>func countLong(words []string, minLen int) int</code> that counts words >= minLen.", "functionSignature": "func countLong(words []string, minLen int) int", "testCases": [{ "input": "[]string{\"go\", \"python\", \"js\"}, 3", "output": "1" }], "hints": [{ "title": "🤔 Think about it", "content": "You need to count things that meet a condition. What two pieces do you need: one to track the count, and one to check each element?" }, { "title": "💡 Hint", "content": "Start a counter at 0. For each element, check your condition - if true, increment the counter." }, { "title": "👀 Show me", "content": "<pre>count := 0\nfor _, word := range words {\n    if len(word) >= minLen {\n        count++\n    }\n}</pre>" }], "solution": "func countLong(words []string, minLen int) int {\n    count := 0\n    for _, word := range words {\n        if len(word) >= minLen {\n            count++\n        }\n    }\n    return count\n}" }
           ]
         },
         {
           "id": "challenge_3", "block": 1, "concept": "Multiple Conditionals",
           "variants": [
-            { "id": "v1", "title": "FizzBuzz", "description": "Print 1-20. Multiples of 3: \"Fizz\", 5: \"Buzz\", both: \"FizzBuzz\".", "functionSignature": "// loop", "testCases": [{ "input": "15", "output": "FizzBuzz" }], "hints": ["Check 15 first, then 3, then 5"], "solution": "for i := 1; i <= 20; i++ {\n    if i%15 == 0 {\n        fmt.Println(\"FizzBuzz\")\n    } else if i%3 == 0 {\n        fmt.Println(\"Fizz\")\n    } else if i%5 == 0 {\n        fmt.Println(\"Buzz\")\n    } else {\n        fmt.Println(i)\n    }\n}" },
-            { "id": "v2", "title": "Grade Classifier", "description": "Write <code>func grade(score int) string</code> returning A/B/C/D/F.", "functionSignature": "func grade(score int) string", "testCases": [{ "input": "85", "output": "\"B\"" }], "hints": ["Check >= 90 first, then >= 80, etc."], "solution": "func grade(score int) string {\n    if score >= 90 { return \"A\" }\n    if score >= 80 { return \"B\" }\n    if score >= 70 { return \"C\" }\n    if score >= 60 { return \"D\" }\n    return \"F\"\n}" },
-            { "id": "v3", "title": "Number Sign", "description": "Write <code>func sign(n int) string</code> returning positive/negative/zero.", "functionSignature": "func sign(n int) string", "testCases": [{ "input": "-5", "output": "\"negative\"" }], "hints": ["Three cases: > 0, < 0, == 0"], "solution": "func sign(n int) string {\n    if n > 0 { return \"positive\" }\n    if n < 0 { return \"negative\" }\n    return \"zero\"\n}" }
+            { "id": "v1", "title": "FizzBuzz", "description": "Print 1-20. Multiples of 3: \"Fizz\", 5: \"Buzz\", both: \"FizzBuzz\".", "functionSignature": "// loop", "testCases": [{ "input": "15", "output": "FizzBuzz" }], "hints": [{ "title": "🤔 Think about it", "content": "When you have overlapping conditions (like a number divisible by both 3 AND 5), which case should you check first?" }, { "title": "💡 Hint", "content": "Check the most specific condition first! For FizzBuzz, 15 is divisible by both 3 and 5, so check for 15 before checking 3 or 5 individually." }, { "title": "👀 Show me", "content": "<pre>if i%15 == 0 {\n    fmt.Println(\"FizzBuzz\")\n} else if i%3 == 0 {\n    fmt.Println(\"Fizz\")\n} else if i%5 == 0 {\n    fmt.Println(\"Buzz\")\n} else {\n    fmt.Println(i)\n}</pre>" }], "solution": "for i := 1; i <= 20; i++ {\n    if i%15 == 0 {\n        fmt.Println(\"FizzBuzz\")\n    } else if i%3 == 0 {\n        fmt.Println(\"Fizz\")\n    } else if i%5 == 0 {\n        fmt.Println(\"Buzz\")\n    } else {\n        fmt.Println(i)\n    }\n}" },
+            { "id": "v2", "title": "Grade Classifier", "description": "Write <code>func grade(score int) string</code> returning A/B/C/D/F.", "functionSignature": "func grade(score int) string", "testCases": [{ "input": "85", "output": "\"B\"" }], "hints": [{ "title": "🤔 Think about it", "content": "When you have overlapping conditions (like a number divisible by both 3 AND 5), which case should you check first?" }, { "title": "💡 Hint", "content": "Check the most specific condition first! For FizzBuzz, 15 is divisible by both 3 and 5, so check for 15 before checking 3 or 5 individually." }, { "title": "👀 Show me", "content": "<pre>if score >= 90 { return \"A\" }\nif score >= 80 { return \"B\" }\nif score >= 70 { return \"C\" }\nif score >= 60 { return \"D\" }\nreturn \"F\"</pre>" }], "solution": "func grade(score int) string {\n    if score >= 90 { return \"A\" }\n    if score >= 80 { return \"B\" }\n    if score >= 70 { return \"C\" }\n    if score >= 60 { return \"D\" }\n    return \"F\"\n}" },
+            { "id": "v3", "title": "Number Sign", "description": "Write <code>func sign(n int) string</code> returning positive/negative/zero.", "functionSignature": "func sign(n int) string", "testCases": [{ "input": "-5", "output": "\"negative\"" }], "hints": [{ "title": "🤔 Think about it", "content": "When you have overlapping conditions (like a number divisible by both 3 AND 5), which case should you check first?" }, { "title": "💡 Hint", "content": "Check the most specific condition first! For FizzBuzz, 15 is divisible by both 3 and 5, so check for 15 before checking 3 or 5 individually." }, { "title": "👀 Show me", "content": "<pre>if n > 0 { return \"positive\" }\nif n < 0 { return \"negative\" }\nreturn \"zero\"</pre>" }], "solution": "func sign(n int) string {\n    if n > 0 { return \"positive\" }\n    if n < 0 { return \"negative\" }\n    return \"zero\"\n}" }
           ]
         },
         {
           "id": "challenge_4", "block": 1, "concept": "Finding Extrema",
           "variants": [
-            { "id": "v1", "title": "Find Maximum", "description": "Write <code>func max(nums []int) int</code> that returns the largest number.", "functionSignature": "func max(nums []int) int", "testCases": [{ "input": "[]int{3, 7, 2, 9}", "output": "9" }], "hints": ["Start with nums[0], update if bigger"], "solution": "func max(nums []int) int {\n    m := nums[0]\n    for _, n := range nums {\n        if n > m { m = n }\n    }\n    return m\n}" },
-            { "id": "v2", "title": "Find Minimum", "description": "Write <code>func min(nums []int) int</code> that returns the smallest number.", "functionSignature": "func min(nums []int) int", "testCases": [{ "input": "[]int{3, 7, 2, 9}", "output": "2" }], "hints": ["Start with nums[0], update if smaller"], "solution": "func min(nums []int) int {\n    m := nums[0]\n    for _, n := range nums {\n        if n < m { m = n }\n    }\n    return m\n}" },
-            { "id": "v3", "title": "Longest String", "description": "Write <code>func longest(words []string) string</code> that returns the longest word.", "functionSignature": "func longest(words []string) string", "testCases": [{ "input": "[]string{\"go\", \"python\"}", "output": "\"python\"" }], "hints": ["Compare len(word) > len(result)"], "solution": "func longest(words []string) string {\n    r := words[0]\n    for _, w := range words {\n        if len(w) > len(r) { r = w }\n    }\n    return r\n}" }
+            { "id": "v1", "title": "Find Maximum", "description": "Write <code>func max(nums []int) int</code> that returns the largest number.", "functionSignature": "func max(nums []int) int", "testCases": [{ "input": "[]int{3, 7, 2, 9}", "output": "9" }], "hints": [{ "title": "🤔 Think about it", "content": "If you want to track the 'best so far', what's a reasonable starting value? Hint: what if the first element is the answer?" }, { "title": "💡 Hint", "content": "Initialize with the first element (not 0 or some arbitrary value). Compare each subsequent element - if it's better, update your best." }, { "title": "👀 Show me", "content": "<pre>best := nums[0]\nfor _, n := range nums {\n    if n > best { best = n }\n}\nreturn best</pre>" }], "solution": "func max(nums []int) int {\n    m := nums[0]\n    for _, n := range nums {\n        if n > m { m = n }\n    }\n    return m\n}" },
+            { "id": "v2", "title": "Find Minimum", "description": "Write <code>func min(nums []int) int</code> that returns the smallest number.", "functionSignature": "func min(nums []int) int", "testCases": [{ "input": "[]int{3, 7, 2, 9}", "output": "2" }], "hints": [{ "title": "🤔 Think about it", "content": "If you want to track the 'best so far', what's a reasonable starting value? Hint: what if the first element is the answer?" }, { "title": "💡 Hint", "content": "Initialize with the first element (not 0 or some arbitrary value). Compare each subsequent element - if it's better, update your best." }, { "title": "👀 Show me", "content": "<pre>best := nums[0]\nfor _, n := range nums {\n    if n < best { best = n }\n}\nreturn best</pre>" }], "solution": "func min(nums []int) int {\n    m := nums[0]\n    for _, n := range nums {\n        if n < m { m = n }\n    }\n    return m\n}" },
+            { "id": "v3", "title": "Longest String", "description": "Write <code>func longest(words []string) string</code> that returns the longest word.", "functionSignature": "func longest(words []string) string", "testCases": [{ "input": "[]string{\"go\", \"python\"}", "output": "\"python\"" }], "hints": [{ "title": "🤔 Think about it", "content": "If you want to track the 'best so far', what's a reasonable starting value? Hint: what if the first element is the answer?" }, { "title": "💡 Hint", "content": "Initialize with the first element (not 0 or some arbitrary value). Compare each subsequent element - if it's better, update your best." }, { "title": "👀 Show me", "content": "<pre>best := words[0]\nfor _, w := range words {\n    if len(w) > len(best) { best = w }\n}\nreturn best</pre>" }], "solution": "func longest(words []string) string {\n    r := words[0]\n    for _, w := range words {\n        if len(w) > len(r) { r = w }\n    }\n    return r\n}" }
           ]
         },
         {
           "id": "challenge_5", "block": 2, "concept": "Filter with Append",
           "variants": [
-            { "id": "v1", "title": "Filter Positives", "description": "Write <code>func filterPositives(nums []int) []int</code> returning only positive numbers.", "functionSignature": "func filterPositives(nums []int) []int", "testCases": [{ "input": "[]int{-2, 3, -1, 5}", "output": "[3, 5]" }], "hints": ["if num > 0 { result = append(result, num) }"], "solution": "func filterPositives(nums []int) []int {\n    r := []int{}\n    for _, n := range nums {\n        if n > 0 { r = append(r, n) }\n    }\n    return r\n}" },
-            { "id": "v2", "title": "Filter Evens", "description": "Write <code>func filterEvens(nums []int) []int</code> returning only even numbers.", "functionSignature": "func filterEvens(nums []int) []int", "testCases": [{ "input": "[]int{1, 2, 3, 4}", "output": "[2, 4]" }], "hints": ["if num%2 == 0 { append }"], "solution": "func filterEvens(nums []int) []int {\n    r := []int{}\n    for _, n := range nums {\n        if n%2 == 0 { r = append(r, n) }\n    }\n    return r\n}" },
-            { "id": "v3", "title": "Filter Short Words", "description": "Write <code>func filterShort(words []string, max int) []string</code> returning words with len <= max.", "functionSignature": "func filterShort(words []string, max int) []string", "testCases": [{ "input": "[]string{\"go\", \"python\"}, 3", "output": "[\"go\"]" }], "hints": ["if len(word) <= max { append }"], "solution": "func filterShort(words []string, max int) []string {\n    r := []string{}\n    for _, w := range words {\n        if len(w) <= max { r = append(r, w) }\n    }\n    return r\n}" }
+            { "id": "v1", "title": "Filter Positives", "description": "Write <code>func filterPositives(nums []int) []int</code> returning only positive numbers.", "functionSignature": "func filterPositives(nums []int) []int", "testCases": [{ "input": "[]int{-2, 3, -1, 5}", "output": "[3, 5]" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to build a new collection containing only some elements. What do you start with, and how do you add elements that pass your test?" }, { "title": "💡 Hint", "content": "Start with an empty slice. Loop through, check your condition, and append elements that pass." }, { "title": "👀 Show me", "content": "<pre>result := []int{}\nfor _, n := range nums {\n    if n > 0 {\n        result = append(result, n)\n    }\n}</pre>" }], "solution": "func filterPositives(nums []int) []int {\n    r := []int{}\n    for _, n := range nums {\n        if n > 0 { r = append(r, n) }\n    }\n    return r\n}" },
+            { "id": "v2", "title": "Filter Evens", "description": "Write <code>func filterEvens(nums []int) []int</code> returning only even numbers.", "functionSignature": "func filterEvens(nums []int) []int", "testCases": [{ "input": "[]int{1, 2, 3, 4}", "output": "[2, 4]" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to build a new collection containing only some elements. What do you start with, and how do you add elements that pass your test?" }, { "title": "💡 Hint", "content": "Start with an empty slice. Loop through, check your condition, and append elements that pass." }, { "title": "👀 Show me", "content": "<pre>result := []int{}\nfor _, n := range nums {\n    if n%2 == 0 {\n        result = append(result, n)\n    }\n}</pre>" }], "solution": "func filterEvens(nums []int) []int {\n    r := []int{}\n    for _, n := range nums {\n        if n%2 == 0 { r = append(r, n) }\n    }\n    return r\n}" },
+            { "id": "v3", "title": "Filter Short Words", "description": "Write <code>func filterShort(words []string, max int) []string</code> returning words with len <= max.", "functionSignature": "func filterShort(words []string, max int) []string", "testCases": [{ "input": "[]string{\"go\", \"python\"}, 3", "output": "[\"go\"]" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to build a new collection containing only some elements. What do you start with, and how do you add elements that pass your test?" }, { "title": "💡 Hint", "content": "Start with an empty slice. Loop through, check your condition, and append elements that pass." }, { "title": "👀 Show me", "content": "<pre>result := []string{}\nfor _, w := range words {\n    if len(w) <= max {\n        result = append(result, w)\n    }\n}</pre>" }], "solution": "func filterShort(words []string, max int) []string {\n    r := []string{}\n    for _, w := range words {\n        if len(w) <= max { r = append(r, w) }\n    }\n    return r\n}" }
           ]
         },
         {
           "id": "challenge_6", "block": 2, "concept": "Find Index",
           "variants": [
-            { "id": "v1", "title": "Find Index", "description": "Write <code>func findIndex(nums []int, target int) int</code> returning index or -1.", "functionSignature": "func findIndex(nums []int, target int) int", "testCases": [{ "input": "[]int{10, 20, 30}, 20", "output": "1" }], "hints": ["for i, num := range nums { if num == target { return i } }"], "solution": "func findIndex(nums []int, target int) int {\n    for i, n := range nums {\n        if n == target { return i }\n    }\n    return -1\n}" },
-            { "id": "v2", "title": "Find Word", "description": "Write <code>func findWord(words []string, target string) int</code> returning index or -1.", "functionSignature": "func findWord(words []string, target string) int", "testCases": [{ "input": "[]string{\"go\", \"py\"}, \"py\"", "output": "1" }], "hints": ["Same pattern with strings"], "solution": "func findWord(words []string, target string) int {\n    for i, w := range words {\n        if w == target { return i }\n    }\n    return -1\n}" },
-            { "id": "v3", "title": "First Negative Index", "description": "Write <code>func firstNegIdx(nums []int) int</code> returning index of first negative or -1.", "functionSignature": "func firstNegIdx(nums []int) int", "testCases": [{ "input": "[]int{5, -2, 3}", "output": "1" }], "hints": ["if num < 0 { return i }"], "solution": "func firstNegIdx(nums []int) int {\n    for i, n := range nums {\n        if n < 0 { return i }\n    }\n    return -1\n}" }
+            { "id": "v1", "title": "Find Index", "description": "Write <code>func findIndex(nums []int, target int) int</code> returning index or -1.", "functionSignature": "func findIndex(nums []int, target int) int", "testCases": [{ "input": "[]int{10, 20, 30}, 20", "output": "1" }], "hints": [{ "title": "🤔 Think about it", "content": "If you're looking for something specific, when should you stop looking? What should you return if you never find it?" }, { "title": "💡 Hint", "content": "Loop with the index variable. When you find a match, return that index immediately (early return). If the loop completes without finding anything, return -1." }, { "title": "👀 Show me", "content": "<pre>for i, num := range nums {\n    if num == target {\n        return i\n    }\n}\nreturn -1</pre>" }], "solution": "func findIndex(nums []int, target int) int {\n    for i, n := range nums {\n        if n == target { return i }\n    }\n    return -1\n}" },
+            { "id": "v2", "title": "Find Word", "description": "Write <code>func findWord(words []string, target string) int</code> returning index or -1.", "functionSignature": "func findWord(words []string, target string) int", "testCases": [{ "input": "[]string{\"go\", \"py\"}, \"py\"", "output": "1" }], "hints": [{ "title": "🤔 Think about it", "content": "If you're looking for something specific, when should you stop looking? What should you return if you never find it?" }, { "title": "💡 Hint", "content": "Loop with the index variable. When you find a match, return that index immediately (early return). If the loop completes without finding anything, return -1." }, { "title": "👀 Show me", "content": "<pre>for i, w := range words {\n    if w == target {\n        return i\n    }\n}\nreturn -1</pre>" }], "solution": "func findWord(words []string, target string) int {\n    for i, w := range words {\n        if w == target { return i }\n    }\n    return -1\n}" },
+            { "id": "v3", "title": "First Negative Index", "description": "Write <code>func firstNegIdx(nums []int) int</code> returning index of first negative or -1.", "functionSignature": "func firstNegIdx(nums []int) int", "testCases": [{ "input": "[]int{5, -2, 3}", "output": "1" }], "hints": [{ "title": "🤔 Think about it", "content": "If you're looking for something specific, when should you stop looking? What should you return if you never find it?" }, { "title": "💡 Hint", "content": "Loop with the index variable. When you find a match, return that index immediately (early return). If the loop completes without finding anything, return -1." }, { "title": "👀 Show me", "content": "<pre>for i, n := range nums {\n    if n < 0 {\n        return i\n    }\n}\nreturn -1</pre>" }], "solution": "func firstNegIdx(nums []int) int {\n    for i, n := range nums {\n        if n < 0 { return i }\n    }\n    return -1\n}" }
           ]
         },
         {
           "id": "challenge_7", "block": 2, "concept": "Map Counting",
           "variants": [
-            { "id": "v1", "title": "Count Occurrences", "description": "Write <code>func countOccurrences(nums []int) map[int]int</code>.", "functionSignature": "func countOccurrences(nums []int) map[int]int", "testCases": [{ "input": "[]int{1, 2, 2, 3, 3, 3}", "output": "map[1:1 2:2 3:3]" }], "hints": ["counts := make(map[int]int)", "counts[num]++"], "solution": "func countOccurrences(nums []int) map[int]int {\n    c := make(map[int]int)\n    for _, n := range nums { c[n]++ }\n    return c\n}" },
-            { "id": "v2", "title": "Count Characters", "description": "Write <code>func countChars(s string) map[rune]int</code>.", "functionSignature": "func countChars(s string) map[rune]int", "testCases": [{ "input": "\"hello\"", "output": "map[e:1 h:1 l:2 o:1]" }], "hints": ["for _, char := range s { counts[char]++ }"], "solution": "func countChars(s string) map[rune]int {\n    c := make(map[rune]int)\n    for _, r := range s { c[r]++ }\n    return c\n}" },
-            { "id": "v3", "title": "Word Frequency", "description": "Write <code>func wordFreq(words []string) map[string]int</code>.", "functionSignature": "func wordFreq(words []string) map[string]int", "testCases": [{ "input": "[]string{\"go\", \"go\", \"py\"}", "output": "map[go:2 py:1]" }], "hints": ["counts[word]++"], "solution": "func wordFreq(words []string) map[string]int {\n    c := make(map[string]int)\n    for _, w := range words { c[w]++ }\n    return c\n}" }
+            { "id": "v1", "title": "Count Occurrences", "description": "Write <code>func countOccurrences(nums []int) map[int]int</code>.", "functionSignature": "func countOccurrences(nums []int) map[int]int", "testCases": [{ "input": "[]int{1, 2, 2, 3, 3, 3}", "output": "map[1:1 2:2 3:3]" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to count how many times each element appears. What data structure maps 'thing' to 'count of that thing'?" }, { "title": "💡 Hint", "content": "Use a map where keys are the elements and values are counts. The magic: accessing a non-existent key returns 0, so you can just do counts[item]++ even for the first occurrence." }, { "title": "👀 Show me", "content": "<pre>counts := make(map[int]int)\ncounts[num]++</pre>" }], "solution": "func countOccurrences(nums []int) map[int]int {\n    c := make(map[int]int)\n    for _, n := range nums { c[n]++ }\n    return c\n}" },
+            { "id": "v2", "title": "Count Characters", "description": "Write <code>func countChars(s string) map[rune]int</code>.", "functionSignature": "func countChars(s string) map[rune]int", "testCases": [{ "input": "\"hello\"", "output": "map[e:1 h:1 l:2 o:1]" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to count how many times each element appears. What data structure maps 'thing' to 'count of that thing'?" }, { "title": "💡 Hint", "content": "Use a map where keys are the elements and values are counts. The magic: accessing a non-existent key returns 0, so you can just do counts[item]++ even for the first occurrence." }, { "title": "👀 Show me", "content": "<pre>counts := make(map[rune]int)\ncounts[char]++</pre>" }], "solution": "func countChars(s string) map[rune]int {\n    c := make(map[rune]int)\n    for _, r := range s { c[r]++ }\n    return c\n}" },
+            { "id": "v3", "title": "Word Frequency", "description": "Write <code>func wordFreq(words []string) map[string]int</code>.", "functionSignature": "func wordFreq(words []string) map[string]int", "testCases": [{ "input": "[]string{\"go\", \"go\", \"py\"}", "output": "map[go:2 py:1]" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to count how many times each element appears. What data structure maps 'thing' to 'count of that thing'?" }, { "title": "💡 Hint", "content": "Use a map where keys are the elements and values are counts. The magic: accessing a non-existent key returns 0, so you can just do counts[item]++ even for the first occurrence." }, { "title": "👀 Show me", "content": "<pre>counts := make(map[string]int)\ncounts[word]++</pre>" }], "solution": "func wordFreq(words []string) map[string]int {\n    c := make(map[string]int)\n    for _, w := range words { c[w]++ }\n    return c\n}" }
           ]
         },
         {
           "id": "challenge_8", "block": 3, "concept": "Swap Pattern",
           "variants": [
-            { "id": "v1", "title": "Swap Elements", "description": "Write <code>func swap(nums []int, i, j int)</code> that swaps elements at i and j.", "functionSignature": "func swap(nums []int, i, j int)", "testCases": [{ "input": "[]int{1,2,3}, 0, 2", "output": "[3,2,1]" }], "hints": ["nums[i], nums[j] = nums[j], nums[i]"], "solution": "func swap(nums []int, i, j int) {\n    nums[i], nums[j] = nums[j], nums[i]\n}" },
-            { "id": "v2", "title": "Swap First Last", "description": "Write <code>func swapEnds(nums []int)</code> that swaps first and last elements.", "functionSignature": "func swapEnds(nums []int)", "testCases": [{ "input": "[]int{1,2,3,4}", "output": "[4,2,3,1]" }], "hints": ["nums[0], nums[len(nums)-1] = ..."], "solution": "func swapEnds(nums []int) {\n    nums[0], nums[len(nums)-1] = nums[len(nums)-1], nums[0]\n}" },
-            { "id": "v3", "title": "Swap Variables", "description": "Swap two variables a=5, b=10 and print them.", "functionSignature": "// inline", "testCases": [{ "input": "a=5, b=10", "output": "a=10, b=5" }], "hints": ["a, b = b, a"], "solution": "a, b := 5, 10\na, b = b, a\nfmt.Println(a, b)" }
+            { "id": "v1", "title": "Swap Elements", "description": "Write <code>func swap(nums []int, i, j int)</code> that swaps elements at i and j.", "functionSignature": "func swap(nums []int, i, j int)", "testCases": [{ "input": "[]int{1,2,3}, 0, 2", "output": "[3,2,1]" }], "hints": [{ "title": "🤔 Think about it", "content": "How do you swap two values without losing one of them? Think about what happens if you just write a = b." }, { "title": "💡 Hint", "content": "Go has a special syntax for simultaneous assignment: a, b = b, a. This evaluates the right side first, then assigns, so nothing is lost." }, { "title": "👀 Show me", "content": "<pre>nums[i], nums[j] = nums[j], nums[i]</pre>" }], "solution": "func swap(nums []int, i, j int) {\n    nums[i], nums[j] = nums[j], nums[i]\n}" },
+            { "id": "v2", "title": "Swap First Last", "description": "Write <code>func swapEnds(nums []int)</code> that swaps first and last elements.", "functionSignature": "func swapEnds(nums []int)", "testCases": [{ "input": "[]int{1,2,3,4}", "output": "[4,2,3,1]" }], "hints": [{ "title": "🤔 Think about it", "content": "How do you swap two values without losing one of them? Think about what happens if you just write a = b." }, { "title": "💡 Hint", "content": "Go has a special syntax for simultaneous assignment: a, b = b, a. This evaluates the right side first, then assigns, so nothing is lost." }, { "title": "👀 Show me", "content": "<pre>nums[0], nums[len(nums)-1] = nums[len(nums)-1], nums[0]</pre>" }], "solution": "func swapEnds(nums []int) {\n    nums[0], nums[len(nums)-1] = nums[len(nums)-1], nums[0]\n}" },
+            { "id": "v3", "title": "Swap Variables", "description": "Swap two variables a=5, b=10 and print them.", "functionSignature": "// inline", "testCases": [{ "input": "a=5, b=10", "output": "a=10, b=5" }], "hints": [{ "title": "🤔 Think about it", "content": "How do you swap two values without losing one of them? Think about what happens if you just write a = b." }, { "title": "💡 Hint", "content": "Go has a special syntax for simultaneous assignment: a, b = b, a. This evaluates the right side first, then assigns, so nothing is lost." }, { "title": "👀 Show me", "content": "<pre>a, b = b, a</pre>" }], "solution": "a, b := 5, 10\na, b = b, a\nfmt.Println(a, b)" }
           ]
         },
         {
           "id": "challenge_9", "block": 3, "concept": "Two-Pointer Comparison",
           "variants": [
-            { "id": "v1", "title": "Palindrome Check", "description": "Write <code>func isPalindrome(nums []int) bool</code> - same forwards/backwards.", "functionSignature": "func isPalindrome(nums []int) bool", "testCases": [{ "input": "[]int{1,2,3,2,1}", "output": "true" }], "hints": ["for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1", "if nums[i] != nums[j] { return false }"], "solution": "func isPalindrome(nums []int) bool {\n    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n        if nums[i] != nums[j] { return false }\n    }\n    return true\n}" },
-            { "id": "v2", "title": "String Palindrome", "description": "Write <code>func isSymmetric(s string) bool</code>.", "functionSignature": "func isSymmetric(s string) bool", "testCases": [{ "input": "\"racecar\"", "output": "true" }], "hints": ["runes := []rune(s), then same pattern"], "solution": "func isSymmetric(s string) bool {\n    r := []rune(s)\n    for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {\n        if r[i] != r[j] { return false }\n    }\n    return true\n}" },
-            { "id": "v3", "title": "Ends Match", "description": "Write <code>func endsMatch(nums []int) bool</code> - first equals last.", "functionSignature": "func endsMatch(nums []int) bool", "testCases": [{ "input": "[]int{5,2,3,5}", "output": "true" }], "hints": ["return nums[0] == nums[len(nums)-1]"], "solution": "func endsMatch(nums []int) bool {\n    return nums[0] == nums[len(nums)-1]\n}" }
+            { "id": "v1", "title": "Palindrome Check", "description": "Write <code>func isPalindrome(nums []int) bool</code> - same forwards/backwards.", "functionSignature": "func isPalindrome(nums []int) bool", "testCases": [{ "input": "[]int{1,2,3,2,1}", "output": "true" }], "hints": [{ "title": "🤔 Think about it", "content": "To check if something reads the same forwards and backwards, where should you start comparing? Do you need to check every element?" }, { "title": "💡 Hint", "content": "Compare from both ends moving inward. Start with pointers at index 0 and len-1. If any pair doesn't match, it's not a palindrome. If you make it to the middle without mismatches, it is." }, { "title": "👀 Show me", "content": "<pre>for i, j := 0, len(items)-1; i < j; i, j = i+1, j-1 {\n    if items[i] != items[j] { return false }\n}</pre>" }], "solution": "func isPalindrome(nums []int) bool {\n    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n        if nums[i] != nums[j] { return false }\n    }\n    return true\n}" },
+            { "id": "v2", "title": "String Palindrome", "description": "Write <code>func isSymmetric(s string) bool</code>.", "functionSignature": "func isSymmetric(s string) bool", "testCases": [{ "input": "\"racecar\"", "output": "true" }], "hints": [{ "title": "🤔 Think about it", "content": "To check if something reads the same forwards and backwards, where should you start comparing? Do you need to check every element?" }, { "title": "💡 Hint", "content": "Compare from both ends moving inward. Start with pointers at index 0 and len-1. If any pair doesn't match, it's not a palindrome. If you make it to the middle without mismatches, it is." }, { "title": "👀 Show me", "content": "<pre>runes := []rune(s)\nfor i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {\n    if runes[i] != runes[j] { return false }\n}</pre>" }], "solution": "func isSymmetric(s string) bool {\n    r := []rune(s)\n    for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {\n        if r[i] != r[j] { return false }\n    }\n    return true\n}" },
+            { "id": "v3", "title": "Ends Match", "description": "Write <code>func endsMatch(nums []int) bool</code> - first equals last.", "functionSignature": "func endsMatch(nums []int) bool", "testCases": [{ "input": "[]int{5,2,3,5}", "output": "true" }], "hints": [{ "title": "🤔 Think about it", "content": "To check if something reads the same forwards and backwards, where should you start comparing? Do you need to check every element?" }, { "title": "💡 Hint", "content": "Compare from both ends moving inward. Start with pointers at index 0 and len-1. If any pair doesn't match, it's not a palindrome. If you make it to the middle without mismatches, it is." }, { "title": "👀 Show me", "content": "<pre>return nums[0] == nums[len(nums)-1]</pre>" }], "solution": "func endsMatch(nums []int) bool {\n    return nums[0] == nums[len(nums)-1]\n}" }
           ]
         },
         {
           "id": "challenge_10", "block": 4, "concept": "Two-Pointer Swap",
           "variants": [
-            { "id": "v1", "title": "Reverse Slice", "description": "Write <code>func reverse(nums []int) []int</code> that reverses in place.", "functionSignature": "func reverse(nums []int) []int", "testCases": [{ "input": "[]int{1,2,3,4,5}", "output": "[5,4,3,2,1]" }], "hints": ["Palindrome loop + swap inside"], "solution": "func reverse(nums []int) []int {\n    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n        nums[i], nums[j] = nums[j], nums[i]\n    }\n    return nums\n}" },
-            { "id": "v2", "title": "Rotate Left", "description": "Write <code>func rotateLeft(nums []int) []int</code> - first element goes to end.", "functionSignature": "func rotateLeft(nums []int) []int", "testCases": [{ "input": "[]int{1,2,3}", "output": "[2,3,1]" }], "hints": ["Save first, shift left, put at end"], "solution": "func rotateLeft(nums []int) []int {\n    first := nums[0]\n    for i := 0; i < len(nums)-1; i++ { nums[i] = nums[i+1] }\n    nums[len(nums)-1] = first\n    return nums\n}" },
-            { "id": "v3", "title": "Rotate Right", "description": "Write <code>func rotateRight(nums []int) []int</code> - last element goes to front.", "functionSignature": "func rotateRight(nums []int) []int", "testCases": [{ "input": "[]int{1,2,3}", "output": "[3,1,2]" }], "hints": ["Save last, shift right, put at front"], "solution": "func rotateRight(nums []int) []int {\n    last := nums[len(nums)-1]\n    for i := len(nums)-1; i > 0; i-- { nums[i] = nums[i-1] }\n    nums[0] = last\n    return nums\n}" }
+            { "id": "v1", "title": "Reverse Slice", "description": "Write <code>func reverse(nums []int) []int</code> that reverses in place.", "functionSignature": "func reverse(nums []int) []int", "testCases": [{ "input": "[]int{1,2,3,4,5}", "output": "[5,4,3,2,1]" }], "hints": [{ "title": "🤔 Think about it", "content": "To reverse in-place, you swap elements from both ends working toward the middle. What pattern lets you walk two pointers toward each other?" }, { "title": "💡 Hint", "content": "Use the same two-pointer loop as palindrome check, but swap the elements instead of comparing them. Stop when the pointers meet or cross." }, { "title": "👀 Show me", "content": "<pre>for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n    nums[i], nums[j] = nums[j], nums[i]\n}</pre>" }], "solution": "func reverse(nums []int) []int {\n    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n        nums[i], nums[j] = nums[j], nums[i]\n    }\n    return nums\n}" },
+            { "id": "v2", "title": "Rotate Left", "description": "Write <code>func rotateLeft(nums []int) []int</code> - first element goes to end.", "functionSignature": "func rotateLeft(nums []int) []int", "testCases": [{ "input": "[]int{1,2,3}", "output": "[2,3,1]" }], "hints": [{ "title": "🤔 Think about it", "content": "To reverse in-place, you swap elements from both ends working toward the middle. What pattern lets you walk two pointers toward each other?" }, { "title": "💡 Hint", "content": "Use the same two-pointer loop as palindrome check, but swap the elements instead of comparing them. Stop when the pointers meet or cross." }, { "title": "👀 Show me", "content": "<pre>for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n    nums[i], nums[j] = nums[j], nums[i]\n}</pre>" }], "solution": "func rotateLeft(nums []int) []int {\n    first := nums[0]\n    for i := 0; i < len(nums)-1; i++ { nums[i] = nums[i+1] }\n    nums[len(nums)-1] = first\n    return nums\n}" },
+            { "id": "v3", "title": "Rotate Right", "description": "Write <code>func rotateRight(nums []int) []int</code> - last element goes to front.", "functionSignature": "func rotateRight(nums []int) []int", "testCases": [{ "input": "[]int{1,2,3}", "output": "[3,1,2]" }], "hints": [{ "title": "🤔 Think about it", "content": "To reverse in-place, you swap elements from both ends working toward the middle. What pattern lets you walk two pointers toward each other?" }, { "title": "💡 Hint", "content": "Use the same two-pointer loop as palindrome check, but swap the elements instead of comparing them. Stop when the pointers meet or cross." }, { "title": "👀 Show me", "content": "<pre>for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n    nums[i], nums[j] = nums[j], nums[i]\n}</pre>" }], "solution": "func rotateRight(nums []int) []int {\n    last := nums[len(nums)-1]\n    for i := len(nums)-1; i > 0; i-- { nums[i] = nums[i-1] }\n    nums[0] = last\n    return nums\n}" }
           ]
         },
         {
           "id": "challenge_11", "block": 4, "concept": "Map Lookup + Early Return",
           "variants": [
-            { "id": "v1", "title": "First Duplicate Index", "description": "Write <code>func firstDupIdx(nums []int) int</code> - index of first repeat, or -1.", "functionSignature": "func firstDupIdx(nums []int) int", "testCases": [{ "input": "[]int{1,2,3,2}", "output": "3" }], "hints": ["seen := make(map[int]bool)", "if seen[num] { return i }; seen[num] = true"], "solution": "func firstDupIdx(nums []int) int {\n    seen := make(map[int]bool)\n    for i, n := range nums {\n        if seen[n] { return i }\n        seen[n] = true\n    }\n    return -1\n}" },
-            { "id": "v2", "title": "First Repeat Char", "description": "Write <code>func firstRepeat(s string) rune</code> - first repeated char, or 0.", "functionSignature": "func firstRepeat(s string) rune", "testCases": [{ "input": "\"abcab\"", "output": "'a'" }], "hints": ["Same pattern with runes"], "solution": "func firstRepeat(s string) rune {\n    seen := make(map[rune]bool)\n    for _, r := range s {\n        if seen[r] { return r }\n        seen[r] = true\n    }\n    return 0\n}" },
-            { "id": "v3", "title": "Has Duplicate", "description": "Write <code>func hasDup(nums []int) bool</code> - true if any number repeats.", "functionSignature": "func hasDup(nums []int) bool", "testCases": [{ "input": "[]int{1,2,3,2}", "output": "true" }], "hints": ["Same pattern, return true/false"], "solution": "func hasDup(nums []int) bool {\n    seen := make(map[int]bool)\n    for _, n := range nums {\n        if seen[n] { return true }\n        seen[n] = true\n    }\n    return false\n}" }
+            { "id": "v1", "title": "First Duplicate Index", "description": "Write <code>func firstDupIdx(nums []int) int</code> - index of first repeat, or -1.", "functionSignature": "func firstDupIdx(nums []int) int", "testCases": [{ "input": "[]int{1,2,3,2}", "output": "3" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to find the first element that appears twice. As you go through, how do you know if you've seen something before?" }, { "title": "💡 Hint", "content": "Use a map as a 'seen' set. For each element, first check if it's in the map - if yes, you found a duplicate! If no, add it to the map and continue." }, { "title": "👀 Show me", "content": "<pre>seen := make(map[int]bool)\nif seen[item] { return ... }\nseen[item] = true</pre>" }], "solution": "func firstDupIdx(nums []int) int {\n    seen := make(map[int]bool)\n    for i, n := range nums {\n        if seen[n] { return i }\n        seen[n] = true\n    }\n    return -1\n}" },
+            { "id": "v2", "title": "First Repeat Char", "description": "Write <code>func firstRepeat(s string) rune</code> - first repeated char, or 0.", "functionSignature": "func firstRepeat(s string) rune", "testCases": [{ "input": "\"abcab\"", "output": "'a'" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to find the first element that appears twice. As you go through, how do you know if you've seen something before?" }, { "title": "💡 Hint", "content": "Use a map as a 'seen' set. For each element, first check if it's in the map - if yes, you found a duplicate! If no, add it to the map and continue." }, { "title": "👀 Show me", "content": "<pre>seen := make(map[rune]bool)\nif seen[r] { return r }\nseen[r] = true</pre>" }], "solution": "func firstRepeat(s string) rune {\n    seen := make(map[rune]bool)\n    for _, r := range s {\n        if seen[r] { return r }\n        seen[r] = true\n    }\n    return 0\n}" },
+            { "id": "v3", "title": "Has Duplicate", "description": "Write <code>func hasDup(nums []int) bool</code> - true if any number repeats.", "functionSignature": "func hasDup(nums []int) bool", "testCases": [{ "input": "[]int{1,2,3,2}", "output": "true" }], "hints": [{ "title": "🤔 Think about it", "content": "You want to find the first element that appears twice. As you go through, how do you know if you've seen something before?" }, { "title": "💡 Hint", "content": "Use a map as a 'seen' set. For each element, first check if it's in the map - if yes, you found a duplicate! If no, add it to the map and continue." }, { "title": "👀 Show me", "content": "<pre>seen := make(map[int]bool)\nif seen[n] { return true }\nseen[n] = true</pre>" }], "solution": "func hasDup(nums []int) bool {\n    seen := make(map[int]bool)\n    for _, n := range nums {\n        if seen[n] { return true }\n        seen[n] = true\n    }\n    return false\n}" }
           ]
         }
       ],
@@ -2750,10 +1551,13 @@ for right := 0; right < len(nums); right++ {
 
             // Add hints
             if (variant.hints) {
-                variant.hints.forEach((hint, hIdx) => {
+                variant.hints.forEach((hint) => {
+                    // Support both old string format and new object format
+                    const title = typeof hint === 'object' ? hint.title : '💡 Hint';
+                    const content = typeof hint === 'object' ? hint.content : hint;
                     html += `<details>
-                        <summary>💡 Hint${variant.hints.length > 1 ? ' ' + (hIdx + 1) : ''}</summary>
-                        <div class="hint-content">${hint}</div>
+                        <summary>${title}</summary>
+                        <div class="hint-content">${content}</div>
                     </details>`;
                 });
             }
@@ -2818,10 +1622,13 @@ for right := 0; right < len(nums); right++ {
 
             // Add hints
             if (variant.hints) {
-                variant.hints.forEach((hint, hIdx) => {
+                variant.hints.forEach((hint) => {
+                    // Support both old string format and new object format
+                    const title = typeof hint === 'object' ? hint.title : '💡 Hint';
+                    const content = typeof hint === 'object' ? hint.content : hint;
                     html += `<details>
-                        <summary>💡 Hint${variant.hints.length > 1 ? ' ' + (hIdx + 1) : ''}</summary>
-                        <div class="hint-content">${hint}</div>
+                        <summary>${title}</summary>
+                        <div class="hint-content">${content}</div>
                     </details>`;
                 });
             }
@@ -2901,10 +1708,13 @@ for right := 0; right < len(nums); right++ {
 
             // Add hints
             if (variant.hints) {
-                variant.hints.forEach((hint, hIdx) => {
+                variant.hints.forEach((hint) => {
+                    // Support both old string format and new object format
+                    const title = typeof hint === 'object' ? hint.title : '💡 Hint';
+                    const content = typeof hint === 'object' ? hint.content : hint;
                     html += `<details>
-                        <summary>💡 Hint ${hIdx + 1}</summary>
-                        <div class="hint-content">${hint}</div>
+                        <summary>${title}</summary>
+                        <div class="hint-content">${content}</div>
                     </details>`;
                 });
             }
