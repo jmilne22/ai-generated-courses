@@ -762,10 +762,15 @@ body.has-sidebar .container {
     padding-top: 4rem;
 }
 
-/* When sidebar is open, shift content on desktop */
-body.sidebar-open .container {
-    margin-left: 280px;
+/* When sidebar is open on medium screens, shift content right */
+@media (min-width: 901px) and (max-width: 1400px) {
+    body.sidebar-open .container {
+        margin-left: 300px;
+        margin-right: 20px;
+    }
 }
+
+/* On ultrawide screens, content stays centered - sidebar floats over empty space */
 
 /* Mobile: full overlay */
 @media (max-width: 900px) {
