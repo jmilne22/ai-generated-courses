@@ -58,33 +58,7 @@ body {
 }
 
 /* ============================================
-   3. Scanline Effect
-   ============================================ */
-.scanlines::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 255, 157, 0.03) 2px,
-        rgba(0, 255, 157, 0.03) 4px
-    );
-    pointer-events: none;
-    z-index: 1000;
-}
-
-.scanlines.disabled::before,
-[data-theme="light"] .scanlines::before {
-    display: none;
-}
-
-/* ============================================
-   4. Container/Layout
+   3. Container/Layout
    ============================================ */
 .container {
     max-width: 900px;
