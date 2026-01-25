@@ -655,6 +655,54 @@ window.moduleData = {
               }
             ],
             "solution": "func totalLength(words []string) int {\n    total := 0\n    for _, word := range words {\n        total += len(word)\n    }\n    return total\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Product of Slice",
+            "description": "Write <code>func product(nums []int) int</code> that returns the product of all numbers (multiply them together).",
+            "functionSignature": "func product(nums []int) int",
+            "testCases": [
+              { "input": "[]int{2, 3, 4}", "output": "24" },
+              { "input": "[]int{5, 2, 1}", "output": "10" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Like sum, but multiply. What should your starting value be? (Hint: not 0!)" },
+              { "title": "💡 Hint", "content": "Start with result := 1 (identity for multiplication). Multiply each element into the accumulator." },
+              { "title": "🔧 Pattern", "content": "<pre>1. Start with result := 1\n2. For each element:\n   - result *= element\n3. Return result</pre>" }
+            ],
+            "solution": "func product(nums []int) int {\n    result := 1\n    for _, n := range nums {\n        result *= n\n    }\n    return result\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Running Balance",
+            "description": "Write <code>func balance(transactions []int) int</code> where positive numbers are deposits, negative are withdrawals. Return final balance.",
+            "functionSignature": "func balance(transactions []int) int",
+            "testCases": [
+              { "input": "[]int{100, -30, 50, -20}", "output": "100", "note": "100 - 30 + 50 - 20 = 100" },
+              { "input": "[]int{-10, 20, -5}", "output": "5" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "This is just a sum! Positive and negative numbers handle themselves." },
+              { "title": "💡 Hint", "content": "Start with balance := 0. Add each transaction (negatives will subtract automatically)." },
+              { "title": "🔧 Pattern", "content": "<pre>1. Start with balance := 0\n2. For each transaction:\n   - balance += transaction\n3. Return balance</pre>" }
+            ],
+            "solution": "func balance(transactions []int) int {\n    bal := 0\n    for _, t := range transactions {\n        bal += t\n    }\n    return bal\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Concat All",
+            "description": "Write <code>func concatAll(words []string) string</code> that concatenates all strings with no separator.",
+            "functionSignature": "func concatAll(words []string) string",
+            "testCases": [
+              { "input": "[]string{\"a\", \"b\", \"c\"}", "output": "\"abc\"" },
+              { "input": "[]string{\"Go\", \"Lang\"}", "output": "\"GoLang\"" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Build up a string by adding each word to the end." },
+              { "title": "💡 Hint", "content": "Start with result := \"\". For each word, result += word." },
+              { "title": "🔧 Pattern", "content": "<pre>1. Start with result := \"\"\n2. For each word:\n   - result += word\n3. Return result</pre>" }
+            ],
+            "solution": "func concatAll(words []string) string {\n    result := \"\"\n    for _, w := range words {\n        result += w\n    }\n    return result\n}"
           }
         ]
       },
@@ -755,6 +803,54 @@ window.moduleData = {
               }
             ],
             "solution": "func countPassing(scores []int, threshold int) int {\n    count := 0\n    for _, score := range scores {\n        if score >= threshold {\n            count++\n        }\n    }\n    return count\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Count Divisible By",
+            "description": "Write <code>func countDivisible(nums []int, d int) int</code> that counts numbers divisible by d.",
+            "functionSignature": "func countDivisible(nums []int, d int) int",
+            "testCases": [
+              { "input": "[]int{3, 6, 7, 9, 12}, 3", "output": "4", "note": "3, 6, 9, 12 are divisible by 3" },
+              { "input": "[]int{1, 2, 3, 4, 5}, 2", "output": "2" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "How do you check if a number is divisible by another? What operation gives you the remainder?" },
+              { "title": "💡 Hint", "content": "Use the modulo operator: num % d == 0 means num is divisible by d." },
+              { "title": "🔧 Pattern", "content": "<pre>1. count := 0\n2. For each num:\n   - num % d == 0? → count++\n3. Return count</pre>" }
+            ],
+            "solution": "func countDivisible(nums []int, d int) int {\n    count := 0\n    for _, n := range nums {\n        if n % d == 0 { count++ }\n    }\n    return count\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Count Long Words",
+            "description": "Write <code>func countLongWords(words []string, minLen int) int</code> that counts words with length >= minLen.",
+            "functionSignature": "func countLongWords(words []string, minLen int) int",
+            "testCases": [
+              { "input": "[]string{\"go\", \"python\", \"rust\", \"c\"}, 4", "output": "2", "note": "python and rust have len >= 4" },
+              { "input": "[]string{\"a\", \"ab\", \"abc\"}, 2", "output": "2" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Same counting pattern, just checking string length instead of numeric value." },
+              { "title": "💡 Hint", "content": "Use len(word) >= minLen as your condition." },
+              { "title": "🔧 Pattern", "content": "<pre>1. count := 0\n2. For each word:\n   - len(word) >= minLen? → count++\n3. Return count</pre>" }
+            ],
+            "solution": "func countLongWords(words []string, minLen int) int {\n    count := 0\n    for _, w := range words {\n        if len(w) >= minLen { count++ }\n    }\n    return count\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Count In Range",
+            "description": "Write <code>func countInRange(nums []int, min, max int) int</code> that counts numbers where min <= num <= max.",
+            "functionSignature": "func countInRange(nums []int, min, max int) int",
+            "testCases": [
+              { "input": "[]int{1, 5, 10, 15, 20}, 5, 15", "output": "3", "note": "5, 10, 15 are in range" },
+              { "input": "[]int{1, 2, 3, 4, 5}, 2, 4", "output": "3" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "You need to check TWO conditions: num >= min AND num <= max." },
+              { "title": "💡 Hint", "content": "Combine conditions with &&: if num >= min && num <= max." },
+              { "title": "🔧 Pattern", "content": "<pre>1. count := 0\n2. For each num:\n   - num >= min && num <= max? → count++\n3. Return count</pre>" }
+            ],
+            "solution": "func countInRange(nums []int, min, max int) int {\n    count := 0\n    for _, n := range nums {\n        if n >= min && n <= max { count++ }\n    }\n    return count\n}"
           }
         ]
       },
@@ -859,6 +955,59 @@ window.moduleData = {
               }
             ],
             "solution": "func ageCategory(age int) string {\n    if age <= 1 { return \"infant\" }\n    if age <= 3 { return \"toddler\" }\n    if age <= 12 { return \"child\" }\n    if age <= 19 { return \"teen\" }\n    return \"adult\"\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Number Sign",
+            "description": "Write <code>func sign(n int) string</code> returning \"positive\", \"negative\", or \"zero\".",
+            "functionSignature": "func sign(n int) string",
+            "testCases": [
+              { "input": "5", "output": "\"positive\"" },
+              { "input": "-3", "output": "\"negative\"" },
+              { "input": "0", "output": "\"zero\"" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Three cases: greater than 0, less than 0, or equal to 0." },
+              { "title": "💡 Hint", "content": "Check n > 0, then n < 0, else it's zero." },
+              { "title": "🔧 Pattern", "content": "<pre>if n > 0 { return \"positive\" }\nif n < 0 { return \"negative\" }\nreturn \"zero\"</pre>" }
+            ],
+            "solution": "func sign(n int) string {\n    if n > 0 { return \"positive\" }\n    if n < 0 { return \"negative\" }\n    return \"zero\"\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Ticket Price",
+            "description": "Write <code>func ticketPrice(age int) int</code>: children (0-12) pay 5, teens (13-17) pay 8, adults (18-64) pay 12, seniors (65+) pay 7.",
+            "functionSignature": "func ticketPrice(age int) int",
+            "testCases": [
+              { "input": "10", "output": "5" },
+              { "input": "15", "output": "8" },
+              { "input": "30", "output": "12" },
+              { "input": "70", "output": "7" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Multiple age ranges with different prices. Check from youngest to oldest." },
+              { "title": "💡 Hint", "content": "Use if-else chain checking upper bounds: <= 12, <= 17, <= 64, else senior." },
+              { "title": "🔧 Pattern", "content": "<pre>if age <= 12 { return 5 }\nif age <= 17 { return 8 }\nif age <= 64 { return 12 }\nreturn 7</pre>" }
+            ],
+            "solution": "func ticketPrice(age int) int {\n    if age <= 12 { return 5 }\n    if age <= 17 { return 8 }\n    if age <= 64 { return 12 }\n    return 7\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Shipping Cost",
+            "description": "Write <code>func shippingCost(weight int) int</code>: 0-1kg costs 5, 2-5kg costs 10, 6-10kg costs 20, over 10kg costs 50.",
+            "functionSignature": "func shippingCost(weight int) int",
+            "testCases": [
+              { "input": "1", "output": "5" },
+              { "input": "3", "output": "10" },
+              { "input": "8", "output": "20" },
+              { "input": "15", "output": "50" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Multiple weight brackets. Check from lightest to heaviest." },
+              { "title": "💡 Hint", "content": "Check upper bounds: <= 1, <= 5, <= 10, else heavy." },
+              { "title": "🔧 Pattern", "content": "<pre>if weight <= 1 { return 5 }\nif weight <= 5 { return 10 }\nif weight <= 10 { return 20 }\nreturn 50</pre>" }
+            ],
+            "solution": "func shippingCost(weight int) int {\n    if weight <= 1 { return 5 }\n    if weight <= 5 { return 10 }\n    if weight <= 10 { return 20 }\n    return 50\n}"
           }
         ]
       },
@@ -959,6 +1108,95 @@ window.moduleData = {
               }
             ],
             "solution": "func longest(words []string) string {\n    r := words[0]\n    for _, w := range words {\n        if len(w) > len(r) { r = w }\n    }\n    return r\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Shortest String",
+            "description": "Write <code>func shortest(words []string) string</code> that returns the shortest word.",
+            "functionSignature": "func shortest(words []string) string",
+            "testCases": [
+              {
+                "input": "[]string{\"go\", \"python\", \"java\"}",
+                "output": "\"go\""
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "If you want to track the 'best so far', what's a reasonable starting value? Hint: what if the first element is the answer?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Initialize with the first element. Compare each subsequent element - if it's shorter, update your best."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Start with first element as \"best so far\"\n2. For each remaining element:\n   - Shorter than current best? → update best\n3. Return best</pre>"
+              }
+            ],
+            "solution": "func shortest(words []string) string {\n    r := words[0]\n    for _, w := range words {\n        if len(w) < len(r) { r = w }\n    }\n    return r\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Second Largest",
+            "description": "Write <code>func secondLargest(nums []int) int</code> that returns the second largest number. Assume at least 2 distinct numbers.",
+            "functionSignature": "func secondLargest(nums []int) int",
+            "testCases": [
+              {
+                "input": "[]int{5, 1, 9, 3}",
+                "output": "5"
+              },
+              {
+                "input": "[]int{10, 10, 8, 5}",
+                "output": "8"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need to track TWO values: the best so far AND the second best. When should each one update?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Track first and second. When you find a new max, the old max becomes second. When you find something bigger than second but smaller than first, that becomes the new second."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Initialize first and second with smallest possible values\n2. For each element:\n   - Bigger than first? → second = first, first = element\n   - Bigger than second (and != first)? → second = element\n3. Return second</pre>"
+              }
+            ],
+            "solution": "func secondLargest(nums []int) int {\n    first, second := nums[0], nums[1]\n    if second > first { first, second = second, first }\n    for _, n := range nums[2:] {\n        if n > first { second, first = first, n\n        } else if n > second && n != first { second = n }\n    }\n    return second\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Smallest Positive",
+            "description": "Write <code>func smallestPositive(nums []int) int</code> that returns the smallest positive number, or -1 if none exist.",
+            "functionSignature": "func smallestPositive(nums []int) int",
+            "testCases": [
+              {
+                "input": "[]int{-5, 3, -1, 7, 2}",
+                "output": "2"
+              },
+              {
+                "input": "[]int{-3, -1, 0}",
+                "output": "-1"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need to find an extrema (minimum) but with a condition (must be positive). What's tricky about initializing the 'best so far'?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "You can't initialize with nums[0] if it might not be positive. Either find the first positive to initialize, or use a flag to track if you've found any positive."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Initialize result to -1 (not found)\n2. For each element:\n   - Is positive AND (first positive OR smaller than result)?\n   → update result\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func smallestPositive(nums []int) int {\n    result := -1\n    for _, n := range nums {\n        if n > 0 && (result == -1 || n < result) {\n            result = n\n        }\n    }\n    return result\n}"
           }
         ]
       },
@@ -1059,6 +1297,87 @@ window.moduleData = {
               }
             ],
             "solution": "func filterShort(words []string, max int) []string {\n    r := []string{}\n    for _, w := range words {\n        if len(w) <= max { r = append(r, w) }\n    }\n    return r\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Filter Greater Than",
+            "description": "Write <code>func filterGreater(nums []int, threshold int) []int</code> returning only numbers greater than threshold.",
+            "functionSignature": "func filterGreater(nums []int, threshold int) []int",
+            "testCases": [
+              {
+                "input": "[]int{1, 5, 3, 8, 2}, 3",
+                "output": "[5, 8]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You want to build a new collection containing only some elements. What do you start with, and how do you add elements that pass your test?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Start with an empty slice. Loop through, check if n > threshold, and append elements that pass."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Start with empty result slice\n2. For each element:\n   - Passes test? → append to result\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func filterGreater(nums []int, threshold int) []int {\n    r := []int{}\n    for _, n := range nums {\n        if n > threshold { r = append(r, n) }\n    }\n    return r\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Filter Non-Empty",
+            "description": "Write <code>func filterNonEmpty(words []string) []string</code> returning only non-empty strings.",
+            "functionSignature": "func filterNonEmpty(words []string) []string",
+            "testCases": [
+              {
+                "input": "[]string{\"go\", \"\", \"python\", \"\"}",
+                "output": "[\"go\", \"python\"]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You want to filter out empty strings. How do you check if a string is empty?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Check if len(w) > 0 or equivalently w != \"\". Append only strings that pass this test."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Start with empty result slice\n2. For each element:\n   - Not empty? → append to result\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func filterNonEmpty(words []string) []string {\n    r := []string{}\n    for _, w := range words {\n        if w != \"\" { r = append(r, w) }\n    }\n    return r\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Filter In Range",
+            "description": "Write <code>func filterInRange(nums []int, min, max int) []int</code> returning numbers where min <= n <= max.",
+            "functionSignature": "func filterInRange(nums []int, min, max int) []int",
+            "testCases": [
+              {
+                "input": "[]int{1, 5, 3, 8, 2}, 2, 5",
+                "output": "[5, 3, 2]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need to check TWO conditions: the number must be >= min AND <= max."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Use n >= min && n <= max as your filter condition. Only append elements that satisfy both conditions."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Start with empty result slice\n2. For each element:\n   - In range [min, max]? → append to result\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func filterInRange(nums []int, min, max int) []int {\n    r := []int{}\n    for _, n := range nums {\n        if n >= min && n <= max { r = append(r, n) }\n    }\n    return r\n}"
           }
         ]
       },
@@ -1159,6 +1478,99 @@ window.moduleData = {
               }
             ],
             "solution": "func firstNegIdx(nums []int) int {\n    for i, n := range nums {\n        if n < 0 { return i }\n    }\n    return -1\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Find First Even",
+            "description": "Write <code>func firstEvenIdx(nums []int) int</code> returning the index of the first even number, or -1 if none.",
+            "functionSignature": "func firstEvenIdx(nums []int) int",
+            "testCases": [
+              {
+                "input": "[]int{1, 3, 4, 5}",
+                "output": "2"
+              },
+              {
+                "input": "[]int{1, 3, 5}",
+                "output": "-1"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "How do you check if a number is even? Use the modulo operator."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Check if n % 2 == 0. If so, return that index immediately. Otherwise keep looking."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. For each element with its index:\n   - Is even (n % 2 == 0)? → return index\n2. Loop finished? → return -1 (not found)</pre>"
+              }
+            ],
+            "solution": "func firstEvenIdx(nums []int) int {\n    for i, n := range nums {\n        if n % 2 == 0 { return i }\n    }\n    return -1\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Last Index Of",
+            "description": "Write <code>func lastIndex(nums []int, target int) int</code> returning the LAST index where target appears, or -1.",
+            "functionSignature": "func lastIndex(nums []int, target int) int",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 2, 1}, 2",
+                "output": "3"
+              },
+              {
+                "input": "[]int{1, 2, 3}, 5",
+                "output": "-1"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Unlike finding the FIRST match (where you return immediately), for the LAST match you need to keep track of matches as you go."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Initialize result to -1. Each time you find a match, update result to that index. After the loop, return result."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Initialize result := -1\n2. For each element with its index:\n   - Matches target? → result = index\n3. Return result (last match, or -1)</pre>"
+              }
+            ],
+            "solution": "func lastIndex(nums []int, target int) int {\n    result := -1\n    for i, n := range nums {\n        if n == target { result = i }\n    }\n    return result\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Find Long Word Index",
+            "description": "Write <code>func findLongWordIdx(words []string, minLen int) int</code> returning the index of first word with length >= minLen, or -1.",
+            "functionSignature": "func findLongWordIdx(words []string, minLen int) int",
+            "testCases": [
+              {
+                "input": "[]string{\"go\", \"hi\", \"python\"}, 4",
+                "output": "2"
+              },
+              {
+                "input": "[]string{\"a\", \"bb\"}, 5",
+                "output": "-1"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Instead of matching an exact value, you're matching a condition (length >= minLen)."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Check if len(w) >= minLen. If so, return that index immediately. Otherwise keep looking."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. For each word with its index:\n   - Long enough? → return index\n2. Loop finished? → return -1 (not found)</pre>"
+              }
+            ],
+            "solution": "func findLongWordIdx(words []string, minLen int) int {\n    for i, w := range words {\n        if len(w) >= minLen { return i }\n    }\n    return -1\n}"
           }
         ]
       },
@@ -1404,6 +1816,56 @@ window.moduleData = {
               }
             ],
             "solution": "func countByLength(words []string) map[int]int {\n    c := make(map[int]int)\n    for _, w := range words { c[len(w)]++ }\n    return c\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Count Unique Elements",
+            "description": "Write <code>func countUnique(nums []int) int</code> that returns how many distinct values are in the slice.",
+            "functionSignature": "func countUnique(nums []int) int",
+            "testCases": [
+              { "input": "[]int{1, 2, 2, 3, 3, 3}", "output": "3", "note": "unique values: 1, 2, 3" },
+              { "input": "[]int{5, 5, 5}", "output": "1" },
+              { "input": "[]int{1, 2, 3, 4}", "output": "4" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "A map's keys are always unique. If you add each element as a key, how many keys will you have?" },
+              { "title": "💡 Hint", "content": "Add every element to a map (value doesn't matter, use true). The number of keys equals the number of unique elements." },
+              { "title": "🔧 Pattern", "content": "<pre>1. Create empty map\n2. For each element: add to map\n3. Return len(map)</pre>" }
+            ],
+            "solution": "func countUnique(nums []int) int {\n    seen := make(map[int]bool)\n    for _, n := range nums { seen[n] = true }\n    return len(seen)\n}"
+          },
+          {
+            "id": "v10",
+            "title": "Count Above Threshold",
+            "description": "Write <code>func countAbove(nums []int, threshold int) int</code> that counts how many numbers are strictly greater than the threshold.",
+            "functionSignature": "func countAbove(nums []int, threshold int) int",
+            "testCases": [
+              { "input": "[]int{1, 5, 3, 8, 2}, 3", "output": "2", "note": "5 and 8 are > 3" },
+              { "input": "[]int{10, 20, 30}, 5", "output": "3" },
+              { "input": "[]int{1, 2, 3}, 10", "output": "0" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "This is simple counting with a condition - no map needed! Just count elements that pass the test." },
+              { "title": "💡 Hint", "content": "Initialize count := 0. Loop through, if element > threshold, increment count." },
+              { "title": "🔧 Pattern", "content": "<pre>1. count := 0\n2. For each element:\n   - element > threshold? → count++\n3. Return count</pre>" }
+            ],
+            "solution": "func countAbove(nums []int, threshold int) int {\n    count := 0\n    for _, n := range nums {\n        if n > threshold { count++ }\n    }\n    return count\n}"
+          },
+          {
+            "id": "v11",
+            "title": "Group by First Letter",
+            "description": "Write <code>func countByFirstLetter(words []string) map[string]int</code> that counts how many words start with each letter. Use lowercase keys.",
+            "functionSignature": "func countByFirstLetter(words []string) map[string]int",
+            "testCases": [
+              { "input": "[]string{\"apple\", \"ant\", \"bear\", \"ace\"}", "output": "map[a:3 b:1]" },
+              { "input": "[]string{\"Go\", \"great\", \"Python\"}", "output": "map[g:2 p:1]", "note": "lowercase keys" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Extract the first character of each word and use it as the key. How do you get the first character of a string?" },
+              { "title": "💡 Hint", "content": "Use strings.ToLower(string(word[0])) to get the lowercase first letter as a string. Then count like before." },
+              { "title": "🔧 Pattern", "content": "<pre>1. Create empty count map\n2. For each word:\n   - Get first letter (lowercase)\n   - Increment count for that letter\n3. Return map</pre>" }
+            ],
+            "solution": "func countByFirstLetter(words []string) map[string]int {\n    c := make(map[string]int)\n    for _, w := range words {\n        if len(w) > 0 {\n            first := strings.ToLower(string(w[0]))\n            c[first]++\n        }\n    }\n    return c\n}"
           }
         ]
       },
@@ -1696,6 +2158,54 @@ window.moduleData = {
               }
             ],
             "solution": "func swapHalves(nums []int) {\n    mid := len(nums) / 2\n    for i := 0; i < mid; i++ {\n        nums[i], nums[i+mid] = nums[i+mid], nums[i]\n    }\n}"
+          },
+          {
+            "id": "v10",
+            "title": "Rotate Right by One",
+            "description": "Write <code>func rotateRight(nums []int)</code> that shifts all elements one position right, wrapping the last element to the front. E.g., [1,2,3,4] → [4,1,2,3].",
+            "functionSignature": "func rotateRight(nums []int)",
+            "testCases": [
+              { "input": "[]int{1,2,3,4}", "output": "[4,1,2,3]" },
+              { "input": "[]int{5,10,15}", "output": "[15,5,10]" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Similar to rotate left, but in reverse. Save the last element, shift everything right, put saved at front." },
+              { "title": "💡 Hint", "content": "Save last := nums[len-1]. Loop backwards from len-1 down to 1, copying nums[i-1] to nums[i]. Set nums[0] = last." },
+              { "title": "🔧 Pattern", "content": "<pre>1. Save last element: last := nums[len-1]\n2. Shift elements right: for i := len-1; i > 0; i-- → nums[i] = nums[i-1]\n3. Place last at front: nums[0] = last</pre>" }
+            ],
+            "solution": "func rotateRight(nums []int) {\n    if len(nums) == 0 { return }\n    last := nums[len(nums)-1]\n    for i := len(nums)-1; i > 0; i-- {\n        nums[i] = nums[i-1]\n    }\n    nums[0] = last\n}"
+          },
+          {
+            "id": "v11",
+            "title": "Swap If Out of Order",
+            "description": "Write <code>func swapIfGreater(nums []int, i, j int)</code> that swaps elements at i and j only if nums[i] > nums[j]. This is a building block for sorting!",
+            "functionSignature": "func swapIfGreater(nums []int, i, j int)",
+            "testCases": [
+              { "input": "[]int{5,2,8,1}, 0, 1", "output": "[2,5,8,1]", "note": "5 > 2, so swap" },
+              { "input": "[]int{1,5,3,4}, 0, 1", "output": "[1,5,3,4]", "note": "1 < 5, no swap" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Check if the first element is greater. If yes, swap. If no, do nothing." },
+              { "title": "💡 Hint", "content": "Use an if statement: if nums[i] > nums[j], then do the swap." },
+              { "title": "🔧 Pattern", "content": "<pre>if nums[i] > nums[j] {\n    nums[i], nums[j] = nums[j], nums[i]\n}</pre>" }
+            ],
+            "solution": "func swapIfGreater(nums []int, i, j int) {\n    if nums[i] > nums[j] {\n        nums[i], nums[j] = nums[j], nums[i]\n    }\n}"
+          },
+          {
+            "id": "v12",
+            "title": "Move to Front",
+            "description": "Write <code>func moveToFront(nums []int, idx int)</code> that moves the element at idx to the front, shifting other elements right. E.g., [1,2,3,4] with idx=2 → [3,1,2,4].",
+            "functionSignature": "func moveToFront(nums []int, idx int)",
+            "testCases": [
+              { "input": "[]int{1,2,3,4}, 2", "output": "[3,1,2,4]" },
+              { "input": "[]int{10,20,30,40}, 3", "output": "[40,10,20,30]" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Save the element at idx. Shift elements from 0 to idx-1 one position right. Put saved element at front." },
+              { "title": "💡 Hint", "content": "Save val := nums[idx]. Loop backwards from idx down to 1, copying nums[i-1] to nums[i]. Set nums[0] = val." },
+              { "title": "🔧 Pattern", "content": "<pre>1. Save element: val := nums[idx]\n2. Shift right: for i := idx; i > 0; i-- → nums[i] = nums[i-1]\n3. Place at front: nums[0] = val</pre>" }
+            ],
+            "solution": "func moveToFront(nums []int, idx int) {\n    val := nums[idx]\n    for i := idx; i > 0; i-- {\n        nums[i] = nums[i-1]\n    }\n    nums[0] = val\n}"
           }
         ]
       },
@@ -1800,6 +2310,99 @@ window.moduleData = {
               }
             ],
             "solution": "func isSorted(nums []int) bool {\n    for i := 0; i < len(nums)-1; i++ {\n        if nums[i] > nums[i+1] { return false }\n    }\n    return true\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Has Adjacent Duplicates",
+            "description": "Write <code>func hasAdjacentDups(nums []int) bool</code> - true if any two adjacent elements are equal.",
+            "functionSignature": "func hasAdjacentDups(nums []int) bool",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 2, 3}",
+                "output": "true"
+              },
+              {
+                "input": "[]int{1, 2, 3, 4}",
+                "output": "false"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need to compare each element with its neighbor. What pairs should you check?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Loop through indices 0 to len-2. Compare nums[i] with nums[i+1]. If they're equal, you found adjacent duplicates."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Loop through indices 0 to len-2\n2. Compare each element with the next\n3. If nums[i] == nums[i+1] → return true\n4. Return false (no adjacent duplicates)</pre>"
+              }
+            ],
+            "solution": "func hasAdjacentDups(nums []int) bool {\n    for i := 0; i < len(nums)-1; i++ {\n        if nums[i] == nums[i+1] { return true }\n    }\n    return false\n}"
+          },
+          {
+            "id": "v5",
+            "title": "All Increasing",
+            "description": "Write <code>func allIncreasing(nums []int) bool</code> - true if strictly increasing (each element < next).",
+            "functionSignature": "func allIncreasing(nums []int) bool",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 4}",
+                "output": "true"
+              },
+              {
+                "input": "[]int{1, 2, 2, 3}",
+                "output": "false"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Strictly increasing means each element must be LESS than (not equal to) the next."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Compare adjacent pairs. If nums[i] >= nums[i+1], it's not strictly increasing."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Loop through indices 0 to len-2\n2. Compare each element with the next\n3. If nums[i] >= nums[i+1] → return false\n4. Return true (all strictly increasing)</pre>"
+              }
+            ],
+            "solution": "func allIncreasing(nums []int) bool {\n    for i := 0; i < len(nums)-1; i++ {\n        if nums[i] >= nums[i+1] { return false }\n    }\n    return true\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Starts And Ends Same",
+            "description": "Write <code>func startsEndsSame(nums []int, k int) bool</code> - true if first k elements match last k elements.",
+            "functionSignature": "func startsEndsSame(nums []int, k int) bool",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 1, 2}, 2",
+                "output": "true"
+              },
+              {
+                "input": "[]int{1, 2, 3, 4, 5}, 2",
+                "output": "false"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need to compare the first k elements with the last k elements. What are the corresponding indices?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Element at index i should match element at index len-k+i. Check all k pairs."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Loop i from 0 to k-1\n2. Compare nums[i] with nums[len-k+i]\n3. If mismatch → return false\n4. Return true (all pairs match)</pre>"
+              }
+            ],
+            "solution": "func startsEndsSame(nums []int, k int) bool {\n    n := len(nums)\n    for i := 0; i < k; i++ {\n        if nums[i] != nums[n-k+i] { return false }\n    }\n    return true\n}"
           }
         ]
       },
@@ -1904,6 +2507,91 @@ window.moduleData = {
               }
             ],
             "solution": "func reverseSegment(nums []int, start, end int) {\n    for i, j := start, end; i < j; i, j = i+1, j-1 {\n        nums[i], nums[j] = nums[j], nums[i]\n    }\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Swap First and Last",
+            "description": "Write <code>func swapEnds(nums []int) []int</code> that swaps the first and last elements.",
+            "functionSignature": "func swapEnds(nums []int) []int",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 4, 5}",
+                "output": "[5, 2, 3, 4, 1]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You only need to swap two specific elements. What are their indices?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "First element is at index 0, last is at index len-1. Use Go's simultaneous assignment to swap."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Identify indices: first = 0, last = len-1\n2. Swap: nums[0], nums[last] = nums[last], nums[0]\n3. Return the modified slice</pre>"
+              }
+            ],
+            "solution": "func swapEnds(nums []int) []int {\n    n := len(nums)\n    nums[0], nums[n-1] = nums[n-1], nums[0]\n    return nums\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Rotate Right by One",
+            "description": "Write <code>func rotateRight(nums []int) []int</code> that moves the last element to the front.",
+            "functionSignature": "func rotateRight(nums []int) []int",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 4, 5}",
+                "output": "[5, 1, 2, 3, 4]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "The last element goes to index 0, and all other elements shift right by one position."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Save the last element. Then loop backwards, shifting each element to the right. Finally place the saved element at index 0."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Save last element: temp = nums[len-1]\n2. Shift all elements right: nums[i] = nums[i-1]\n3. Place saved element at front: nums[0] = temp</pre>"
+              }
+            ],
+            "solution": "func rotateRight(nums []int) []int {\n    n := len(nums)\n    last := nums[n-1]\n    for i := n-1; i > 0; i-- {\n        nums[i] = nums[i-1]\n    }\n    nums[0] = last\n    return nums\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Mirror Slice",
+            "description": "Write <code>func mirror(nums []int) []int</code> that makes the second half mirror the first half. For [1,2,3,4] → [1,2,2,1].",
+            "functionSignature": "func mirror(nums []int) []int",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 4}",
+                "output": "[1, 2, 2, 1]"
+              },
+              {
+                "input": "[]int{1, 2, 3, 4, 5}",
+                "output": "[1, 2, 3, 2, 1]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need to copy elements from the first half to matching positions in the second half."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Use two pointers: one from start, one from end. Copy nums[i] to nums[j] as long as i < j."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. left pointer at 0, right pointer at len-1\n2. While left < right:\n   - Copy nums[left] to nums[right]\n   - Move both pointers inward\n3. Return modified slice</pre>"
+              }
+            ],
+            "solution": "func mirror(nums []int) []int {\n    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n        nums[j] = nums[i]\n    }\n    return nums\n}"
           }
         ]
       },
@@ -2004,6 +2692,99 @@ window.moduleData = {
               }
             ],
             "solution": "func hasDup(nums []int) bool {\n    seen := make(map[int]bool)\n    for _, n := range nums {\n        if seen[n] { return true }\n        seen[n] = true\n    }\n    return false\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Two Sum Exists",
+            "description": "Write <code>func twoSumExists(nums []int, target int) bool</code> - true if any two numbers add to target.",
+            "functionSignature": "func twoSumExists(nums []int, target int) bool",
+            "testCases": [
+              {
+                "input": "[]int{2, 7, 11, 15}, 9",
+                "output": "true"
+              },
+              {
+                "input": "[]int{2, 7, 11, 15}, 10",
+                "output": "false"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "For each number, what complement would you need to see to make the target sum? How can you check if you've seen that complement?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "For each num, check if (target - num) is in your 'seen' set. If yes, you found a pair! If no, add num to seen and continue."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Create empty \"seen\" map\n2. For each num:\n   - complement = target - num\n   - seen[complement]? → return true\n   - Add num to seen\n3. Return false</pre>"
+              }
+            ],
+            "solution": "func twoSumExists(nums []int, target int) bool {\n    seen := make(map[int]bool)\n    for _, n := range nums {\n        if seen[target-n] { return true }\n        seen[n] = true\n    }\n    return false\n}"
+          },
+          {
+            "id": "v5",
+            "title": "All Unique Words",
+            "description": "Write <code>func allUnique(words []string) bool</code> - true if no word appears twice.",
+            "functionSignature": "func allUnique(words []string) bool",
+            "testCases": [
+              {
+                "input": "[]string{\"go\", \"rust\", \"python\"}",
+                "output": "true"
+              },
+              {
+                "input": "[]string{\"go\", \"rust\", \"go\"}",
+                "output": "false"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "This is the inverse of 'has duplicate'. When should you return false?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Use a map to track seen words. If you ever encounter a word you've already seen, return false. If you finish the loop, return true."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Create empty \"seen\" map\n2. For each word:\n   - Already seen? → return false\n   - Add to seen\n3. Return true (all unique)</pre>"
+              }
+            ],
+            "solution": "func allUnique(words []string) bool {\n    seen := make(map[string]bool)\n    for _, w := range words {\n        if seen[w] { return false }\n        seen[w] = true\n    }\n    return true\n}"
+          },
+          {
+            "id": "v6",
+            "title": "First Non-Repeating",
+            "description": "Write <code>func firstNonRepeating(s string) rune</code> - first character that appears exactly once, or 0 if all repeat.",
+            "functionSignature": "func firstNonRepeating(s string) rune",
+            "testCases": [
+              {
+                "input": "\"aabbccd\"",
+                "output": "'d'"
+              },
+              {
+                "input": "\"aabbcc\"",
+                "output": "0"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need TWO passes: first count all characters, then find the first one with count == 1."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "First pass: build a frequency map. Second pass: iterate through string again and return the first char with count == 1."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. First pass: count each character\n2. Second pass: for each character\n   - Count == 1? → return it\n3. Return 0 (none found)</pre>"
+              }
+            ],
+            "solution": "func firstNonRepeating(s string) rune {\n    counts := make(map[rune]int)\n    for _, r := range s { counts[r]++ }\n    for _, r := range s {\n        if counts[r] == 1 { return r }\n    }\n    return 0\n}"
           }
         ]
       }

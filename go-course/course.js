@@ -71,6 +71,43 @@
         details.thinking-locked summary::after {
             content: ' 🔒';
         }
+        .concept-filter {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            border: 1px solid var(--bg-lighter);
+        }
+        .concept-filter-label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .concept-filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .concept-btn {
+            background: transparent;
+            border: 1px solid var(--bg-lighter);
+            color: var(--text);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .concept-btn:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+        .concept-btn.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: white;
+        }
     `;
     document.head.appendChild(timerStyles);
 
@@ -80,6 +117,7 @@
     const currentWarmupVariants = {};
     const currentIntermediateVariants = {};
     const currentChallengeVariants = {};
+    let currentConceptFilter = null; // null = show all
 
     function escapeHtml(text) {
         const div = document.createElement('div');
@@ -144,6 +182,7 @@
         shuffleWarmups();
         shuffleIntermediate();
         shuffleChallenges();
+        setupConceptFilter();
         shuffleVariants();
     }
 
@@ -328,16 +367,144 @@
         }
     }
 
+    function getUniqueConcepts() {
+        if (!variantsData || !variantsData.challenges) return [];
+        const concepts = new Set();
+        variantsData.challenges.forEach(c => {
+            if (c.concept) concepts.add(c.concept);
+        });
+        return Array.from(concepts).sort();
+    }
+
+    function setupConceptFilter() {
+        const container = document.getElementById('challenges-container');
+        if (!container) return;
+
+        // Check if filter already exists
+        if (document.getElementById('concept-filter')) return;
+
+        const concepts = getUniqueConcepts();
+        if (concepts.length === 0) return;
+
+        const filterDiv = document.createElement('div');
+        filterDiv.id = 'concept-filter';
+        filterDiv.className = 'concept-filter';
+        filterDiv.innerHTML = `
+            <span class="concept-filter-label">🎯 Focus on a specific pattern:</span>
+            <div class="concept-filter-buttons">
+                <button class="concept-btn active" data-concept="">All Patterns</button>
+                ${concepts.map(c => `<button class="concept-btn" data-concept="${c}">${c}</button>`).join('')}
+            </div>
+        `;
+
+        container.parentNode.insertBefore(filterDiv, container);
+
+        // Add click handlers
+        filterDiv.querySelectorAll('.concept-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterDiv.querySelectorAll('.concept-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentConceptFilter = btn.dataset.concept || null;
+                shuffleChallenges();
+            });
+        });
+    }
+
+    function renderSingleChallenge(num, variant, challenge, difficulty) {
+        let html = `<div class="exercise">
+            <h4>Challenge ${num}: ${variant.title} <span style="font-size: 0.75rem; opacity: 0.6;">${difficulty}</span></h4>
+            <p>${variant.description}</p>`;
+
+        // Add hints
+        if (variant.hints) {
+            variant.hints.forEach((hint) => {
+                const title = typeof hint === 'object' ? hint.title : '💡 Hint';
+                const content = typeof hint === 'object' ? hint.content : hint;
+                html += `<details>
+                    <summary>${title}</summary>
+                    <div class="hint-content">${content}</div>
+                </details>`;
+            });
+        }
+
+        // Add solution
+        html += `<details>
+            <summary>✅ Solution</summary>
+            <div class="hint-content"><pre>${escapeHtml(variant.solution)}</pre></div>
+        </details>`;
+
+        // Add documentation links if available
+        if (challenge.docLinks && challenge.docLinks.length > 0) {
+            html += `<details>
+                <summary>📚 Documentation</summary>
+                <div class="hint-content">
+                    <p style="margin-bottom: 0.5rem; color: var(--text-dim);">Relevant Go docs:</p>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        ${challenge.docLinks.map(link =>
+                            `<li><a href="${link.url}" target="_blank" rel="noopener" style="color: var(--cyan);">${link.title}</a>${link.note ? ` <span style="color: var(--text-dim);">— ${link.note}</span>` : ''}</li>`
+                        ).join('\n                        ')}
+                    </ul>
+                </div>
+            </details>`;
+        }
+
+        // Add expected output
+        html += `<div class="expected">
+            <div class="expected-title">Expected Output</div>
+            <pre>${variant.testCases.map(tc =>
+                `${tc.input} → ${tc.output}`
+            ).join('\n')}</pre>
+        </div></div>`;
+
+        return html;
+    }
+
     function renderChallenges() {
         const container = document.getElementById('challenges-container');
         if (!container || !variantsData || !variantsData.challenges) return;
+
+        // Filter challenges by concept if a filter is active
+        const challenges = currentConceptFilter
+            ? variantsData.challenges.filter(c => c.concept === currentConceptFilter)
+            : variantsData.challenges;
 
         let html = '';
         let currentBlock = 0;
         const blockNames = { 1: 'Core Patterns', 2: 'Building & Filtering', 3: 'Two-Pointer Foundation', 4: 'Two-Pointer Application' };
         const blockDifficulty = { 1: '⭐', 2: '⭐⭐', 3: '⭐⭐', 4: '⭐⭐⭐' };
 
-        variantsData.challenges.forEach((challenge, idx) => {
+        if (challenges.length === 0) {
+            html = '<p style="color: var(--text-dim); text-align: center;">No challenges match this filter.</p>';
+            container.innerHTML = html;
+            return;
+        }
+
+        // When filtering by concept, show 6 random variants for practice
+        if (currentConceptFilter) {
+            // Collect all variants with their challenge info
+            const allVariants = [];
+            challenges.forEach(challenge => {
+                challenge.variants.forEach(variant => {
+                    allVariants.push({ variant, challenge, difficulty: blockDifficulty[challenge.block] });
+                });
+            });
+
+            // Shuffle and pick 6
+            const shuffled = allVariants.sort(() => Math.random() - 0.5);
+            const selected = shuffled.slice(0, 6);
+
+            html += `<p style="color: var(--orange); font-size: 0.9rem; margin: 0 0 1rem; font-weight: 600;">Practicing: ${currentConceptFilter} (${selected.length} of ${allVariants.length} variants)</p>`;
+
+            selected.forEach((item, idx) => {
+                html += renderSingleChallenge(idx + 1, item.variant, item.challenge, item.difficulty);
+            });
+
+            container.innerHTML = html;
+            container.querySelectorAll('.exercise').forEach(initThinkingTimer);
+            return;
+        }
+
+        challenges.forEach((challenge, idx) => {
             const variant = currentChallengeVariants[challenge.id];
             const num = idx + 1;
             const difficulty = blockDifficulty[challenge.block];
@@ -348,51 +515,7 @@
                 html += `<p style="color: var(--cyan); font-size: 0.85rem; margin: 1.5rem 0 0.5rem; font-weight: 600;">Block ${currentBlock}: ${blockNames[currentBlock]} <span style="opacity: 0.7">${difficulty}</span></p>`;
             }
 
-            html += `<div class="exercise">
-                <h4>Challenge ${num}: ${variant.title} <span style="font-size: 0.75rem; opacity: 0.6;">${difficulty}</span></h4>
-                <p>${variant.description}</p>`;
-
-            // Add hints
-            if (variant.hints) {
-                variant.hints.forEach((hint) => {
-                    // Support both old string format and new object format
-                    const title = typeof hint === 'object' ? hint.title : '💡 Hint';
-                    const content = typeof hint === 'object' ? hint.content : hint;
-                    html += `<details>
-                        <summary>${title}</summary>
-                        <div class="hint-content">${content}</div>
-                    </details>`;
-                });
-            }
-
-            // Add solution
-            html += `<details>
-                <summary>✅ Solution</summary>
-                <div class="hint-content"><pre>${escapeHtml(variant.solution)}</pre></div>
-            </details>`;
-
-            // Add documentation links if available
-            if (challenge.docLinks && challenge.docLinks.length > 0) {
-                html += `<details>
-                    <summary>📚 Documentation</summary>
-                    <div class="hint-content">
-                        <p style="margin-bottom: 0.5rem; color: var(--text-dim);">Relevant Go docs:</p>
-                        <ul style="margin: 0; padding-left: 1.5rem;">
-                            ${challenge.docLinks.map(link =>
-                                `<li><a href="${link.url}" target="_blank" rel="noopener" style="color: var(--cyan);">${link.title}</a>${link.note ? ` <span style="color: var(--text-dim);">— ${link.note}</span>` : ''}</li>`
-                            ).join('\n                            ')}
-                        </ul>
-                    </div>
-                </details>`;
-            }
-
-            // Add expected output
-            html += `<div class="expected">
-                <div class="expected-title">Expected Output</div>
-                <pre>${variant.testCases.map(tc =>
-                    `${tc.input} → ${tc.output}`
-                ).join('\n')}</pre>
-            </div></div>`;
+            html += renderSingleChallenge(num, variant, challenge, difficulty);
         });
 
         container.innerHTML = html;
