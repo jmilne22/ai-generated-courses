@@ -9,6 +9,71 @@
 (function() {
     'use strict';
 
+    // Thinking timer configuration (seconds) - set to 0 to disable
+    // Can be overridden per-page with: window.THINKING_TIME_SECONDS = 30;
+    const THINKING_TIME_SECONDS = window.THINKING_TIME_SECONDS ?? 45;
+
+    // Inject thinking timer CSS
+    const timerStyles = document.createElement('style');
+    timerStyles.textContent = `
+        .thinking-timer-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--purple);
+            color: var(--purple);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+        .thinking-timer-btn:hover {
+            background: var(--purple);
+            color: white;
+        }
+        .thinking-timer {
+            background: linear-gradient(135deg, var(--purple), var(--blue-bright));
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .thinking-timer .timer-icon {
+            font-size: 1.2em;
+        }
+        .thinking-timer .timer-countdown {
+            font-family: monospace;
+            font-size: 1.1em;
+            background: rgba(255,255,255,0.2);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+        }
+        .thinking-timer.timer-done {
+            background: var(--green-bright);
+            animation: none;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+        details.thinking-locked {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        details.thinking-locked summary {
+            cursor: not-allowed;
+        }
+        details.thinking-locked summary::after {
+            content: ' 🔒';
+        }
+    `;
+    document.head.appendChild(timerStyles);
+
     // State for tracking current variants
     let variantsData = null;
     const currentVariants = {};
@@ -20,6 +85,58 @@
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // Thinking timer - adds a button to start timer that locks hints/solutions (not docs)
+    function initThinkingTimer(container) {
+        if (THINKING_TIME_SECONDS <= 0) return;
+
+        const allDetails = container.querySelectorAll('details');
+        // Only lock hints and solutions, not documentation
+        const details = Array.from(allDetails).filter(d => {
+            const summary = d.querySelector('summary');
+            return summary && !summary.textContent.includes('Documentation');
+        });
+        if (details.length === 0) return;
+
+        // Add "Start Timer" button
+        const btn = document.createElement('button');
+        btn.className = 'thinking-timer-btn';
+        btn.innerHTML = `🧠 Start ${THINKING_TIME_SECONDS}s thinking timer`;
+        container.insertBefore(btn, allDetails[0]);
+
+        btn.addEventListener('click', function() {
+            // Lock hints/solutions (not docs)
+            details.forEach(d => {
+                d.classList.add('thinking-locked');
+            });
+
+            // Replace button with timer display
+            const timerDiv = document.createElement('div');
+            timerDiv.className = 'thinking-timer';
+            timerDiv.innerHTML = `<span class="timer-icon">🧠</span> Think first: <span class="timer-countdown">${THINKING_TIME_SECONDS}</span>s`;
+            btn.replaceWith(timerDiv);
+
+            // Countdown
+            let remaining = THINKING_TIME_SECONDS;
+            const countdownSpan = timerDiv.querySelector('.timer-countdown');
+
+            const interval = setInterval(() => {
+                remaining--;
+                countdownSpan.textContent = remaining;
+
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    // Unlock hints/solutions
+                    details.forEach(d => {
+                        d.classList.remove('thinking-locked');
+                    });
+                    timerDiv.innerHTML = '✅ Hints unlocked!';
+                    timerDiv.classList.add('timer-done');
+                    setTimeout(() => timerDiv.remove(), 2000);
+                }
+            }, 1000);
+        });
     }
 
     function loadVariants() {
@@ -99,6 +216,7 @@
         });
 
         container.innerHTML = html;
+        container.querySelectorAll('.exercise').forEach(initThinkingTimer);
     }
 
     function shuffleIntermediate() {
@@ -178,6 +296,7 @@
         });
 
         container.innerHTML = html;
+        container.querySelectorAll('.exercise').forEach(initThinkingTimer);
     }
 
     function shuffleChallenges() {
@@ -252,12 +371,12 @@
                 <div class="hint-content"><pre>${escapeHtml(variant.solution)}</pre></div>
             </details>`;
 
-            // Add documentation links if available (from challenge level)
+            // Add documentation links if available
             if (challenge.docLinks && challenge.docLinks.length > 0) {
                 html += `<details>
                     <summary>📚 Documentation</summary>
                     <div class="hint-content">
-                        <p style="margin-bottom: 0.5rem; color: var(--text-dim);">Relevant Go docs for this challenge:</p>
+                        <p style="margin-bottom: 0.5rem; color: var(--text-dim);">Relevant Go docs:</p>
                         <ul style="margin: 0; padding-left: 1.5rem;">
                             ${challenge.docLinks.map(link =>
                                 `<li><a href="${link.url}" target="_blank" rel="noopener" style="color: var(--cyan);">${link.title}</a>${link.note ? ` <span style="color: var(--text-dim);">— ${link.note}</span>` : ''}</li>`
@@ -277,6 +396,7 @@
         });
 
         container.innerHTML = html;
+        container.querySelectorAll('.exercise').forEach(initThinkingTimer);
     }
 
     function shuffleVariants() {
@@ -390,6 +510,7 @@
         });
 
         container.innerHTML = html;
+        container.querySelectorAll('.exercise').forEach(initThinkingTimer);
     }
 
     function renderPreExercisesFor(advancedId, advancedNum, advancedTitle) {
