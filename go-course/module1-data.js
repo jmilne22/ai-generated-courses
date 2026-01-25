@@ -238,6 +238,46 @@ for fast := 1; fast < len(items); fast++ {  // Initialize IN loop (read position
             { url: "https://go.dev/blog/slices-intro", title: "Go Blog: Slices introduction", note: "slice indexing and sub-slicing" },
             { url: "https://pkg.go.dev/builtin#len", title: "Builtin len()", note: "getting slice length" }
         ]
+    },
+    advanced_7: {
+        preReading: {
+            title: '📖 Pre-reading: The "Best So Far" Pattern',
+            content: `<strong>The Problem:</strong> Find the optimal result that depends on pairs of elements where order matters<br><br>
+                <strong>Example:</strong> Best Time to Buy/Sell Stock - you must buy BEFORE you sell<br><br>
+                <strong>Naive approach (slow):</strong><br>
+                Check every pair (i, j) where i < j - O(n²) 🐌<br><br>
+                <strong>Smart approach (fast):</strong><br>
+                Track the "best so far" as you scan - O(n) 🚀<br><br>
+                <strong>The Pattern:</strong><br>
+                • Track the minimum (or maximum) seen so far<br>
+                • At each position, calculate the best result using that tracked value<br>
+                • Update your overall best if this result is better<br><br>
+                <strong>Key insight:</strong> You don't need to remember ALL previous values - just the one that matters (min or max)!`
+        },
+        hints: [
+            {
+                title: '🤔 Think about it',
+                content: `To maximize profit, you want to buy low and sell high. As you scan through prices, what single value from the past do you need to remember to calculate the best possible profit at each day?`
+            },
+            {
+                title: '💡 Hint',
+                content: `Track the minimum price seen so far. At each day, the best profit you could make is: today's price - minimum so far. Keep track of the maximum profit across all days.`
+            },
+            {
+                title: '🔧 Pattern',
+                content: `<pre>1. Initialize: minSoFar = first element, bestResult = 0
+2. For each element:
+   - Calculate result using minSoFar
+   - Update bestResult if this is better
+   - Update minSoFar if current element is smaller
+3. Return bestResult</pre>`
+            }
+        ],
+        docLinks: [
+            { url: "https://go.dev/ref/spec#Comparison_operators", title: "Go Spec: Comparison operators", note: "< > comparisons" },
+            { url: "https://go.dev/ref/spec#Arithmetic_operators", title: "Go Spec: Arithmetic operators", note: "subtraction for differences" },
+            { url: "https://go.dev/ref/spec#If_statements", title: "Go Spec: If statements", note: "conditional updates" }
+        ]
     }
 };
 
@@ -323,7 +363,7 @@ window.variantsDataEmbedded = {
       "variants": [
         { "id": "v1", "title": "FizzBuzz", "description": "Print 1-20. Multiples of 3: \"Fizz\", 5: \"Buzz\", both: \"FizzBuzz\".", "functionSignature": "// loop", "testCases": [{ "input": "15", "output": "FizzBuzz" }], "hints": [{ "title": "🤔 Think about it", "content": "When you have overlapping conditions (like a number divisible by both 3 AND 5), which case should you check first?" }, { "title": "💡 Hint", "content": "Check the most specific condition first! For FizzBuzz, 15 is divisible by both 3 and 5, so check for 15 before checking 3 or 5 individually." }, { "title": "🔧 Pattern", "content": "<pre>1. Check most specific condition first\n2. Then check less specific conditions\n3. Default case last\n(Order matters: check \"both 3 AND 5\" before \"just 3\" or \"just 5\")</pre>" }], "solution": "for i := 1; i <= 20; i++ {\n    if i%15 == 0 {\n        fmt.Println(\"FizzBuzz\")\n    } else if i%3 == 0 {\n        fmt.Println(\"Fizz\")\n    } else if i%5 == 0 {\n        fmt.Println(\"Buzz\")\n    } else {\n        fmt.Println(i)\n    }\n}" },
         { "id": "v2", "title": "Grade Classifier", "description": "Write <code>func grade(score int) string</code> returning A/B/C/D/F.", "functionSignature": "func grade(score int) string", "testCases": [{ "input": "85", "output": "\"B\"" }], "hints": [{ "title": "🤔 Think about it", "content": "When you have overlapping conditions (like a number divisible by both 3 AND 5), which case should you check first?" }, { "title": "💡 Hint", "content": "Check the most specific condition first! For FizzBuzz, 15 is divisible by both 3 and 5, so check for 15 before checking 3 or 5 individually." }, { "title": "🔧 Pattern", "content": "<pre>1. Check most specific condition first\n2. Then check less specific conditions\n3. Default case last\n(Order matters: check \"both 3 AND 5\" before \"just 3\" or \"just 5\")</pre>" }], "solution": "func grade(score int) string {\n    if score >= 90 { return \"A\" }\n    if score >= 80 { return \"B\" }\n    if score >= 70 { return \"C\" }\n    if score >= 60 { return \"D\" }\n    return \"F\"\n}" },
-        { "id": "v3", "title": "Number Sign", "description": "Write <code>func sign(n int) string</code> returning positive/negative/zero.", "functionSignature": "func sign(n int) string", "testCases": [{ "input": "-5", "output": "\"negative\"" }], "hints": [{ "title": "🤔 Think about it", "content": "When you have overlapping conditions (like a number divisible by both 3 AND 5), which case should you check first?" }, { "title": "💡 Hint", "content": "Check the most specific condition first! For FizzBuzz, 15 is divisible by both 3 and 5, so check for 15 before checking 3 or 5 individually." }, { "title": "🔧 Pattern", "content": "<pre>1. Check most specific condition first\n2. Then check less specific conditions\n3. Default case last\n(Order matters: check \"both 3 AND 5\" before \"just 3\" or \"just 5\")</pre>" }], "solution": "func sign(n int) string {\n    if n > 0 { return \"positive\" }\n    if n < 0 { return \"negative\" }\n    return \"zero\"\n}" }
+        { "id": "v3", "title": "Age Category", "description": "Write <code>func ageCategory(age int) string</code> returning \"infant\" (0-1), \"toddler\" (2-3), \"child\" (4-12), \"teen\" (13-19), or \"adult\" (20+).", "functionSignature": "func ageCategory(age int) string", "testCases": [{ "input": "15", "output": "\"teen\"" }, { "input": "2", "output": "\"toddler\"" }], "hints": [{ "title": "🤔 Think about it", "content": "When you have multiple age ranges to check, what order should you check them in to avoid incorrect matches?" }, { "title": "💡 Hint", "content": "Check ranges in ascending order using upper bounds. If age <= 1, it's infant. If age <= 3, it's toddler. And so on." }, { "title": "🔧 Pattern", "content": "<pre>1. Check ranges in order from youngest to oldest\n2. Use upper bounds (<=) for each category\n3. Default to \"adult\" for 20+</pre>" }], "solution": "func ageCategory(age int) string {\n    if age <= 1 { return \"infant\" }\n    if age <= 3 { return \"toddler\" }\n    if age <= 12 { return \"child\" }\n    if age <= 19 { return \"teen\" }\n    return \"adult\"\n}" }
       ]
     },
     {
@@ -383,7 +423,7 @@ window.variantsDataEmbedded = {
       "variants": [
         { "id": "v1", "title": "Swap Elements", "description": "Write <code>func swap(nums []int, i, j int)</code> that swaps elements at i and j.", "functionSignature": "func swap(nums []int, i, j int)", "testCases": [{ "input": "[]int{1,2,3}, 0, 2", "output": "[3,2,1]" }], "hints": [{ "title": "🤔 Think about it", "content": "How do you swap two values without losing one of them? Think about what happens if you just write a = b." }, { "title": "💡 Hint", "content": "Go has a special syntax for simultaneous assignment: a, b = b, a. This evaluates the right side first, then assigns, so nothing is lost." }, { "title": "🔧 Pattern", "content": "<pre>1. Simultaneous assignment: left, right = right, left\n(Both sides evaluated before assignment - nothing lost!)</pre>" }], "solution": "func swap(nums []int, i, j int) {\n    nums[i], nums[j] = nums[j], nums[i]\n}" },
         { "id": "v2", "title": "Swap First Last", "description": "Write <code>func swapEnds(nums []int)</code> that swaps first and last elements.", "functionSignature": "func swapEnds(nums []int)", "testCases": [{ "input": "[]int{1,2,3,4}", "output": "[4,2,3,1]" }], "hints": [{ "title": "🤔 Think about it", "content": "How do you swap two values without losing one of them? Think about what happens if you just write a = b." }, { "title": "💡 Hint", "content": "Go has a special syntax for simultaneous assignment: a, b = b, a. This evaluates the right side first, then assigns, so nothing is lost." }, { "title": "🔧 Pattern", "content": "<pre>1. Simultaneous assignment: left, right = right, left\n(Both sides evaluated before assignment - nothing lost!)</pre>" }], "solution": "func swapEnds(nums []int) {\n    nums[0], nums[len(nums)-1] = nums[len(nums)-1], nums[0]\n}" },
-        { "id": "v3", "title": "Swap Variables", "description": "Swap two variables a=5, b=10 and print them.", "functionSignature": "// inline", "testCases": [{ "input": "a=5, b=10", "output": "a=10, b=5" }], "hints": [{ "title": "🤔 Think about it", "content": "How do you swap two values without losing one of them? Think about what happens if you just write a = b." }, { "title": "💡 Hint", "content": "Go has a special syntax for simultaneous assignment: a, b = b, a. This evaluates the right side first, then assigns, so nothing is lost." }, { "title": "🔧 Pattern", "content": "<pre>1. Simultaneous assignment: left, right = right, left\n(Both sides evaluated before assignment - nothing lost!)</pre>" }], "solution": "a, b := 5, 10\na, b = b, a\nfmt.Println(a, b)" }
+        { "id": "v3", "title": "Swap Adjacent Pairs", "description": "Write <code>func swapPairs(nums []int)</code> that swaps elements at indices 0&1, 2&3, 4&5, etc. If odd length, last element stays.", "functionSignature": "func swapPairs(nums []int)", "testCases": [{ "input": "[]int{1,2,3,4,5}", "output": "[2,1,4,3,5]" }, { "input": "[]int{1,2,3,4}", "output": "[2,1,4,3]" }], "hints": [{ "title": "🤔 Think about it", "content": "How do you swap two values without losing one of them? Think about what happens if you just write a = b." }, { "title": "💡 Hint", "content": "Loop through the slice incrementing by 2 each time. Use Go's simultaneous assignment to swap pairs: nums[i], nums[i+1] = nums[i+1], nums[i]." }, { "title": "🔧 Pattern", "content": "<pre>1. Loop with i += 2\n2. Check i+1 < len to avoid out of bounds\n3. Swap: nums[i], nums[i+1] = nums[i+1], nums[i]</pre>" }], "solution": "func swapPairs(nums []int) {\n    for i := 0; i+1 < len(nums); i += 2 {\n        nums[i], nums[i+1] = nums[i+1], nums[i]\n    }\n}" }
       ]
     },
     {
@@ -395,7 +435,7 @@ window.variantsDataEmbedded = {
       "variants": [
         { "id": "v1", "title": "Palindrome Check", "description": "Write <code>func isPalindrome(nums []int) bool</code> - same forwards/backwards.", "functionSignature": "func isPalindrome(nums []int) bool", "testCases": [{ "input": "[]int{1,2,3,2,1}", "output": "true" }], "hints": [{ "title": "🤔 Think about it", "content": "To check if something reads the same forwards and backwards, where should you start comparing? Do you need to check every element?" }, { "title": "💡 Hint", "content": "Compare from both ends moving inward. Start with pointers at index 0 and len-1. If any pair doesn't match, it's not a palindrome. If you make it to the middle without mismatches, it is." }, { "title": "🔧 Pattern", "content": "<pre>1. left pointer at start, right pointer at end\n2. While left < right:\n   - Compare elements at both pointers\n   - Mismatch? → return false\n   - Move both pointers inward\n3. Return true (all pairs matched)</pre>" }], "solution": "func isPalindrome(nums []int) bool {\n    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n        if nums[i] != nums[j] { return false }\n    }\n    return true\n}" },
         { "id": "v2", "title": "String Palindrome", "description": "Write <code>func isSymmetric(s string) bool</code>.", "functionSignature": "func isSymmetric(s string) bool", "testCases": [{ "input": "\"racecar\"", "output": "true" }], "hints": [{ "title": "🤔 Think about it", "content": "To check if something reads the same forwards and backwards, where should you start comparing? Do you need to check every element?" }, { "title": "💡 Hint", "content": "Compare from both ends moving inward. Start with pointers at index 0 and len-1. If any pair doesn't match, it's not a palindrome. If you make it to the middle without mismatches, it is." }, { "title": "🔧 Pattern", "content": "<pre>1. left pointer at start, right pointer at end\n2. While left < right:\n   - Compare elements at both pointers\n   - Mismatch? → return false\n   - Move both pointers inward\n3. Return true (all pairs matched)</pre>" }], "solution": "func isSymmetric(s string) bool {\n    r := []rune(s)\n    for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {\n        if r[i] != r[j] { return false }\n    }\n    return true\n}" },
-        { "id": "v3", "title": "Ends Match", "description": "Write <code>func endsMatch(nums []int) bool</code> - first equals last.", "functionSignature": "func endsMatch(nums []int) bool", "testCases": [{ "input": "[]int{5,2,3,5}", "output": "true" }], "hints": [{ "title": "🤔 Think about it", "content": "To check if something reads the same forwards and backwards, where should you start comparing? Do you need to check every element?" }, { "title": "💡 Hint", "content": "Compare from both ends moving inward. Start with pointers at index 0 and len-1. If any pair doesn't match, it's not a palindrome. If you make it to the middle without mismatches, it is." }, { "title": "🔧 Pattern", "content": "<pre>1. left pointer at start, right pointer at end\n2. While left < right:\n   - Compare elements at both pointers\n   - Mismatch? → return false\n   - Move both pointers inward\n3. Return true (all pairs matched)</pre>" }], "solution": "func endsMatch(nums []int) bool {\n    return nums[0] == nums[len(nums)-1]\n}" }
+        { "id": "v3", "title": "Is Sorted Ascending", "description": "Write <code>func isSorted(nums []int) bool</code> - true if each element <= the next.", "functionSignature": "func isSorted(nums []int) bool", "testCases": [{ "input": "[]int{1,2,3,4}", "output": "true" }, { "input": "[]int{1,3,2,4}", "output": "false" }], "hints": [{ "title": "🤔 Think about it", "content": "To verify sorted order, what pairs of elements do you need to compare? Do you need to compare every element to every other element?" }, { "title": "💡 Hint", "content": "Check adjacent pairs: compare nums[i] with nums[i+1]. If any pair is out of order (nums[i] > nums[i+1]), return false immediately." }, { "title": "🔧 Pattern", "content": "<pre>1. Loop through indices 0 to len-2\n2. Compare each element with the next\n3. If nums[i] > nums[i+1] → return false\n4. Return true (all pairs in order)</pre>" }], "solution": "func isSorted(nums []int) bool {\n    for i := 0; i < len(nums)-1; i++ {\n        if nums[i] > nums[i+1] { return false }\n    }\n    return true\n}" }
       ]
     },
     {
@@ -406,8 +446,8 @@ window.variantsDataEmbedded = {
       ],
       "variants": [
         { "id": "v1", "title": "Reverse Slice", "description": "Write <code>func reverse(nums []int) []int</code> that reverses in place.", "functionSignature": "func reverse(nums []int) []int", "testCases": [{ "input": "[]int{1,2,3,4,5}", "output": "[5,4,3,2,1]" }], "hints": [{ "title": "🤔 Think about it", "content": "To reverse in-place, you swap elements from both ends working toward the middle. What pattern lets you walk two pointers toward each other?" }, { "title": "💡 Hint", "content": "Use the same two-pointer loop as palindrome check, but swap the elements instead of comparing them. Stop when the pointers meet or cross." }, { "title": "🔧 Pattern", "content": "<pre>1. left pointer at start, right pointer at end\n2. While left < right:\n   - Swap elements at left and right\n   - Move both pointers inward\n3. Done (reversed in place)</pre>" }], "solution": "func reverse(nums []int) []int {\n    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n        nums[i], nums[j] = nums[j], nums[i]\n    }\n    return nums\n}" },
-        { "id": "v2", "title": "Rotate Left", "description": "Write <code>func rotateLeft(nums []int) []int</code> - first element goes to end.", "functionSignature": "func rotateLeft(nums []int) []int", "testCases": [{ "input": "[]int{1,2,3}", "output": "[2,3,1]" }], "hints": [{ "title": "🤔 Think about it", "content": "To reverse in-place, you swap elements from both ends working toward the middle. What pattern lets you walk two pointers toward each other?" }, { "title": "💡 Hint", "content": "Use the same two-pointer loop as palindrome check, but swap the elements instead of comparing them. Stop when the pointers meet or cross." }, { "title": "🔧 Pattern", "content": "<pre>1. left pointer at start, right pointer at end\n2. While left < right:\n   - Swap elements at left and right\n   - Move both pointers inward\n3. Done (reversed in place)</pre>" }], "solution": "func rotateLeft(nums []int) []int {\n    first := nums[0]\n    for i := 0; i < len(nums)-1; i++ { nums[i] = nums[i+1] }\n    nums[len(nums)-1] = first\n    return nums\n}" },
-        { "id": "v3", "title": "Rotate Right", "description": "Write <code>func rotateRight(nums []int) []int</code> - last element goes to front.", "functionSignature": "func rotateRight(nums []int) []int", "testCases": [{ "input": "[]int{1,2,3}", "output": "[3,1,2]" }], "hints": [{ "title": "🤔 Think about it", "content": "To reverse in-place, you swap elements from both ends working toward the middle. What pattern lets you walk two pointers toward each other?" }, { "title": "💡 Hint", "content": "Use the same two-pointer loop as palindrome check, but swap the elements instead of comparing them. Stop when the pointers meet or cross." }, { "title": "🔧 Pattern", "content": "<pre>1. left pointer at start, right pointer at end\n2. While left < right:\n   - Swap elements at left and right\n   - Move both pointers inward\n3. Done (reversed in place)</pre>" }], "solution": "func rotateRight(nums []int) []int {\n    last := nums[len(nums)-1]\n    for i := len(nums)-1; i > 0; i-- { nums[i] = nums[i-1] }\n    nums[0] = last\n    return nums\n}" }
+        { "id": "v2", "title": "Reverse String", "description": "Write <code>func reverseString(s string) string</code> that reverses a string.", "functionSignature": "func reverseString(s string) string", "testCases": [{ "input": "\"hello\"", "output": "\"olleh\"" }, { "input": "\"Go\"", "output": "\"oG\"" }], "hints": [{ "title": "🤔 Think about it", "content": "To reverse in-place, you swap elements from both ends working toward the middle. What pattern lets you walk two pointers toward each other?" }, { "title": "💡 Hint", "content": "Convert to []rune first (strings are immutable). Then use the same two-pointer swap as with slices." }, { "title": "🔧 Pattern", "content": "<pre>1. Convert string to []rune\n2. left pointer at start, right pointer at end\n3. While left < right:\n   - Swap runes at left and right\n   - Move both pointers inward\n4. Convert back to string</pre>" }], "solution": "func reverseString(s string) string {\n    r := []rune(s)\n    for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {\n        r[i], r[j] = r[j], r[i]\n    }\n    return string(r)\n}" },
+        { "id": "v3", "title": "Reverse Segment", "description": "Write <code>func reverseSegment(nums []int, start, end int)</code> that reverses elements from index start to end (inclusive).", "functionSignature": "func reverseSegment(nums []int, start, end int)", "testCases": [{ "input": "[]int{1,2,3,4,5}, 1, 3", "output": "[1,4,3,2,5]" }], "hints": [{ "title": "🤔 Think about it", "content": "To reverse in-place, you swap elements from both ends working toward the middle. What pattern lets you walk two pointers toward each other?" }, { "title": "💡 Hint", "content": "Same two-pointer pattern, but start at 'start' instead of 0, and end at 'end' instead of len-1." }, { "title": "🔧 Pattern", "content": "<pre>1. left pointer at start, right pointer at end\n2. While left < right:\n   - Swap elements at left and right\n   - Move both pointers inward\n3. Done (segment reversed in place)</pre>" }], "solution": "func reverseSegment(nums []int, start, end int) {\n    for i, j := start, end; i < j; i, j = i+1, j-1 {\n        nums[i], nums[j] = nums[j], nums[i]\n    }\n}" }
       ]
     },
     {
@@ -887,6 +927,77 @@ window.variantsDataEmbedded = {
           "solutionNotes": "Variable-size window with condition: expand to increase sum, shrink while condition met to find minimum. Classic 'minimum window' pattern."
         }
       ]
+    },
+    {
+      "id": "advanced_7",
+      "baseTitle": "Track Min/Max While Scanning",
+      "concept": "Best So Far Pattern",
+      "variants": [
+        {
+          "id": "v1",
+          "title": "Best Time to Buy and Sell Stock",
+          "description": "Given an array of stock prices where prices[i] is the price on day i, find the maximum profit from one buy and one sell. You must buy before you sell. <code>func maxProfit(prices []int) int</code>",
+          "functionSignature": "func maxProfit(prices []int) int",
+          "testCases": [
+            { "input": "[]int{7, 1, 5, 3, 6, 4}", "output": "5", "note": "buy at 1, sell at 6" },
+            { "input": "[]int{7, 6, 4, 3, 1}", "output": "0", "note": "prices only go down, no profit possible" },
+            { "input": "[]int{2, 4, 1}", "output": "2", "note": "buy at 2, sell at 4" }
+          ],
+          "solution": "func maxProfit(prices []int) int {\n    if len(prices) == 0 {\n        return 0\n    }\n    \n    minPrice := prices[0]\n    maxProfit := 0\n    \n    for _, price := range prices {\n        if price < minPrice {\n            minPrice = price\n        } else if price - minPrice > maxProfit {\n            maxProfit = price - minPrice\n        }\n    }\n    return maxProfit\n}"
+        },
+        {
+          "id": "v2",
+          "title": "Maximum Difference",
+          "description": "Find the maximum difference between any two elements where the larger element comes after the smaller one. Return 0 if no such pair exists. <code>func maxDiff(nums []int) int</code>",
+          "functionSignature": "func maxDiff(nums []int) int",
+          "testCases": [
+            { "input": "[]int{2, 3, 10, 6, 4, 8, 1}", "output": "8", "note": "10 - 2 = 8" },
+            { "input": "[]int{7, 9, 5, 6, 3, 2}", "output": "2", "note": "9 - 7 = 2" },
+            { "input": "[]int{5, 4, 3, 2, 1}", "output": "0", "note": "decreasing, no valid pair" }
+          ],
+          "solution": "func maxDiff(nums []int) int {\n    if len(nums) < 2 {\n        return 0\n    }\n    \n    minSoFar := nums[0]\n    maxDiff := 0\n    \n    for i := 1; i < len(nums); i++ {\n        diff := nums[i] - minSoFar\n        if diff > maxDiff {\n            maxDiff = diff\n        }\n        if nums[i] < minSoFar {\n            minSoFar = nums[i]\n        }\n    }\n    return maxDiff\n}",
+          "solutionNotes": "This is the same problem as Best Time to Buy/Sell Stock! Track the minimum seen so far, and at each position calculate the potential profit/difference."
+        },
+        {
+          "id": "v3",
+          "title": "Best Sightseeing Pair",
+          "description": "Given an array of values, find max score of values[i] + values[j] + i - j where i < j. <code>func maxScoreSightseeingPair(values []int) int</code>",
+          "functionSignature": "func maxScoreSightseeingPair(values []int) int",
+          "testCases": [
+            { "input": "[]int{8, 1, 5, 2, 6}", "output": "11", "note": "i=0, j=2: 8+5+0-2=11" },
+            { "input": "[]int{1, 2}", "output": "2", "note": "1+2+0-1=2" },
+            { "input": "[]int{1, 3, 5}", "output": "7", "note": "i=1, j=2: 3+5+1-2=7" }
+          ],
+          "solution": "func maxScoreSightseeingPair(values []int) int {\n    maxScore := 0\n    bestI := values[0] + 0  // values[i] + i\n    \n    for j := 1; j < len(values); j++ {\n        score := bestI + values[j] - j\n        if score > maxScore {\n            maxScore = score\n        }\n        if values[j] + j > bestI {\n            bestI = values[j] + j\n        }\n    }\n    return maxScore\n}",
+          "solutionNotes": "Rewrite the formula: (values[i] + i) + (values[j] - j). Track the best (values[i] + i) seen so far, then for each j compute the score. Same pattern as stock problem!"
+        },
+        {
+          "id": "v4",
+          "title": "Maximum Subarray (Kadane's)",
+          "description": "Find the contiguous subarray with the largest sum. <code>func maxSubArray(nums []int) int</code>",
+          "functionSignature": "func maxSubArray(nums []int) int",
+          "testCases": [
+            { "input": "[]int{-2, 1, -3, 4, -1, 2, 1, -5, 4}", "output": "6", "note": "[4,-1,2,1] = 6" },
+            { "input": "[]int{1}", "output": "1" },
+            { "input": "[]int{-1, -2, -3}", "output": "-1", "note": "least negative" }
+          ],
+          "solution": "func maxSubArray(nums []int) int {\n    maxSum := nums[0]\n    currentSum := nums[0]\n    \n    for i := 1; i < len(nums); i++ {\n        if currentSum < 0 {\n            currentSum = nums[i]\n        } else {\n            currentSum += nums[i]\n        }\n        if currentSum > maxSum {\n            maxSum = currentSum\n        }\n    }\n    return maxSum\n}",
+          "solutionNotes": "Kadane's algorithm: at each position, decide whether to extend the current subarray or start fresh. Track the best sum seen so far. Same 'best so far' pattern!"
+        },
+        {
+          "id": "v5",
+          "title": "Best Time to Buy and Sell Stock II",
+          "description": "You can buy and sell multiple times (but must sell before buying again). Find the maximum total profit. <code>func maxProfitII(prices []int) int</code>",
+          "functionSignature": "func maxProfitII(prices []int) int",
+          "testCases": [
+            { "input": "[]int{7, 1, 5, 3, 6, 4}", "output": "7", "note": "buy@1 sell@5 (+4), buy@3 sell@6 (+3)" },
+            { "input": "[]int{1, 2, 3, 4, 5}", "output": "4", "note": "buy@1 sell@5, or buy/sell each day" },
+            { "input": "[]int{7, 6, 4, 3, 1}", "output": "0", "note": "no profit possible" }
+          ],
+          "solution": "func maxProfitII(prices []int) int {\n    profit := 0\n    \n    for i := 1; i < len(prices); i++ {\n        if prices[i] > prices[i-1] {\n            profit += prices[i] - prices[i-1]\n        }\n    }\n    return profit\n}",
+          "solutionNotes": "Greedy insight: capture every upward movement! If tomorrow's price is higher, that's profit. Sum all positive differences. Much simpler than it seems!"
+        }
+      ]
     }
   ],
   "preExercises": {
@@ -983,6 +1094,56 @@ window.variantsDataEmbedded = {
           "solution": "nums := []int{1, 1, 2, 2, 2, 3}\ngroups := 1  // First element starts the first group\n\nfor i := 1; i < len(nums); i++ {\n    if nums[i] != nums[i-1] {\n        groups++  // New value = new group\n    }\n}\n\nfmt.Printf(\"Groups: %d\\n\", groups)",
           "expectedOutput": "Groups: 3",
           "keyInsight": "This is exactly what the slow/fast algorithm returns! The slow pointer ends up at the last unique position, so slow+1 = number of unique elements = number of groups."
+        }
+      ]
+    },
+    "advanced_3": {
+      "title": "Pre-exercise: Strings vs Runes",
+      "description": "Before manipulating strings character-by-character, let's understand the difference between bytes and runes in Go.",
+      "exercises": [
+        {
+          "id": "pre3a",
+          "title": "Explore String Length vs Rune Count",
+          "problem": "Compare the byte length and rune count of these strings: <code>\"hello\"</code>, <code>\"世界\"</code>, and <code>\"🎉\"</code>. Print both <code>len(s)</code> and <code>len([]rune(s))</code> for each.",
+          "hints": [
+            {
+              "title": "Step 1: ASCII string",
+              "content": "<pre>s1 := \"hello\"\nfmt.Printf(\"%s: %d bytes, %d runes\\n\", s1, len(s1), len([]rune(s1)))</pre>"
+            },
+            {
+              "title": "Step 2: Chinese characters",
+              "content": "<pre>s2 := \"世界\"\nfmt.Printf(\"%s: %d bytes, %d runes\\n\", s2, len(s2), len([]rune(s2)))</pre>"
+            },
+            {
+              "title": "Step 3: Emoji",
+              "content": "<pre>s3 := \"🎉\"\nfmt.Printf(\"%s: %d bytes, %d runes\\n\", s3, len(s3), len([]rune(s3)))</pre>"
+            }
+          ],
+          "solution": "s1 := \"hello\"\nfmt.Printf(\"%s: %d bytes, %d runes\\n\", s1, len(s1), len([]rune(s1)))\n\ns2 := \"世界\"\nfmt.Printf(\"%s: %d bytes, %d runes\\n\", s2, len(s2), len([]rune(s2)))\n\ns3 := \"🎉\"\nfmt.Printf(\"%s: %d bytes, %d runes\\n\", s3, len(s3), len([]rune(s3)))",
+          "expectedOutput": "hello: 5 bytes, 5 runes\n世界: 6 bytes, 2 runes\n🎉: 4 bytes, 1 runes",
+          "keyInsight": "ASCII characters are 1 byte each, but Unicode characters can be 2-4 bytes! <code>len(string)</code> counts bytes, <code>len([]rune(string))</code> counts actual characters. Always convert to <code>[]rune</code> when you need to work with individual characters."
+        },
+        {
+          "id": "pre3b",
+          "title": "Convert, Modify, Convert Back",
+          "problem": "Take the string <code>\"Go!\"</code>, convert to runes, change the first character to <code>'g'</code>, and convert back to a string. Print the result.",
+          "hints": [
+            {
+              "title": "Step 1: Convert to runes",
+              "content": "<pre>s := \"Go!\"\nrunes := []rune(s)</pre>"
+            },
+            {
+              "title": "Step 2: Modify",
+              "content": "<pre>runes[0] = 'g'  // Single quotes for rune literal</pre>"
+            },
+            {
+              "title": "Step 3: Convert back",
+              "content": "<pre>result := string(runes)\nfmt.Println(result)</pre>"
+            }
+          ],
+          "solution": "s := \"Go!\"\nrunes := []rune(s)\n\nrunes[0] = 'g'  // Modify first character\n\nresult := string(runes)\nfmt.Println(result)",
+          "expectedOutput": "go!",
+          "keyInsight": "Strings in Go are immutable - you can't do <code>s[0] = 'g'</code>. The pattern is: convert to <code>[]rune</code>, modify the slice, convert back to <code>string</code>. This is exactly what we'll do for reversing strings!"
         }
       ]
     },
@@ -1121,6 +1282,52 @@ window.variantsDataEmbedded = {
           "solution": "s := \"abca\"\nseen := make(map[byte]int)\n\n// Expand: add all characters\nfor i := 0; i < len(s); i++ {\n    seen[s[i]]++\n}\nfmt.Printf(\"Full window: %v\\n\", seen)  // a:2, b:1, c:1\n\n// Shrink: remove from left (index 0 = 'a')\nseen[s[0]]--\nif seen[s[0]] == 0 {\n    delete(seen, s[0])\n}\nfmt.Printf(\"After removing s[0]: %v\\n\", seen)  // a:1, b:1, c:1\n\n// Shrink more: remove s[1] = 'b'\nseen[s[1]]--\nif seen[s[1]] == 0 {\n    delete(seen, s[1])\n}\nfmt.Printf(\"After removing s[1]: %v\\n\", seen)  // a:1, c:1",
           "expectedOutput": "Full window: map[97:2 98:1 99:1]\nAfter removing s[0]: map[97:1 98:1 99:1]\nAfter removing s[1]: map[97:1 99:1]",
           "keyInsight": "Variable sliding windows use a map to track what's in the window. When expanding (right pointer moves), increment counts. When shrinking (left pointer moves), decrement counts. Delete keys when count hits 0 to keep the map clean."
+        }
+      ]
+    },
+    "advanced_7": {
+      "title": "Pre-exercise: Tracking Best So Far",
+      "description": "Before tackling optimization problems, let's practice the core pattern: tracking a running minimum/maximum while scanning.",
+      "exercises": [
+        {
+          "id": "pre7a",
+          "title": "Track Running Minimum",
+          "problem": "Given <code>[]int{5, 3, 8, 1, 9, 2}</code>, print the running minimum after each element. Output should show: 5, 3, 3, 1, 1, 1.",
+          "hints": [
+            {
+              "title": "Step 1: Initialize",
+              "content": "<pre>nums := []int{5, 3, 8, 1, 9, 2}\nminSoFar := nums[0]\nfmt.Println(minSoFar)  // First element is the min so far</pre>"
+            },
+            {
+              "title": "Step 2: Loop and update",
+              "content": "<pre>for i := 1; i < len(nums); i++ {\n    if nums[i] < minSoFar {\n        minSoFar = nums[i]\n    }\n    fmt.Println(minSoFar)\n}</pre>"
+            }
+          ],
+          "solution": "nums := []int{5, 3, 8, 1, 9, 2}\nminSoFar := nums[0]\nfmt.Println(minSoFar)\n\nfor i := 1; i < len(nums); i++ {\n    if nums[i] < minSoFar {\n        minSoFar = nums[i]\n    }\n    fmt.Println(minSoFar)\n}",
+          "expectedOutput": "5\n3\n3\n1\n1\n1",
+          "keyInsight": "At each position, <code>minSoFar</code> holds the smallest value we've seen from the start up to that point. This is the foundation of the 'Best So Far' pattern - we don't need to remember ALL previous values, just the one that matters!"
+        },
+        {
+          "id": "pre7b",
+          "title": "Calculate Difference from Minimum",
+          "problem": "Given <code>[]int{5, 3, 8, 1, 9}</code>, for each element print the difference between it and the minimum of all PREVIOUS elements. Skip the first element (no previous elements). Output: -2, 5, -2, 8.",
+          "hints": [
+            {
+              "title": "Step 1: Initialize",
+              "content": "<pre>nums := []int{5, 3, 8, 1, 9}\nminSoFar := nums[0]  // Min of elements before current</pre>"
+            },
+            {
+              "title": "Step 2: Loop from second element",
+              "content": "<pre>for i := 1; i < len(nums); i++ {\n    diff := nums[i] - minSoFar\n    fmt.Println(diff)\n    // Update minSoFar AFTER calculating diff\n    if nums[i] < minSoFar {\n        minSoFar = nums[i]\n    }\n}</pre>"
+            },
+            {
+              "title": "Key insight",
+              "content": "The order matters! Calculate the difference BEFORE updating minSoFar. This ensures we're comparing to the minimum of previous elements, not including the current one."
+            }
+          ],
+          "solution": "nums := []int{5, 3, 8, 1, 9}\nminSoFar := nums[0]\n\nfor i := 1; i < len(nums); i++ {\n    diff := nums[i] - minSoFar\n    fmt.Println(diff)\n    \n    // Update min AFTER calculating diff\n    if nums[i] < minSoFar {\n        minSoFar = nums[i]\n    }\n}",
+          "expectedOutput": "-2\n5\n-2\n8",
+          "keyInsight": "This is exactly the stock problem! The difference <code>nums[i] - minSoFar</code> is the profit if you bought at the minimum price so far and sold today. The maximum of all these differences is your answer. Notice we update minSoFar AFTER calculating the diff - order matters!"
         }
       ]
     }
