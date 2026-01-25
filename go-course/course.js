@@ -17,9 +17,9 @@
     const timerStyles = document.createElement('style');
     timerStyles.textContent = `
         .thinking-timer-btn {
-            background: var(--bg-card);
-            border: 2px solid var(--purple);
-            color: var(--purple);
+            background: transparent;
+            border: 2px solid #8b5cf6;
+            color: #8b5cf6;
             padding: 0.5rem 1rem;
             border-radius: 8px;
             font-weight: 600;
@@ -28,11 +28,11 @@
             transition: all 0.2s;
         }
         .thinking-timer-btn:hover {
-            background: var(--purple);
+            background: #8b5cf6;
             color: white;
         }
         .thinking-timer {
-            background: linear-gradient(135deg, var(--purple), var(--blue-bright));
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
             color: white;
             padding: 0.75rem 1rem;
             border-radius: 8px;
@@ -54,7 +54,7 @@
             border-radius: 4px;
         }
         .thinking-timer.timer-done {
-            background: var(--green-bright);
+            background: #22c55e;
             animation: none;
         }
         @keyframes pulse {
