@@ -117,7 +117,7 @@
     const currentWarmupVariants = {};
     const currentIntermediateVariants = {};
     const currentChallengeVariants = {};
-    let currentConceptFilter = null; // null = show all
+    let currentPatternFilter = null; // null = show all
 
     function escapeHtml(text) {
         const div = document.createElement('div');
@@ -367,13 +367,38 @@
         }
     }
 
-    function getUniqueConcepts() {
+    function getUniquePatterns() {
         if (!variantsData || !variantsData.challenges) return [];
-        const concepts = new Set();
+
+        const patternsById = new Map();
         variantsData.challenges.forEach(c => {
-            if (c.concept) concepts.add(c.concept);
+            const patternId = c.patternId || c.concept;
+            if (!patternId) return;
+
+            const patternLabel = c.patternLabel || c.concept || patternId;
+            if (!patternsById.has(patternId)) {
+                patternsById.set(patternId, { patternId, patternLabel });
+            }
         });
-        return Array.from(concepts).sort();
+
+        const patterns = Array.from(patternsById.values());
+
+        // Prefer JSON-defined learning-path ordering
+        const order = variantsData?.meta?.patternOrder;
+        if (Array.isArray(order) && order.length > 0) {
+            const index = new Map(order.map((id, i) => [id, i]));
+            patterns.sort((a, b) => {
+                const ai = index.has(a.patternId) ? index.get(a.patternId) : Number.MAX_SAFE_INTEGER;
+                const bi = index.has(b.patternId) ? index.get(b.patternId) : Number.MAX_SAFE_INTEGER;
+                if (ai !== bi) return ai - bi;
+                return a.patternLabel.localeCompare(b.patternLabel);
+            });
+            return patterns;
+        }
+
+        // Fallback: alphabetical by label
+        patterns.sort((a, b) => a.patternLabel.localeCompare(b.patternLabel));
+        return patterns;
     }
 
     function setupConceptFilter() {
@@ -383,8 +408,8 @@
         // Check if filter already exists
         if (document.getElementById('concept-filter')) return;
 
-        const concepts = getUniqueConcepts();
-        if (concepts.length === 0) return;
+        const patterns = getUniquePatterns();
+        if (patterns.length === 0) return;
 
         const filterDiv = document.createElement('div');
         filterDiv.id = 'concept-filter';
@@ -392,8 +417,8 @@
         filterDiv.innerHTML = `
             <span class="concept-filter-label">🎯 Focus on a specific pattern:</span>
             <div class="concept-filter-buttons">
-                <button class="concept-btn active" data-concept="">All Patterns</button>
-                ${concepts.map(c => `<button class="concept-btn" data-concept="${c}">${c}</button>`).join('')}
+                <button class="concept-btn active" data-pattern="">All Patterns</button>
+                ${patterns.map(p => `<button class="concept-btn" data-pattern="${p.patternId}">${p.patternLabel}</button>`).join('')}
             </div>
         `;
 
@@ -404,7 +429,7 @@
             btn.addEventListener('click', () => {
                 filterDiv.querySelectorAll('.concept-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                currentConceptFilter = btn.dataset.concept || null;
+                currentPatternFilter = btn.dataset.pattern || null;
                 shuffleChallenges();
             });
         });
@@ -459,19 +484,51 @@
         return html;
     }
 
+    function starsForTier(tier) {
+        if (tier === 'easy') return '⭐';
+        if (tier === 'hard') return '⭐⭐⭐';
+        return '⭐⭐';
+    }
+
+    function renderPatternPrimer(patternId, fallbackLabel) {
+        const info = variantsData?.meta?.patternInfo?.[patternId];
+        if (!info) return '';
+
+        const label = info.label || fallbackLabel || patternId;
+        const brute = info.bruteForce || '';
+        const opt = info.optimized || '';
+        const comp = info.complexity;
+
+        return `
+            <details style="background: linear-gradient(135deg, rgba(255, 126, 25, 0.12), rgba(255, 126, 25, 0.03)); border: 1px solid rgba(255, 126, 25, 0.35); border-radius: 10px; padding: 0.85rem 1.1rem; margin: 0 0 1.25rem 0;">
+                <summary style="cursor: pointer; color: var(--orange); font-weight: 700;">Pattern Primer: ${label} (brute force + best approach)</summary>
+                <div class="hint-content" style="padding-top: 0.75rem;">
+                    <div style="color: var(--text); margin: 0.25rem 0;"><strong>Brute force:</strong> <span style="color: var(--text-dim);">${brute}</span></div>
+                    <div style="color: var(--text); margin: 0.25rem 0;"><strong>Best approach:</strong> <span style="color: var(--text-dim);">${opt}</span></div>
+                    ${comp ? `<div style="color: var(--text); margin: 0.25rem 0;"><strong>Typical:</strong> <span style="color: var(--text-dim);">${comp}</span></div>` : ''}
+                </div>
+            </details>
+        `;
+    }
+
     function renderChallenges() {
         const container = document.getElementById('challenges-container');
         if (!container || !variantsData || !variantsData.challenges) return;
 
-        // Filter challenges by concept if a filter is active
-        const challenges = currentConceptFilter
-            ? variantsData.challenges.filter(c => c.concept === currentConceptFilter)
+        // Filter challenges by pattern if a filter is active
+        const challenges = currentPatternFilter
+            ? variantsData.challenges.filter(c => (c.patternId || c.concept) === currentPatternFilter)
             : variantsData.challenges;
 
         let html = '';
         let currentBlock = 0;
-        const blockNames = { 1: 'Core Patterns', 2: 'Building & Filtering', 3: 'Two-Pointer Foundation', 4: 'Two-Pointer Application' };
-        const blockDifficulty = { 1: '⭐', 2: '⭐⭐', 3: '⭐⭐', 4: '⭐⭐⭐' };
+        const blocks = variantsData?.meta?.challengeBlocks || {};
+        const blockNames = Object.keys(blocks).length > 0
+            ? Object.fromEntries(Object.entries(blocks).map(([k, v]) => [Number(k), v.name]))
+            : { 1: 'Core Patterns', 2: 'Building & Filtering', 3: 'Two-Pointer Foundation', 4: 'Two-Pointer Application' };
+        const blockDifficulty = Object.keys(blocks).length > 0
+            ? Object.fromEntries(Object.entries(blocks).map(([k, v]) => [Number(k), v.difficulty]))
+            : { 1: '⭐', 2: '⭐⭐', 3: '⭐⭐', 4: '⭐⭐⭐' };
 
         if (challenges.length === 0) {
             html = '<p style="color: var(--text-dim); text-align: center;">No challenges match this filter.</p>';
@@ -479,24 +536,47 @@
             return;
         }
 
-        // When filtering by concept, show 6 random variants for practice
-        if (currentConceptFilter) {
+        // When filtering by pattern, show 6 mixed-difficulty variants for practice
+        if (currentPatternFilter) {
             // Collect all variants with their challenge info
             const allVariants = [];
             challenges.forEach(challenge => {
                 challenge.variants.forEach(variant => {
-                    allVariants.push({ variant, challenge, difficulty: blockDifficulty[challenge.block] });
+                    allVariants.push({
+                        variant,
+                        challenge,
+                        difficulty: blockDifficulty[challenge.block],
+                        tier: variant.tier || 'medium'
+                    });
                 });
             });
 
-            // Shuffle and pick 6
-            const shuffled = allVariants.sort(() => Math.random() - 0.5);
-            const selected = shuffled.slice(0, 6);
+            // Pick 6 with a guaranteed mix: at least 1 easy, 1 medium, 1 hard
+            const pickRandom = (arr, n) => arr.slice().sort(() => Math.random() - 0.5).slice(0, n);
+            const key = (x) => `${x.challenge.id}:${x.variant.id}`;
 
-            html += `<p style="color: var(--orange); font-size: 0.9rem; margin: 0 0 1rem; font-weight: 600;">Practicing: ${currentConceptFilter} (${selected.length} of ${allVariants.length} variants)</p>`;
+            const easyPool = allVariants.filter(v => v.tier === 'easy');
+            const medPool = allVariants.filter(v => v.tier === 'medium');
+            const hardPool = allVariants.filter(v => v.tier === 'hard');
+
+            let selected = [];
+            selected = selected.concat(pickRandom(easyPool, Math.min(1, easyPool.length)));
+            selected = selected.concat(pickRandom(medPool, Math.min(1, medPool.length)));
+            selected = selected.concat(pickRandom(hardPool, Math.min(1, hardPool.length)));
+
+            const selectedSet = new Set(selected.map(key));
+            const remaining = allVariants.filter(x => !selectedSet.has(key(x)));
+            selected = selected.concat(pickRandom(remaining, Math.max(0, 6 - selected.length)));
+            selected = selected.slice(0, 6);
+
+            const practicingLabel = challenges[0]?.patternLabel || challenges[0]?.concept || currentPatternFilter;
+            html += `<p style="color: var(--orange); font-size: 0.9rem; margin: 0 0 1rem; font-weight: 600;">Practicing: ${practicingLabel} (${selected.length} of ${allVariants.length} variants)</p>`;
+
+            html += renderPatternPrimer(currentPatternFilter, practicingLabel);
 
             selected.forEach((item, idx) => {
-                html += renderSingleChallenge(idx + 1, item.variant, item.challenge, item.difficulty);
+                // In focus mode, show difficulty by tier (not by block)
+                html += renderSingleChallenge(idx + 1, item.variant, item.challenge, starsForTier(item.tier));
             });
 
             container.innerHTML = html;
