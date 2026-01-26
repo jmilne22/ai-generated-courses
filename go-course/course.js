@@ -108,6 +108,76 @@
             border-color: var(--orange);
             color: white;
         }
+        .difficulty-mode-selector {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            border: 1px solid var(--bg-lighter);
+        }
+        .difficulty-mode-label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .difficulty-mode-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .difficulty-mode-btn {
+            background: transparent;
+            border: 2px solid var(--bg-lighter);
+            color: var(--text);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 120px;
+        }
+        .difficulty-mode-btn:hover {
+            border-color: var(--orange);
+            transform: translateY(-2px);
+        }
+        .difficulty-mode-btn.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: white;
+            font-weight: 600;
+        }
+        .difficulty-mode-btn.easy.active {
+            background: var(--green-bright);
+            border-color: var(--green-bright);
+            color: var(--bg-dark);
+        }
+        .difficulty-mode-btn.hard.active {
+            background: var(--purple);
+            border-color: var(--purple);
+            color: white;
+        }
+        .difficulty-mode-btn .mode-desc {
+            display: block;
+            font-size: 0.7rem;
+            opacity: 0.8;
+            margin-top: 0.2rem;
+        }
+        .variant-difficulty {
+            display: inline-block;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-left: 0.5rem;
+        }
+        .shuffle-info {
+            background: var(--bg-lighter);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+        }
     `;
     document.head.appendChild(timerStyles);
 
@@ -118,6 +188,14 @@
     const currentIntermediateVariants = {};
     const currentChallengeVariants = {};
     let currentConceptFilter = null; // null = show all
+
+    // Unified difficulty mode: 'mixed', 'balanced', 'progressive', 'easy', 'hard'
+    let difficultyMode = 'balanced';
+    const DIFFICULTY_TARGETS = {
+        1: 0.35,  // 35% easy
+        2: 0.40,  // 40% medium
+        3: 0.25   // 25% hard
+    };
 
     function escapeHtml(text) {
         const div = document.createElement('div');
@@ -134,6 +212,16 @@
     // Get difficulty from exercise, with fallback to block number
     function getExerciseDifficulty(exercise) {
         return exercise.difficulty || exercise.block || 1;
+    }
+
+    // Get variant-specific difficulty (supports both variant.difficulty and fallback)
+    function getVariantDifficulty(variant, challenge) {
+        // First check if variant has its own difficulty
+        if (variant && variant.difficulty) {
+            return variant.difficulty;
+        }
+        // Fallback to challenge difficulty or block
+        return challenge ? (challenge.difficulty || challenge.block || 2) : 2;
     }
 
     // Thinking timer - adds a button to start timer that locks hints/solutions (not docs)
@@ -188,12 +276,66 @@
         });
     }
 
+    function setupDifficultyModeSelector() {
+        // Check if selector already exists
+        if (document.getElementById('difficulty-mode-selector')) return;
+
+        const container = document.getElementById('challenges-container');
+        if (!container) return;
+
+        const selectorDiv = document.createElement('div');
+        selectorDiv.id = 'difficulty-mode-selector';
+        selectorDiv.className = 'difficulty-mode-selector';
+        selectorDiv.innerHTML = `
+            <span class="difficulty-mode-label">🎚️ Difficulty Mode:</span>
+            <div class="difficulty-mode-buttons">
+                <button class="difficulty-mode-btn easy" data-mode="easy">
+                    <div>⭐ Easy</div>
+                    <span class="mode-desc">Only easy variants</span>
+                </button>
+                <button class="difficulty-mode-btn" data-mode="mixed">
+                    <div>🎲 Mixed</div>
+                    <span class="mode-desc">Random mix</span>
+                </button>
+                <button class="difficulty-mode-btn active" data-mode="balanced">
+                    <div>⚖️ Balanced</div>
+                    <span class="mode-desc">35% easy, 40% med, 25% hard</span>
+                </button>
+                <button class="difficulty-mode-btn" data-mode="progressive">
+                    <div>📈 Progressive</div>
+                    <span class="mode-desc">Easy → Medium → Hard</span>
+                </button>
+                <button class="difficulty-mode-btn hard" data-mode="hard">
+                    <div>⭐⭐⭐ Hard</div>
+                    <span class="mode-desc">Only hard variants</span>
+                </button>
+            </div>
+        `;
+
+        // Insert before challenges container
+        if (container.parentNode) {
+            container.parentNode.insertBefore(selectorDiv, container);
+        }
+
+        // Add click handlers
+        selectorDiv.querySelectorAll('.difficulty-mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                selectorDiv.querySelectorAll('.difficulty-mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                difficultyMode = btn.dataset.mode;
+                shuffleChallenges();
+            });
+        });
+    }
+
     function loadVariants() {
         variantsData = window.variantsDataEmbedded;
         shuffleWarmups();
         shuffleIntermediate();
+        // Setup filters in reverse order (they insert before container, so last becomes first)
+        setupConceptFilter();        // Will be 2nd (pattern filter)
+        setupDifficultyModeSelector();  // Will be 1st (difficulty mode)
         shuffleChallenges();
-        setupConceptFilter();
         shuffleVariants();
     }
 
@@ -352,13 +494,138 @@
     function shuffleChallenges() {
         if (!variantsData || !variantsData.challenges) return;
 
-        // Pick a random variant for each challenge
-        variantsData.challenges.forEach(challenge => {
-            const current = currentChallengeVariants[challenge.id];
-            const available = challenge.variants.filter(v => !current || v.id !== current.id);
-            const pool = available.length > 0 ? available : challenge.variants;
-            currentChallengeVariants[challenge.id] = pool[Math.floor(Math.random() * pool.length)];
-        });
+        // Filter challenges by concept if active
+        const challenges = currentConceptFilter
+            ? variantsData.challenges.filter(c => c.concept === currentConceptFilter)
+            : variantsData.challenges;
+
+        if (difficultyMode === 'easy') {
+            // Easy mode: Only show easy variants
+            challenges.forEach(challenge => {
+                const easyVariants = challenge.variants.filter(v => getVariantDifficulty(v, challenge) === 1);
+                if (easyVariants.length === 0) {
+                    // No easy variants, skip this challenge
+                    return;
+                }
+                const current = currentChallengeVariants[challenge.id];
+                const available = easyVariants.filter(v => !current || v.id !== current.id);
+                const pool = available.length > 0 ? available : easyVariants;
+                currentChallengeVariants[challenge.id] = pool[Math.floor(Math.random() * pool.length)];
+            });
+        } else if (difficultyMode === 'hard') {
+            // Hard mode: Only show hard variants
+            challenges.forEach(challenge => {
+                const hardVariants = challenge.variants.filter(v => getVariantDifficulty(v, challenge) === 3);
+                if (hardVariants.length === 0) {
+                    // No hard variants, skip this challenge
+                    return;
+                }
+                const current = currentChallengeVariants[challenge.id];
+                const available = hardVariants.filter(v => !current || v.id !== current.id);
+                const pool = available.length > 0 ? available : hardVariants;
+                currentChallengeVariants[challenge.id] = pool[Math.floor(Math.random() * pool.length)];
+            });
+        } else if (difficultyMode === 'mixed') {
+            // Original random shuffle
+            challenges.forEach(challenge => {
+                const current = currentChallengeVariants[challenge.id];
+                const available = challenge.variants.filter(v => !current || v.id !== current.id);
+                const pool = available.length > 0 ? available : challenge.variants;
+                currentChallengeVariants[challenge.id] = pool[Math.floor(Math.random() * pool.length)];
+            });
+        } else if (difficultyMode === 'balanced') {
+            // Balanced shuffle - ensure difficulty distribution
+            const targetCount = challenges.length;
+            const targetEasy = Math.round(targetCount * DIFFICULTY_TARGETS[1]);
+            const targetMedium = Math.round(targetCount * DIFFICULTY_TARGETS[2]);
+            const targetHard = targetCount - targetEasy - targetMedium;
+
+            let easyCount = 0;
+            let mediumCount = 0;
+            let hardCount = 0;
+
+            challenges.forEach(challenge => {
+                // Group variants by difficulty
+                const variantsByDifficulty = {
+                    1: challenge.variants.filter(v => getVariantDifficulty(v, challenge) === 1),
+                    2: challenge.variants.filter(v => getVariantDifficulty(v, challenge) === 2),
+                    3: challenge.variants.filter(v => getVariantDifficulty(v, challenge) === 3)
+                };
+
+                // Determine which difficulty to pick from based on targets
+                let targetDifficulty = 2; // default to medium
+
+                if (easyCount < targetEasy && variantsByDifficulty[1].length > 0) {
+                    targetDifficulty = 1;
+                    easyCount++;
+                } else if (mediumCount < targetMedium && variantsByDifficulty[2].length > 0) {
+                    targetDifficulty = 2;
+                    mediumCount++;
+                } else if (hardCount < targetHard && variantsByDifficulty[3].length > 0) {
+                    targetDifficulty = 3;
+                    hardCount++;
+                } else {
+                    // Targets met or no variants at target difficulty, pick from available
+                    const availableDifficulties = Object.keys(variantsByDifficulty)
+                        .filter(d => variantsByDifficulty[d].length > 0)
+                        .map(Number);
+
+                    if (availableDifficulties.length > 0) {
+                        targetDifficulty = availableDifficulties[Math.floor(Math.random() * availableDifficulties.length)];
+                        if (targetDifficulty === 1) easyCount++;
+                        else if (targetDifficulty === 2) mediumCount++;
+                        else hardCount++;
+                    }
+                }
+
+                // Pick random variant of target difficulty
+                const pool = variantsByDifficulty[targetDifficulty];
+                if (pool && pool.length > 0) {
+                    currentChallengeVariants[challenge.id] = pool[Math.floor(Math.random() * pool.length)];
+                } else {
+                    // Fallback to any variant if no variants at target difficulty
+                    currentChallengeVariants[challenge.id] = challenge.variants[
+                        Math.floor(Math.random() * challenge.variants.length)
+                    ];
+                }
+            });
+        } else if (difficultyMode === 'progressive') {
+            // Progressive mode - sort by challenge order, pick easier variants first
+            challenges.forEach((challenge, idx) => {
+                const variantsByDifficulty = {
+                    1: challenge.variants.filter(v => getVariantDifficulty(v, challenge) === 1),
+                    2: challenge.variants.filter(v => getVariantDifficulty(v, challenge) === 2),
+                    3: challenge.variants.filter(v => getVariantDifficulty(v, challenge) === 3)
+                };
+
+                // Early challenges get easier variants
+                const progressPct = idx / challenges.length;
+                let targetDifficulty;
+
+                if (progressPct < 0.4) {
+                    // First 40% of challenges: prefer easy
+                    targetDifficulty = variantsByDifficulty[1].length > 0 ? 1 :
+                                     variantsByDifficulty[2].length > 0 ? 2 : 3;
+                } else if (progressPct < 0.7) {
+                    // Middle 30%: prefer medium
+                    targetDifficulty = variantsByDifficulty[2].length > 0 ? 2 :
+                                     variantsByDifficulty[1].length > 0 ? 1 : 3;
+                } else {
+                    // Last 30%: prefer hard
+                    targetDifficulty = variantsByDifficulty[3].length > 0 ? 3 :
+                                     variantsByDifficulty[2].length > 0 ? 2 : 1;
+                }
+
+                const pool = variantsByDifficulty[targetDifficulty];
+                if (pool && pool.length > 0) {
+                    currentChallengeVariants[challenge.id] = pool[Math.floor(Math.random() * pool.length)];
+                } else {
+                    currentChallengeVariants[challenge.id] = challenge.variants[
+                        Math.floor(Math.random() * challenge.variants.length)
+                    ];
+                }
+            });
+        }
 
         renderChallenges();
 
@@ -422,8 +689,14 @@
     }
 
     function renderSingleChallenge(num, variant, challenge, difficulty) {
+        // Get variant-specific difficulty if available
+        const variantDiff = getVariantDifficulty(variant, challenge);
+        const variantStars = getDifficultyStars(variantDiff);
+
         let html = `<div class="exercise">
-            <h4>Challenge ${num}: ${variant.title} <span style="font-size: 0.75rem; opacity: 0.6;">${difficulty}</span></h4>
+            <h4>Challenge ${num}: ${variant.title}
+                <span class="variant-difficulty" title="Variant difficulty: ${variantDiff} stars">${variantStars}</span>
+            </h4>
             <p>${variant.description}</p>`;
 
         // Add hints
@@ -535,9 +808,43 @@
             return;
         }
 
+        // Calculate distribution stats
+        const counts = { 1: 0, 2: 0, 3: 0 };
+        challenges.forEach(challenge => {
+            const variant = currentChallengeVariants[challenge.id];
+            if (variant) {
+                const diff = getVariantDifficulty(variant, challenge);
+                counts[diff] = (counts[diff] || 0) + 1;
+            }
+        });
+
+        const total = Object.values(counts).reduce((a, b) => a + b, 0);
+        if (total > 0) {
+            let infoText = '';
+            if (difficultyMode === 'easy') {
+                infoText = `⭐ Easy mode: ${total} easy challenge${total !== 1 ? 's' : ''}`;
+            } else if (difficultyMode === 'hard') {
+                infoText = `⭐⭐⭐ Hard mode: ${total} hard challenge${total !== 1 ? 's' : ''}`;
+            } else if (difficultyMode === 'balanced') {
+                infoText = `⚖️ Distribution: ⭐ ${counts[1]} (${Math.round(counts[1]/total*100)}%) | ⭐⭐ ${counts[2]} (${Math.round(counts[2]/total*100)}%) | ⭐⭐⭐ ${counts[3]} (${Math.round(counts[3]/total*100)}%)`;
+            } else if (difficultyMode === 'progressive') {
+                infoText = `📈 Progressive: ${total} challenges with increasing difficulty`;
+            } else {
+                infoText = `🎲 Mixed: ${total} random challenges`;
+            }
+
+            if (infoText) {
+                html += `<div class="shuffle-info">${infoText}</div>`;
+            }
+        }
+
+        let displayNum = 1;
         challenges.forEach((challenge, idx) => {
             const variant = currentChallengeVariants[challenge.id];
-            const num = idx + 1;
+
+            // Skip if no variant was selected (due to difficulty filter)
+            if (!variant) return;
+
             const difficultyNum = getExerciseDifficulty(challenge);
             const difficultyStars = getDifficultyStars(difficultyNum);
 
@@ -547,7 +854,8 @@
                 html += `<p style="color: var(--cyan); font-size: 0.85rem; margin: 1.5rem 0 0.5rem; font-weight: 600;">Block ${currentBlock}: ${blockNames[currentBlock] || ''} <span style="opacity: 0.7">${difficultyStars}</span></p>`;
             }
 
-            html += renderSingleChallenge(num, variant, challenge, difficultyStars);
+            html += renderSingleChallenge(displayNum, variant, challenge, difficultyStars);
+            displayNum++;
         });
 
         container.innerHTML = html;
