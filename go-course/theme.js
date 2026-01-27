@@ -33,6 +33,7 @@
             label: 'Default',
             options: [
                 { value: 'dark', label: 'Dark' },
+                { value: 'oled-dark', label: 'OLED' },
                 { value: 'light', label: 'Light' }
             ]
         },
@@ -74,8 +75,7 @@
         {
             label: 'Dracula',
             options: [
-                { value: 'dracula-dark', label: 'Dark' },
-                { value: 'dracula-light', label: 'Light' }
+                { value: 'dracula-dark', label: 'Dark' }
             ]
         },
         {
@@ -90,6 +90,12 @@
             options: [
                 { value: 'everforest-dark', label: 'Dark' },
                 { value: 'everforest-light', label: 'Light' }
+            ]
+        },
+        {
+            label: 'Pastel',
+            options: [
+                { value: 'pastel-light', label: 'Light' }
             ]
         }
     ];
