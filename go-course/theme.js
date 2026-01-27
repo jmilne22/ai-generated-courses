@@ -67,10 +67,7 @@
 })();
 
 (function() {
-    const SESSION_PARAM_START = 'sessionStart';
-    const SESSION_PARAM_MINUTES = 'sessionMinutes';
-    const SESSION_PARAM_PAUSED = 'sessionPaused';
-    const SESSION_PARAM_REMAINING = 'sessionRemaining';
+    const SESSION_KEY = 'go-course-session';
     let sessionInterval = null;
 
     function formatCountdown(ms) {
@@ -80,82 +77,68 @@
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
-    function getSessionParams() {
-        return new URLSearchParams(window.location.search);
+    function getSession() {
+        try {
+            const raw = localStorage.getItem(SESSION_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch (error) {
+            return null;
+        }
     }
 
-    function writeSessionParams(params) {
+    function setSession(session) {
+        if (!session) {
+            localStorage.removeItem(SESSION_KEY);
+            return;
+        }
+        localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    }
+
+    function migrateSessionFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const startParam = params.get('sessionStart');
+        const minutesParam = params.get('sessionMinutes');
+        const pausedParam = params.get('sessionPaused');
+        const remainingParam = params.get('sessionRemaining');
+
+        if (!startParam && !minutesParam && !pausedParam && !remainingParam) return;
+
+        const minutes = Number(minutesParam || 25);
+        const startAt = Number(startParam || Date.now());
+        const paused = pausedParam === '1';
+        const remainingSeconds = remainingParam ? Number(remainingParam) : null;
+
+        if (Number.isFinite(minutes) && minutes > 0) {
+            if (paused) {
+                setSession({
+                    status: 'paused',
+                    minutes,
+                    remainingSeconds: Number.isFinite(remainingSeconds)
+                        ? remainingSeconds
+                        : minutes * 60
+                });
+            } else if (Number.isFinite(startAt)) {
+                setSession({
+                    status: 'running',
+                    minutes,
+                    startAt
+                });
+            }
+        }
+
+        ['sessionStart', 'sessionMinutes', 'sessionPaused', 'sessionRemaining']
+            .forEach(key => params.delete(key));
         const url = new URL(window.location.href);
         url.search = params.toString();
         history.replaceState({}, '', url.toString());
     }
 
-    function getSessionFromUrl() {
-        const params = getSessionParams();
-        const startParam = params.get(SESSION_PARAM_START);
-        const minutesParam = params.get(SESSION_PARAM_MINUTES);
-
-        if (!minutesParam) return null;
-
-        let startAt = startParam ? Number(startParam) : null;
-        const minutes = Number(minutesParam);
-        if (!Number.isFinite(startAt) || !Number.isFinite(minutes) || minutes <= 0) return null;
-
-        const paused = params.get(SESSION_PARAM_PAUSED) === '1';
-        const remainingParam = params.get(SESSION_PARAM_REMAINING);
-        const remainingSeconds = remainingParam ? Number(remainingParam) : null;
-
-        if (!Number.isFinite(startAt)) {
-            startAt = Date.now();
-        }
-
-        return {
-            startAt,
-            minutes,
-            paused,
-            remainingSeconds
-        };
-    }
-
-    function setSessionInUrl(session) {
-        const params = getSessionParams();
-        if (!session) {
-            params.delete(SESSION_PARAM_START);
-            params.delete(SESSION_PARAM_MINUTES);
-            params.delete(SESSION_PARAM_PAUSED);
-            params.delete(SESSION_PARAM_REMAINING);
-            writeSessionParams(params);
-            return;
-        }
-
-        params.set(SESSION_PARAM_START, String(session.startAt));
-        params.set(SESSION_PARAM_MINUTES, String(session.minutes));
-
-        if (session.paused) {
-            params.set(SESSION_PARAM_PAUSED, '1');
-            if (Number.isFinite(session.remainingSeconds)) {
-                params.set(SESSION_PARAM_REMAINING, String(session.remainingSeconds));
-            } else {
-                params.delete(SESSION_PARAM_REMAINING);
-            }
-        } else {
-            params.delete(SESSION_PARAM_PAUSED);
-            params.delete(SESSION_PARAM_REMAINING);
-        }
-
-        writeSessionParams(params);
-    }
-
     function getRemainingSeconds(session) {
-        if (session.paused) {
-            if (Number.isFinite(session.remainingSeconds)) {
-                return Math.max(0, Math.floor(session.remainingSeconds));
-            }
-            return session.minutes * 60;
+        if (session.status === 'paused') {
+            return Math.max(0, Math.floor(session.remainingSeconds || 0));
         }
-
-        const endAt = session.startAt + session.minutes * 60 * 1000;
-        return Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
+        const elapsedSeconds = Math.floor((Date.now() - session.startAt) / 1000);
+        return Math.max(0, session.minutes * 60 - elapsedSeconds);
     }
 
     function ensureFloatingTimer() {
@@ -189,7 +172,8 @@
         countdownText,
         progressWidth,
         labelText,
-        toggleLabel
+        toggleLabel,
+        showToggle
     }) {
         const dashboardTimer = document.getElementById('session-timer');
 
@@ -204,6 +188,7 @@
             if (progress) progress.style.width = progressWidth;
             if (label) label.textContent = labelText;
             if (toggleBtn && toggleLabel) toggleBtn.textContent = toggleLabel;
+            if (toggleBtn) toggleBtn.hidden = !showToggle;
             bindTimerControls(dashboardTimer);
             return;
         }
@@ -218,6 +203,7 @@
         if (progress) progress.style.width = progressWidth;
         if (label) label.textContent = labelText;
         if (toggleBtn && toggleLabel) toggleBtn.textContent = toggleLabel;
+        if (toggleBtn) toggleBtn.hidden = !showToggle;
     }
 
     function bindTimerControls(root) {
@@ -233,40 +219,39 @@
         }
     }
 
-    function resetSession() {
-        const session = getSessionFromUrl();
-        const minutes = session?.minutes || 25;
-        setSessionInUrl({
-            startAt: Date.now(),
+    function seedPausedSession(minutes) {
+        setSession({
+            status: 'paused',
             minutes,
-            paused: true,
             remainingSeconds: minutes * 60
         });
+    }
+
+    function resetSession() {
+        const session = getSession();
+        const minutes = session?.minutes || 25;
+        seedPausedSession(minutes);
         updateSessionTimer();
     }
 
     function togglePauseSession() {
-        const session = getSessionFromUrl();
+        const session = getSession();
         if (!session) return;
 
-        if (session.paused) {
+        if (session.status === 'paused') {
             const totalSeconds = session.minutes * 60;
-            const remainingSeconds = Number.isFinite(session.remainingSeconds)
-                ? Math.max(0, session.remainingSeconds)
-                : totalSeconds;
-            const elapsedSeconds = Math.max(0, totalSeconds - remainingSeconds);
-            const startAt = Date.now() - elapsedSeconds * 1000;
-            setSessionInUrl({
-                startAt,
+            const remainingSeconds = Math.max(0, session.remainingSeconds || totalSeconds);
+            const elapsedSeconds = totalSeconds - remainingSeconds;
+            setSession({
+                status: 'running',
                 minutes: session.minutes,
-                paused: false
+                startAt: Date.now() - elapsedSeconds * 1000
             });
         } else {
             const remainingSeconds = getRemainingSeconds(session);
-            setSessionInUrl({
-                startAt: session.startAt,
+            setSession({
+                status: 'paused',
                 minutes: session.minutes,
-                paused: true,
                 remainingSeconds
             });
         }
@@ -275,7 +260,8 @@
     }
 
     function updateSessionTimer() {
-        const session = getSessionFromUrl();
+        migrateSessionFromUrl();
+        const session = getSession();
         const dashboardTimer = document.getElementById('session-timer');
         const floatingTimer = document.getElementById('floating-session-timer');
 
@@ -283,12 +269,7 @@
             if (dashboardTimer) {
                 const durationSelect = document.getElementById('session-duration');
                 const minutes = durationSelect ? Number(durationSelect.value) || 25 : 25;
-                setSessionInUrl({
-                    startAt: Date.now(),
-                    minutes,
-                    paused: true,
-                    remainingSeconds: minutes * 60
-                });
+                seedPausedSession(minutes);
                 updateSessionTimer();
                 return;
             }
@@ -306,24 +287,26 @@
         const countdownText = formatCountdown(remainingSeconds * 1000);
         const pct = Math.min(1, Math.max(0, 1 - remainingSeconds / totalSeconds));
         const progressWidth = `${Math.round(pct * 100)}%`;
-        const statusLabel = session.paused ? 'Stopped' : 'Focus block';
+        const statusLabel = session.status === 'paused' ? 'Stopped' : 'Focus block';
         const labelText = `${statusLabel} • ${session.minutes} min`;
-        const toggleLabel = session.paused ? 'Start' : 'Pause';
+        const toggleLabel = session.status === 'paused' ? 'Start' : 'Pause';
+        const showToggle = !(dashboardTimer && session.status === 'paused');
 
         renderTimer({
             countdownText,
             progressWidth,
             labelText,
-            toggleLabel
+            toggleLabel,
+            showToggle
         });
 
-        if (!session.paused && remainingSeconds <= 0) {
-            setSessionInUrl(null);
+        if (session.status === 'running' && remainingSeconds <= 0) {
+            setSession(null);
             updateSessionTimer();
             return;
         }
 
-        if (!session.paused) {
+        if (session.status === 'running') {
             if (!sessionInterval) {
                 sessionInterval = setInterval(updateSessionTimer, 1000);
             }
@@ -334,32 +317,22 @@
     }
 
     function startSession(minutes) {
-        const now = Date.now();
-        setSessionInUrl({
-            startAt: now,
+        setSession({
+            status: 'running',
             minutes,
-            paused: false
+            startAt: Date.now()
         });
         updateSessionTimer();
 
         const lastModule = localStorage.getItem('go-course-last-module');
         const target = lastModule ? `module${lastModule}.html` : 'module0.html';
-        const url = new URL(target, window.location.href);
-        url.searchParams.set(SESSION_PARAM_START, String(now));
-        url.searchParams.set(SESSION_PARAM_MINUTES, String(minutes));
-        window.open(url.toString(), '_blank');
+        window.open(target, '_blank');
     }
 
     function updateSessionDuration(minutes) {
         const safeMinutes = Number(minutes);
         if (!Number.isFinite(safeMinutes) || safeMinutes <= 0) return;
-
-        setSessionInUrl({
-            startAt: Date.now(),
-            minutes: safeMinutes,
-            paused: true,
-            remainingSeconds: safeMinutes * 60
-        });
+        seedPausedSession(safeMinutes);
         updateSessionTimer();
     }
 
