@@ -1099,6 +1099,28 @@ body.focus-mode .code-compare {
     margin-top: 0.75rem;
 }
 
+.session-duration-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.session-duration-select {
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.35rem 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
 .session-control-btn {
     background: transparent;
     border: 1px solid var(--border);

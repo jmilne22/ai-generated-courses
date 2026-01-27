@@ -225,11 +225,12 @@
             <div class="quick-btn" style="padding: 1rem;">
                 <label for="session-duration" style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Session length</label>
                 <select id="session-duration" class="session-duration" onchange="window.updateSessionDuration && window.updateSessionDuration(this.value)">
-                    <option value="25">25 minutes</option>
-                    <option value="60">60 minutes</option>
+                    <option value="25-5">Pomodoro 25/5</option>
+                    <option value="50-10">Pomodoro 50/10</option>
+                    <option value="90-20">Pomodoro 90/20</option>
                 </select>
             </div>
-            <button class="quick-btn primary" type="button" onclick="startSession(Number(document.getElementById('session-duration').value))">
+            <button class="quick-btn primary" type="button" onclick="startSession(document.getElementById('session-duration').value)">
                 <span class="btn-icon">⏱️</span>
                 Start session
             </button>

@@ -338,12 +338,58 @@
         history.replaceState({}, '', url.toString());
     }
 
+    function normalizeSession(session) {
+        if (!session) return null;
+
+        if (typeof session.focusMinutes !== 'number' && typeof session.minutes === 'number') {
+            session.focusMinutes = session.minutes;
+        }
+
+        if (typeof session.breakMinutes !== 'number') {
+            session.breakMinutes = 0;
+        }
+
+        if (!session.phase) {
+            session.phase = 'focus';
+        }
+
+        return session;
+    }
+
+    function getPhaseDurationSeconds(session) {
+        if (session.phase === 'break') {
+            return (session.breakMinutes || 0) * 60;
+        }
+        return (session.focusMinutes || 0) * 60;
+    }
+
     function getRemainingSeconds(session) {
         if (session.status === 'paused') {
             return Math.max(0, Math.floor(session.remainingSeconds || 0));
         }
         const elapsedSeconds = Math.floor((Date.now() - session.startAt) / 1000);
-        return Math.max(0, session.minutes * 60 - elapsedSeconds);
+        return Math.max(0, getPhaseDurationSeconds(session) - elapsedSeconds);
+    }
+
+    function parseDurationValue(value) {
+        if (typeof value === 'number') {
+            return { focusMinutes: value, breakMinutes: 0 };
+        }
+
+        const raw = String(value || '').trim();
+        if (raw.includes('-')) {
+            const [focus, rest] = raw.split('-').map(Number);
+            return {
+                focusMinutes: Number.isFinite(focus) ? focus : 25,
+                breakMinutes: Number.isFinite(rest) ? rest : 5
+            };
+        }
+
+        const minutes = Number(raw);
+        return {
+            focusMinutes: Number.isFinite(minutes) ? minutes : 25,
+            breakMinutes: 0
+        };
     }
 
     function ensureFloatingTimer() {
@@ -366,6 +412,14 @@
                 <button class="session-control-btn" type="button" data-session-action="toggle">Pause</button>
                 <button class="session-control-btn" type="button" data-session-action="reset">Reset</button>
                 <button class="session-control-btn danger" type="button" data-session-action="hide">Hide</button>
+            </div>
+            <div class="session-duration-row">
+                <label for="floating-session-duration">Duration</label>
+                <select id="floating-session-duration" class="session-duration-select">
+                    <option value="25-5">25/5</option>
+                    <option value="50-10">50/10</option>
+                    <option value="90-20">90/20</option>
+                </select>
             </div>
         `;
 
@@ -416,6 +470,7 @@
         const toggle = root.querySelector('[data-session-action="toggle"]');
         const reset = root.querySelector('[data-session-action="reset"]');
         const hide = root.querySelector('[data-session-action="hide"]');
+        const duration = root.querySelector('.session-duration-select');
 
         if (toggle) {
             toggle.onclick = () => togglePauseSession();
@@ -429,35 +484,49 @@
             hide.onclick = () => hideFloatingTimer();
         }
 
+        if (duration) {
+            duration.onchange = () => {
+                if (window.updateSessionDuration) {
+                    window.updateSessionDuration(duration.value);
+                }
+            };
+        }
+
     }
 
     function seedPausedSession(minutes) {
+        const { focusMinutes, breakMinutes } = parseDurationValue(minutes);
         setSession({
             status: 'paused',
-            minutes,
-            remainingSeconds: minutes * 60,
+            phase: 'focus',
+            focusMinutes,
+            breakMinutes,
+            remainingSeconds: focusMinutes * 60,
             hidden: false
         });
     }
 
     function resetSession() {
-        const session = getSession();
-        const minutes = session?.minutes || 25;
-        seedPausedSession(minutes);
+        const session = normalizeSession(getSession());
+        const focusMinutes = session?.focusMinutes || session?.minutes || 25;
+        const breakMinutes = session?.breakMinutes || 0;
+        seedPausedSession(`${focusMinutes}-${breakMinutes}`);
         updateSessionTimer();
     }
 
     function togglePauseSession() {
-        const session = getSession();
+        const session = normalizeSession(getSession());
         if (!session) return;
 
         if (session.status === 'paused') {
-            const totalSeconds = session.minutes * 60;
+            const totalSeconds = getPhaseDurationSeconds(session);
             const remainingSeconds = Math.max(0, session.remainingSeconds || totalSeconds);
             const elapsedSeconds = totalSeconds - remainingSeconds;
             setSession({
                 status: 'running',
-                minutes: session.minutes,
+                phase: session.phase || 'focus',
+                focusMinutes: session.focusMinutes || session.minutes,
+                breakMinutes: session.breakMinutes || 0,
                 startAt: Date.now() - elapsedSeconds * 1000,
                 hidden: false
             });
@@ -465,7 +534,9 @@
             const remainingSeconds = getRemainingSeconds(session);
             setSession({
                 status: 'paused',
-                minutes: session.minutes,
+                phase: session.phase || 'focus',
+                focusMinutes: session.focusMinutes || session.minutes,
+                breakMinutes: session.breakMinutes || 0,
                 remainingSeconds,
                 hidden: false
             });
@@ -502,7 +573,7 @@
         if (!session) {
             if (dashboardTimer) {
                 const durationSelect = document.getElementById('session-duration');
-                const minutes = durationSelect ? Number(durationSelect.value) || 25 : 25;
+                const minutes = durationSelect ? durationSelect.value : '25-5';
                 seedPausedSession(minutes);
                 updateSessionTimer();
                 return;
@@ -526,7 +597,7 @@
         }
 
         const remainingSeconds = getRemainingSeconds(session);
-        const totalSeconds = session.minutes * 60;
+        const totalSeconds = getPhaseDurationSeconds(session);
 
         if (!dashboardTimer && session.hidden) {
             if (session.status === 'running') {
@@ -551,8 +622,13 @@
         const countdownText = formatCountdown(remainingSeconds * 1000);
         const pct = Math.min(1, Math.max(0, 1 - remainingSeconds / totalSeconds));
         const progressWidth = `${Math.round(pct * 100)}%`;
-        const statusLabel = session.status === 'paused' ? 'Stopped' : 'Focus block';
-        const labelText = `${statusLabel} • ${session.minutes} min`;
+        const statusLabel = session.status === 'paused'
+            ? 'Stopped'
+            : (session.phase === 'break' ? 'Break' : 'Focus block');
+        const labelMinutes = session.phase === 'break'
+            ? (session.breakMinutes || 0)
+            : (session.focusMinutes || 0);
+        const labelText = `${statusLabel} • ${labelMinutes} min`;
         const toggleLabel = session.status === 'paused' ? 'Start' : 'Pause';
         const showToggle = !(dashboardTimer && session.status === 'paused');
 
@@ -564,8 +640,35 @@
             showToggle
         });
 
+        if (floatingTimer) {
+            const duration = floatingTimer.querySelector('.session-duration-select');
+            if (duration) {
+                duration.value = `${session.focusMinutes || 25}-${session.breakMinutes || 0}`;
+            }
+        }
+
         if (session.status === 'running' && remainingSeconds <= 0) {
-            setSession(null);
+            if (session.phase === 'focus' && session.breakMinutes > 0) {
+                setSession({
+                    status: 'running',
+                    phase: 'break',
+                    focusMinutes: session.focusMinutes,
+                    breakMinutes: session.breakMinutes,
+                    startAt: Date.now(),
+                    hidden: false
+                });
+                updateSessionTimer();
+                return;
+            }
+
+            setSession({
+                status: 'paused',
+                phase: 'focus',
+                focusMinutes: session.focusMinutes,
+                breakMinutes: session.breakMinutes,
+                remainingSeconds: session.focusMinutes * 60,
+                hidden: false
+            });
             updateSessionTimer();
             return;
         }
@@ -581,9 +684,12 @@
     }
 
     function startSession(minutes) {
+        const { focusMinutes, breakMinutes } = parseDurationValue(minutes);
         setSession({
             status: 'running',
-            minutes,
+            phase: 'focus',
+            focusMinutes,
+            breakMinutes,
             startAt: Date.now(),
             hidden: false
         });
@@ -595,9 +701,9 @@
     }
 
     function updateSessionDuration(minutes) {
-        const safeMinutes = Number(minutes);
-        if (!Number.isFinite(safeMinutes) || safeMinutes <= 0) return;
-        seedPausedSession(safeMinutes);
+        const { focusMinutes, breakMinutes } = parseDurationValue(minutes);
+        if (!Number.isFinite(focusMinutes) || focusMinutes <= 0) return;
+        seedPausedSession(`${focusMinutes}-${breakMinutes}`);
         updateSessionTimer();
     }
 
