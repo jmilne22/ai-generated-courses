@@ -170,6 +170,49 @@
             opacity: 0.8;
             margin-left: 0.5rem;
         }
+        .variant-btn-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .easier-variant-btn, .harder-variant-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--green-bright);
+            color: var(--green-bright);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .harder-variant-btn {
+            border-color: var(--purple);
+            color: var(--purple);
+        }
+        .easier-variant-btn:hover {
+            background: var(--green-bright);
+            color: var(--bg-dark);
+            transform: translateY(-1px);
+        }
+        .harder-variant-btn:hover {
+            background: var(--purple);
+            color: white;
+            transform: translateY(-1px);
+        }
+        .easier-variant-btn:disabled, .harder-variant-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: var(--text-dim);
+            color: var(--text-dim);
+        }
+        .easier-variant-btn:disabled:hover, .harder-variant-btn:disabled:hover {
+            background: var(--bg-card);
+            color: var(--text-dim);
+            transform: none;
+        }
         .shuffle-info {
             background: var(--bg-lighter);
             padding: 0.5rem 0.75rem;
@@ -864,11 +907,46 @@
         const variantDiff = getVariantDifficulty(variant, challenge);
         const variantStars = getDifficultyStars(variantDiff);
 
-        let html = `<div class="exercise">
+        let html = `<div class="exercise" data-challenge-id="${challenge.id}">
             <h4>Challenge ${num}: ${variant.title}
                 <span class="variant-difficulty" title="Variant difficulty: ${variantDiff} stars">${variantStars}</span>
-            </h4>
-            <p>${variant.description}</p>`;
+            </h4>`;
+
+        // Add difficulty navigation buttons
+        const hasEasierVariants = challenge.variants.some(v =>
+            getVariantDifficulty(v, challenge) < variantDiff
+        );
+        const hasHarderVariants = challenge.variants.some(v =>
+            getVariantDifficulty(v, challenge) > variantDiff
+        );
+
+        if (hasEasierVariants || hasHarderVariants) {
+            html += `<div class="variant-btn-container">`;
+
+            if (hasEasierVariants) {
+                html += `<button class="easier-variant-btn" data-challenge-id="${challenge.id}">
+                    📉 Get Easier Version
+                </button>`;
+            } else if (variantDiff === 1) {
+                html += `<button class="easier-variant-btn" disabled title="This is already the easiest variant">
+                    ✓ Already Easiest
+                </button>`;
+            }
+
+            if (hasHarderVariants) {
+                html += `<button class="harder-variant-btn" data-challenge-id="${challenge.id}">
+                    📈 Get Harder Version
+                </button>`;
+            } else if (variantDiff === 3) {
+                html += `<button class="harder-variant-btn" disabled title="This is already the hardest variant">
+                    ✓ Already Hardest
+                </button>`;
+            }
+
+            html += `</div>`;
+        }
+
+        html += `<p>${variant.description}</p>`;
 
         // Add hints
         if (variant.hints) {
@@ -978,7 +1056,10 @@
             });
 
             container.innerHTML = html;
-            container.querySelectorAll('.exercise').forEach(initThinkingTimer);
+            container.querySelectorAll('.exercise').forEach(ex => {
+                initThinkingTimer(ex);
+                initVariantDifficultyButtons(ex);
+            });
             return;
         }
 
@@ -1036,7 +1117,116 @@
         container.querySelectorAll('.exercise').forEach(ex => {
             initThinkingTimer(ex);
             initPersonalNotes(ex);
+            initVariantDifficultyButtons(ex);
         });
+    }
+
+    function getEasierVariant(challengeId) {
+        if (!variantsData || !variantsData.challenges) return;
+
+        // Find the challenge
+        const challenge = variantsData.challenges.find(c => c.id === challengeId);
+        if (!challenge) return;
+
+        // Get current variant and its difficulty
+        const currentVariant = currentChallengeVariants[challengeId];
+        if (!currentVariant) return;
+
+        const currentDiff = getVariantDifficulty(currentVariant, challenge);
+
+        // Find all variants with lower difficulty
+        const easierVariants = challenge.variants.filter(v =>
+            getVariantDifficulty(v, challenge) < currentDiff
+        );
+
+        if (easierVariants.length === 0) return;
+
+        // Pick a random easier variant
+        const randomIndex = Math.floor(Math.random() * easierVariants.length);
+        const newVariant = easierVariants[randomIndex];
+
+        // Update the current variant
+        currentChallengeVariants[challengeId] = newVariant;
+
+        // Re-render challenges
+        renderChallenges();
+
+        // Visual feedback - scroll to the challenge and flash it
+        setTimeout(() => {
+            const exerciseDiv = document.querySelector(`.exercise[data-challenge-id="${challengeId}"]`);
+            if (exerciseDiv) {
+                exerciseDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                exerciseDiv.style.transition = 'background 0.5s';
+                exerciseDiv.style.background = 'var(--green-bright-dim, rgba(34, 197, 94, 0.1))';
+                setTimeout(() => {
+                    exerciseDiv.style.background = '';
+                }, 800);
+            }
+        }, 100);
+    }
+
+    function getHarderVariant(challengeId) {
+        if (!variantsData || !variantsData.challenges) return;
+
+        // Find the challenge
+        const challenge = variantsData.challenges.find(c => c.id === challengeId);
+        if (!challenge) return;
+
+        // Get current variant and its difficulty
+        const currentVariant = currentChallengeVariants[challengeId];
+        if (!currentVariant) return;
+
+        const currentDiff = getVariantDifficulty(currentVariant, challenge);
+
+        // Find all variants with higher difficulty
+        const harderVariants = challenge.variants.filter(v =>
+            getVariantDifficulty(v, challenge) > currentDiff
+        );
+
+        if (harderVariants.length === 0) return;
+
+        // Pick a random harder variant
+        const randomIndex = Math.floor(Math.random() * harderVariants.length);
+        const newVariant = harderVariants[randomIndex];
+
+        // Update the current variant
+        currentChallengeVariants[challengeId] = newVariant;
+
+        // Re-render challenges
+        renderChallenges();
+
+        // Visual feedback - scroll to the challenge and flash it
+        setTimeout(() => {
+            const exerciseDiv = document.querySelector(`.exercise[data-challenge-id="${challengeId}"]`);
+            if (exerciseDiv) {
+                exerciseDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                exerciseDiv.style.transition = 'background 0.5s';
+                exerciseDiv.style.background = 'var(--purple-dim, rgba(139, 92, 246, 0.15))';
+                setTimeout(() => {
+                    exerciseDiv.style.background = '';
+                }, 800);
+            }
+        }, 100);
+    }
+
+    function initVariantDifficultyButtons(exerciseElement) {
+        // Initialize easier button
+        const easierBtn = exerciseElement.querySelector('.easier-variant-btn:not([disabled])');
+        if (easierBtn) {
+            easierBtn.addEventListener('click', function() {
+                const challengeId = this.getAttribute('data-challenge-id');
+                getEasierVariant(challengeId);
+            });
+        }
+
+        // Initialize harder button
+        const harderBtn = exerciseElement.querySelector('.harder-variant-btn:not([disabled])');
+        if (harderBtn) {
+            harderBtn.addEventListener('click', function() {
+                const challengeId = this.getAttribute('data-challenge-id');
+                getHarderVariant(challengeId);
+            });
+        }
     }
 
     function shuffleVariants() {
