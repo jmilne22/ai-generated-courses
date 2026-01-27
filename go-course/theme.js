@@ -1,5 +1,33 @@
 // Theme toggle functionality for Go Course
 (function() {
+    const memoryStore = {};
+
+    function safeGet(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (error) {
+            return Object.prototype.hasOwnProperty.call(memoryStore, key)
+                ? memoryStore[key]
+                : null;
+        }
+    }
+
+    function safeSet(key, value) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (error) {
+            memoryStore[key] = value;
+        }
+    }
+
+    function safeRemove(key) {
+        try {
+            localStorage.removeItem(key);
+        } catch (error) {
+            delete memoryStore[key];
+        }
+    }
+
     const themeGroups = [
         {
             label: 'Default',
@@ -68,7 +96,7 @@
 
     // Check for saved theme preference or default to dark
     function getPreferredTheme() {
-        const saved = localStorage.getItem('go-course-theme');
+        const saved = safeGet('go-course-theme');
         if (saved) {
             return saved;
         }
@@ -83,11 +111,78 @@
         } else {
             document.documentElement.setAttribute('data-theme', theme);
         }
-        localStorage.setItem('go-course-theme', theme);
+        safeSet('go-course-theme', theme);
     }
 
     // Initialize theme immediately to prevent flash
     setTheme(getPreferredTheme());
+
+    const focusStorageKey = 'go-course-focus-mode';
+
+    function isFocusModeEnabled() {
+        return safeGet(focusStorageKey) === 'on';
+    }
+
+    function setFocusMode(enabled) {
+        document.body.classList.toggle('focus-mode', enabled);
+        safeSet(focusStorageKey, enabled ? 'on' : 'off');
+    }
+
+    window.goCourseFocus = {
+        isEnabled: isFocusModeEnabled,
+        set: setFocusMode
+    };
+
+    function createFocusToggle(target) {
+        if (!target || document.querySelector('.focus-toggle')) {
+            return;
+        }
+        const button = document.createElement('button');
+        button.className = 'focus-toggle';
+        button.type = 'button';
+        button.setAttribute('aria-label', 'Toggle focus mode');
+
+        const updateLabel = () => {
+            const enabled = isFocusModeEnabled();
+            button.textContent = enabled ? 'Focus On' : 'Focus Off';
+            button.classList.toggle('active', enabled);
+        };
+
+        updateLabel();
+
+        button.addEventListener('click', () => {
+            setFocusMode(!isFocusModeEnabled());
+            updateLabel();
+        });
+
+        target.appendChild(button);
+    }
+
+    function createShowTimerToggle(target) {
+        if (!target || document.querySelector('.show-timer-toggle')) {
+            return;
+        }
+        const button = document.createElement('button');
+        button.className = 'show-timer-toggle';
+        button.type = 'button';
+        button.textContent = 'Show timer';
+        button.setAttribute('aria-label', 'Show session timer');
+        button.addEventListener('click', () => {
+            if (window.sessionShow) {
+                window.sessionShow();
+            }
+        });
+        target.appendChild(button);
+    }
+
+    function createFocusToggleFallback() {
+        if (document.querySelector('.focus-toggle')) {
+            return;
+        }
+        const wrapper = document.querySelector('.theme-actions');
+        if (!wrapper) return;
+        createFocusToggle(wrapper);
+    }
 
     // Create and inject theme picker when DOM is ready
     function createThemePicker() {
@@ -121,9 +216,18 @@
             updateThemeLabel(select.value, label);
         });
 
+        const actions = document.createElement('div');
+        actions.className = 'theme-actions';
+
+        createShowTimerToggle(actions);
+
         wrapper.appendChild(label);
         wrapper.appendChild(select);
+        if (actions.childNodes.length > 0) {
+            wrapper.appendChild(actions);
+        }
         document.body.appendChild(wrapper);
+        createFocusToggleFallback();
     }
 
     function updateThemeLabel(value, labelEl) {
@@ -139,14 +243,20 @@
 
     // Wait for DOM
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', createThemePicker);
+        document.addEventListener('DOMContentLoaded', () => {
+            createThemePicker();
+            createFocusToggle(document.getElementById('focus-toggle-slot'));
+            setFocusMode(isFocusModeEnabled());
+        });
     } else {
         createThemePicker();
+        createFocusToggle(document.getElementById('focus-toggle-slot'));
+        setFocusMode(isFocusModeEnabled());
     }
 
     // Listen for system theme changes (only if no saved preference)
     window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
-        if (!localStorage.getItem('go-course-theme')) {
+        if (!safeGet('go-course-theme')) {
             setTheme(e.matches ? 'light' : 'dark');
         }
     });
@@ -154,6 +264,7 @@
 
 (function() {
     const SESSION_KEY = 'go-course-session';
+    const memoryStore = {};
     let sessionInterval = null;
 
     function formatCountdown(ms) {
@@ -168,16 +279,24 @@
             const raw = localStorage.getItem(SESSION_KEY);
             return raw ? JSON.parse(raw) : null;
         } catch (error) {
-            return null;
+            return memoryStore[SESSION_KEY] || null;
         }
     }
 
     function setSession(session) {
         if (!session) {
-            localStorage.removeItem(SESSION_KEY);
+            try {
+                localStorage.removeItem(SESSION_KEY);
+            } catch (error) {
+                delete memoryStore[SESSION_KEY];
+            }
             return;
         }
-        localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+        try {
+            localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+        } catch (error) {
+            memoryStore[SESSION_KEY] = session;
+        }
     }
 
     function migrateSessionFromUrl() {
@@ -309,6 +428,7 @@
         if (hide) {
             hide.onclick = () => hideFloatingTimer();
         }
+
     }
 
     function seedPausedSession(minutes) {
@@ -361,6 +481,15 @@
         setSession(session);
         const floating = document.getElementById('floating-session-timer');
         if (floating) floating.remove();
+        updateSessionTimer();
+    }
+
+    function showFloatingTimer() {
+        const session = getSession();
+        if (!session) return;
+        session.hidden = false;
+        setSession(session);
+        updateSessionTimer();
     }
 
     function updateSessionTimer() {
@@ -368,6 +497,7 @@
         const session = getSession();
         const dashboardTimer = document.getElementById('session-timer');
         const floatingTimer = document.getElementById('floating-session-timer');
+        const showTimerToggle = document.querySelector('.show-timer-toggle');
 
         if (!session) {
             if (dashboardTimer) {
@@ -383,7 +513,16 @@
                 clearInterval(sessionInterval);
                 sessionInterval = null;
             }
+            if (showTimerToggle) {
+                showTimerToggle.hidden = true;
+            }
             return;
+        }
+
+        if (showTimerToggle) {
+            const shouldShowToggle = session.hidden && !dashboardTimer;
+            showTimerToggle.hidden = !shouldShowToggle;
+            showTimerToggle.style.display = shouldShowToggle ? 'inline-flex' : 'none';
         }
 
         const remainingSeconds = getRemainingSeconds(session);
@@ -402,6 +541,11 @@
                 sessionInterval = null;
             }
             return;
+        }
+
+        if (session.hidden) {
+            session.hidden = false;
+            setSession(session);
         }
 
         const countdownText = formatCountdown(remainingSeconds * 1000);
@@ -462,6 +606,7 @@
     window.updateSessionDuration = updateSessionDuration;
     window.sessionReset = resetSession;
     window.sessionToggle = togglePauseSession;
+    window.sessionShow = showFloatingTimer;
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', updateSessionTimer);

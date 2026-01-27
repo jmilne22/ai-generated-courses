@@ -884,7 +884,7 @@ a:hover {
     z-index: 101;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: stretch;
     gap: 0.35rem;
 }
 
@@ -906,11 +906,110 @@ a:hover {
     font-size: 0.8rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
     cursor: pointer;
+    min-width: 180px;
 }
 
 .theme-select:focus {
     outline: 2px solid var(--green-bright);
     outline-offset: 2px;
+}
+
+.theme-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.focus-toggle {
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-dim);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 180px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.show-timer-toggle {
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-dim);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 180px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.show-timer-toggle:hover {
+    border-color: var(--orange);
+    color: var(--orange);
+}
+
+.focus-toggle-slot {
+    margin: 0.75rem 0 2rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.focus-toggle:hover {
+    border-color: var(--green-bright);
+    color: var(--green-bright);
+}
+
+.focus-toggle.active {
+    background: var(--green-bright);
+    color: var(--bg-dark);
+    border-color: var(--green-bright);
+}
+
+/* ============================================
+   20. Focus Mode
+   ============================================ */
+body.focus-mode .sidebar,
+body.focus-mode .sidebar-toggle,
+body.focus-mode .sidebar-backdrop {
+    display: none !important;
+}
+
+body.focus-mode nav,
+body.focus-mode .breadcrumb {
+    display: none !important;
+}
+
+body.focus-mode .container > * {
+    opacity: 0.45;
+    transition: opacity 0.2s ease;
+}
+
+body.focus-mode .lesson {
+    opacity: 1;
+}
+
+body.focus-mode .session-timer,
+body.focus-mode .floating-session-timer,
+body.focus-mode .focus-toggle {
+    opacity: 1;
+}
+
+body.focus-mode .theme-picker-label,
+body.focus-mode .theme-select {
+    display: none !important;
+}
+
+body.focus-mode .code-compare {
+    display: block;
 }
 
 .theme-toggle:hover {
