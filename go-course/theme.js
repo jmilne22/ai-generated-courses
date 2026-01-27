@@ -1,12 +1,69 @@
 // Theme toggle functionality for Go Course
 (function() {
-    const themes = [
-        { value: 'dark', label: 'Default Dark' },
-        { value: 'light', label: 'Default Light' },
-        { value: 'catppuccin-dark', label: 'Catppuccin Dark' },
-        { value: 'catppuccin-light', label: 'Catppuccin Light' },
-        { value: 'gruvbox-dark', label: 'Gruvbox Dark' },
-        { value: 'gruvbox-light', label: 'Gruvbox Light' }
+    const themeGroups = [
+        {
+            label: 'Default',
+            options: [
+                { value: 'dark', label: 'Dark' },
+                { value: 'light', label: 'Light' }
+            ]
+        },
+        {
+            label: 'Catppuccin',
+            options: [
+                { value: 'catppuccin-dark', label: 'Dark' },
+                { value: 'catppuccin-light', label: 'Light' }
+            ]
+        },
+        {
+            label: 'Gruvbox',
+            options: [
+                { value: 'gruvbox-dark', label: 'Dark' },
+                { value: 'gruvbox-light', label: 'Light' }
+            ]
+        },
+        {
+            label: 'Tokyo Night',
+            options: [
+                { value: 'tokyonight-dark', label: 'Dark' },
+                { value: 'tokyonight-light', label: 'Light' }
+            ]
+        },
+        {
+            label: 'Ayu',
+            options: [
+                { value: 'ayu-dark', label: 'Dark' },
+                { value: 'ayu-light', label: 'Light' }
+            ]
+        },
+        {
+            label: 'Nord',
+            options: [
+                { value: 'nord-dark', label: 'Dark' },
+                { value: 'nord-light', label: 'Light' }
+            ]
+        },
+        {
+            label: 'Dracula',
+            options: [
+                { value: 'dracula-dark', label: 'Dark' },
+                { value: 'dracula-light', label: 'Light' }
+            ]
+        },
+        {
+            label: 'Solarized',
+            options: [
+                { value: 'solarized-dark', label: 'Dark' },
+                { value: 'solarized-light', label: 'Light' }
+            ]
+        },
+        {
+            label: 'Everforest',
+            options: [
+                { value: 'everforest-dark', label: 'Dark' },
+                { value: 'everforest-light', label: 'Light' }
+            ]
+        }
     ];
 
     // Check for saved theme preference or default to dark
@@ -37,24 +94,47 @@
         const wrapper = document.createElement('div');
         wrapper.className = 'theme-picker';
 
+        const label = document.createElement('div');
+        label.className = 'theme-picker-label';
+        label.textContent = 'Theme';
+
         const select = document.createElement('select');
         select.className = 'theme-select';
         select.setAttribute('aria-label', 'Select color theme');
 
-        themes.forEach(theme => {
-            const option = document.createElement('option');
-            option.value = theme.value;
-            option.textContent = theme.label;
-            select.appendChild(option);
+        themeGroups.forEach(group => {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = group.label;
+            group.options.forEach(theme => {
+                const option = document.createElement('option');
+                option.value = theme.value;
+                option.textContent = theme.label;
+                optgroup.appendChild(option);
+            });
+            select.appendChild(optgroup);
         });
 
         select.value = getPreferredTheme();
+        updateThemeLabel(select.value, label);
         select.addEventListener('change', () => {
             setTheme(select.value);
+            updateThemeLabel(select.value, label);
         });
 
+        wrapper.appendChild(label);
         wrapper.appendChild(select);
         document.body.appendChild(wrapper);
+    }
+
+    function updateThemeLabel(value, labelEl) {
+        for (const group of themeGroups) {
+            const match = group.options.find(option => option.value === value);
+            if (match) {
+                labelEl.textContent = `${group.label} • ${match.label}`;
+                return;
+            }
+        }
+        labelEl.textContent = 'Theme';
     }
 
     // Wait for DOM
