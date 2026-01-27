@@ -10,24 +10,14 @@
     <link rel="stylesheet" href="style.css">
     <style>
         .dashboard-header {
-            text-align: center;
-            margin: 2rem 0 3rem;
-            padding-bottom: 2rem;
-            border-bottom: 2px solid var(--bg-lighter);
-        }
-        .dashboard-header h1 {
-            margin: 0 0 0.5rem;
-            font-size: 2.5rem;
-        }
-        .dashboard-header .subtitle {
-            color: var(--text-dim);
-            font-size: 1rem;
+            margin: 2rem 0 2.5rem;
         }
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 1rem;
-            margin: 2rem 0;
+            margin: 2rem auto;
+            max-width: 760px;
         }
         .quick-btn {
             padding: 1rem 1.5rem;
@@ -39,15 +29,71 @@
             color: var(--text);
             transition: all 0.2s;
             font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            cursor: pointer;
         }
         .quick-btn:hover {
             border-color: var(--orange);
             transform: translateY(-2px);
         }
+        .quick-btn.primary {
+            background: var(--green-bright);
+            border-color: var(--green-bright);
+            color: var(--bg-dark);
+            font-weight: 700;
+        }
+        .quick-btn.primary:hover {
+            background: #fff;
+        }
+        .session-duration {
+            width: 100%;
+            padding: 0.65rem 0.9rem;
+            border-radius: 8px;
+            border: 2px solid var(--bg-lighter);
+            background: var(--bg-card);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 720px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+                max-width: 100%;
+            }
+        }
         .quick-btn .btn-icon {
             font-size: 1.5rem;
             display: block;
-            margin-bottom: 0.5rem;
+        }
+        .session-timer {
+            margin-bottom: 2rem;
+        }
+        .focus-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            margin: 0.5rem 0 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+        .focus-link {
+            padding: 0.35rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            text-decoration: none;
+            color: var(--cyan);
+            transition: all 0.2s;
+        }
+        .focus-link:hover {
+            border-color: var(--cyan);
+            color: var(--text-main);
         }
         .progress-stats {
             display: grid;
@@ -169,20 +215,53 @@
 </head>
 <body>
     <div class="container">
-        <div class="dashboard-header">
-            <h1>Go Course Dashboard</h1>
-            <p class="subtitle">Track your progress through 17 modules</p>
+        <div class="module-header dashboard-header">
+            <div class="module-tag">// DASHBOARD</div>
+            <h1>Go Course</h1>
+            <p class="module-desc">Track your progress through 17 modules</p>
         </div>
 
         <div class="quick-actions">
-            <a href="module0.html" class="quick-btn">
-                <span class="btn-icon">📚</span>
-                Quick Reference
-            </a>
+            <div class="quick-btn" style="padding: 1rem;">
+                <label for="session-duration" style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Session length</label>
+                <select id="session-duration" class="session-duration" onchange="window.updateSessionDuration && window.updateSessionDuration(this.value)">
+                    <option value="25">25 minutes</option>
+                    <option value="60">60 minutes</option>
+                </select>
+            </div>
+            <button class="quick-btn primary" type="button" onclick="startSession(Number(document.getElementById('session-duration').value))">
+                <span class="btn-icon">⏱️</span>
+                Start session
+            </button>
             <a href="#" onclick="resumeLastModule(event)" class="quick-btn">
                 <span class="btn-icon">▶️</span>
-                Resume Last Module
+                Resume last module
             </a>
+            <a href="module0.html" class="quick-btn">
+                <span class="btn-icon">📚</span>
+                Quick reference
+            </a>
+        </div>
+
+        <div class="session-timer" id="session-timer" hidden>
+            <div class="session-timer-header">
+                <span class="session-title">Session in progress</span>
+                <span class="session-countdown" id="session-countdown">25:00</span>
+            </div>
+            <div class="session-progress">
+                <div class="session-progress-bar" id="session-progress"></div>
+            </div>
+            <div class="session-meta" id="session-label">Focus block • 25 min</div>
+            <div class="session-controls">
+                <button class="session-control-btn" type="button" data-session-action="toggle" onclick="window.sessionToggle && window.sessionToggle()">Pause</button>
+                <button class="session-control-btn" type="button" data-session-action="reset" onclick="window.sessionReset && window.sessionReset()">Reset timer</button>
+            </div>
+        </div>
+
+        <div class="focus-links">
+            <span>Pomodoro stream:</span>
+            <a class="focus-link" href="https://www.youtube.com/watch?v=QOfygTDyITY" target="_blank" rel="noopener">Persona 1</a>
+            <a class="focus-link" href="https://www.youtube.com/watch?v=brTT4cmTRTY" target="_blank" rel="noopener">Persona 2</a>
         </div>
 
         <div class="progress-stats">
@@ -458,6 +537,7 @@
             }
         }
 
+
         function exportNotes() {
             const notesKey = 'go-course-personal-notes';
             const allNotes = JSON.parse(localStorage.getItem(notesKey) || '{}');
@@ -549,6 +629,9 @@
         // Add event listeners to checkboxes
         document.addEventListener('DOMContentLoaded', () => {
             updateStats();
+            if (window.updateSessionTimer) {
+                window.updateSessionTimer();
+            }
 
             document.querySelectorAll('.module-checkbox').forEach(checkbox => {
                 checkbox.addEventListener('change', (e) => {

@@ -33,6 +33,12 @@
         return page;
     }
 
+    function getSessionQuery() {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.get('sessionStart') || !params.get('sessionMinutes')) return '';
+        return `?${params.toString()}`;
+    }
+
     // Check if sidebar should be open by default (desktop only)
     function shouldBeOpen() {
         if (window.innerWidth <= 900) return false;
@@ -91,12 +97,14 @@
         `;
 
         // All pages - with sections nested under active page
+        const sessionQuery = getSessionQuery();
+
         pages.forEach(page => {
             const isActive = currentPage === page.file;
             const linkClass = page.isProject ? 'sidebar-link sidebar-project-link' : 'sidebar-link';
 
             html += `
-                <a href="${page.file}" class="${linkClass}${isActive ? ' active' : ''}">
+                <a href="${page.file}${sessionQuery}" class="${linkClass}${isActive ? ' active' : ''}">
                     <span class="sidebar-module-num">${page.num}</span>
                     ${page.title}
                 </a>
@@ -208,4 +216,3 @@
         }, 250);
     });
 })();
-
