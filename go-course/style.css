@@ -351,6 +351,24 @@
     --border: #e6e2cc;
 }
 
+[data-theme="persona5-dark"] {
+    --bg-dark: #000000;
+    --bg-card: #0d0d0d;
+    --bg-code: #1a1a1a;
+    --bg-lighter: #1f1f1f;
+    --green-bright: #00ff41;
+    --green-dim: #00cc33;
+    --green-glow: rgba(0, 255, 65, 0.2);
+    --orange: #ff6b6b;
+    --purple: #ff1744;
+    --blue: #00e5ff;
+    --cyan: #18ffff;
+    --red: #e60012;
+    --text-main: #ffffff;
+    --text-dim: #999999;
+    --border: #e60012;
+}
+
 /* ============================================
    2. Reset and Base Styles
    ============================================ */
@@ -1086,10 +1104,42 @@ body.focus-mode .code-compare {
     letter-spacing: 1px;
 }
 
+.countdown-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.circular-progress {
+    width: 70px;
+    height: 70px;
+    transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+    fill: none;
+    stroke: var(--bg-code);
+    stroke-width: 6;
+}
+
+.progress-ring-circle {
+    fill: none;
+    stroke: var(--green-bright);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 283; /* 2 * PI * 45 */
+    stroke-dashoffset: 283;
+    transition: stroke-dashoffset 0.3s ease;
+}
+
 .session-countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     color: var(--orange);
+    font-weight: bold;
 }
 
 .session-progress {
@@ -1165,6 +1215,42 @@ body.focus-mode .code-compare {
 .session-drag-handle {
     cursor: move;
     user-select: none;
+}
+
+/* Timer visual enhancements */
+@keyframes timer-complete-flash {
+    0% {
+        box-shadow: 0 0 0 0 var(--green-bright);
+        border-color: var(--green-bright);
+    }
+    50% {
+        box-shadow: 0 0 30px 10px var(--green-glow);
+        border-color: var(--green-bright);
+        transform: scale(1.02);
+    }
+    100% {
+        box-shadow: 0 0 0 0 var(--green-glow);
+        border-color: var(--border);
+        transform: scale(1);
+    }
+}
+
+@keyframes timer-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.01);
+    }
+}
+
+.timer-complete {
+    animation: timer-complete-flash 1s ease-out;
+}
+
+.session-timer:not([hidden]),
+.floating-session-timer {
+    animation: timer-pulse 3s ease-in-out infinite;
 }
 
 /* ============================================

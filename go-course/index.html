@@ -247,7 +247,13 @@
         <div class="session-timer" id="session-timer" hidden>
             <div class="session-timer-header">
                 <span class="session-title">Session in progress</span>
-                <span class="session-countdown" id="session-countdown">25:00</span>
+                <div class="countdown-wrapper">
+                    <svg class="circular-progress" width="100" height="100" viewBox="0 0 100 100">
+                        <circle class="progress-ring-bg" cx="50" cy="50" r="45" />
+                        <circle class="progress-ring-circle" cx="50" cy="50" r="45" />
+                    </svg>
+                    <span class="session-countdown" id="session-countdown">25:00</span>
+                </div>
             </div>
             <div class="session-progress">
                 <div class="session-progress-bar" id="session-progress"></div>
@@ -256,6 +262,7 @@
             <div class="session-controls">
                 <button class="session-control-btn" type="button" data-session-action="toggle" onclick="window.sessionToggle && window.sessionToggle()">Pause</button>
                 <button class="session-control-btn" type="button" data-session-action="reset" onclick="window.sessionReset && window.sessionReset()">Reset timer</button>
+                <button class="session-control-btn" type="button" id="sound-toggle" onclick="window.toggleTimerSound && window.toggleTimerSound()">🔔 Sound</button>
             </div>
         </div>
 

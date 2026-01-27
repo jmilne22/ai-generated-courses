@@ -97,6 +97,12 @@
             options: [
                 { value: 'pastel-light', label: 'Light' }
             ]
+        },
+        {
+            label: 'Persona 5',
+            options: [
+                { value: 'persona5-dark', label: 'Dark' }
+            ]
         }
     ];
 
@@ -270,8 +276,43 @@
 
 (function() {
     const SESSION_KEY = 'go-course-session';
+    const SOUND_ENABLED_KEY = 'go-course-timer-sound';
     const memoryStore = {};
     let sessionInterval = null;
+
+    // Sound notification system
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+        try {
+            const soundEnabled = localStorage.getItem(SOUND_ENABLED_KEY) !== 'false';
+            if (!soundEnabled) return;
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            if (type === 'break') {
+                // Break start: gentle chime (C major chord)
+                oscillator.frequency.value = 523.25; // C5
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.8);
+            } else {
+                // Work start: upbeat ding (higher pitch)
+                oscillator.frequency.value = 659.25; // E5
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            }
+        } catch (error) {
+            console.log('Sound playback failed:', error);
+        }
+    }
 
     function formatCountdown(ms) {
         const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -418,6 +459,29 @@
         };
     }
 
+    function showTimerCompletion(message) {
+        // Flash visual feedback
+        const timers = [
+            document.getElementById('session-timer'),
+            document.getElementById('floating-session-timer')
+        ].filter(Boolean);
+
+        timers.forEach(timer => {
+            timer.classList.add('timer-complete');
+            setTimeout(() => {
+                timer.classList.remove('timer-complete');
+            }, 1000);
+        });
+
+        // Show notification if supported
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('Go Course Timer', {
+                body: message,
+                icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75">⏱️</text></svg>'
+            });
+        }
+    }
+
     function ensureFloatingTimer() {
         let timer = document.getElementById('floating-session-timer');
         if (timer) return timer;
@@ -428,7 +492,13 @@
         timer.innerHTML = `
             <div class="session-timer-header">
                 <span class="session-title">Session</span>
-                <span class="session-countdown" id="floating-session-countdown">25:00</span>
+                <div class="countdown-wrapper">
+                    <svg class="circular-progress" width="100" height="100" viewBox="0 0 100 100">
+                        <circle class="progress-ring-bg" cx="50" cy="50" r="45" />
+                        <circle class="progress-ring-circle" cx="50" cy="50" r="45" />
+                    </svg>
+                    <span class="session-countdown" id="floating-session-countdown">25:00</span>
+                </div>
             </div>
             <div class="session-progress">
                 <div class="session-progress-bar" id="floating-session-progress"></div>
@@ -437,6 +507,7 @@
             <div class="session-controls">
                 <button class="session-control-btn" type="button" data-session-action="toggle">Pause</button>
                 <button class="session-control-btn" type="button" data-session-action="reset">Reset</button>
+                <button class="session-control-btn" type="button" data-session-action="sound">🔔 Sound</button>
                 <button class="session-control-btn danger" type="button" data-session-action="hide">Hide</button>
             </div>
             <div class="session-duration-row">
@@ -463,11 +534,17 @@
     }) {
         const dashboardTimer = document.getElementById('session-timer');
 
+        // Calculate circular progress percentage (0-100)
+        const progressPercent = parseFloat(progressWidth);
+        const circumference = 2 * Math.PI * 45; // radius = 45
+        const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
+
         if (dashboardTimer) {
             const countdown = document.getElementById('session-countdown');
             const progress = document.getElementById('session-progress');
             const label = document.getElementById('session-label');
             const toggleBtn = dashboardTimer.querySelector('[data-session-action="toggle"]');
+            let circularProgress = dashboardTimer.querySelector('.circular-progress');
 
             dashboardTimer.hidden = false;
             if (countdown) countdown.textContent = countdownText;
@@ -475,6 +552,15 @@
             if (label) label.textContent = labelText;
             if (toggleBtn && toggleLabel) toggleBtn.textContent = toggleLabel;
             if (toggleBtn) toggleBtn.hidden = !showToggle;
+
+            // Update circular progress
+            if (circularProgress) {
+                const circle = circularProgress.querySelector('.progress-ring-circle');
+                if (circle) {
+                    circle.style.strokeDashoffset = strokeDashoffset;
+                }
+            }
+
             bindTimerControls(dashboardTimer);
             return;
         }
@@ -484,18 +570,28 @@
         const progress = floating.querySelector('#floating-session-progress');
         const label = floating.querySelector('#floating-session-label');
         const toggleBtn = floating.querySelector('[data-session-action="toggle"]');
+        let circularProgress = floating.querySelector('.circular-progress');
 
         if (countdown) countdown.textContent = countdownText;
         if (progress) progress.style.width = progressWidth;
         if (label) label.textContent = labelText;
         if (toggleBtn && toggleLabel) toggleBtn.textContent = toggleLabel;
         if (toggleBtn) toggleBtn.hidden = !showToggle;
+
+        // Update circular progress
+        if (circularProgress) {
+            const circle = circularProgress.querySelector('.progress-ring-circle');
+            if (circle) {
+                circle.style.strokeDashoffset = strokeDashoffset;
+            }
+        }
     }
 
     function bindTimerControls(root) {
         const toggle = root.querySelector('[data-session-action="toggle"]');
         const reset = root.querySelector('[data-session-action="reset"]');
         const hide = root.querySelector('[data-session-action="hide"]');
+        const sound = root.querySelector('[data-session-action="sound"]');
         const duration = root.querySelector('.session-duration-select');
 
         if (toggle) {
@@ -508,6 +604,18 @@
 
         if (hide) {
             hide.onclick = () => hideFloatingTimer();
+        }
+
+        if (sound) {
+            sound.onclick = () => {
+                toggleTimerSound();
+                // Update this button's text
+                const soundEnabled = localStorage.getItem(SOUND_ENABLED_KEY) !== 'false';
+                sound.textContent = soundEnabled ? '🔔 Sound' : '🔇 Sound';
+            };
+            // Set initial state
+            const soundEnabled = localStorage.getItem(SOUND_ENABLED_KEY) !== 'false';
+            sound.textContent = soundEnabled ? '🔔 Sound' : '🔇 Sound';
         }
 
         if (duration) {
@@ -702,6 +810,9 @@
                 const newCompletedCycles = (session.completedCycles || 0) + 1;
                 const needsLongBreak = newCompletedCycles % (session.cyclesBeforeLongBreak || 4) === 0;
 
+                playSound('break'); // Play break sound
+                showTimerCompletion('Break time!');
+
                 setSession({
                     status: 'running',
                     phase: needsLongBreak ? 'longBreak' : 'break',
@@ -719,6 +830,9 @@
 
             // Break completed - automatically start next focus session
             if ((session.phase === 'break' || session.phase === 'longBreak') && session.focusMinutes > 0) {
+                playSound('work'); // Play work sound
+                showTimerCompletion('Back to work!');
+
                 setSession({
                     status: 'running',
                     phase: 'focus',
@@ -761,6 +875,11 @@
     }
 
     function startSession(minutes) {
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
         const { focusMinutes, breakMinutes, longBreakMinutes } = parseDurationValue(minutes);
         setSession({
             status: 'running',
@@ -787,16 +906,41 @@
         updateSessionTimer();
     }
 
+    function toggleTimerSound() {
+        const currentState = localStorage.getItem(SOUND_ENABLED_KEY) !== 'false';
+        const newState = !currentState;
+        localStorage.setItem(SOUND_ENABLED_KEY, String(newState));
+
+        // Update button text
+        const btn = document.getElementById('sound-toggle');
+        if (btn) {
+            btn.textContent = newState ? '🔔 Sound' : '🔇 Sound';
+        }
+    }
+
+    function updateSoundButtonState() {
+        const soundEnabled = localStorage.getItem(SOUND_ENABLED_KEY) !== 'false';
+        const btn = document.getElementById('sound-toggle');
+        if (btn) {
+            btn.textContent = soundEnabled ? '🔔 Sound' : '🔇 Sound';
+        }
+    }
+
     window.startSession = startSession;
     window.updateSessionTimer = updateSessionTimer;
     window.updateSessionDuration = updateSessionDuration;
     window.sessionReset = resetSession;
     window.sessionToggle = togglePauseSession;
     window.sessionShow = showFloatingTimer;
+    window.toggleTimerSound = toggleTimerSound;
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', updateSessionTimer);
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSessionTimer();
+            updateSoundButtonState();
+        });
     } else {
         updateSessionTimer();
+        updateSoundButtonState();
     }
 })();
