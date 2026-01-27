@@ -267,235 +267,6 @@
     }
   },
   "variants": {
-    "intermediate": [
-      {
-        "id": "intermediate_1",
-        "concept": "make() Function",
-        "variants": [
-          {
-            "id": "v1",
-            "title": "Make and Append to Slice",
-            "description": "Create an empty slice using <code>make([]int, 0)</code>, add three numbers with <code>append</code>, then print its length.",
-            "hints": [
-              "<code>make([]int, 0)</code> creates an empty int slice",
-              "<code>nums = append(nums, value)</code> adds to the slice"
-            ],
-            "solution": "nums := make([]int, 0)\nnums = append(nums, 10)\nnums = append(nums, 20)\nnums = append(nums, 30)\nfmt.Println(len(nums))  // 3",
-            "expected": "3"
-          },
-          {
-            "id": "v2",
-            "title": "Make an Empty Map",
-            "description": "Create an empty map using <code>make(map[string]int)</code>, add three key-value pairs, then print its length.",
-            "hints": [
-              "<code>make(map[string]int)</code> creates an empty map",
-              "<code>scores[\"alice\"] = 100</code> adds a key-value pair"
-            ],
-            "solution": "scores := make(map[string]int)\nscores[\"alice\"] = 100\nscores[\"bob\"] = 85\nscores[\"carol\"] = 92\nfmt.Println(len(scores))  // 3",
-            "expected": "3"
-          },
-          {
-            "id": "v3",
-            "title": "Append Multiple Values",
-            "description": "Create an empty string slice, then use <code>append</code> to add multiple values at once. Print the slice.",
-            "hints": [
-              "<code>append</code> can take multiple values: <code>append(slice, a, b, c)</code>"
-            ],
-            "solution": "words := make([]string, 0)\nwords = append(words, \"go\", \"is\", \"fun\")\nfmt.Println(words)  // [go is fun]",
-            "expected": "[go is fun]"
-          }
-        ]
-      },
-      {
-        "id": "intermediate_2",
-        "concept": "Comma-Ok Pattern",
-        "variants": [
-          {
-            "id": "v1",
-            "title": "Check Map Key Exists",
-            "description": "Create a map of fruit prices. Check if \"banana\" exists using the <code>value, ok := map[key]</code> pattern.",
-            "hints": [
-              "<code>price, ok := prices[\"banana\"]</code>",
-              "<code>ok</code> is true if key exists, false otherwise"
-            ],
-            "solution": "prices := map[string]float64{\n    \"apple\":  1.50,\n    \"orange\": 2.00,\n}\n\nif price, ok := prices[\"banana\"]; ok {\n    fmt.Printf(\"Banana: $%.2f\\n\", price)\n} else {\n    fmt.Println(\"Banana not found\")\n}",
-            "expected": "Banana not found"
-          },
-          {
-            "id": "v2",
-            "title": "Safe Map Lookup",
-            "description": "Create a map of user ages. Safely look up a user that exists AND one that doesn't, printing appropriate messages.",
-            "hints": [
-              "Use <code>if age, ok := ages[name]; ok { ... } else { ... }</code>"
-            ],
-            "solution": "ages := map[string]int{\"alice\": 30, \"bob\": 25}\n\nif age, ok := ages[\"alice\"]; ok {\n    fmt.Printf(\"Alice is %d\\n\", age)\n}\n\nif age, ok := ages[\"charlie\"]; ok {\n    fmt.Printf(\"Charlie is %d\\n\", age)\n} else {\n    fmt.Println(\"Charlie not found\")\n}",
-            "expected": "Alice is 30\nCharlie not found"
-          },
-          {
-            "id": "v3",
-            "title": "Default Value Pattern",
-            "description": "Create a map of stock counts. If an item doesn't exist, print \"Out of stock\" instead of 0.",
-            "hints": [
-              "Check with comma-ok before using the value"
-            ],
-            "solution": "stock := map[string]int{\"apple\": 5, \"banana\": 0}\n\nitem := \"orange\"\nif count, ok := stock[item]; ok {\n    fmt.Printf(\"%s: %d in stock\\n\", item, count)\n} else {\n    fmt.Printf(\"%s: Out of stock\\n\", item)\n}",
-            "expected": "orange: Out of stock"
-          }
-        ]
-      },
-      {
-        "id": "intermediate_3",
-        "concept": "Range with Index",
-        "variants": [
-          {
-            "id": "v1",
-            "title": "Print Index and Value",
-            "description": "Create a slice of your favorite foods. Loop through and print both index and value: \"0: pizza\", \"1: tacos\", etc.",
-            "hints": [
-              "<code>for i, food := range foods</code> gives you both index and value"
-            ],
-            "solution": "foods := []string{\"pizza\", \"tacos\", \"sushi\"}\nfor i, food := range foods {\n    fmt.Printf(\"%d: %s\\n\", i, food)\n}",
-            "expected": "0: pizza\n1: tacos\n2: sushi"
-          },
-          {
-            "id": "v2",
-            "title": "Numbered List",
-            "description": "Create a slice of task names. Print them as a numbered list starting from 1: \"1. Buy milk\", \"2. Walk dog\", etc.",
-            "hints": [
-              "Use <code>i+1</code> to start numbering from 1 instead of 0"
-            ],
-            "solution": "tasks := []string{\"Buy milk\", \"Walk dog\", \"Code\"}\nfor i, task := range tasks {\n    fmt.Printf(\"%d. %s\\n\", i+1, task)\n}",
-            "expected": "1. Buy milk\n2. Walk dog\n3. Code"
-          },
-          {
-            "id": "v3",
-            "title": "Find Element Index",
-            "description": "Create a slice of colors. Find and print the index of \"green\" (or -1 if not found).",
-            "hints": [
-              "Loop with index, check if element matches"
-            ],
-            "solution": "colors := []string{\"red\", \"blue\", \"green\", \"yellow\"}\ntarget := \"green\"\nresult := -1\n\nfor i, color := range colors {\n    if color == target {\n        result = i\n        break\n    }\n}\nfmt.Printf(\"Index of %s: %d\\n\", target, result)",
-            "expected": "Index of green: 2"
-          }
-        ]
-      },
-      {
-        "id": "intermediate_4",
-        "concept": "Building Slices",
-        "variants": [
-          {
-            "id": "v1",
-            "title": "Collect Even Numbers",
-            "description": "Create an empty slice, then loop 1-10 and append only even numbers. Print the result.",
-            "hints": [
-              "Check <code>if i%2 == 0</code>",
-              "Use <code>append</code> inside the if block"
-            ],
-            "solution": "evens := []int{}\nfor i := 1; i <= 10; i++ {\n    if i%2 == 0 {\n        evens = append(evens, i)\n    }\n}\nfmt.Println(evens)",
-            "expected": "[2 4 6 8 10]"
-          },
-          {
-            "id": "v2",
-            "title": "Filter Long Words",
-            "description": "Given <code>[]string{\"go\", \"python\", \"js\", \"rust\"}</code>, collect only words with 3+ characters into a new slice.",
-            "hints": [
-              "Check <code>if len(word) >= 3</code>"
-            ],
-            "solution": "words := []string{\"go\", \"python\", \"js\", \"rust\"}\nlong := []string{}\nfor _, word := range words {\n    if len(word) >= 3 {\n        long = append(long, word)\n    }\n}\nfmt.Println(long)",
-            "expected": "[python rust]"
-          },
-          {
-            "id": "v3",
-            "title": "Collect Multiples of 3",
-            "description": "Create an empty slice, loop 1-15, and append only numbers divisible by 3. Print the result.",
-            "hints": [
-              "Check <code>if i%3 == 0</code>"
-            ],
-            "solution": "multiples := []int{}\nfor i := 1; i <= 15; i++ {\n    if i%3 == 0 {\n        multiples = append(multiples, i)\n    }\n}\nfmt.Println(multiples)",
-            "expected": "[3 6 9 12 15]"
-          }
-        ]
-      },
-      {
-        "id": "intermediate_5",
-        "concept": "String Basics",
-        "variants": [
-          {
-            "id": "v1",
-            "title": "String Length and Indexing",
-            "description": "Create a string \"Golang\". Print its length, first character, and last character.",
-            "hints": [
-              "Length: <code>len(s)</code>",
-              "First char: <code>s[0]</code> (returns byte)",
-              "Last char: <code>s[len(s)-1]</code>"
-            ],
-            "solution": "s := \"Golang\"\nfmt.Println(len(s))        // 6\nfmt.Printf(\"%c\\n\", s[0])   // G\nfmt.Printf(\"%c\\n\", s[len(s)-1])  // g",
-            "expected": "6\nG\ng"
-          },
-          {
-            "id": "v2",
-            "title": "Iterate Over String",
-            "description": "Create a string \"Hello\". Loop through it and print each character on a new line.",
-            "hints": [
-              "Use <code>for _, char := range s</code>",
-              "Print with <code>fmt.Printf(\"%c\\n\", char)</code>"
-            ],
-            "solution": "s := \"Hello\"\nfor _, char := range s {\n    fmt.Printf(\"%c\\n\", char)\n}",
-            "expected": "H\ne\nl\nl\no"
-          },
-          {
-            "id": "v3",
-            "title": "String Concatenation",
-            "description": "Create two strings \"Hello\" and \"World\". Concatenate them with a space and print the result.",
-            "hints": [
-              "Use <code>+</code> to concatenate strings",
-              "Or use <code>fmt.Sprintf</code>"
-            ],
-            "solution": "a := \"Hello\"\nb := \"World\"\nresult := a + \" \" + b\nfmt.Println(result)",
-            "expected": "Hello World"
-          }
-        ]
-      },
-      {
-        "id": "intermediate_6",
-        "concept": "Boolean Functions",
-        "variants": [
-          {
-            "id": "v1",
-            "title": "Contains Check",
-            "description": "Write <code>func contains(nums []int, target int) bool</code> that returns true if target is in the slice.",
-            "hints": [
-              "Loop through, return true if found",
-              "Return false after the loop"
-            ],
-            "solution": "func contains(nums []int, target int) bool {\n    for _, n := range nums {\n        if n == target {\n            return true\n        }\n    }\n    return false\n}",
-            "expected": "true for []int{1,2,3}, 2"
-          },
-          {
-            "id": "v2",
-            "title": "All Positive",
-            "description": "Write <code>func allPositive(nums []int) bool</code> that returns true only if all numbers are positive (> 0).",
-            "hints": [
-              "Return false as soon as you find a non-positive",
-              "Return true after checking all"
-            ],
-            "solution": "func allPositive(nums []int) bool {\n    for _, n := range nums {\n        if n <= 0 {\n            return false\n        }\n    }\n    return true\n}",
-            "expected": "false for []int{1,2,-3}"
-          },
-          {
-            "id": "v3",
-            "title": "Any Even",
-            "description": "Write <code>func anyEven(nums []int) bool</code> that returns true if at least one number is even.",
-            "hints": [
-              "Check <code>n % 2 == 0</code>",
-              "Return true as soon as you find one"
-            ],
-            "solution": "func anyEven(nums []int) bool {\n    for _, n := range nums {\n        if n % 2 == 0 {\n            return true\n        }\n    }\n    return false\n}",
-            "expected": "true for []int{1,3,4}"
-          }
-        ]
-      }
-    ],
     "warmups": [
       {
         "id": "warmup_1",
@@ -1010,6 +781,72 @@
               }
             ],
             "solution": "func alternatingSum(nums []int) int {\n    sum := 0\n    for i, n := range nums {\n        if i%2 == 0 {\n            sum += n\n        } else {\n            sum -= n\n        }\n    }\n    return sum\n}"
+          },
+          {
+            "id": "v10",
+            "title": "Total Revenue",
+            "description": "Write <code>func totalRevenue(sales []float64, taxRate float64) float64</code> that sums all sales including tax.",
+            "functionSignature": "func totalRevenue(sales []float64, taxRate float64) float64",
+            "testCases": [
+              {
+                "input": "[]float64{100.0, 200.0, 50.0}, 0.08",
+                "output": "378.0",
+                "note": "350 * 1.08"
+              },
+              {
+                "input": "[]float64{25.0, 75.0}, 0.10",
+                "output": "110.0"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "First sum all sales, then add tax to the total: total * (1 + taxRate)."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Accumulate sum, then multiply by (1 + taxRate) at the end."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. sum := 0.0\n2. For each sale:\n   - sum += sale\n3. Return sum * (1 + taxRate)</pre>"
+              }
+            ],
+            "solution": "func totalRevenue(sales []float64, taxRate float64) float64 {\n    sum := 0.0\n    for _, sale := range sales {\n        sum += sale\n    }\n    return sum * (1 + taxRate)\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v11",
+            "title": "Dice Total",
+            "description": "Write <code>func diceTotal(rolls []int) int</code> that sums dice rolls and returns -1 if any roll is invalid (not 1-6).",
+            "functionSignature": "func diceTotal(rolls []int) int",
+            "testCases": [
+              {
+                "input": "[]int{6, 3, 4, 2}",
+                "output": "15"
+              },
+              {
+                "input": "[]int{6, 7, 4}",
+                "output": "-1",
+                "note": "7 is invalid"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Check validity while accumulating. If any roll is outside 1-6, return -1 immediately."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "As you sum, check each roll. Use early return for invalid rolls."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. sum := 0\n2. For each roll:\n   - roll < 1 OR roll > 6? \u2192 return -1\n   - sum += roll\n3. Return sum</pre>"
+              }
+            ],
+            "solution": "func diceTotal(rolls []int) int {\n    sum := 0\n    for _, roll := range rolls {\n        if roll < 1 || roll > 6 { return -1 }\n        sum += roll\n    }\n    return sum\n}",
+            "difficulty": 2
           }
         ]
       },
@@ -1286,6 +1123,70 @@
               }
             ],
             "solution": "func countVowelStart(words []string) int {\n    count := 0\n    for _, word := range words {\n        if len(word) > 0 {\n            first := strings.ToLower(string(word[0]))\n            if first == \"a\" || first == \"e\" || first == \"i\" || first == \"o\" || first == \"u\" {\n                count++\n            }\n        }\n    }\n    return count\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Three Letter Words",
+            "description": "Write <code>func threeLetterWords(words []string) int</code> that counts words with exactly 3 letters.",
+            "functionSignature": "func threeLetterWords(words []string) int",
+            "testCases": [
+              {
+                "input": "[]string{\"cat\", \"dog\", \"elephant\", \"bat\"}",
+                "output": "3"
+              },
+              {
+                "input": "[]string{\"hello\", \"world\"}",
+                "output": "0"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Count words where len(word) == 3."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Simple counter with condition: if len(word) == 3, count++"
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. count := 0\n2. For each word:\n   - len(word) == 3? \u2192 count++\n3. Return count</pre>"
+              }
+            ],
+            "solution": "func threeLetterWords(words []string) int {\n    count := 0\n    for _, word := range words {\n        if len(word) == 3 { count++ }\n    }\n    return count\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v10",
+            "title": "Temperature Extremes",
+            "description": "Write <code>func tempExtremes(temps []int) int</code> that counts how many temps are below 0 or above 100.",
+            "functionSignature": "func tempExtremes(temps []int) int",
+            "testCases": [
+              {
+                "input": "[]int{-5, 50, 105, 25, -10}",
+                "output": "3"
+              },
+              {
+                "input": "[]int{20, 30, 40}",
+                "output": "0"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Count temperatures that are < 0 OR > 100."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "if temp < 0 || temp > 100, increment count."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. count := 0\n2. For each temp:\n   - temp < 0 OR temp > 100? \u2192 count++\n3. Return count</pre>"
+              }
+            ],
+            "solution": "func tempExtremes(temps []int) int {\n    count := 0\n    for _, temp := range temps {\n        if temp < 0 || temp > 100 { count++ }\n    }\n    return count\n}",
+            "difficulty": 1
           }
         ]
       },
@@ -1591,6 +1492,78 @@
               }
             ],
             "solution": "func rps(p1, p2 string) string {\n    if p1 == p2 {\n        return \"tie\"\n    }\n    if (p1 == \"rock\" && p2 == \"scissors\") ||\n       (p1 == \"paper\" && p2 == \"rock\") ||\n       (p1 == \"scissors\" && p2 == \"paper\") {\n        return \"p1\"\n    }\n    return \"p2\"\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Rating Categories",
+            "description": "Write <code>func ratingCategory(rating int) string</code>: \"Poor\" (0-2), \"Fair\" (3-5), \"Good\" (6-8), \"Excellent\" (9-10).",
+            "functionSignature": "func ratingCategory(rating int) string",
+            "testCases": [
+              {
+                "input": "8",
+                "output": "\"Good\""
+              },
+              {
+                "input": "10",
+                "output": "\"Excellent\""
+              },
+              {
+                "input": "1",
+                "output": "\"Poor\""
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Use if-else chain to check ranges. Order matters - check highest first or use <= appropriately."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "if rating <= 2 return \"Poor\", else if rating <= 5 return \"Fair\", etc."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>if rating <= 2: Poor\nelse if rating <= 5: Fair\nelse if rating <= 8: Good\nelse: Excellent</pre>"
+              }
+            ],
+            "solution": "func ratingCategory(rating int) string {\n    if rating <= 2 { return \"Poor\" }\n    if rating <= 5 { return \"Fair\" }\n    if rating <= 8 { return \"Good\" }\n    return \"Excellent\"\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v10",
+            "title": "Message Priority",
+            "description": "Write <code>func messagePriority(msg string) string</code>: \"URGENT\" if contains \"ASAP\", \"High\" if starts with \"Important\", else \"Normal\".",
+            "functionSignature": "func messagePriority(msg string) string",
+            "testCases": [
+              {
+                "input": "\"Please reply ASAP\"",
+                "output": "\"URGENT\""
+              },
+              {
+                "input": "\"Important meeting tomorrow\"",
+                "output": "\"High\""
+              },
+              {
+                "input": "\"Hello there\"",
+                "output": "\"Normal\""
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Check for \"ASAP\" first (most urgent), then check prefix, otherwise default to Normal."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Use strings.Contains() for ASAP, strings.HasPrefix() for Important."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>if contains \"ASAP\": URGENT\nelse if starts with \"Important\": High\nelse: Normal</pre>"
+              }
+            ],
+            "solution": "func messagePriority(msg string) string {\n    if strings.Contains(msg, \"ASAP\") { return \"URGENT\" }\n    if strings.HasPrefix(msg, \"Important\") { return \"High\" }\n    return \"Normal\"\n}",
+            "difficulty": 2
           }
         ]
       },
@@ -1791,6 +1764,102 @@
               }
             ],
             "solution": "func smallestPositive(nums []int) int {\n    result := -1\n    for _, n := range nums {\n        if n > 0 && (result == -1 || n < result) {\n            result = n\n        }\n    }\n    return result\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v7",
+            "title": "Highest Temperature",
+            "description": "Write <code>func highestTemp(temps []float64) float64</code> that returns the highest temperature reading.",
+            "functionSignature": "func highestTemp(temps []float64) float64",
+            "testCases": [
+              {
+                "input": "[]float64{23.5, 28.7, 22.1, 30.2}",
+                "output": "30.2"
+              },
+              {
+                "input": "[]float64{-5.5, -2.0, -10.0}",
+                "output": "-2.0"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Track the highest temperature seen so far. Initialize with the first reading."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Same pattern as finding max - start with first element, update when you find a higher value."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. highest := temps[0]\n2. For each temp:\n   - temp > highest? \u2192 highest = temp\n3. Return highest</pre>"
+              }
+            ],
+            "solution": "func highestTemp(temps []float64) float64 {\n    highest := temps[0]\n    for _, t := range temps {\n        if t > highest { highest = t }\n    }\n    return highest\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v8",
+            "title": "Best Game Score",
+            "description": "Write <code>func bestScore(scores []int) int</code> that finds the highest score. Return -1 if no valid scores (all negative).",
+            "functionSignature": "func bestScore(scores []int) int",
+            "testCases": [
+              {
+                "input": "[]int{450, 320, 580, 410}",
+                "output": "580"
+              },
+              {
+                "input": "[]int{-1, -5, -3}",
+                "output": "-1"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Find the maximum, but only count non-negative scores as valid. What if all scores are negative?"
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Track the max, but initialize to -1. Only update if you find a score >= 0 that's also greater than current max."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. bestScore := -1\n2. For each score:\n   - score >= 0 AND score > bestScore?\n     \u2192 bestScore = score\n3. Return bestScore</pre>"
+              }
+            ],
+            "solution": "func bestScore(scores []int) int {\n    bestScore := -1\n    for _, s := range scores {\n        if s >= 0 && s > bestScore {\n            bestScore = s\n        }\n    }\n    return bestScore\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v9",
+            "title": "Most Expensive Item",
+            "description": "Write <code>func mostExpensive(prices []float64) int</code> that returns the INDEX of the most expensive item.",
+            "functionSignature": "func mostExpensive(prices []float64) int",
+            "testCases": [
+              {
+                "input": "[]float64{12.99, 45.50, 23.75, 50.00}",
+                "output": "3"
+              },
+              {
+                "input": "[]float64{100.0, 200.0, 150.0}",
+                "output": "1"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Instead of tracking the maximum VALUE, track the INDEX where the maximum occurs."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Keep two variables: maxPrice and maxIndex. When you find a higher price, update both."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. maxPrice, maxIndex := prices[0], 0\n2. For i, price:\n   - price > maxPrice?\n     \u2192 maxPrice = price, maxIndex = i\n3. Return maxIndex</pre>"
+              }
+            ],
+            "solution": "func mostExpensive(prices []float64) int {\n    maxPrice, maxIndex := prices[0], 0\n    for i, price := range prices {\n        if price > maxPrice {\n            maxPrice = price\n            maxIndex = i\n        }\n    }\n    return maxIndex\n}",
             "difficulty": 2
           }
         ]
@@ -2050,6 +2119,70 @@
               }
             ],
             "solution": "func filterPrimes(nums []int) []int {\n    result := []int{}\n    for _, n := range nums {\n        if isPrime(n) {\n            result = append(result, n)\n        }\n    }\n    return result\n}\n\nfunc isPrime(n int) bool {\n    if n <= 1 {\n        return false\n    }\n    for i := 2; i*i <= n; i++ {\n        if n%i == 0 {\n            return false\n        }\n    }\n    return true\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Affordable Items",
+            "description": "Write <code>func affordableItems(prices []float64, budget float64) []float64</code> that returns prices within budget.",
+            "functionSignature": "func affordableItems(prices []float64, budget float64) []float64",
+            "testCases": [
+              {
+                "input": "[]float64{29.99, 45.00, 15.50, 60.00}, 40.0",
+                "output": "[]float64{29.99, 15.50}"
+              },
+              {
+                "input": "[]float64{100.0, 200.0}, 50.0",
+                "output": "[]float64{}"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Filter prices that are <= budget. Append matching prices to result slice."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Standard filter pattern: if price <= budget, append it."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. result := []float64{}\n2. For each price:\n   - price <= budget? \u2192 append to result\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func affordableItems(prices []float64, budget float64) []float64 {\n    result := []float64{}\n    for _, price := range prices {\n        if price <= budget {\n            result = append(result, price)\n        }\n    }\n    return result\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v10",
+            "title": "Valid Emails",
+            "description": "Write <code>func validEmails(emails []string) []string</code> that returns emails containing '@' symbol.",
+            "functionSignature": "func validEmails(emails []string) []string",
+            "testCases": [
+              {
+                "input": "[]string{\"user@example.com\", \"invalid\", \"admin@site.org\"}",
+                "output": "[]string{\"user@example.com\", \"admin@site.org\"}"
+              },
+              {
+                "input": "[]string{\"nope\", \"nada\"}",
+                "output": "[]string{}"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Simple validation: check if email contains '@'. Use strings.Contains()."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Filter emails where strings.Contains(email, \"@\") is true."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. result := []string{}\n2. For each email:\n   - contains '@'? \u2192 append to result\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func validEmails(emails []string) []string {\n    result := []string{}\n    for _, email := range emails {\n        if strings.Contains(email, \"@\") {\n            result = append(result, email)\n        }\n    }\n    return result\n}",
+            "difficulty": 1
           }
         ]
       },
@@ -2325,6 +2458,70 @@
               }
             ],
             "solution": "func binarySearch(nums []int, target int) int {\n    left, right := 0, len(nums)-1\n    for left <= right {\n        mid := (left + right) / 2\n        if nums[mid] == target {\n            return mid\n        } else if target < nums[mid] {\n            right = mid - 1\n        } else {\n            left = mid + 1\n        }\n    }\n    return -1\n}"
+          },
+          {
+            "id": "v9",
+            "title": "First Negative Index",
+            "description": "Write <code>func firstNegativeIdx(nums []int) int</code> that returns index of first negative number, or -1.",
+            "functionSignature": "func firstNegativeIdx(nums []int) int",
+            "testCases": [
+              {
+                "input": "[]int{5, 3, -2, 8}",
+                "output": "2"
+              },
+              {
+                "input": "[]int{1, 2, 3}",
+                "output": "-1"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Return index as soon as you find num < 0."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Early return pattern: for i, num := range nums { if num < 0 { return i } }"
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. For i, num:\n   - num < 0? \u2192 return i\n2. Return -1</pre>"
+              }
+            ],
+            "solution": "func firstNegativeIdx(nums []int) int {\n    for i, num := range nums {\n        if num < 0 { return i }\n    }\n    return -1\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v10",
+            "title": "Find Keyword Position",
+            "description": "Write <code>func findKeyword(words []string, keyword string) int</code> that returns index of keyword (case-insensitive).",
+            "functionSignature": "func findKeyword(words []string, keyword string) int",
+            "testCases": [
+              {
+                "input": "[]string{\"hello\", \"WORLD\", \"Go\"}, \"world\"",
+                "output": "1"
+              },
+              {
+                "input": "[]string{\"apple\", \"banana\"}, \"orange\"",
+                "output": "-1"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Compare lowercase versions of both word and keyword."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Use strings.ToLower() to normalize before comparing."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. For i, word:\n   - ToLower(word) == ToLower(keyword)?\n     \u2192 return i\n2. Return -1</pre>"
+              }
+            ],
+            "solution": "func findKeyword(words []string, keyword string) int {\n    keyword = strings.ToLower(keyword)\n    for i, word := range words {\n        if strings.ToLower(word) == keyword {\n            return i\n        }\n    }\n    return -1\n}",
+            "difficulty": 2
           }
         ]
       },
@@ -2586,6 +2783,70 @@
             ],
             "solution": "func countByFirstLetter(words []string) map[string]int {\n    c := make(map[string]int)\n    for _, w := range words {\n        if len(w) > 0 {\n            first := strings.ToLower(string(w[0]))\n            c[first]++\n        }\n    }\n    return c\n}",
             "difficulty": 2
+          },
+          {
+            "id": "v9",
+            "title": "Vote Tally",
+            "description": "Write <code>func voteTally(votes []string) map[string]int</code> that counts votes for each candidate.",
+            "functionSignature": "func voteTally(votes []string) map[string]int",
+            "testCases": [
+              {
+                "input": "[]string{\"Alice\", \"Bob\", \"Alice\", \"Charlie\", \"Alice\"}",
+                "output": "map[string]int{\"Alice\": 3, \"Bob\": 1, \"Charlie\": 1}"
+              },
+              {
+                "input": "[]string{\"Yes\", \"No\", \"Yes\"}",
+                "output": "map[string]int{\"Yes\": 2, \"No\": 1}"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Standard frequency map: increment count for each vote."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "counts[vote]++ for each vote."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. counts := make(map[string]int)\n2. For each vote:\n   - counts[vote]++\n3. Return counts</pre>"
+              }
+            ],
+            "solution": "func voteTally(votes []string) map[string]int {\n    counts := make(map[string]int)\n    for _, vote := range votes {\n        counts[vote]++\n    }\n    return counts\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v10",
+            "title": "Grade Distribution",
+            "description": "Write <code>func gradeDistribution(grades []string) map[string]int</code> that counts how many of each letter grade.",
+            "functionSignature": "func gradeDistribution(grades []string) map[string]int",
+            "testCases": [
+              {
+                "input": "[]string{\"A\", \"B\", \"A\", \"C\", \"A\", \"B\"}",
+                "output": "map[string]int{\"A\": 3, \"B\": 2, \"C\": 1}"
+              },
+              {
+                "input": "[]string{\"F\", \"F\", \"D\"}",
+                "output": "map[string]int{\"F\": 2, \"D\": 1}"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Another frequency map - count occurrences of each grade."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Same pattern: dist[grade]++ for each grade."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. dist := make(map[string]int)\n2. For each grade:\n   - dist[grade]++\n3. Return dist</pre>"
+              }
+            ],
+            "solution": "func gradeDistribution(grades []string) map[string]int {\n    dist := make(map[string]int)\n    for _, grade := range grades {\n        dist[grade]++\n    }\n    return dist\n}",
+            "difficulty": 1
           }
         ]
       },
@@ -3202,6 +3463,111 @@
             ],
             "solution": "func startsEndsSame(nums []int, k int) bool {\n    n := len(nums)\n    for i := 0; i < k; i++ {\n        if nums[i] != nums[n-k+i] { return false }\n    }\n    return true\n}",
             "difficulty": 1
+          },
+          {
+            "id": "v7",
+            "title": "Mirror Halves",
+            "description": "Write <code>func mirrorHalves(nums []int) bool</code> - true if first half mirrors second half. Assume even length.",
+            "functionSignature": "func mirrorHalves(nums []int) bool",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 2, 1}",
+                "output": "true"
+              },
+              {
+                "input": "[]int{5, 3, 3, 5}",
+                "output": "true"
+              },
+              {
+                "input": "[]int{1, 2, 3, 4}",
+                "output": "false"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Compare first half with second half in reverse. Element at index i should match element at index n-1-i."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Use two pointers starting at both ends, moving inward. Compare only the first n/2 pairs."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. left = 0, right = len-1\n2. While left < right:\n   - nums[left] != nums[right]? \u2192 return false\n   - left++, right--\n3. Return true</pre>"
+              }
+            ],
+            "solution": "func mirrorHalves(nums []int) bool {\n    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {\n        if nums[i] != nums[j] { return false }\n    }\n    return true\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v8",
+            "title": "Valid Score Sequence",
+            "description": "Write <code>func validScoreSeq(scores []int) bool</code> - true if scores never decrease by more than 10 points between adjacent rounds.",
+            "functionSignature": "func validScoreSeq(scores []int) bool",
+            "testCases": [
+              {
+                "input": "[]int{100, 95, 98, 90}",
+                "output": "true"
+              },
+              {
+                "input": "[]int{100, 85, 90}",
+                "output": "false",
+                "note": "100 to 85 is -15"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Compare adjacent scores. If any drop is more than 10, return false."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Loop through indices, compare scores[i] with scores[i+1]. Check if scores[i] - scores[i+1] > 10."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. For i from 0 to len-2:\n   - scores[i] - scores[i+1] > 10?\n     \u2192 return false\n2. Return true</pre>"
+              }
+            ],
+            "solution": "func validScoreSeq(scores []int) bool {\n    for i := 0; i < len(scores)-1; i++ {\n        if scores[i] - scores[i+1] > 10 { return false }\n    }\n    return true\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v9",
+            "title": "Balanced Brackets",
+            "description": "Write <code>func balancedBrackets(s string) bool</code> - true if string has equal '[' and ']' counts AND they're balanced left-to-right.",
+            "functionSignature": "func balancedBrackets(s string) bool",
+            "testCases": [
+              {
+                "input": "\"[[][]]\"",
+                "output": "true"
+              },
+              {
+                "input": "\"[[]\"",
+                "output": "false"
+              },
+              {
+                "input": "\"][[\"",
+                "output": "false"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Track a running count: +1 for '[', -1 for ']'. Count should never go negative, and should be 0 at end."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Use a counter variable. If it ever goes negative, we have ']' before matching '['. Must end at 0."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. count := 0\n2. For each char:\n   - '[' \u2192 count++\n   - ']' \u2192 count--\n   - count < 0? \u2192 return false\n3. Return count == 0</pre>"
+              }
+            ],
+            "solution": "func balancedBrackets(s string) bool {\n    count := 0\n    for _, c := range s {\n        if c == '[' { count++ }\n        if c == ']' { count-- }\n        if count < 0 { return false }\n    }\n    return count == 0\n}",
+            "difficulty": 3
           }
         ]
       },
@@ -3469,6 +3835,70 @@
               }
             ],
             "solution": "func reverseFirstN(nums []int, n int) {\n    if n > len(nums) {\n        n = len(nums)\n    }\n    left, right := 0, n-1\n    for left < right {\n        nums[left], nums[right] = nums[right], nums[left]\n        left++\n        right--\n    }\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Move Zeros to End",
+            "description": "Write <code>func moveZeros(nums []int) []int</code> that moves all zeros to the end, preserving order of non-zeros.",
+            "functionSignature": "func moveZeros(nums []int) []int",
+            "testCases": [
+              {
+                "input": "[]int{0, 1, 0, 3, 12}",
+                "output": "[]int{1, 3, 12, 0, 0}"
+              },
+              {
+                "input": "[]int{0, 0, 1}",
+                "output": "[]int{1, 0, 0}"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Collect all non-zero elements first, then append zeros to fill the rest."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Filter non-zeros into result, then append len(nums) - len(result) zeros."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. result := []int{}\n2. For each num:\n   - num != 0? \u2192 append to result\n3. While len(result) < len(nums):\n   - append 0\n4. Return result</pre>"
+              }
+            ],
+            "solution": "func moveZeros(nums []int) []int {\n    result := []int{}\n    for _, num := range nums {\n        if num != 0 {\n            result = append(result, num)\n        }\n    }\n    for len(result) < len(nums) {\n        result = append(result, 0)\n    }\n    return result\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v10",
+            "title": "Reverse Words in Place",
+            "description": "Write <code>func reverseWords(words []string)</code> that reverses the order of words in the slice in-place.",
+            "functionSignature": "func reverseWords(words []string)",
+            "testCases": [
+              {
+                "input": "[]string{\"hello\", \"world\", \"go\"}",
+                "output": "[\"go\", \"world\", \"hello\"]"
+              },
+              {
+                "input": "[]string{\"a\", \"b\"}",
+                "output": "[\"b\", \"a\"]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Two-pointer swap pattern: swap from both ends moving toward center."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "left starts at 0, right at len-1. Swap and move inward until they meet."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. left = 0, right = len-1\n2. While left < right:\n   - Swap words[left] \u2194 words[right]\n   - left++, right--</pre>"
+              }
+            ],
+            "solution": "func reverseWords(words []string) {\n    for i, j := 0, len(words)-1; i < j; i, j = i+1, j-1 {\n        words[i], words[j] = words[j], words[i]\n    }\n}",
+            "difficulty": 2
           }
         ]
       },
@@ -3744,6 +4174,70 @@
               }
             ],
             "solution": "func countUnique(nums []int) int {\n    seen := make(map[int]bool)\n    for _, n := range nums {\n        seen[n] = true\n    }\n    return len(seen)\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Employee ID Lookup",
+            "description": "Write <code>func employeeName(ids map[int]string, id int) string</code> that returns employee name or \"Unknown\".",
+            "functionSignature": "func employeeName(ids map[int]string, id int) string",
+            "testCases": [
+              {
+                "input": "map[int]string{101: \"Alice\", 102: \"Bob\"}, 101",
+                "output": "\"Alice\""
+              },
+              {
+                "input": "map[int]string{101: \"Alice\"}, 999",
+                "output": "\"Unknown\""
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Use comma-ok idiom to check if ID exists in map."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "name, exists := ids[id]; if exists return name, else return \"Unknown\""
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. name, exists := ids[id]\n2. If exists \u2192 return name\n3. Return \"Unknown\"</pre>"
+              }
+            ],
+            "solution": "func employeeName(ids map[int]string, id int) string {\n    if name, exists := ids[id]; exists {\n        return name\n    }\n    return \"Unknown\"\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v10",
+            "title": "Country Capital",
+            "description": "Write <code>func getCapital(capitals map[string]string, country string) (string, bool)</code> that returns capital and whether found.",
+            "functionSignature": "func getCapital(capitals map[string]string, country string) (string, bool)",
+            "testCases": [
+              {
+                "input": "map[string]string{\"USA\": \"Washington DC\", \"France\": \"Paris\"}, \"France\"",
+                "output": "\"Paris\", true"
+              },
+              {
+                "input": "map[string]string{\"USA\": \"Washington DC\"}, \"Spain\"",
+                "output": "\"\", false"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "This is a direct map lookup with comma-ok pattern - return both value and existence."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "capital, exists := capitals[country]; return capital, exists"
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>capital, exists := capitals[country]\nreturn capital, exists</pre>"
+              }
+            ],
+            "solution": "func getCapital(capitals map[string]string, country string) (string, bool) {\n    capital, exists := capitals[country]\n    return capital, exists\n}",
+            "difficulty": 1
           }
         ]
       },
@@ -3953,6 +4447,102 @@
             ],
             "solution": "func hasValue(nums []int, target int) bool {\n    for _, n := range nums {\n        if n == target { return true }\n    }\n    return false\n}",
             "difficulty": 1
+          },
+          {
+            "id": "v7",
+            "title": "Count Even Numbers",
+            "description": "Write <code>func countEvens(nums []int) int</code> that counts how many even numbers are in the slice.",
+            "functionSignature": "func countEvens(nums []int) int",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 4, 5, 6}",
+                "output": "3"
+              },
+              {
+                "input": "[]int{1, 3, 5}",
+                "output": "0"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "A number is even if num % 2 == 0. Count how many satisfy this condition."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Loop through, increment counter when num % 2 == 0."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. count := 0\n2. For each num:\n   - num % 2 == 0? \u2192 count++\n3. Return count</pre>"
+              }
+            ],
+            "solution": "func countEvens(nums []int) int {\n    count := 0\n    for _, n := range nums {\n        if n % 2 == 0 { count++ }\n    }\n    return count\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v8",
+            "title": "Passing Grades",
+            "description": "Write <code>func passingGrades(grades []int) int</code> that counts how many grades are 60 or above.",
+            "functionSignature": "func passingGrades(grades []int) int",
+            "testCases": [
+              {
+                "input": "[]int{85, 55, 90, 45, 70}",
+                "output": "3"
+              },
+              {
+                "input": "[]int{30, 40, 50}",
+                "output": "0"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Count grades that are >= 60."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Simple counter: if grade >= 60, increment count."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. count := 0\n2. For each grade:\n   - grade >= 60? \u2192 count++\n3. Return count</pre>"
+              }
+            ],
+            "solution": "func passingGrades(grades []int) int {\n    count := 0\n    for _, g := range grades {\n        if g >= 60 { count++ }\n    }\n    return count\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v9",
+            "title": "Inventory Below Threshold",
+            "description": "Write <code>func lowStock(inventory map[string]int, threshold int) []string</code> that returns item names with stock below threshold.",
+            "functionSignature": "func lowStock(inventory map[string]int, threshold int) []string",
+            "testCases": [
+              {
+                "input": "map[string]int{\"apples\": 5, \"oranges\": 15, \"bananas\": 3}, 10",
+                "output": "[\"apples\", \"bananas\"]"
+              },
+              {
+                "input": "map[string]int{\"pens\": 100, \"paper\": 200}, 50",
+                "output": "[]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Loop through the map, collect items where count < threshold."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "For each key-value pair, if value < threshold, append key to result slice."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. result := []string{}\n2. For item, count in inventory:\n   - count < threshold?\n     \u2192 append item to result\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func lowStock(inventory map[string]int, threshold int) []string {\n    result := []string{}\n    for item, count := range inventory {\n        if count < threshold {\n            result = append(result, item)\n        }\n    }\n    return result\n}",
+            "difficulty": 2
           }
         ]
       },
@@ -4167,6 +4757,104 @@
             ],
             "solution": "func swapIfGreater(a, b int) (int, int) {\n    if a > b {\n        return b, a\n    }\n    return a, b\n}",
             "difficulty": 2
+          },
+          {
+            "id": "v7",
+            "title": "Swap Pairs",
+            "description": "Write <code>func swapPairs(nums []int)</code> that swaps adjacent pairs (0\u21941, 2\u21943, etc). Assume even length.",
+            "functionSignature": "func swapPairs(nums []int)",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 4}",
+                "output": "[2, 1, 4, 3]"
+              },
+              {
+                "input": "[]int{5, 10, 15, 20}",
+                "output": "[10, 5, 20, 15]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Loop with step size 2, swapping nums[i] with nums[i+1]."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "for i := 0; i < len(nums); i += 2 { swap nums[i] and nums[i+1] }"
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. For i = 0, 2, 4, ... (step 2):\n   - Swap nums[i] \u2194 nums[i+1]\n2. Done</pre>"
+              }
+            ],
+            "solution": "func swapPairs(nums []int) {\n    for i := 0; i < len(nums); i += 2 {\n        nums[i], nums[i+1] = nums[i+1], nums[i]\n    }\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v8",
+            "title": "Rotate Three",
+            "description": "Write <code>func rotateThree(a, b, c int) (int, int, int)</code> that rotates values: a\u2192b, b\u2192c, c\u2192a.",
+            "functionSignature": "func rotateThree(a, b, c int) (int, int, int)",
+            "testCases": [
+              {
+                "input": "1, 2, 3",
+                "output": "3, 1, 2"
+              },
+              {
+                "input": "10, 20, 30",
+                "output": "30, 10, 20"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "This is a circular rotation. Use simultaneous assignment."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "The pattern is: return c, a, b"
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>return c, a, b</pre>"
+              }
+            ],
+            "solution": "func rotateThree(a, b, c int) (int, int, int) {\n    return c, a, b\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v9",
+            "title": "Swap Min and Max",
+            "description": "Write <code>func swapMinMax(nums []int)</code> that swaps the positions of minimum and maximum values.",
+            "functionSignature": "func swapMinMax(nums []int)",
+            "testCases": [
+              {
+                "input": "[]int{3, 1, 4, 9, 2}",
+                "output": "[3, 9, 4, 1, 2]",
+                "note": "min=1 at idx 1, max=9 at idx 3"
+              },
+              {
+                "input": "[]int{5, 2, 8, 2}",
+                "output": "[5, 8, 2, 2]",
+                "note": "first occurrence of min"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "First find indices of min and max values, then swap elements at those indices."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Loop twice: once to find minIdx and maxIdx, then swap nums[minIdx] with nums[maxIdx]."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. Find minIdx and maxIdx\n2. Swap nums[minIdx] \u2194 nums[maxIdx]\n3. Done</pre>"
+              }
+            ],
+            "solution": "func swapMinMax(nums []int) {\n    minIdx, maxIdx := 0, 0\n    for i := range nums {\n        if nums[i] < nums[minIdx] { minIdx = i }\n        if nums[i] > nums[maxIdx] { maxIdx = i }\n    }\n    nums[minIdx], nums[maxIdx] = nums[maxIdx], nums[minIdx]\n}",
+            "difficulty": 3
           }
         ]
       },
@@ -4381,6 +5069,105 @@
             ],
             "solution": "func longestStreak(nums []int, target int) int {\n    current, max := 0, 0\n    for _, n := range nums {\n        if n == target {\n            current++\n            if current > max { max = current }\n        } else {\n            current = 0\n        }\n    }\n    return max\n}",
             "difficulty": 3
+          },
+          {
+            "id": "v7",
+            "title": "All Positive",
+            "description": "Write <code>func allPositive(nums []int) bool</code> that returns true if all numbers are greater than 0.",
+            "functionSignature": "func allPositive(nums []int) bool",
+            "testCases": [
+              {
+                "input": "[]int{1, 5, 10, 3}",
+                "output": "true"
+              },
+              {
+                "input": "[]int{1, 0, 5}",
+                "output": "false"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Check each number. If any is <= 0, return false immediately."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Early return pattern: as soon as you find non-positive, return false."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. For each num:\n   - num <= 0? \u2192 return false\n2. Return true</pre>"
+              }
+            ],
+            "solution": "func allPositive(nums []int) bool {\n    for _, n := range nums {\n        if n <= 0 { return false }\n    }\n    return true\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v8",
+            "title": "Price Drop Count",
+            "description": "Write <code>func priceDrops(prices []float64) int</code> that counts how many times price decreased from one day to next.",
+            "functionSignature": "func priceDrops(prices []float64) int",
+            "testCases": [
+              {
+                "input": "[]float64{100.0, 95.0, 97.0, 90.0}",
+                "output": "2",
+                "note": "100\u219295 and 97\u219290"
+              },
+              {
+                "input": "[]float64{50.0, 55.0, 60.0}",
+                "output": "0"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "Compare adjacent prices. Count when prices[i+1] < prices[i]."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Loop through indices, increment counter when next price is lower than current."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. count := 0\n2. For i from 0 to len-2:\n   - prices[i+1] < prices[i]? \u2192 count++\n3. Return count</pre>"
+              }
+            ],
+            "solution": "func priceDrops(prices []float64) int {\n    count := 0\n    for i := 0; i < len(prices)-1; i++ {\n        if prices[i+1] < prices[i] { count++ }\n    }\n    return count\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v9",
+            "title": "Length Matches Position",
+            "description": "Write <code>func lengthMatchesPos(words []string) bool</code> - true if each word's length equals its position+1.",
+            "functionSignature": "func lengthMatchesPos(words []string) bool",
+            "testCases": [
+              {
+                "input": "[]string{\"a\", \"hi\", \"cat\", \"dogs\"}",
+                "output": "true",
+                "note": "lengths: 1,2,3,4"
+              },
+              {
+                "input": "[]string{\"a\", \"ab\", \"abc\"}",
+                "output": "false",
+                "note": "position 1: \"ab\" has length 2, needs 2 \u2713; position 2: \"abc\" has length 3, needs 3 \u2713... wait this should be true!"
+              }
+            ],
+            "hints": [
+              {
+                "title": "\ud83e\udd14 Think about it",
+                "content": "For each word at index i, check if len(word) == i+1."
+              },
+              {
+                "title": "\ud83d\udca1 Hint",
+                "content": "Loop with index: if len(words[i]) != i+1, return false."
+              },
+              {
+                "title": "\ud83d\udd27 Pattern",
+                "content": "<pre>1. For i, word:\n   - len(word) != i+1? \u2192 return false\n2. Return true</pre>"
+              }
+            ],
+            "solution": "func lengthMatchesPos(words []string) bool {\n    for i, word := range words {\n        if len(word) != i+1 { return false }\n    }\n    return true\n}",
+            "difficulty": 2
           }
         ]
       }

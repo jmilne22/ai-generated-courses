@@ -185,7 +185,6 @@
     let variantsData = null;
     const currentVariants = {};
     const currentWarmupVariants = {};
-    const currentIntermediateVariants = {};
     const currentChallengeVariants = {};
     let currentConceptFilter = null; // null = show all
 
@@ -331,7 +330,6 @@
     function loadVariants() {
         variantsData = window.variantsDataEmbedded;
         shuffleWarmups();
-        shuffleIntermediate();
         // Setup filters in reverse order (they insert before container, so last becomes first)
         setupConceptFilter();        // Will be 2nd (pattern filter)
         setupDifficultyModeSelector();  // Will be 1st (difficulty mode)
@@ -403,86 +401,6 @@
                 <summary>✅ Solution</summary>
                 <div class="hint-content"><pre>${escapeHtml(variant.solution)}</pre></div>
             </details>`;
-
-            html += '</div>';
-        });
-
-        container.innerHTML = html;
-        container.querySelectorAll('.exercise').forEach(initThinkingTimer);
-    }
-
-    function shuffleIntermediate() {
-        if (!variantsData || !variantsData.intermediate) return;
-
-        // Pick a random variant for each intermediate exercise
-        variantsData.intermediate.forEach(exercise => {
-            const current = currentIntermediateVariants[exercise.id];
-            const available = exercise.variants.filter(v => !current || v.id !== current.id);
-            const pool = available.length > 0 ? available : exercise.variants;
-            currentIntermediateVariants[exercise.id] = pool[Math.floor(Math.random() * pool.length)];
-        });
-
-        renderIntermediate();
-
-        // Visual feedback
-        const btn = document.getElementById('shuffle-intermediate-btn');
-        if (btn) {
-            btn.textContent = '✓ Shuffled!';
-            btn.style.background = 'var(--cyan)';
-            btn.style.color = 'var(--bg-dark)';
-            setTimeout(() => {
-                btn.textContent = '🎲 Shuffle';
-                btn.style.background = 'var(--bg-card)';
-                btn.style.color = 'var(--cyan)';
-            }, 800);
-        }
-    }
-
-    function renderIntermediate() {
-        const container = document.getElementById('intermediate-container');
-        if (!container || !variantsData || !variantsData.intermediate) return;
-
-        let html = '';
-
-        variantsData.intermediate.forEach((exercise, idx) => {
-            const variant = currentIntermediateVariants[exercise.id];
-            const num = idx + 1;
-
-            const conceptLink = window.conceptLinks[exercise.concept];
-            const conceptHtml = conceptLink
-                ? `<a href="${conceptLink}" class="concept-link" style="color: var(--cyan); opacity: 0.8;">(${exercise.concept} ↗)</a>`
-                : `<span style="font-size: 0.75rem; opacity: 0.6; color: var(--text-dim);">(${exercise.concept})</span>`;
-
-            html += `<div class="exercise">
-                <h4>Intermediate ${num}: ${variant.title} ${conceptHtml}</h4>
-                <p>${variant.description}</p>`;
-
-            // Add hints
-            if (variant.hints) {
-                variant.hints.forEach((hint) => {
-                    // Support both old string format and new object format
-                    const title = typeof hint === 'object' ? hint.title : '💡 Hint';
-                    const content = typeof hint === 'object' ? hint.content : hint;
-                    html += `<details>
-                        <summary>${title}</summary>
-                        <div class="hint-content">${content}</div>
-                    </details>`;
-                });
-            }
-
-            // Add solution
-            html += `<details>
-                <summary>✅ Solution</summary>
-                <div class="hint-content"><pre>${escapeHtml(variant.solution)}</pre></div>
-            </details>`;
-
-            // Add expected output if available
-            if (variant.expected) {
-                html += `<div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>${escapeHtml(variant.expected)}</pre>
-                </div>`;
-            }
 
             html += '</div>';
         });
@@ -1072,7 +990,6 @@
 
     // Expose functions globally for onclick handlers
     window.shuffleWarmups = shuffleWarmups;
-    window.shuffleIntermediate = shuffleIntermediate;
     window.shuffleChallenges = shuffleChallenges;
     window.shuffleVariants = shuffleVariants;
 })();
