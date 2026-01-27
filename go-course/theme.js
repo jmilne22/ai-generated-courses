@@ -1,5 +1,14 @@
 // Theme toggle functionality for Go Course
 (function() {
+    const themes = [
+        { value: 'dark', label: 'Default Dark' },
+        { value: 'light', label: 'Default Light' },
+        { value: 'catppuccin-dark', label: 'Catppuccin Dark' },
+        { value: 'catppuccin-light', label: 'Catppuccin Light' },
+        { value: 'gruvbox-dark', label: 'Gruvbox Dark' },
+        { value: 'gruvbox-light', label: 'Gruvbox Light' }
+    ];
+
     // Check for saved theme preference or default to dark
     function getPreferredTheme() {
         const saved = localStorage.getItem('go-course-theme');
@@ -12,50 +21,47 @@
 
     // Apply theme to document
     function setTheme(theme) {
-        if (theme === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-        } else {
+        if (theme === 'dark') {
             document.documentElement.removeAttribute('data-theme');
+        } else {
+            document.documentElement.setAttribute('data-theme', theme);
         }
         localStorage.setItem('go-course-theme', theme);
-        updateToggleIcon();
-    }
-
-    // Update toggle button icon
-    function updateToggleIcon() {
-        const toggle = document.querySelector('.theme-toggle');
-        if (toggle) {
-            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-            toggle.innerHTML = isLight ? '🌙' : '☀️';
-            toggle.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
-        }
     }
 
     // Initialize theme immediately to prevent flash
     setTheme(getPreferredTheme());
 
-    // Create and inject toggle button when DOM is ready
-    function createToggle() {
-        const toggle = document.createElement('button');
-        toggle.className = 'theme-toggle';
-        toggle.setAttribute('aria-label', 'Toggle light mode');
-        
-        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-        toggle.innerHTML = isLight ? '🌙' : '☀️';
-        
-        toggle.addEventListener('click', function() {
-            const current = document.documentElement.getAttribute('data-theme');
-            setTheme(current === 'light' ? 'dark' : 'light');
+    // Create and inject theme picker when DOM is ready
+    function createThemePicker() {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'theme-picker';
+
+        const select = document.createElement('select');
+        select.className = 'theme-select';
+        select.setAttribute('aria-label', 'Select color theme');
+
+        themes.forEach(theme => {
+            const option = document.createElement('option');
+            option.value = theme.value;
+            option.textContent = theme.label;
+            select.appendChild(option);
         });
-        
-        document.body.appendChild(toggle);
+
+        select.value = getPreferredTheme();
+        select.addEventListener('change', () => {
+            setTheme(select.value);
+        });
+
+        wrapper.appendChild(select);
+        document.body.appendChild(wrapper);
     }
 
     // Wait for DOM
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', createToggle);
+        document.addEventListener('DOMContentLoaded', createThemePicker);
     } else {
-        createToggle();
+        createThemePicker();
     }
 
     // Listen for system theme changes (only if no saved preference)
