@@ -263,6 +263,7 @@
     const currentChallengeVariants = {};
     let currentConceptFilter = null; // null = show all (for challenges)
     let currentWarmupConceptFilter = null; // null = show all (for warmups)
+    let conceptFilterSelection = []; // Tracks which challenges are shown when concept filter is active
 
     // Personal notes storage
     const NOTES_STORAGE_KEY = 'go-course-personal-notes';
@@ -704,6 +705,11 @@
     function shuffleChallenges() {
         if (!variantsData || !variantsData.challenges) return;
 
+        // Reset concept filter selection when shuffling (will pick new random challenges in concept filter mode)
+        if (currentConceptFilter) {
+            conceptFilterSelection = [];
+        }
+
         // Filter challenges by concept if active
         const challenges = currentConceptFilter
             ? variantsData.challenges.filter(c => c.concept === currentConceptFilter)
@@ -897,6 +903,7 @@
                 filterDiv.querySelectorAll('.concept-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentConceptFilter = btn.dataset.concept || null;
+                conceptFilterSelection = []; // Reset selection when filter changes
                 shuffleChallenges();
             });
         });
@@ -1014,22 +1021,32 @@
             return;
         }
 
-        // When filtering by concept, show 6 random variants for practice
+        // When filtering by concept, show 6 challenges with their current variants
         if (currentConceptFilter) {
-            // Collect all variants with their challenge info
-            const allVariants = [];
-            challenges.forEach(challenge => {
-                const difficulty = getExerciseDifficulty(challenge);
-                challenge.variants.forEach(variant => {
-                    allVariants.push({ variant, challenge, difficulty: getDifficultyStars(difficulty) });
+            // If conceptFilterSelection is empty or doesn't match current filter, initialize it
+            if (conceptFilterSelection.length === 0 ||
+                !conceptFilterSelection.every(id => {
+                    const challenge = challenges.find(c => c.id === id);
+                    return challenge && challenge.concept === currentConceptFilter;
+                })) {
+                // Pick 6 random challenges from this concept
+                const shuffledChallenges = [...challenges].sort(() => Math.random() - 0.5);
+                conceptFilterSelection = shuffledChallenges.slice(0, Math.min(6, challenges.length)).map(c => c.id);
+
+                // Initialize variants for selected challenges if not already set
+                conceptFilterSelection.forEach(challengeId => {
+                    const challenge = challenges.find(c => c.id === challengeId);
+                    if (challenge && !currentChallengeVariants[challengeId]) {
+                        const randomVariant = challenge.variants[Math.floor(Math.random() * challenge.variants.length)];
+                        currentChallengeVariants[challengeId] = randomVariant;
+                    }
                 });
-            });
+            }
 
-            // Shuffle and pick 6
-            const shuffled = allVariants.sort(() => Math.random() - 0.5);
-            const selected = shuffled.slice(0, 6);
+            // Count total variants for display
+            const totalVariants = challenges.reduce((sum, c) => sum + c.variants.length, 0);
 
-            html += `<p style="color: var(--orange); font-size: 0.9rem; margin: 0 0 1rem; font-weight: 600;">Practicing: ${currentConceptFilter} (${selected.length} of ${allVariants.length} variants)</p>`;
+            html += `<p style="color: var(--orange); font-size: 0.9rem; margin: 0 0 1rem; font-weight: 600;">Practicing: ${currentConceptFilter} (${conceptFilterSelection.length} of ${totalVariants} variants)</p>`;
 
             // Add pattern primer if available for this concept
             const firstChallenge = challenges[0];
@@ -1051,8 +1068,17 @@
                 </details>`;
             }
 
-            selected.forEach((item, idx) => {
-                html += renderSingleChallenge(idx + 1, item.variant, item.challenge, item.difficulty);
+            // Render selected challenges using their current variants
+            conceptFilterSelection.forEach((challengeId, idx) => {
+                const challenge = challenges.find(c => c.id === challengeId);
+                if (challenge) {
+                    const variant = currentChallengeVariants[challengeId];
+                    if (variant) {
+                        const difficultyNum = getExerciseDifficulty(challenge);
+                        const difficultyStars = getDifficultyStars(difficultyNum);
+                        html += renderSingleChallenge(idx + 1, variant, challenge, difficultyStars);
+                    }
+                }
             });
 
             container.innerHTML = html;
@@ -1134,14 +1160,24 @@
 
         const currentDiff = getVariantDifficulty(currentVariant, challenge);
 
-        // Find all variants with lower difficulty
-        const easierVariants = challenge.variants.filter(v =>
-            getVariantDifficulty(v, challenge) < currentDiff
+        // Step down one difficulty level at a time
+        // Try currentDiff - 1 first, then currentDiff - 2 if needed
+        let targetDiff = currentDiff - 1;
+        let easierVariants = challenge.variants.filter(v =>
+            getVariantDifficulty(v, challenge) === targetDiff
         );
+
+        // If no variants at target difficulty, try one more level down
+        if (easierVariants.length === 0 && targetDiff > 1) {
+            targetDiff = currentDiff - 2;
+            easierVariants = challenge.variants.filter(v =>
+                getVariantDifficulty(v, challenge) === targetDiff
+            );
+        }
 
         if (easierVariants.length === 0) return;
 
-        // Pick a random easier variant
+        // Pick a random variant at the target difficulty
         const randomIndex = Math.floor(Math.random() * easierVariants.length);
         const newVariant = easierVariants[randomIndex];
 
@@ -1178,14 +1214,24 @@
 
         const currentDiff = getVariantDifficulty(currentVariant, challenge);
 
-        // Find all variants with higher difficulty
-        const harderVariants = challenge.variants.filter(v =>
-            getVariantDifficulty(v, challenge) > currentDiff
+        // Step up one difficulty level at a time
+        // Try currentDiff + 1 first, then currentDiff + 2 if needed
+        let targetDiff = currentDiff + 1;
+        let harderVariants = challenge.variants.filter(v =>
+            getVariantDifficulty(v, challenge) === targetDiff
         );
+
+        // If no variants at target difficulty, try one more level up
+        if (harderVariants.length === 0 && targetDiff < 3) {
+            targetDiff = currentDiff + 2;
+            harderVariants = challenge.variants.filter(v =>
+                getVariantDifficulty(v, challenge) === targetDiff
+            );
+        }
 
         if (harderVariants.length === 0) return;
 
-        // Pick a random harder variant
+        // Pick a random variant at the target difficulty
         const randomIndex = Math.floor(Math.random() * harderVariants.length);
         const newVariant = harderVariants[randomIndex];
 
