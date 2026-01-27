@@ -178,6 +178,38 @@
             color: var(--text-dim);
             margin-top: 0.5rem;
         }
+        .personal-notes {
+            margin-top: 0.5rem;
+        }
+        .personal-notes summary {
+            cursor: pointer;
+            color: var(--purple);
+            font-weight: 600;
+            padding: 0.5rem 0;
+        }
+        .personal-notes-textarea {
+            width: 100%;
+            min-height: 100px;
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background: var(--bg-lighter);
+            border: 1px solid var(--bg-lighter);
+            border-radius: 4px;
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            resize: vertical;
+        }
+        .personal-notes-textarea:focus {
+            outline: none;
+            border-color: var(--purple);
+            background: var(--bg-card);
+        }
+        .personal-notes-hint {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 0.25rem;
+        }
     `;
     document.head.appendChild(timerStyles);
 
@@ -188,6 +220,67 @@
     const currentChallengeVariants = {};
     let currentConceptFilter = null; // null = show all (for challenges)
     let currentWarmupConceptFilter = null; // null = show all (for warmups)
+
+    // Personal notes storage
+    const NOTES_STORAGE_KEY = 'go-course-personal-notes';
+    let saveNotesTimer = null;
+
+    function getNotesKey(exerciseId, variantId) {
+        return `${exerciseId}_${variantId}`;
+    }
+
+    function loadNote(exerciseId, variantId) {
+        const allNotes = JSON.parse(localStorage.getItem(NOTES_STORAGE_KEY) || '{}');
+        return allNotes[getNotesKey(exerciseId, variantId)] || '';
+    }
+
+    function saveNote(exerciseId, variantId, text) {
+        const allNotes = JSON.parse(localStorage.getItem(NOTES_STORAGE_KEY) || '{}');
+        const key = getNotesKey(exerciseId, variantId);
+
+        if (text.trim() === '') {
+            delete allNotes[key];
+        } else {
+            allNotes[key] = text;
+        }
+
+        localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(allNotes));
+    }
+
+    function renderPersonalNotes(exerciseId, variantId) {
+        const savedNote = loadNote(exerciseId, variantId);
+        const textareaId = `notes-${exerciseId}-${variantId}`;
+
+        return `<details class="personal-notes">
+            <summary>📝 Personal Notes</summary>
+            <div class="hint-content">
+                <textarea
+                    class="personal-notes-textarea"
+                    id="${textareaId}"
+                    placeholder="Write your notes about this exercise...&#10;&#10;• What did you learn?&#10;• Edge cases to remember&#10;• Patterns you discovered"
+                >${escapeHtml(savedNote)}</textarea>
+                <div class="personal-notes-hint">Auto-saves to browser storage</div>
+            </div>
+        </details>`;
+    }
+
+    function initPersonalNotes(container) {
+        container.querySelectorAll('.personal-notes-textarea').forEach(textarea => {
+            const id = textarea.id;
+            const match = id.match(/notes-(.+?)_(.+)/);
+            if (!match) return;
+
+            const [, exerciseId, variantId] = match;
+
+            textarea.addEventListener('input', () => {
+                // Debounce saves
+                clearTimeout(saveNotesTimer);
+                saveNotesTimer = setTimeout(() => {
+                    saveNote(exerciseId, variantId, textarea.value);
+                }, 500);
+            });
+        });
+    }
 
     // Unified difficulty mode: 'mixed', 'balanced', 'progressive', 'easy', 'hard'
     let difficultyMode = 'balanced';
@@ -475,6 +568,9 @@
                     <div class="hint-content"><pre>${escapeHtml(item.variant.solution)}</pre></div>
                 </details>`;
 
+                // Add personal notes
+                html += renderPersonalNotes(item.warmup.id, item.variant.id);
+
                 // Add expected output if available
                 if (item.variant.expected) {
                     html += `<div class="expected">
@@ -487,7 +583,10 @@
             });
 
             container.innerHTML = html;
-            container.querySelectorAll('.exercise').forEach(initThinkingTimer);
+            container.querySelectorAll('.exercise').forEach(ex => {
+                initThinkingTimer(ex);
+                initPersonalNotes(ex);
+            });
             return;
         }
 
@@ -524,6 +623,9 @@
                 <div class="hint-content"><pre>${escapeHtml(variant.solution)}</pre></div>
             </details>`;
 
+            // Add personal notes
+            html += renderPersonalNotes(warmup.id, variant.id);
+
             // Add expected output if available
             if (variant.expected) {
                 html += `<div class="expected">
@@ -536,7 +638,10 @@
         });
 
         container.innerHTML = html;
-        container.querySelectorAll('.exercise').forEach(initThinkingTimer);
+        container.querySelectorAll('.exercise').forEach(ex => {
+            initThinkingTimer(ex);
+            initPersonalNotes(ex);
+        });
     }
 
     function shuffleChallenges() {
@@ -765,6 +870,9 @@
             <div class="hint-content"><pre>${escapeHtml(variant.solution)}</pre></div>
         </details>`;
 
+        // Add personal notes
+        html += renderPersonalNotes(challenge.id, variant.id);
+
         // Add documentation links if available
         if (challenge.docLinks && challenge.docLinks.length > 0) {
             html += `<details>
@@ -907,7 +1015,10 @@
         });
 
         container.innerHTML = html;
-        container.querySelectorAll('.exercise').forEach(initThinkingTimer);
+        container.querySelectorAll('.exercise').forEach(ex => {
+            initThinkingTimer(ex);
+            initPersonalNotes(ex);
+        });
     }
 
     function shuffleVariants() {
@@ -990,6 +1101,9 @@
                 </div>
             </details>`;
 
+            // Add personal notes
+            html += renderPersonalNotes(advanced.id, variant.id);
+
             // Add documentation links if available
             if (shared && shared.docLinks && shared.docLinks.length > 0) {
                 html += `<details>
@@ -1022,7 +1136,10 @@
         });
 
         container.innerHTML = html;
-        container.querySelectorAll('.exercise').forEach(initThinkingTimer);
+        container.querySelectorAll('.exercise').forEach(ex => {
+            initThinkingTimer(ex);
+            initPersonalNotes(ex);
+        });
     }
 
     function renderPreExercisesFor(advancedId, advancedNum, advancedTitle) {

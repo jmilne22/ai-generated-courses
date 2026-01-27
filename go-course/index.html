@@ -3,350 +3,478 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go From Python | CLI Tools & API Design</title>
+    <title>Go Course - Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .dashboard-header {
+            text-align: center;
+            margin: 2rem 0 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--bg-lighter);
+        }
+        .dashboard-header h1 {
+            margin: 0 0 0.5rem;
+            font-size: 2.5rem;
+        }
+        .dashboard-header .subtitle {
+            color: var(--text-dim);
+            font-size: 1rem;
+        }
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .quick-btn {
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 2px solid var(--bg-lighter);
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .quick-btn:hover {
+            border-color: var(--orange);
+            transform: translateY(-2px);
+        }
+        .quick-btn .btn-icon {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--bg-lighter);
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--orange);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+        }
+        .module-list {
+            margin-top: 2rem;
+        }
+        .track-section {
+            margin: 2rem 0;
+        }
+        .track-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .module-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--bg-lighter);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+        .module-item:hover {
+            border-color: var(--orange);
+        }
+        .module-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--green-bright);
+        }
+        .module-link {
+            flex: 1;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .module-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            min-width: 80px;
+        }
+        .module-name {
+            font-weight: 500;
+        }
+        .module-item.completed {
+            opacity: 0.6;
+        }
+        .module-item.completed .module-name {
+            text-decoration: line-through;
+        }
+        .last-studied {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .clear-progress {
+            margin-top: 2rem;
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--bg-lighter);
+            color: var(--text-dim);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .clear-progress:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="logo">go-course --interactive --comprehensive</div>
-            <h1>Go From Python</h1>
-            <p class="subtitle">
-                Build CLI tools, TUIs, and APIs. Learn pointers, interfaces, design patterns, and how to actually think in Go. 
-                For devs who know <span>Python</span> but keep forgetting Go syntax.
-            </p>
-            <div class="hero-stats">
-                <div class="stat">
-                    <div class="stat-value">17</div>
-                    <div class="stat-label">Modules</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">100+</div>
-                    <div class="stat-label">Examples</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">5</div>
-                    <div class="stat-label">Projects</div>
-                </div>
-            </div>
-        </header>
+        <div class="dashboard-header">
+            <h1>Go Course Dashboard</h1>
+            <p class="subtitle">Track your progress through 17 modules</p>
+        </div>
 
-        <!-- Track 0: Mindset -->
-        <div class="track">
-            <div class="track-header">
-                <span class="track-name">TRACK 0</span>
-                <span class="track-desc">Start here. Seriously.</span>
+        <div class="quick-actions">
+            <a href="module0.html" class="quick-btn">
+                <span class="btn-icon">📚</span>
+                Quick Reference
+            </a>
+            <a href="#" onclick="resumeLastModule(event)" class="quick-btn">
+                <span class="btn-icon">▶️</span>
+                Resume Last Module
+            </a>
+        </div>
+
+        <div class="progress-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="completed-count">0</div>
+                <div class="stat-label">Completed</div>
             </div>
-            <div class="modules-grid">
-                <a href="module0.html" class="module-card">
-                    <div class="module-number">MODULE 00</div>
-                    <h3 class="module-title">How to Learn Go (Without Losing Your Mind)</h3>
-                    <p class="module-desc">Mindset, reading docs, debugging frustration, and not rage-quitting when the compiler yells at you.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">mindset</span>
-                        <span class="topic-tag">go docs</span>
-                        <span class="topic-tag">debugging</span>
-                        <span class="topic-tag">problem solving</span>
-                    </div>
-                </a>
+            <div class="stat-card">
+                <div class="stat-value" id="remaining-count">17</div>
+                <div class="stat-label">Remaining</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="progress-percent">0%</div>
+                <div class="stat-label">Progress</div>
             </div>
         </div>
 
-        <!-- Track 1: Fundamentals -->
-        <div class="track">
-            <div class="track-header">
-                <span class="track-name">TRACK 1</span>
-                <span class="track-desc">Core language features. The stuff you need before doing anything useful.</span>
-            </div>
-            <div class="modules-grid">
-                <a href="module1.html" class="module-card">
-                    <div class="module-number">MODULE 01</div>
-                    <h3 class="module-title">Go Fundamentals</h3>
-                    <p class="module-desc">Variables, types, functions, and control flow. Every concept compared to Python.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">variables</span>
-                        <span class="topic-tag">types</span>
-                        <span class="topic-tag">functions</span>
-                        <span class="topic-tag">control flow</span>
-                    </div>
-                </a>
-
-                <a href="module2.html" class="module-card">
-                    <div class="module-number">MODULE 02</div>
-                    <h3 class="module-title">Pointers & Memory</h3>
-                    <p class="module-desc">Pointers demystified. When to use them, when not to, and why Go isn't scary like C.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">pointers</span>
-                        <span class="topic-tag">references</span>
-                        <span class="topic-tag">nil</span>
-                        <span class="topic-tag">stack vs heap</span>
-                    </div>
-                </a>
-
-                <a href="module3.html" class="module-card">
-                    <div class="module-number">MODULE 03</div>
-                    <h3 class="module-title">Structs Deep Dive</h3>
-                    <p class="module-desc">Go's alternative to classes. Composition, embedding, methods, and struct tags.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">structs</span>
-                        <span class="topic-tag">methods</span>
-                        <span class="topic-tag">embedding</span>
-                        <span class="topic-tag">tags</span>
-                    </div>
-                </a>
-
-                <a href="module4.html" class="module-card">
-                    <div class="module-number">MODULE 04</div>
-                    <h3 class="module-title">Interfaces & Polymorphism</h3>
-                    <p class="module-desc">Implicit interfaces, the empty interface, type assertions, and thinking in behaviors.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">interfaces</span>
-                        <span class="topic-tag">polymorphism</span>
-                        <span class="topic-tag">type assertions</span>
-                        <span class="topic-tag">any</span>
-                    </div>
-                </a>
-
-                <a href="module5.html" class="module-card">
-                    <div class="module-number">MODULE 05</div>
-                    <h3 class="module-title">Data Structures</h3>
-                    <p class="module-desc">Slices, maps, and building your own. Stacks, queues, sets, and when to use what.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">slices</span>
-                        <span class="topic-tag">maps</span>
-                        <span class="topic-tag">stacks</span>
-                        <span class="topic-tag">generics</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- Track 2: CLI & Tools -->
-        <div class="track">
-            <div class="track-header">
-                <span class="track-name">TRACK 2</span>
-                <span class="track-desc">Build command-line tools that don't suck.</span>
-            </div>
-            <div class="modules-grid">
-                <a href="module6.html" class="module-card">
-                    <div class="module-number">MODULE 06</div>
-                    <h3 class="module-title">CLI Foundations</h3>
-                    <p class="module-desc">Args, flags, stdin/stdout, exit codes. Build tools that feel native to the terminal.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">os.Args</span>
-                        <span class="topic-tag">flag pkg</span>
-                        <span class="topic-tag">cobra</span>
-                        <span class="topic-tag">stdin/stdout</span>
-                    </div>
-                </a>
-
-                <a href="module7.html" class="module-card">
-                    <div class="module-number">MODULE 07</div>
-                    <h3 class="module-title">Files, YAML & Shell</h3>
-                    <p class="module-desc">Read files, parse YAML/JSON/TOML, run shell commands, and handle configs properly.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">os/exec</span>
-                        <span class="topic-tag">yaml</span>
-                        <span class="topic-tag">viper</span>
-                        <span class="topic-tag project-tag">🔨 Task Runner</span>
-                    </div>
-                </a>
-
-                <a href="module8.html" class="module-card">
-                    <div class="module-number">MODULE 08</div>
-                    <h3 class="module-title">Building TUIs</h3>
-                    <p class="module-desc">Terminal UIs with Bubble Tea. Build interactive CLI apps that look amazing.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">bubbletea</span>
-                        <span class="topic-tag">lipgloss</span>
-                        <span class="topic-tag">bubbles</span>
-                        <span class="topic-tag project-tag">🔨 File Browser</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- Track 3: Production Code -->
-        <div class="track">
-            <div class="track-header">
-                <span class="track-name">TRACK 3</span>
-                <span class="track-desc">Write code that doesn't make future-you cry.</span>
-            </div>
-            <div class="modules-grid">
-                <a href="module9.html" class="module-card">
-                    <div class="module-number">MODULE 09</div>
-                    <h3 class="module-title">Error Handling & Testing</h3>
-                    <p class="module-desc">Go's explicit error handling, custom errors, and writing tests that catch bugs.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">errors</span>
-                        <span class="topic-tag">testing</span>
-                        <span class="topic-tag">table tests</span>
-                        <span class="topic-tag">mocking</span>
-                    </div>
-                </a>
-
-                <a href="module10.html" class="module-card">
-                    <div class="module-number">MODULE 10</div>
-                    <h3 class="module-title">Design Patterns</h3>
-                    <p class="module-desc">Patterns that actually matter in Go. Factory, strategy, options pattern, and more.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">factory</span>
-                        <span class="topic-tag">strategy</span>
-                        <span class="topic-tag">options</span>
-                        <span class="topic-tag">builder</span>
-                    </div>
-                </a>
-
-                <a href="module11.html" class="module-card">
-                    <div class="module-number">MODULE 11</div>
-                    <h3 class="module-title">HTTP & API Design</h3>
-                    <p class="module-desc">Build REST APIs, handle JSON, middleware patterns, and HTTP clients.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">net/http</span>
-                        <span class="topic-tag">REST</span>
-                        <span class="topic-tag">middleware</span>
-                        <span class="topic-tag project-tag">🔨 GitHub CLI</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- Track 4: Advanced -->
-        <div class="track">
-            <div class="track-header">
-                <span class="track-name">TRACK 4</span>
-                <span class="track-desc">The good stuff. Make things fast and scalable.</span>
-            </div>
-            <div class="modules-grid">
-                <a href="module12.html" class="module-card">
-                    <div class="module-number">MODULE 12</div>
-                    <h3 class="module-title">Concurrency & Goroutines</h3>
-                    <p class="module-desc">Goroutines, channels, and patterns. The stuff that makes Go actually fast.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">goroutines</span>
-                        <span class="topic-tag">channels</span>
-                        <span class="topic-tag">context</span>
-                        <span class="topic-tag project-tag">🔨 Parallel Downloader</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- Track 5: Real-World -->
-        <div class="track">
-            <div class="track-header">
-                <span class="track-name">TRACK 5</span>
-                <span class="track-desc">Scaling up. Multi-file projects, OS interaction, and useful algorithms.</span>
-            </div>
-            <div class="modules-grid">
-                <a href="module13.html" class="module-card">
-                    <div class="module-number">MODULE 13</div>
-                    <h3 class="module-title">Project Structure</h3>
-                    <p class="module-desc">Multi-file programs, packages, visibility rules, internal/ directory.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">packages</span>
-                        <span class="topic-tag">internal</span>
-                        <span class="topic-tag">exports</span>
-                        <span class="topic-tag">imports</span>
-                    </div>
-                </a>
-
-                <a href="module14.html" class="module-card">
-                    <div class="module-number">MODULE 14</div>
-                    <h3 class="module-title">System Interaction</h3>
-                    <p class="module-desc">Run commands, capture output, check what exists, parse results.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">exec</span>
-                        <span class="topic-tag">os.Stat</span>
-                        <span class="topic-tag">LookPath</span>
-                        <span class="topic-tag">parsing</span>
-                    </div>
-                </a>
-
-                <a href="module15.html" class="module-card">
-                    <div class="module-number">MODULE 15</div>
-                    <h3 class="module-title">Sets & Diffing</h3>
-                    <p class="module-desc">Set operations, comparing lists, finding differences efficiently.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">sets</span>
-                        <span class="topic-tag">difference</span>
-                        <span class="topic-tag">intersection</span>
-                        <span class="topic-tag">O(n)</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- Track 6: Testing -->
-        <div class="track">
-            <div class="track-header">
-                <span class="track-name">TRACK 6</span>
-                <span class="track-desc">Testing properly. Unit tests, integration tests, mocking, and test organization.</span>
-            </div>
-            <div class="modules-grid">
-                <a href="module16.html" class="module-card">
-                    <div class="module-number">MODULE 16</div>
-                    <h3 class="module-title">Unit Testing</h3>
-                    <p class="module-desc">Table-driven tests, test helpers, mocking with interfaces, coverage.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">testing.T</span>
-                        <span class="topic-tag">table-driven</span>
-                        <span class="topic-tag">mocks</span>
-                        <span class="topic-tag">coverage</span>
-                    </div>
-                </a>
-
-                <a href="module17.html" class="module-card">
-                    <div class="module-number">MODULE 17</div>
-                    <h3 class="module-title">Integration Testing</h3>
-                    <p class="module-desc">HTTP testing, temp files, build tags, TestMain, parallel tests.</p>
-                    <div class="module-topics">
-                        <span class="topic-tag">httptest</span>
-                        <span class="topic-tag">TempDir</span>
-                        <span class="topic-tag">build tags</span>
-                        <span class="topic-tag">TestMain</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <section class="philosophy">
-            <h2>// How This Course Works</h2>
-            <div class="philosophy-grid">
-                <div class="philosophy-item">
-                    <h3>Python → Go Translation</h3>
-                    <p>Every concept shows the Python way first, then the Go way. Your brain already knows the patterns.</p>
-                </div>
-                <div class="philosophy-item">
-                    <h3>Build Cool Shit</h3>
-                    <p>TUIs, task runners, API clients, parallel downloaders. Tools you'll actually want to use.</p>
-                </div>
-                <div class="philosophy-item">
-                    <h3>Frustration-Aware</h3>
-                    <p>We address the actual pain points: pointer confusion, interface gotchas, "why won't this compile" moments.</p>
-                </div>
-                <div class="philosophy-item">
-                    <h3>Docs-First Mindset</h3>
-                    <p>Learn to read Go docs, explore the stdlib, and stop copying StackOverflow blindly.</p>
+        <div class="module-list">
+            <!-- Track 0 -->
+            <div class="track-section">
+                <div class="track-title">Track 0 • Foundation</div>
+                <div class="module-item" data-module="0">
+                    <input type="checkbox" class="module-checkbox" id="m0">
+                    <a href="module0.html" class="module-link">
+                        <span class="module-num">MODULE 00</span>
+                        <span class="module-name">Go Quick Reference</span>
+                    </a>
+                    <span class="last-studied" id="last-0"></span>
                 </div>
             </div>
-        </section>
 
-        <div class="terminal-prompt">
-            <code>$ go mod init myproject</code><br>
-            <span class="comment"># Your journey starts here</span><br>
-            <code>$ go run main.go</code>
+            <!-- Track 1 -->
+            <div class="track-section">
+                <div class="track-title">Track 1 • Fundamentals</div>
+                <div class="module-item" data-module="1">
+                    <input type="checkbox" class="module-checkbox" id="m1">
+                    <a href="module1.html" class="module-link">
+                        <span class="module-num">MODULE 01</span>
+                        <span class="module-name">Go Fundamentals</span>
+                    </a>
+                    <span class="last-studied" id="last-1"></span>
+                </div>
+                <div class="module-item" data-module="2">
+                    <input type="checkbox" class="module-checkbox" id="m2">
+                    <a href="module2.html" class="module-link">
+                        <span class="module-num">MODULE 02</span>
+                        <span class="module-name">Pointers & Memory</span>
+                    </a>
+                    <span class="last-studied" id="last-2"></span>
+                </div>
+                <div class="module-item" data-module="3">
+                    <input type="checkbox" class="module-checkbox" id="m3">
+                    <a href="module3.html" class="module-link">
+                        <span class="module-num">MODULE 03</span>
+                        <span class="module-name">Structs Deep Dive</span>
+                    </a>
+                    <span class="last-studied" id="last-3"></span>
+                </div>
+                <div class="module-item" data-module="4">
+                    <input type="checkbox" class="module-checkbox" id="m4">
+                    <a href="module4.html" class="module-link">
+                        <span class="module-num">MODULE 04</span>
+                        <span class="module-name">Interfaces & Polymorphism</span>
+                    </a>
+                    <span class="last-studied" id="last-4"></span>
+                </div>
+                <div class="module-item" data-module="5">
+                    <input type="checkbox" class="module-checkbox" id="m5">
+                    <a href="module5.html" class="module-link">
+                        <span class="module-num">MODULE 05</span>
+                        <span class="module-name">Data Structures</span>
+                    </a>
+                    <span class="last-studied" id="last-5"></span>
+                </div>
+            </div>
+
+            <!-- Track 2 -->
+            <div class="track-section">
+                <div class="track-title">Track 2 • CLI & Tools</div>
+                <div class="module-item" data-module="6">
+                    <input type="checkbox" class="module-checkbox" id="m6">
+                    <a href="module6.html" class="module-link">
+                        <span class="module-num">MODULE 06</span>
+                        <span class="module-name">CLI Foundations</span>
+                    </a>
+                    <span class="last-studied" id="last-6"></span>
+                </div>
+                <div class="module-item" data-module="7">
+                    <input type="checkbox" class="module-checkbox" id="m7">
+                    <a href="module7.html" class="module-link">
+                        <span class="module-num">MODULE 07</span>
+                        <span class="module-name">Files, YAML & Shell</span>
+                    </a>
+                    <span class="last-studied" id="last-7"></span>
+                </div>
+                <div class="module-item" data-module="8">
+                    <input type="checkbox" class="module-checkbox" id="m8">
+                    <a href="module8.html" class="module-link">
+                        <span class="module-num">MODULE 08</span>
+                        <span class="module-name">Building TUIs</span>
+                    </a>
+                    <span class="last-studied" id="last-8"></span>
+                </div>
+            </div>
+
+            <!-- Track 3 -->
+            <div class="track-section">
+                <div class="track-title">Track 3 • Production Code</div>
+                <div class="module-item" data-module="9">
+                    <input type="checkbox" class="module-checkbox" id="m9">
+                    <a href="module9.html" class="module-link">
+                        <span class="module-num">MODULE 09</span>
+                        <span class="module-name">Error Handling & Testing</span>
+                    </a>
+                    <span class="last-studied" id="last-9"></span>
+                </div>
+                <div class="module-item" data-module="10">
+                    <input type="checkbox" class="module-checkbox" id="m10">
+                    <a href="module10.html" class="module-link">
+                        <span class="module-num">MODULE 10</span>
+                        <span class="module-name">Design Patterns</span>
+                    </a>
+                    <span class="last-studied" id="last-10"></span>
+                </div>
+                <div class="module-item" data-module="11">
+                    <input type="checkbox" class="module-checkbox" id="m11">
+                    <a href="module11.html" class="module-link">
+                        <span class="module-num">MODULE 11</span>
+                        <span class="module-name">HTTP & API Design</span>
+                    </a>
+                    <span class="last-studied" id="last-11"></span>
+                </div>
+            </div>
+
+            <!-- Track 4 -->
+            <div class="track-section">
+                <div class="track-title">Track 4 • Advanced</div>
+                <div class="module-item" data-module="12">
+                    <input type="checkbox" class="module-checkbox" id="m12">
+                    <a href="module12.html" class="module-link">
+                        <span class="module-num">MODULE 12</span>
+                        <span class="module-name">Concurrency & Goroutines</span>
+                    </a>
+                    <span class="last-studied" id="last-12"></span>
+                </div>
+            </div>
+
+            <!-- Track 5 -->
+            <div class="track-section">
+                <div class="track-title">Track 5 • Real-World</div>
+                <div class="module-item" data-module="13">
+                    <input type="checkbox" class="module-checkbox" id="m13">
+                    <a href="module13.html" class="module-link">
+                        <span class="module-num">MODULE 13</span>
+                        <span class="module-name">Project Structure</span>
+                    </a>
+                    <span class="last-studied" id="last-13"></span>
+                </div>
+                <div class="module-item" data-module="14">
+                    <input type="checkbox" class="module-checkbox" id="m14">
+                    <a href="module14.html" class="module-link">
+                        <span class="module-num">MODULE 14</span>
+                        <span class="module-name">System Interaction</span>
+                    </a>
+                    <span class="last-studied" id="last-14"></span>
+                </div>
+                <div class="module-item" data-module="15">
+                    <input type="checkbox" class="module-checkbox" id="m15">
+                    <a href="module15.html" class="module-link">
+                        <span class="module-num">MODULE 15</span>
+                        <span class="module-name">Sets & Diffing</span>
+                    </a>
+                    <span class="last-studied" id="last-15"></span>
+                </div>
+            </div>
+
+            <!-- Track 6 -->
+            <div class="track-section">
+                <div class="track-title">Track 6 • Testing</div>
+                <div class="module-item" data-module="16">
+                    <input type="checkbox" class="module-checkbox" id="m16">
+                    <a href="module16.html" class="module-link">
+                        <span class="module-num">MODULE 16</span>
+                        <span class="module-name">Unit Testing</span>
+                    </a>
+                    <span class="last-studied" id="last-16"></span>
+                </div>
+                <div class="module-item" data-module="17">
+                    <input type="checkbox" class="module-checkbox" id="m17">
+                    <a href="module17.html" class="module-link">
+                        <span class="module-num">MODULE 17</span>
+                        <span class="module-name">Integration Testing</span>
+                    </a>
+                    <span class="last-studied" id="last-17"></span>
+                </div>
+            </div>
         </div>
 
-        <a href="module0.html" class="start-btn">Start with Module 0</a>
-
-        <footer>
-            <p>Built with caffeine and questionable life choices. Go 1.21+</p>
-        </footer>
+        <button class="clear-progress" onclick="clearProgress()">Clear All Progress</button>
     </div>
+
     <script src="theme.js"></script>
+    <script>
+        // Progress tracking with localStorage
+        const STORAGE_KEY = 'go-course-progress';
+        const LAST_MODULE_KEY = 'go-course-last-module';
+
+        function loadProgress() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : {};
+        }
+
+        function saveProgress(moduleNum, completed) {
+            const progress = loadProgress();
+            progress[moduleNum] = {
+                completed,
+                lastStudied: completed ? new Date().toISOString() : (progress[moduleNum]?.lastStudied || null)
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+            updateStats();
+        }
+
+        function updateStats() {
+            const progress = loadProgress();
+            const total = 17;
+            const completed = Object.values(progress).filter(p => p.completed).length;
+            const remaining = total - completed;
+            const percent = Math.round((completed / total) * 100);
+
+            document.getElementById('completed-count').textContent = completed;
+            document.getElementById('remaining-count').textContent = remaining;
+            document.getElementById('progress-percent').textContent = percent + '%';
+
+            // Update UI
+            for (let i = 0; i <= 17; i++) {
+                const checkbox = document.getElementById(`m${i}`);
+                const item = document.querySelector(`[data-module="${i}"]`);
+                const lastStudied = document.getElementById(`last-${i}`);
+
+                if (checkbox && progress[i]) {
+                    checkbox.checked = progress[i].completed;
+                    if (progress[i].completed && item) {
+                        item.classList.add('completed');
+                    }
+                    if (progress[i].lastStudied && lastStudied) {
+                        const date = new Date(progress[i].lastStudied);
+                        lastStudied.textContent = date.toLocaleDateString();
+                    }
+                }
+            }
+        }
+
+        function recordModuleVisit(moduleNum) {
+            localStorage.setItem(LAST_MODULE_KEY, moduleNum);
+            const progress = loadProgress();
+            if (!progress[moduleNum]) {
+                progress[moduleNum] = { completed: false };
+            }
+            progress[moduleNum].lastStudied = new Date().toISOString();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+        }
+
+        function resumeLastModule(e) {
+            e.preventDefault();
+            const lastModule = localStorage.getItem(LAST_MODULE_KEY);
+            if (lastModule) {
+                window.location.href = `module${lastModule}.html`;
+            } else {
+                window.location.href = 'module0.html';
+            }
+        }
+
+        function clearProgress() {
+            if (confirm('Clear all progress? This cannot be undone.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(LAST_MODULE_KEY);
+                location.reload();
+            }
+        }
+
+        // Add event listeners to checkboxes
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStats();
+
+            document.querySelectorAll('.module-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const moduleNum = e.target.id.replace('m', '');
+                    const item = document.querySelector(`[data-module="${moduleNum}"]`);
+
+                    saveProgress(moduleNum, e.target.checked);
+
+                    if (e.target.checked) {
+                        item?.classList.add('completed');
+                    } else {
+                        item?.classList.remove('completed');
+                    }
+                });
+            });
+
+            // Track clicks on module links
+            document.querySelectorAll('.module-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const moduleNum = link.closest('[data-module]').dataset.module;
+                    recordModuleVisit(moduleNum);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

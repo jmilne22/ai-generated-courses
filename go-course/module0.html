@@ -3,312 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module 0: How to Learn Go | Go From Python</title>
+    <title>Go Quick Reference | Go Course</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .ref-card {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-lighter);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        .ref-card h3 {
+            margin: 0 0 1rem;
+            color: var(--orange);
+            font-size: 1.1rem;
+        }
+        .ref-card ul {
+            margin: 0;
+            padding-left: 1.2rem;
+        }
+        .ref-card li {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+        .ref-card a {
+            color: var(--cyan);
+            text-decoration: none;
+        }
+        .ref-card a:hover {
+            text-decoration: underline;
+        }
+        .quick-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+        .quick-link {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 2px solid var(--orange);
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--orange);
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .quick-link:hover {
+            background: var(--orange);
+            color: var(--bg-dark);
+        }
+    </style>
 </head>
-<body>
+<body data-module="0">
     <div class="container">
         <nav>
-            <a href="index.html">← Course Home</a>
+            <a href="index.html">← Dashboard</a>
             <a href="module1.html">Module 1 →</a>
         </nav>
 
         <div class="module-header">
-            <div class="module-tag">// MODULE 00</div>
-            <h1>How to Learn Go (Without Losing Your Mind)</h1>
-            <p class="module-desc">Before you write a single line of code, let's talk about mindset, tools, and how to not rage-quit.</p>
+            <div class="module-tag">// QUICK REFERENCE</div>
+            <h1>Go Cheat Sheet</h1>
+            <p class="module-desc">Commands, links, and common errors for quick lookup</p>
         </div>
 
-        <!-- Lesson 1: The Mindset Shift -->
-        <div class="lesson">
-            <h2>The Python → Go Mindset Shift</h2>
-            
-            <p>Coming from Python, Go will feel <strong>annoyingly strict</strong> at first. This is actually a feature.</p>
-
-            <div class="quote-box">
-                "Go is designed to make you think before you type, not debug after you run."
-            </div>
-
-            <h3>Things That Will Annoy You (And Why They're Good)</h3>
-            <ul>
-                <li><strong>Unused variables are errors:</strong> Forces clean code. No <span class="inline-code">x = 5</span> sitting around doing nothing.</li>
-                <li><strong>Explicit error handling:</strong> No hidden exceptions. You know exactly what can fail.</li>
-                <li><strong>No generics... wait, now there are:</strong> Go 1.18+ has generics, but the culture prefers simplicity.</li>
-                <li><strong>Curly braces on the same line:</strong> Not negotiable. <span class="inline-code">gofmt</span> will enforce this.</li>
-                <li><strong>No classes:</strong> Structs + interfaces = more flexible, less OOP baggage.</li>
-            </ul>
-
-            <div class="tip">
-                <div class="tip-title">Key Insight</div>
-                <p>Go's restrictions aren't limitations — they're guardrails. The language is designed to make the "obvious" code also the "correct" code.</p>
-            </div>
+        <div class="quick-links">
+            <a href="https://pkg.go.dev/std" target="_blank" class="quick-link">📦 Standard Library</a>
+            <a href="https://go.dev/doc/" target="_blank" class="quick-link">📖 Official Docs</a>
+            <a href="https://go.dev/blog/" target="_blank" class="quick-link">📝 Go Blog</a>
+            <a href="https://go.dev/play/" target="_blank" class="quick-link">🎮 Go Playground</a>
         </div>
 
-        <!-- Lesson 2: Your Dev Environment -->
+        <!-- Commands Cheat Sheet -->
         <div class="lesson">
-            <h2>Setting Up Your Environment</h2>
-            
-            <h3>Install Go</h3>
+            <h2>Go Commands</h2>
             <div class="code-block">
-                <div class="code-header terminal">Installation</div>
-                <pre><span class="comment"># macOS</span>
-brew install go
-
-<span class="comment"># Ubuntu/Debian</span>
-sudo apt install golang-go
-
-<span class="comment"># Or download from https://go.dev/dl/</span>
-
-<span class="comment"># Verify</span>
-go version
-<span class="comment"># go version go1.21.0 darwin/arm64</span></pre>
-            </div>
-
-            <h3>Editor Setup</h3>
-            <p>Use <strong>VS Code + Go extension</strong> or <strong>GoLand</strong>. The tooling is incredible:</p>
-            <ul>
-                <li><strong>gopls:</strong> Language server — autocomplete, go-to-definition, refactoring</li>
-                <li><strong>gofmt:</strong> Auto-formats on save (no more style arguments)</li>
-                <li><strong>go vet:</strong> Catches suspicious code patterns</li>
-                <li><strong>staticcheck:</strong> Even more linting</li>
-            </ul>
-
-            <div class="code-block">
-                <div class="code-header terminal">VS Code settings.json</div>
-                <pre>{
-    "[go]": {
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "golang.go"
-    },
-    "go.lintTool": "staticcheck",
-    "go.lintOnSave": "package"
-}</pre>
-            </div>
-
-            <h3>Your First Project</h3>
-            <div class="code-block">
-                <div class="code-header terminal">Creating a module</div>
-                <pre><span class="comment"># Create project directory</span>
-mkdir myproject && cd myproject
-
-<span class="comment"># Initialize module (like pip's setup.py or package.json)</span>
-go mod init github.com/yourusername/myproject
-
-<span class="comment"># This creates go.mod — your dependency file</span>
-cat go.mod
-<span class="comment"># module github.com/yourusername/myproject</span>
-<span class="comment"># go 1.21</span></pre>
-            </div>
-        </div>
-
-        <!-- Lesson 3: Reading Go Documentation -->
-        <div class="lesson">
-            <h2>How to Read Go Docs (Actually Read Them)</h2>
-            
-            <p>Go has incredible documentation. Learn to use it instead of blindly copying StackOverflow.</p>
-
-            <h3>The Go Documentation Sites</h3>
-            <ul>
-                <li><a href="https://pkg.go.dev" target="_blank"><strong>pkg.go.dev</strong></a> — Package documentation (like PyPI + readthedocs combined)</li>
-                <li><a href="https://go.dev/doc/" target="_blank"><strong>go.dev/doc</strong></a> — Official guides, tutorials, specs</li>
-                <li><a href="https://go.dev/blog/" target="_blank"><strong>go.dev/blog</strong></a> — Deep dives on language features</li>
-            </ul>
-
-            <h3>Reading Package Docs</h3>
-            <p>Let's look at the <span class="inline-code">strings</span> package:</p>
-
-            <div class="code-block">
-                <div class="code-header terminal">Finding docs</div>
-                <pre><span class="comment"># From terminal</span>
-go doc strings
-go doc strings.Split
-
-<span class="comment"># Or visit https://pkg.go.dev/strings</span></pre>
-            </div>
-
-            <p>A typical function doc looks like:</p>
-            <div class="code-block">
-                <div class="code-header go">From pkg.go.dev/strings</div>
-                <pre><span class="keyword">func</span> <span class="func">Split</span>(s, sep <span class="type">string</span>) []<span class="type">string</span>
-
-<span class="comment">// Split slices s into all substrings separated by sep and returns</span>
-<span class="comment">// a slice of the substrings between those separators.</span>
-<span class="comment">//</span>
-<span class="comment">// If s does not contain sep and sep is not empty, Split returns a</span>
-<span class="comment">// slice of length 1 whose only element is s.</span>
-<span class="comment">//</span>
-<span class="comment">// If sep is empty, Split splits after each UTF-8 sequence.</span>
-<span class="comment">// If both s and sep are empty, Split returns an empty slice.</span></pre>
-            </div>
-
-            <div class="tip">
-                <div class="tip-title">Pro Tip</div>
-                <p>Scroll down on pkg.go.dev to see <strong>Examples</strong>. Most stdlib packages have runnable examples that show real usage.</p>
-            </div>
-
-            <h3>The Source Code Is Your Friend</h3>
-            <p>Go's stdlib is readable. When in doubt, read the source:</p>
-            <div class="code-block">
-                <div class="code-header terminal">Reading source</div>
-                <pre><span class="comment"># Find where a package lives</span>
-go list -f '{{.Dir}}' strings
-<span class="comment"># /usr/local/go/src/strings</span>
-
-<span class="comment"># Or click "Source" on pkg.go.dev</span></pre>
-            </div>
-        </div>
-
-        <!-- Lesson 4: When the Compiler Yells -->
-        <div class="lesson">
-            <h2>When the Compiler Yells at You</h2>
-            
-            <p>Go's compiler errors are actually helpful once you learn to read them. Let's decode the common ones.</p>
-
-            <div class="error-box">
-                <div class="error-title">undefined: someVar</div>
-                <p>You're using a variable that doesn't exist in this scope. Check spelling, or maybe you declared it in an if-block.</p>
-            </div>
-
-            <div class="error-box">
-                <div class="error-title">someVar declared but not used</div>
-                <p>Delete it or use it. If you intentionally don't need a return value, use <span class="inline-code">_</span>.</p>
-            </div>
-
-            <div class="error-box">
-                <div class="error-title">cannot use x (type Y) as type Z</div>
-                <p>Type mismatch. Go is strict. You probably need a conversion: <span class="inline-code">int(myFloat)</span> or <span class="inline-code">string(myBytes)</span>.</p>
-            </div>
-
-            <div class="error-box">
-                <div class="error-title">not enough arguments in call to someFunc</div>
-                <p>Check the function signature. You're missing parameters.</p>
-            </div>
-
-            <div class="error-box">
-                <div class="error-title">multiple-value someFunc() in single-value context</div>
-                <p>The function returns multiple values (probably <span class="inline-code">result, err</span>). You need to handle both: <span class="inline-code">result, err := someFunc()</span></p>
-            </div>
-
-            <h3>The Debug Loop</h3>
-            <ol>
-                <li><strong>Read the error:</strong> Line number, what it says</li>
-                <li><strong>Check the line:</strong> Is it a typo? Type mismatch?</li>
-                <li><strong>Check the function signature:</strong> <span class="inline-code">go doc package.Function</span></li>
-                <li><strong>If stuck:</strong> Search "golang [error message]" — someone's had this before</li>
-            </ol>
-        </div>
-
-        <!-- Lesson 5: Problem Solving Approach -->
-        <div class="lesson">
-            <h2>How to Approach Problems</h2>
-            
-            <p>When you're stuck, here's a framework that works:</p>
-
-            <h3>The "5 Minute Rule"</h3>
-            <ol>
-                <li><strong>0-2 min:</strong> Read the error. Actually read it.</li>
-                <li><strong>2-4 min:</strong> Check docs for the function/type involved</li>
-                <li><strong>4-5 min:</strong> Google it / ask ChatGPT</li>
-                <li><strong>5+ min:</strong> Isolate the problem — make a minimal example that reproduces it</li>
-            </ol>
-
-            <h3>When Learning New Concepts</h3>
-            <ol>
-                <li><strong>Read the explanation</strong></li>
-                <li><strong>Type the example yourself</strong> (no copy-paste!)</li>
-                <li><strong>Break it</strong> — what happens if you remove this line?</li>
-                <li><strong>Modify it</strong> — can you make it do something slightly different?</li>
-                <li><strong>Build something small</strong> using the concept</li>
-            </ol>
-
-            <div class="warning">
-                <div class="warning-title">Don't Do This</div>
-                <p>Copy-pasting code without understanding it. You'll learn nothing and have no idea how to fix it when it breaks.</p>
-            </div>
-
-            <h3>Rubber Duck Debugging</h3>
-            <p>Explain your code out loud, line by line. To a duck, a friend, or just yourself. You'll often realize the bug while explaining.</p>
-        </div>
-
-        <!-- Lesson 6: Essential Tools -->
-        <div class="lesson">
-            <h2>Tools You'll Use Daily</h2>
-            
-            <div class="code-block">
-                <div class="code-header terminal">Go commands cheat sheet</div>
-                <pre><span class="comment"># Run code directly</span>
+                <div class="code-header terminal">Common commands</div>
+                <pre><span class="comment"># Run code</span>
 go run main.go
-go run .                    <span class="comment"># Run all files in current dir</span>
+go run .                      <span class="comment"># Run all files in current dir</span>
 
 <span class="comment"># Build binary</span>
 go build -o myapp .
+go build -o myapp main.go
 
-<span class="comment"># Run tests</span>
-go test ./...              <span class="comment"># All tests in all subdirs</span>
-go test -v ./...           <span class="comment"># Verbose</span>
-go test -run TestName      <span class="comment"># Run specific test</span>
+<span class="comment"># Testing</span>
+go test ./...                 <span class="comment"># All tests in all subdirs</span>
+go test -v ./...              <span class="comment"># Verbose</span>
+go test -run TestName         <span class="comment"># Run specific test</span>
+go test -cover ./...          <span class="comment"># Show coverage</span>
 
-<span class="comment"># Manage dependencies</span>
-go get github.com/some/package    <span class="comment"># Add dependency</span>
-go mod tidy                       <span class="comment"># Clean up go.mod</span>
-go mod download                   <span class="comment"># Download all deps</span>
+<span class="comment"># Dependencies</span>
+go mod init github.com/user/project
+go mod tidy                   <span class="comment"># Clean up go.mod</span>
+go get github.com/pkg/name    <span class="comment"># Add dependency</span>
+go get -u ./...               <span class="comment"># Update all deps</span>
 
 <span class="comment"># Code quality</span>
-go fmt ./...               <span class="comment"># Format all code</span>
-go vet ./...               <span class="comment"># Find suspicious code</span>
-staticcheck ./...          <span class="comment"># Advanced linting</span>
+go fmt ./...                  <span class="comment"># Format all code</span>
+go vet ./...                  <span class="comment"># Find suspicious code</span>
+staticcheck ./...             <span class="comment"># Advanced linting</span>
 
 <span class="comment"># Documentation</span>
-go doc strings             <span class="comment"># Package docs</span>
-go doc strings.Split       <span class="comment"># Function docs</span>
-go doc -all strings        <span class="comment"># Everything</span></pre>
+go doc strings                <span class="comment"># Package docs</span>
+go doc strings.Split          <span class="comment"># Function docs</span>
+go doc -all strings           <span class="comment"># Everything</span>
+
+<span class="comment"># Other</span>
+go install                    <span class="comment"># Install binary to $GOPATH/bin</span>
+go clean                      <span class="comment"># Remove build artifacts</span>
+go version                    <span class="comment"># Show Go version</span></pre>
             </div>
         </div>
 
-        <!-- Lesson 7: When to Ask for Help -->
+        <!-- Useful Links Grid -->
         <div class="lesson">
-            <h2>Getting Unstuck</h2>
-            
-            <h3>Good Places to Ask</h3>
-            <ul>
-                <li><a href="https://www.reddit.com/r/golang/" target="_blank"><strong>r/golang</strong></a> — Active, helpful community</li>
-                <li><a href="https://gophers.slack.com" target="_blank"><strong>Gophers Slack</strong></a> — Real-time help</li>
-                <li><strong>StackOverflow</strong> — [go] tag, for specific technical questions</li>
-            </ul>
+            <h2>Essential Resources</h2>
+            <div class="reference-grid">
+                <div class="ref-card">
+                    <h3>Documentation</h3>
+                    <ul>
+                        <li><a href="https://pkg.go.dev/std" target="_blank">Standard Library</a></li>
+                        <li><a href="https://go.dev/ref/spec" target="_blank">Language Specification</a></li>
+                        <li><a href="https://go.dev/doc/effective_go" target="_blank">Effective Go</a></li>
+                        <li><a href="https://go.dev/doc/faq" target="_blank">Go FAQ</a></li>
+                    </ul>
+                </div>
 
-            <h3>How to Ask Good Questions</h3>
-            <ol>
-                <li><strong>What are you trying to do?</strong> (Goal, not implementation)</li>
-                <li><strong>What did you try?</strong> (Show code)</li>
-                <li><strong>What happened?</strong> (Full error message)</li>
-                <li><strong>What did you expect?</strong></li>
-            </ol>
+                <div class="ref-card">
+                    <h3>Common Packages</h3>
+                    <ul>
+                        <li><a href="https://pkg.go.dev/fmt" target="_blank">fmt</a> - Formatting I/O</li>
+                        <li><a href="https://pkg.go.dev/os" target="_blank">os</a> - OS interface</li>
+                        <li><a href="https://pkg.go.dev/strings" target="_blank">strings</a> - String operations</li>
+                        <li><a href="https://pkg.go.dev/strconv" target="_blank">strconv</a> - String conversions</li>
+                        <li><a href="https://pkg.go.dev/io" target="_blank">io</a> - I/O primitives</li>
+                        <li><a href="https://pkg.go.dev/net/http" target="_blank">net/http</a> - HTTP client/server</li>
+                    </ul>
+                </div>
+
+                <div class="ref-card">
+                    <h3>Tools & Libraries</h3>
+                    <ul>
+                        <li><a href="https://github.com/spf13/cobra" target="_blank">cobra</a> - CLI apps</li>
+                        <li><a href="https://github.com/charmbracelet/bubbletea" target="_blank">bubbletea</a> - TUI framework</li>
+                        <li><a href="https://github.com/spf13/viper" target="_blank">viper</a> - Configuration</li>
+                        <li><a href="https://github.com/stretchr/testify" target="_blank">testify</a> - Testing toolkit</li>
+                    </ul>
+                </div>
+
+                <div class="ref-card">
+                    <h3>Learning</h3>
+                    <ul>
+                        <li><a href="https://go.dev/tour/" target="_blank">Tour of Go</a></li>
+                        <li><a href="https://gobyexample.com" target="_blank">Go by Example</a></li>
+                        <li><a href="https://go.dev/blog/" target="_blank">Go Blog</a></li>
+                        <li><a href="https://www.reddit.com/r/golang/" target="_blank">r/golang</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Syntax Reference -->
+        <div class="lesson">
+            <h2>Quick Syntax Reference</h2>
+            <div class="code-block">
+                <div class="code-header go">Common patterns</div>
+                <pre><span class="comment">// Variables</span>
+<span class="keyword">var</span> name <span class="type">string</span> = <span class="string">"value"</span>
+name := <span class="string">"value"</span>              <span class="comment">// Short declaration (inside functions only)</span>
+
+<span class="comment">// If statement</span>
+<span class="keyword">if</span> x > <span class="number">10</span> {
+    <span class="comment">// do something</span>
+}
+
+<span class="comment">// If with initialization</span>
+<span class="keyword">if</span> err := doSomething(); err != <span class="keyword">nil</span> {
+    <span class="keyword">return</span> err
+}
+
+<span class="comment">// For loop (the only loop)</span>
+<span class="keyword">for</span> i := <span class="number">0</span>; i < <span class="number">10</span>; i++ { }
+<span class="keyword">for</span> key, val := <span class="keyword">range</span> myMap { }
+<span class="keyword">for</span> index, item := <span class="keyword">range</span> mySlice { }
+<span class="keyword">for</span> { <span class="comment">// infinite loop</span> }
+
+<span class="comment">// Functions</span>
+<span class="keyword">func</span> <span class="func">add</span>(a, b <span class="type">int</span>) <span class="type">int</span> {
+    <span class="keyword">return</span> a + b
+}
+
+<span class="comment">// Multiple returns</span>
+<span class="keyword">func</span> <span class="func">divide</span>(a, b <span class="type">float64</span>) (<span class="type">float64</span>, <span class="type">error</span>) {
+    <span class="keyword">if</span> b == <span class="number">0</span> {
+        <span class="keyword">return</span> <span class="number">0</span>, errors.<span class="func">New</span>(<span class="string">"division by zero"</span>)
+    }
+    <span class="keyword">return</span> a / b, <span class="keyword">nil</span>
+}
+
+<span class="comment">// Error handling</span>
+result, err := doSomething()
+<span class="keyword">if</span> err != <span class="keyword">nil</span> {
+    <span class="keyword">return</span> err
+}
+
+<span class="comment">// Slices</span>
+nums := []<span class="type">int</span>{<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>}
+nums = <span class="func">append</span>(nums, <span class="number">4</span>)
+
+<span class="comment">// Maps</span>
+ages := <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span>{
+    <span class="string">"alice"</span>: <span class="number">30</span>,
+    <span class="string">"bob"</span>:   <span class="number">25</span>,
+}
+
+<span class="comment">// Check if key exists</span>
+age, ok := ages[<span class="string">"charlie"</span>]
+<span class="keyword">if</span> ok {
+    fmt.<span class="func">Println</span>(age)
+}
+
+<span class="comment">// Structs</span>
+<span class="keyword">type</span> Person <span class="keyword">struct</span> {
+    Name <span class="type">string</span>
+    Age  <span class="type">int</span>
+}
+
+p := Person{Name: <span class="string">"Alice"</span>, Age: <span class="number">30</span>}
+
+<span class="comment">// Pointers</span>
+x := <span class="number">5</span>
+ptr := &x              <span class="comment">// Get address</span>
+val := *ptr            <span class="comment">// Dereference</span></pre>
+            </div>
+        </div>
+
+        <!-- Editor Setup -->
+        <div class="lesson">
+            <h2>Editor Setup</h2>
+            <p>Most editors support Go through <strong>gopls</strong> (Go language server). Install it:</p>
+            <div class="code-block">
+                <div class="code-header terminal">Install gopls</div>
+                <pre>go install golang.org/x/tools/gopls@latest</pre>
+            </div>
+
+            <h3>Helix</h3>
+            <p>Already works out of the box with gopls. Add to <span class="inline-code">~/.config/helix/languages.toml</span> for customization:</p>
+            <div class="code-block">
+                <div class="code-header">languages.toml</div>
+                <pre>[[language]]
+name = "go"
+auto-format = true
+formatter = { command = "goimports" }
+
+[language-server.gopls]
+command = "gopls"
+config = { "gofumpt" = true }</pre>
+            </div>
+
+            <h3>Useful Tools</h3>
+            <div class="code-block">
+                <div class="code-header terminal">Install formatting/linting tools</div>
+                <pre><span class="comment"># Better imports (includes gofmt)</span>
+go install golang.org/x/tools/cmd/goimports@latest
+
+<span class="comment"># Advanced linter</span>
+go install honnef.co/go/tools/cmd/staticcheck@latest
+
+<span class="comment"># Stricter formatting (optional)</span>
+go install mvdan.cc/gofumpt@latest</pre>
+            </div>
 
             <div class="tip">
-                <div class="tip-title">The XY Problem</div>
-                <p>Don't ask "How do I do X?" when your real problem is Y. Explain the actual goal.</p>
+                <div class="tip-title">Format on save</div>
+                <p>Enable auto-formatting in your editor. Running <span class="inline-code">gofmt</span> or <span class="inline-code">goimports</span> on save prevents most style-related issues.</p>
             </div>
-        </div>
-
-        <!-- Summary -->
-        <div class="lesson">
-            <h2>Module 0 Summary</h2>
-            <ul>
-                <li><strong>Mindset:</strong> Go's strictness is a feature, not a bug</li>
-                <li><strong>Docs:</strong> pkg.go.dev is your primary resource. Learn to read examples.</li>
-                <li><strong>Errors:</strong> Read them. They tell you exactly what's wrong.</li>
-                <li><strong>Learning:</strong> Type code yourself, break it, modify it, build with it</li>
-                <li><strong>Tools:</strong> <span class="inline-code">go run</span>, <span class="inline-code">go test</span>, <span class="inline-code">go doc</span>, <span class="inline-code">go fmt</span></li>
-            </ul>
-
-            <p style="margin-top: 1.5rem; color: var(--text-main);">Now let's actually write some Go.</p>
         </div>
 
         <div class="nav-buttons">
-            <a href="index.html" class="nav-btn">← Course Home</a>
+            <a href="index.html" class="nav-btn">← Dashboard</a>
             <a href="module1.html" class="nav-btn primary">Module 1: Fundamentals →</a>
         </div>
     </div>
