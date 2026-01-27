@@ -166,6 +166,7 @@
             <div class="session-controls">
                 <button class="session-control-btn" type="button" data-session-action="toggle">Pause</button>
                 <button class="session-control-btn" type="button" data-session-action="reset">Reset</button>
+                <button class="session-control-btn danger" type="button" data-session-action="hide">Hide</button>
             </div>
         `;
 
@@ -215,6 +216,7 @@
     function bindTimerControls(root) {
         const toggle = root.querySelector('[data-session-action="toggle"]');
         const reset = root.querySelector('[data-session-action="reset"]');
+        const hide = root.querySelector('[data-session-action="hide"]');
 
         if (toggle) {
             toggle.onclick = () => togglePauseSession();
@@ -223,13 +225,18 @@
         if (reset) {
             reset.onclick = () => resetSession();
         }
+
+        if (hide) {
+            hide.onclick = () => hideFloatingTimer();
+        }
     }
 
     function seedPausedSession(minutes) {
         setSession({
             status: 'paused',
             minutes,
-            remainingSeconds: minutes * 60
+            remainingSeconds: minutes * 60,
+            hidden: false
         });
     }
 
@@ -251,18 +258,29 @@
             setSession({
                 status: 'running',
                 minutes: session.minutes,
-                startAt: Date.now() - elapsedSeconds * 1000
+                startAt: Date.now() - elapsedSeconds * 1000,
+                hidden: false
             });
         } else {
             const remainingSeconds = getRemainingSeconds(session);
             setSession({
                 status: 'paused',
                 minutes: session.minutes,
-                remainingSeconds
+                remainingSeconds,
+                hidden: false
             });
         }
 
         updateSessionTimer();
+    }
+
+    function hideFloatingTimer() {
+        const session = getSession();
+        if (!session) return;
+        session.hidden = true;
+        setSession(session);
+        const floating = document.getElementById('floating-session-timer');
+        if (floating) floating.remove();
     }
 
     function updateSessionTimer() {
@@ -290,6 +308,22 @@
 
         const remainingSeconds = getRemainingSeconds(session);
         const totalSeconds = session.minutes * 60;
+
+        if (!dashboardTimer && session.hidden) {
+            if (session.status === 'running') {
+                if (remainingSeconds <= 0) {
+                    setSession(null);
+                }
+                if (!sessionInterval) {
+                    sessionInterval = setInterval(updateSessionTimer, 1000);
+                }
+            } else if (sessionInterval) {
+                clearInterval(sessionInterval);
+                sessionInterval = null;
+            }
+            return;
+        }
+
         const countdownText = formatCountdown(remainingSeconds * 1000);
         const pct = Math.min(1, Math.max(0, 1 - remainingSeconds / totalSeconds));
         const progressWidth = `${Math.round(pct * 100)}%`;
@@ -326,7 +360,8 @@
         setSession({
             status: 'running',
             minutes,
-            startAt: Date.now()
+            startAt: Date.now(),
+            hidden: false
         });
         updateSessionTimer();
 
