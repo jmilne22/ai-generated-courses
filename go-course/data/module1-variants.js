@@ -1838,6 +1838,175 @@ window.moduleData = {
             ],
             "solution": "func tempExtremes(temps []int) int {\n    count := 0\n    for _, temp := range temps {\n        if temp < 0 || temp > 100 { count++ }\n    }\n    return count\n}",
             "difficulty": 1
+          },
+          {
+            "id": "v11",
+            "title": "Count By Multiple Criteria",
+            "description": "Write <code>func countByCriteria(words []string, minLen, maxLen int, mustContain string) int</code> that counts words where length is between minLen and maxLen (inclusive) AND the word contains the substring mustContain.",
+            "functionSignature": "func countByCriteria(words []string, minLen, maxLen int, mustContain string) int",
+            "testCases": [
+              {
+                "input": "[\"hello\", \"world\", \"hi\", \"help\"], 4, 6, \"el\"",
+                "output": "2",
+                "note": "hello and help both have length 4-5 and contain 'el'"
+              },
+              {
+                "input": "[\"go\", \"gopher\", \"golang\", \"rust\"], 2, 6, \"go\"",
+                "output": "3",
+                "note": "go, gopher, golang all contain 'go' and fit length constraint"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need to check THREE conditions for each word: minimum length, maximum length, and contains substring. Use strings.Contains() to check for substring."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Import strings package. For each word, check: len(word) >= minLen AND len(word) <= maxLen AND strings.Contains(word, mustContain). Only count if all three are true."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. count := 0\n2. For each word:\n   - length in range? AND\n   - contains substring?\n   - Both true? → count++\n3. Return count</pre>"
+              }
+            ],
+            "solution": "import \"strings\"\n\nfunc countByCriteria(words []string, minLen, maxLen int, mustContain string) int {\n    count := 0\n    for _, word := range words {\n        if len(word) >= minLen && len(word) <= maxLen && strings.Contains(word, mustContain) {\n            count++\n        }\n    }\n    return count\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v12",
+            "title": "Count Valid Pairs",
+            "description": "Write <code>func countValidPairs(nums []int, targetSum int) int</code> that counts how many pairs of adjacent elements sum to targetSum.",
+            "functionSignature": "func countValidPairs(nums []int, targetSum int) int",
+            "testCases": [
+              {
+                "input": "[]int{1, 4, 3, 2, 5}, 5",
+                "output": "2",
+                "note": "pairs (1,4) and (3,2) both sum to 5"
+              },
+              {
+                "input": "[]int{2, 3, 2, 3}, 5",
+                "output": "3",
+                "note": "all three adjacent pairs (2,3), (3,2), (2,3) sum to 5"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need to look at each pair of consecutive elements. For position i, check if nums[i] + nums[i+1] equals targetSum."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Loop from i=0 to len(nums)-2 (so i+1 is valid). For each i, check if nums[i] + nums[i+1] == targetSum."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. count := 0\n2. For i from 0 to len-2:\n   - nums[i] + nums[i+1] == target?\n   - Yes → count++\n3. Return count</pre>"
+              }
+            ],
+            "solution": "func countValidPairs(nums []int, targetSum int) int {\n    count := 0\n    for i := 0; i < len(nums)-1; i++ {\n        if nums[i] + nums[i+1] == targetSum {\n            count++\n        }\n    }\n    return count\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v13",
+            "title": "Count Pattern Match",
+            "description": "Write <code>func countPatternMatch(words []string, prefix, suffix string) int</code> that counts words that start with prefix AND end with suffix.",
+            "functionSignature": "func countPatternMatch(words []string, prefix, suffix string) int",
+            "testCases": [
+              {
+                "input": "[\"hello\", \"hero\", \"hermit\", \"world\"], \"he\", \"o\"",
+                "output": "2",
+                "note": "hello and hero both start with 'he' and end with 'o'"
+              },
+              {
+                "input": "[\"testing\", \"resting\", \"test\", \"ing\"], \"test\", \"ing\"",
+                "output": "1",
+                "note": "only 'testing' starts with 'test' and ends with 'ing'"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Use strings.HasPrefix() and strings.HasSuffix() to check both ends of each word. Count only if both conditions are true."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Import strings package. For each word: if strings.HasPrefix(word, prefix) && strings.HasSuffix(word, suffix), increment count."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. count := 0\n2. For each word:\n   - starts with prefix? AND\n   - ends with suffix?\n   - Both true? → count++\n3. Return count</pre>"
+              }
+            ],
+            "solution": "import \"strings\"\n\nfunc countPatternMatch(words []string, prefix, suffix string) int {\n    count := 0\n    for _, word := range words {\n        if strings.HasPrefix(word, prefix) && strings.HasSuffix(word, suffix) {\n            count++\n        }\n    }\n    return count\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v14",
+            "title": "Count Words Starting With Letter",
+            "description": "Write <code>func countStartsWith(words []string, letter rune) int</code> that counts words starting with the given letter (case-insensitive).",
+            "functionSignature": "func countStartsWith(words []string, letter rune) int",
+            "testCases": [
+              {
+                "input": "[\"Hello\", \"world\", \"Hi\"], 'h'",
+                "output": "2",
+                "note": "Hello and Hi start with h (case-insensitive)"
+              },
+              {
+                "input": "[\"Go\", \"Python\", \"Rust\", \"Go\"], 'g'",
+                "output": "2"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Check the first character of each word. Convert both to lowercase for case-insensitive comparison."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Use strings.ToLower() on the first character. Get first rune with rune(word[0]) if word is non-empty."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. count := 0\n2. For each word:\n   - Get first letter (lowercase)\n   - Matches target letter? → count++\n3. Return count</pre>"
+              }
+            ],
+            "solution": "import \"strings\"\n\nfunc countStartsWith(words []string, letter rune) int {\n    count := 0\n    targetLower := strings.ToLower(string(letter))\n    \n    for _, word := range words {\n        if len(word) > 0 {\n            firstLetter := strings.ToLower(string(word[0]))\n            if firstLetter == targetLower {\n                count++\n            }\n        }\n    }\n    \n    return count\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v15",
+            "title": "Count Between (Exclusive)",
+            "description": "Write <code>func countBetween(nums []int, low, high int) int</code> that counts numbers strictly between low and high (exclusive on both ends: low < num < high).",
+            "functionSignature": "func countBetween(nums []int, low, high int) int",
+            "testCases": [
+              {
+                "input": "[]int{1, 5, 10, 15, 20}, 5, 15",
+                "output": "1",
+                "note": "only 10 is strictly between 5 and 15"
+              },
+              {
+                "input": "[]int{1, 2, 3, 4, 5}, 1, 5",
+                "output": "3",
+                "note": "2, 3, 4 are between 1 and 5 (exclusive)"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Exclusive means not including the boundaries. Check num > low AND num < high (not >= or <=)."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Use strict inequality: if num > low && num < high, count it."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. count := 0\n2. For each num:\n   - num > low AND num < high? → count++\n3. Return count</pre>"
+              }
+            ],
+            "solution": "func countBetween(nums []int, low, high int) int {\n    count := 0\n    for _, num := range nums {\n        if num > low && num < high {\n            count++\n        }\n    }\n    return count\n}",
+            "difficulty": 2
           }
         ]
       },
@@ -2326,6 +2495,108 @@ window.moduleData = {
             ],
             "solution": "func discount(price int, isPremium bool, quantity int) int {\n    if isPremium { return price * 80 / 100 }\n    if quantity >= 5 { return price * 90 / 100 }\n    return price\n}",
             "difficulty": 1
+          },
+          {
+            "id": "v14",
+            "title": "Categorize Numbers",
+            "description": "Write <code>func categorizeNumbers(nums []int) map[string][]int</code> that categorizes numbers into \"small\" (<10), \"medium\" (10-99), or \"large\" (>=100). Returns a map where keys are categories and values are slices of numbers in that category.",
+            "functionSignature": "func categorizeNumbers(nums []int) map[string][]int",
+            "testCases": [
+              {
+                "input": "[]int{5, 15, 150, 8, 25, 200}",
+                "output": "map[\"small\":[5, 8] \"medium\":[15, 25] \"large\":[150, 200]]"
+              },
+              {
+                "input": "[]int{1, 10, 100}",
+                "output": "map[\"small\":[1] \"medium\":[10] \"large\":[100]]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Create a map where each category name maps to a slice of integers. For each number, determine which category it belongs to and append it to that category's slice."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Initialize map with three empty slices. Use if-else to check: num < 10, num < 100, else. Append to the appropriate slice."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Create map[string][]int\n2. For each num:\n   - num < 10? → append to \"small\"\n   - num < 100? → append to \"medium\"\n   - else → append to \"large\"\n3. Return map</pre>"
+              }
+            ],
+            "solution": "func categorizeNumbers(nums []int) map[string][]int {\n    categories := map[string][]int{\n        \"small\": {},\n        \"medium\": {},\n        \"large\": {},\n    }\n    \n    for _, num := range nums {\n        if num < 10 {\n            categories[\"small\"] = append(categories[\"small\"], num)\n        } else if num < 100 {\n            categories[\"medium\"] = append(categories[\"medium\"], num)\n        } else {\n            categories[\"large\"] = append(categories[\"large\"], num)\n        }\n    }\n    \n    return categories\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v15",
+            "title": "Score to Grade with Plus/Minus",
+            "description": "Write <code>func scoreToGradePlus(score int) string</code> that converts a score to a letter grade with +/- modifiers. A+ (97-100), A (93-96), A- (90-92), B+ (87-89), B (83-86), B- (80-82), etc. Below 60 is F.",
+            "functionSignature": "func scoreToGradePlus(score int) string",
+            "testCases": [
+              {
+                "input": "98",
+                "output": "\"A+\""
+              },
+              {
+                "input": "85",
+                "output": "\"B\""
+              },
+              {
+                "input": "72",
+                "output": "\"C-\""
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need precise range checking for 12 different grade levels. Start from the top (100) and work down with else-if chains."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Check score >= 97 for A+, >= 93 for A, >= 90 for A-, >= 87 for B+, and so on. Each check needs exact boundaries."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>if score >= 97 { return \"A+\" }\nif score >= 93 { return \"A\" }\nif score >= 90 { return \"A-\" }\n... continue pattern ...\nreturn \"F\"</pre>"
+              }
+            ],
+            "solution": "func scoreToGradePlus(score int) string {\n    if score >= 97 { return \"A+\" }\n    if score >= 93 { return \"A\" }\n    if score >= 90 { return \"A-\" }\n    if score >= 87 { return \"B+\" }\n    if score >= 83 { return \"B\" }\n    if score >= 80 { return \"B-\" }\n    if score >= 77 { return \"C+\" }\n    if score >= 73 { return \"C\" }\n    if score >= 70 { return \"C-\" }\n    if score >= 67 { return \"D+\" }\n    if score >= 63 { return \"D\" }\n    if score >= 60 { return \"D-\" }\n    return \"F\"\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v16",
+            "title": "Calculate Shipping Cost",
+            "description": "Write <code>func calculateShipping(weight float64, distance int, isPriority bool) float64</code> that calculates shipping cost. Base cost = weight * 0.5 + distance * 0.1. If isPriority, multiply total by 1.5. If weight > 50, add $10. If distance > 1000, add $20.",
+            "functionSignature": "func calculateShipping(weight float64, distance int, isPriority bool) float64",
+            "testCases": [
+              {
+                "input": "30.0, 500, false",
+                "output": "65.0",
+                "note": "30*0.5 + 500*0.1 = 15 + 50 = 65"
+              },
+              {
+                "input": "60.0, 1200, true",
+                "output": "247.5",
+                "note": "(60*0.5 + 1200*0.1 + 10 + 20) * 1.5 = 165 * 1.5 = 247.5"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Calculate base cost first. Then add conditional fees. Finally, apply priority multiplier if needed. Order matters!"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Start: cost = weight * 0.5 + distance * 0.1. Then: if weight > 50, cost += 10. if distance > 1000, cost += 20. Finally: if isPriority, cost *= 1.5."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Calculate base: weight*0.5 + distance*0.1\n2. Add weight surcharge if needed\n3. Add distance surcharge if needed\n4. Apply priority multiplier if needed\n5. Return total</pre>"
+              }
+            ],
+            "solution": "func calculateShipping(weight float64, distance int, isPriority bool) float64 {\n    cost := weight * 0.5 + float64(distance) * 0.1\n    \n    if weight > 50 {\n        cost += 10\n    }\n    \n    if distance > 1000 {\n        cost += 20\n    }\n    \n    if isPriority {\n        cost *= 1.5\n    }\n    \n    return cost\n}",
+            "difficulty": 3
           }
         ]
       },
@@ -2623,6 +2894,104 @@ window.moduleData = {
             ],
             "solution": "func mostExpensive(prices []float64) int {\n    maxPrice, maxIndex := prices[0], 0\n    for i, price := range prices {\n        if price > maxPrice {\n            maxPrice = price\n            maxIndex = i\n        }\n    }\n    return maxIndex\n}",
             "difficulty": 2
+          },
+          {
+            "id": "v10",
+            "title": "Find Two Largest",
+            "description": "Write <code>func findTwoLargest(nums []int) (int, int)</code> that returns the two largest distinct values. First return value is the largest, second is second-largest.",
+            "functionSignature": "func findTwoLargest(nums []int) (int, int)",
+            "testCases": [
+              {
+                "input": "[]int{3, 7, 2, 9, 5}",
+                "output": "9, 7"
+              },
+              {
+                "input": "[]int{1, 2, 3, 4, 5}",
+                "output": "5, 4"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need to track TWO values as you iterate: the largest and second-largest. When you find a new max, the old max becomes second-max."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Initialize first and second to very small values. For each number: if it's bigger than first, shift first to second, then update first. Else if it's bigger than second, update second."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. first, second := nums[0], nums[1]\n   (handle if first < second)\n2. For each remaining num:\n   - num > first? → second = first, first = num\n   - num > second? → second = num\n3. Return first, second</pre>"
+              }
+            ],
+            "solution": "func findTwoLargest(nums []int) (int, int) {\n    first, second := nums[0], nums[1]\n    if first < second {\n        first, second = second, first\n    }\n    \n    for i := 2; i < len(nums); i++ {\n        if nums[i] > first {\n            second = first\n            first = nums[i]\n        } else if nums[i] > second {\n            second = nums[i]\n        }\n    }\n    \n    return first, second\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v11",
+            "title": "Longest String and Length",
+            "description": "Write <code>func longestStringAndLen(words []string) (string, int)</code> that returns the longest string and its length. If multiple strings tie for longest, return the first one.",
+            "functionSignature": "func longestStringAndLen(words []string) (string, int)",
+            "testCases": [
+              {
+                "input": "[\"go\", \"rust\", \"python\"]",
+                "output": "\"python\", 6"
+              },
+              {
+                "input": "[\"hello\", \"world\"]",
+                "output": "\"hello\", 5",
+                "note": "both length 5, return first"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Track both the longest word AND its length. For each word, compute len(word) and compare to current max length."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Keep longest string and maxLen. For each word, if len(word) > maxLen, update both longest and maxLen."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. longest := words[0], maxLen := len(words[0])\n2. For each word:\n   - len(word) > maxLen?\n     → longest = word, maxLen = len(word)\n3. Return longest, maxLen</pre>"
+              }
+            ],
+            "solution": "func longestStringAndLen(words []string) (string, int) {\n    longest := words[0]\n    maxLen := len(words[0])\n    \n    for _, word := range words {\n        if len(word) > maxLen {\n            longest = word\n            maxLen = len(word)\n        }\n    }\n    \n    return longest, maxLen\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v12",
+            "title": "Find Range (Max - Min)",
+            "description": "Write <code>func findRange(nums []int) int</code> that returns the difference between the maximum and minimum values in the slice (range = max - min).",
+            "functionSignature": "func findRange(nums []int) int",
+            "testCases": [
+              {
+                "input": "[]int{3, 7, 2, 9, 5}",
+                "output": "7",
+                "note": "9 - 2 = 7"
+              },
+              {
+                "input": "[]int{1, 1, 1}",
+                "output": "0"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need to find both the maximum and minimum values, then calculate their difference."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Track both max and min as you iterate. Initialize both to nums[0]. For each number, update max if larger, update min if smaller. Return max - min."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. max, min := nums[0], nums[0]\n2. For each num:\n   - num > max? → max = num\n   - num < min? → min = num\n3. Return max - min</pre>"
+              }
+            ],
+            "solution": "func findRange(nums []int) int {\n    max, min := nums[0], nums[0]\n    \n    for _, num := range nums {\n        if num > max {\n            max = num\n        }\n        if num < min {\n            min = num\n        }\n    }\n    \n    return max - min\n}",
+            "difficulty": 3
           }
         ]
       },
@@ -2945,6 +3314,102 @@ window.moduleData = {
             ],
             "solution": "func validEmails(emails []string) []string {\n    result := []string{}\n    for _, email := range emails {\n        if strings.Contains(email, \"@\") {\n            result = append(result, email)\n        }\n    }\n    return result\n}",
             "difficulty": 1
+          },
+          {
+            "id": "v11",
+            "title": "Filter By Length Range",
+            "description": "Write <code>func filterByLengthRange(words []string, minLen, maxLen int) []string</code> that returns words where minLen <= len(word) <= maxLen.",
+            "functionSignature": "func filterByLengthRange(words []string, minLen, maxLen int) []string",
+            "testCases": [
+              {
+                "input": "[]string{\"go\", \"rust\", \"python\", \"c\"}, 2, 4",
+                "output": "[]string{\"go\", \"rust\"}"
+              },
+              {
+                "input": "[]string{\"a\", \"ab\", \"abc\", \"abcd\"}, 2, 3",
+                "output": "[]string{\"ab\", \"abc\"}"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Check two conditions: length must be >= minLen AND <= maxLen."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Filter words where len(word) >= minLen && len(word) <= maxLen."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. result := []string{}\n2. For each word:\n   - len(word) in range? → append\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func filterByLengthRange(words []string, minLen, maxLen int) []string {\n    result := []string{}\n    for _, word := range words {\n        if len(word) >= minLen && len(word) <= maxLen {\n            result = append(result, word)\n        }\n    }\n    return result\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v12",
+            "title": "Filter Multiples",
+            "description": "Write <code>func filterMultiples(nums []int, divisor int) []int</code> that returns only numbers divisible by divisor (multiples of divisor).",
+            "functionSignature": "func filterMultiples(nums []int, divisor int) []int",
+            "testCases": [
+              {
+                "input": "[]int{3, 6, 7, 9, 12, 15}, 3",
+                "output": "[]int{3, 6, 9, 12, 15}"
+              },
+              {
+                "input": "[]int{1, 2, 3, 4, 5, 6}, 2",
+                "output": "[]int{2, 4, 6}"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "A number is divisible by divisor if num % divisor == 0. Filter based on this condition."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "For each number, check if num % divisor == 0, then append to result."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. result := []int{}\n2. For each num:\n   - num % divisor == 0? → append\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func filterMultiples(nums []int, divisor int) []int {\n    result := []int{}\n    for _, num := range nums {\n        if num % divisor == 0 {\n            result = append(result, num)\n        }\n    }\n    return result\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v13",
+            "title": "Filter Contains Substring",
+            "description": "Write <code>func filterContains(words []string, substr string) []string</code> that returns words containing the substring.",
+            "functionSignature": "func filterContains(words []string, substr string) []string",
+            "testCases": [
+              {
+                "input": "[]string{\"hello\", \"world\", \"help\", \"loop\"}, \"lo\"",
+                "output": "[]string{\"hello\", \"loop\"}"
+              },
+              {
+                "input": "[]string{\"go\", \"gopher\", \"python\"}, \"go\"",
+                "output": "[]string{\"go\", \"gopher\"}"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Use strings.Contains() to check if a word contains the substring."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Import strings. Filter words where strings.Contains(word, substr) is true."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. result := []string{}\n2. For each word:\n   - contains substr? → append\n3. Return result</pre>"
+              }
+            ],
+            "solution": "import \"strings\"\n\nfunc filterContains(words []string, substr string) []string {\n    result := []string{}\n    for _, word := range words {\n        if strings.Contains(word, substr) {\n            result = append(result, word)\n        }\n    }\n    return result\n}",
+            "difficulty": 2
           }
         ]
       },
@@ -3284,6 +3749,105 @@ window.moduleData = {
             ],
             "solution": "func findKeyword(words []string, keyword string) int {\n    keyword = strings.ToLower(keyword)\n    for i, word := range words {\n        if strings.ToLower(word) == keyword {\n            return i\n        }\n    }\n    return -1\n}",
             "difficulty": 2
+          },
+          {
+            "id": "v11",
+            "title": "Find First Negative",
+            "description": "Write <code>func findFirstNegative(nums []int) int</code> that returns the index of the first negative number, or -1 if none found.",
+            "functionSignature": "func findFirstNegative(nums []int) int",
+            "testCases": [
+              {
+                "input": "[]int{5, 3, -2, 8, -1}",
+                "output": "2"
+              },
+              {
+                "input": "[]int{1, 2, 3}",
+                "output": "-1"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Loop through and check each number. Return the index as soon as you find a negative."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Use early return: if num < 0, return i immediately."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. For i, num:\n   - num < 0? → return i\n2. Return -1 (not found)</pre>"
+              }
+            ],
+            "solution": "func findFirstNegative(nums []int) int {\n    for i, num := range nums {\n        if num < 0 {\n            return i\n        }\n    }\n    return -1\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v12",
+            "title": "Find Last Index Of",
+            "description": "Write <code>func findLastIndexOf(nums []int, target int) int</code> that returns the index of the LAST occurrence of target, or -1 if not found.",
+            "functionSignature": "func findLastIndexOf(nums []int, target int) int",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 2, 5}, 2",
+                "output": "3",
+                "note": "last occurrence of 2 is at index 3"
+              },
+              {
+                "input": "[]int{5, 5, 5}, 5",
+                "output": "2"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Loop through all elements and track the most recent index where you found the target."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Keep updating lastIndex whenever you find target. Initialize to -1."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. lastIndex := -1\n2. For i, num:\n   - num == target? → lastIndex = i\n3. Return lastIndex</pre>"
+              }
+            ],
+            "solution": "func findLastIndexOf(nums []int, target int) int {\n    lastIndex := -1\n    for i, num := range nums {\n        if num == target {\n            lastIndex = i\n        }\n    }\n    return lastIndex\n}",
+            "difficulty": 2
+          },
+          {
+            "id": "v13",
+            "title": "Find Index of Longest Word",
+            "description": "Write <code>func findLongestWordIndex(words []string) int</code> that returns the index of the longest word. If multiple words tie, return the first occurrence.",
+            "functionSignature": "func findLongestWordIndex(words []string) int",
+            "testCases": [
+              {
+                "input": "[]string{\"go\", \"rust\", \"python\", \"c\"}",
+                "output": "2",
+                "note": "python is longest at index 2"
+              },
+              {
+                "input": "[]string{\"hello\", \"world\"}",
+                "output": "0",
+                "note": "both length 5, return first"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Track both the maximum length seen and the index where it occurred."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Keep maxLen and maxIndex. For each word, if len(word) > maxLen, update both."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. maxLen := 0, maxIndex := 0\n2. For i, word:\n   - len(word) > maxLen?\n     → maxLen = len(word), maxIndex = i\n3. Return maxIndex</pre>"
+              }
+            ],
+            "solution": "func findLongestWordIndex(words []string) int {\n    maxLen := 0\n    maxIndex := 0\n    \n    for i, word := range words {\n        if len(word) > maxLen {\n            maxLen = len(word)\n            maxIndex = i\n        }\n    }\n    \n    return maxIndex\n}",
+            "difficulty": 2
           }
         ]
       },
@@ -3609,6 +4173,105 @@ window.moduleData = {
             ],
             "solution": "func gradeDistribution(grades []string) map[string]int {\n    dist := make(map[string]int)\n    for _, grade := range grades {\n        dist[grade]++\n    }\n    return dist\n}",
             "difficulty": 1
+          },
+          {
+            "id": "v11",
+            "title": "Most Common Element",
+            "description": "Write <code>func mostCommonElement(items []string) string</code> that returns the element appearing most frequently. If multiple items tie for most common, return the one that appeared first.",
+            "functionSignature": "func mostCommonElement(items []string) string",
+            "testCases": [
+              {
+                "input": "[\"cat\", \"dog\", \"cat\", \"bird\", \"dog\", \"dog\"]",
+                "output": "\"dog\"",
+                "note": "dog appears 3 times"
+              },
+              {
+                "input": "[\"a\", \"b\", \"a\"]",
+                "output": "\"a\""
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "First build a frequency map to count all items. Then find the key with the highest value. Track both the item and its frequency as you search."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Build frequency map with freq[item]++. Then loop through the map to find the key with maximum value. Keep track of maxCount and mostCommon item."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Build frequency map\n2. maxCount := 0, mostCommon := \"\"\n3. For each item, count in map:\n   - count > maxCount?\n     → maxCount = count, mostCommon = item\n4. Return mostCommon</pre>"
+              }
+            ],
+            "solution": "func mostCommonElement(items []string) string {\n    freq := make(map[string]int)\n    for _, item := range items {\n        freq[item]++\n    }\n    \n    maxCount := 0\n    mostCommon := \"\"\n    \n    for item, count := range freq {\n        if count > maxCount {\n            maxCount = count\n            mostCommon = item\n        }\n    }\n    \n    return mostCommon\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v12",
+            "title": "Frequency Histogram",
+            "description": "Write <code>func frequencyHistogram(nums []int) map[int]int</code> that returns a \"meta-map\" showing how many elements appear each number of times. For example, if 2 elements appear once and 1 element appears twice, return map[1:2, 2:1].",
+            "functionSignature": "func frequencyHistogram(nums []int) map[int]int",
+            "testCases": [
+              {
+                "input": "[]int{1, 1, 2, 3, 3, 3}",
+                "output": "map[1:1 2:2 3:1]",
+                "note": "one element appears 1x (2), two elements appear 2x (1), one element appears 3x (3)"
+              },
+              {
+                "input": "[]int{5, 5, 5, 5}",
+                "output": "map[4:1]",
+                "note": "one element appears 4 times"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Build a frequency map first to count how often each number appears. Then build a second map that counts how many numbers have each frequency."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Step 1: Build freq map with freq[num]++. Step 2: Build histogram with histogram[count]++ for each count in freq. This creates a frequency-of-frequencies map."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Build freq map (num → count)\n2. Create histogram map[int]int\n3. For each count in freq.values:\n   - histogram[count]++\n4. Return histogram</pre>"
+              }
+            ],
+            "solution": "func frequencyHistogram(nums []int) map[int]int {\n    freq := make(map[int]int)\n    for _, num := range nums {\n        freq[num]++\n    }\n    \n    histogram := make(map[int]int)\n    for _, count := range freq {\n        histogram[count]++\n    }\n    \n    return histogram\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v13",
+            "title": "Merge Frequency Maps",
+            "description": "Write <code>func mergeFrequencyMaps(map1, map2 map[string]int) map[string]int</code> that merges two frequency maps by adding their counts. If a key exists in both maps, add the counts together.",
+            "functionSignature": "func mergeFrequencyMaps(map1, map2 map[string]int) map[string]int",
+            "testCases": [
+              {
+                "input": "map[\"a\":2, \"b\":1], map[\"a\":1, \"c\":3]",
+                "output": "map[\"a\":3 \"b\":1 \"c\":3]"
+              },
+              {
+                "input": "map[\"x\":5], map[\"x\":3]",
+                "output": "map[\"x\":8]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Copy all entries from map1 to result. Then iterate through map2, adding each count to result (which may already have that key)."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Create result map. Copy map1: result[k] = v. Then for each k, v in map2: result[k] += v. This adds to existing or creates new entry."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Create result map\n2. Copy all from map1 to result\n3. For each key, value in map2:\n   - result[key] += value\n4. Return result</pre>"
+              }
+            ],
+            "solution": "func mergeFrequencyMaps(map1, map2 map[string]int) map[string]int {\n    result := make(map[string]int)\n    \n    for k, v := range map1 {\n        result[k] = v\n    }\n    \n    for k, v := range map2 {\n        result[k] += v\n    }\n    \n    return result\n}",
+            "difficulty": 3
           }
         ]
       },
@@ -5538,6 +6201,136 @@ window.moduleData = {
             ],
             "solution": "func lowStock(inventory map[string]int, threshold int) []string {\n    result := []string{}\n    for item, count := range inventory {\n        if count < threshold {\n            result = append(result, item)\n        }\n    }\n    return result\n}",
             "difficulty": 2
+          },
+          {
+            "id": "v10",
+            "title": "Group By First Letter",
+            "description": "Write <code>func groupByFirstLetter(words []string) map[rune][]string</code> that groups words by their first letter. Returns a map where keys are first letters and values are slices of all words starting with that letter.",
+            "functionSignature": "func groupByFirstLetter(words []string) map[rune][]string",
+            "testCases": [
+              {
+                "input": "[\"go\", \"rust\", \"ruby\", \"python\", \"perl\"]",
+                "output": "map['g':[\"go\"] 'r':[\"rust\", \"ruby\"] 'p':[\"python\", \"perl\"]]"
+              },
+              {
+                "input": "[\"apple\", \"ant\", \"bat\", \"bear\"]",
+                "output": "map['a':[\"apple\", \"ant\"] 'b':[\"bat\", \"bear\"]]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need to build a map where each key points to a slice. For each word, get its first letter and append the word to that letter's slice."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Create map[rune][]string. For each word, get first letter with rune(word[0]). Append word to groups[firstLetter]. If the slice doesn't exist yet, append creates it."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Create map[rune][]string\n2. For each word:\n   - Get first letter: rune(word[0])\n   - Append word to map[firstLetter]\n3. Return map</pre>"
+              }
+            ],
+            "solution": "func groupByFirstLetter(words []string) map[rune][]string {\n    groups := make(map[rune][]string)\n    for _, word := range words {\n        if len(word) > 0 {\n            firstLetter := rune(word[0])\n            groups[firstLetter] = append(groups[firstLetter], word)\n        }\n    }\n    return groups\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v11",
+            "title": "Frequency Sorted Keys",
+            "description": "Write <code>func frequencySortedKeys(items []string) []string</code> that returns unique items sorted by frequency (most common first). If frequencies are tied, maintain the order items were first seen.",
+            "functionSignature": "func frequencySortedKeys(items []string) []string",
+            "testCases": [
+              {
+                "input": "[\"cat\", \"dog\", \"cat\", \"bird\", \"cat\", \"dog\"]",
+                "output": "[\"cat\", \"dog\", \"bird\"]",
+                "note": "cat appears 3x, dog 2x, bird 1x"
+              },
+              {
+                "input": "[\"a\", \"b\", \"a\", \"c\", \"a\", \"b\"]",
+                "output": "[\"a\", \"b\", \"c\"]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "First build a frequency map to count occurrences. Then you need to create a result by iterating through unique items and sorting by their frequency. Track the order items first appeared."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Build two things: a frequency map and a list of unique items in order seen. Then sort the unique list by looking up frequencies. Use a simple comparison to sort."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Build frequency map\n2. Track unique items in order\n3. Sort unique items by frequency\n   (most frequent first)\n4. Return sorted list</pre>"
+              }
+            ],
+            "solution": "func frequencySortedKeys(items []string) []string {\n    freq := make(map[string]int)\n    var order []string\n    seen := make(map[string]bool)\n    \n    for _, item := range items {\n        freq[item]++\n        if !seen[item] {\n            order = append(order, item)\n            seen[item] = true\n        }\n    }\n    \n    // Simple bubble sort by frequency\n    for i := 0; i < len(order); i++ {\n        for j := i + 1; j < len(order); j++ {\n            if freq[order[j]] > freq[order[i]] {\n                order[i], order[j] = order[j], order[i]\n            }\n        }\n    }\n    \n    return order\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v12",
+            "title": "Count Multi-Condition",
+            "description": "Write <code>func countMultiCondition(nums []int, min, max, divisor int) map[string]int</code> that categorizes numbers into four groups: \"in_range\" (min <= n <= max), \"divisible\" (n % divisor == 0), \"both\" (satisfies both conditions), and \"neither\".",
+            "functionSignature": "func countMultiCondition(nums []int, min, max, divisor int) map[string]int",
+            "testCases": [
+              {
+                "input": "[]int{5, 10, 15, 20}, 10, 20, 5",
+                "output": "map[\"in_range\":3 \"divisible\":4 \"both\":3 \"neither\":0]",
+                "note": "10,15,20 in range; all divisible by 5; 10,15,20 satisfy both; 5 satisfies neither"
+              },
+              {
+                "input": "[]int{1, 2, 3}, 5, 10, 2",
+                "output": "map[\"in_range\":0 \"divisible\":1 \"both\":0 \"neither\":2]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "For each number, check both conditions independently. Count how many satisfy: just range, just divisible, both, or neither. All four counts are independent."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Create a map with 4 keys initialized to 0. For each number, check inRange := (n >= min && n <= max) and isDivisible := (n % divisor == 0). Then increment the appropriate counters."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Create map with 4 categories = 0\n2. For each num:\n   - Check if in range\n   - Check if divisible\n   - Increment all matching categories\n3. Return map</pre>"
+              }
+            ],
+            "solution": "func countMultiCondition(nums []int, min, max, divisor int) map[string]int {\n    counts := map[string]int{\"in_range\": 0, \"divisible\": 0, \"both\": 0, \"neither\": 0}\n    \n    for _, n := range nums {\n        inRange := n >= min && n <= max\n        isDivisible := n % divisor == 0\n        \n        if inRange {\n            counts[\"in_range\"]++\n        }\n        if isDivisible {\n            counts[\"divisible\"]++\n        }\n        if inRange && isDivisible {\n            counts[\"both\"]++\n        }\n        if !inRange && !isDivisible {\n            counts[\"neither\"]++\n        }\n    }\n    \n    return counts\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v13",
+            "title": "Tally By Category",
+            "description": "Write <code>func tallyByCategory(items []string, categories map[string]string) map[string]int</code> that counts items per category. Given items and a map of item→category, return count of items per category.",
+            "functionSignature": "func tallyByCategory(items []string, categories map[string]string) map[string]int",
+            "testCases": [
+              {
+                "input": "[\"apple\", \"banana\", \"carrot\", \"broccoli\"], map[\"apple\":\"fruit\", \"banana\":\"fruit\", \"carrot\":\"veggie\", \"broccoli\":\"veggie\"]",
+                "output": "map[\"fruit\":2 \"veggie\":2]"
+              },
+              {
+                "input": "[\"a\", \"b\", \"c\"], map[\"a\":\"x\", \"b\":\"x\", \"c\":\"y\"]",
+                "output": "map[\"x\":2 \"y\":1]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "For each item, look up its category in the categories map, then increment that category's count in your result map."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Create a result map for counting. For each item, get category := categories[item], then do counts[category]++. The map lookup gives you the indirect key to increment."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Create counts map[string]int\n2. For each item:\n   - Look up category from categories map\n   - Increment counts[category]\n3. Return counts</pre>"
+              }
+            ],
+            "solution": "func tallyByCategory(items []string, categories map[string]string) map[string]int {\n    counts := make(map[string]int)\n    for _, item := range items {\n        category := categories[item]\n        counts[category]++\n    }\n    return counts\n}",
+            "difficulty": 3
           }
         ]
       },
@@ -5849,6 +6642,104 @@ window.moduleData = {
               }
             ],
             "solution": "func swapMinMax(nums []int) {\n    minIdx, maxIdx := 0, 0\n    for i := range nums {\n        if nums[i] < nums[minIdx] { minIdx = i }\n        if nums[i] > nums[maxIdx] { maxIdx = i }\n    }\n    nums[minIdx], nums[maxIdx] = nums[maxIdx], nums[minIdx]\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v10",
+            "title": "Rotate Slice Left",
+            "description": "Write <code>func rotateLeft(nums []int, k int) []int</code> that rotates the slice left by k positions. For example, [1,2,3,4,5] rotated left by 2 becomes [3,4,5,1,2].",
+            "functionSignature": "func rotateLeft(nums []int, k int) []int",
+            "testCases": [
+              {
+                "input": "[]int{10, 20, 30, 40}, 1",
+                "output": "[20, 30, 40, 10]"
+              },
+              {
+                "input": "[]int{1, 2, 3, 4, 5}, 2",
+                "output": "[3, 4, 5, 1, 2]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Rotating left by k means taking the first k elements and moving them to the end. You can use slice operations to split and recombine."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Split the slice at position k: first part is nums[:k], second part is nums[k:]. Concatenate them in reverse order: append(nums[k:], nums[:k]...)."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Split at k: left = nums[:k], right = nums[k:]\n2. Concatenate: result = append(right, left...)\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func rotateLeft(nums []int, k int) []int {\n    k = k % len(nums)\n    return append(nums[k:], nums[:k]...)\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v11",
+            "title": "Swap All Pairs",
+            "description": "Write <code>func swapAllPairs(nums []int) []int</code> that swaps every pair of adjacent elements. If the slice has odd length, the last element stays in place. For example, [1,2,3,4,5] becomes [2,1,4,3,5].",
+            "functionSignature": "func swapAllPairs(nums []int) []int",
+            "testCases": [
+              {
+                "input": "[]int{10, 20, 30, 40}",
+                "output": "[20, 10, 40, 30]"
+              },
+              {
+                "input": "[]int{1, 2, 3}",
+                "output": "[2, 1, 3]",
+                "note": "last element stays"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Loop through pairs (i=0, 2, 4...) and swap each pair. Make sure to stop before going out of bounds on odd-length slices."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Create a copy of nums. Loop with i += 2, and swap result[i] with result[i+1] if i+1 < len(result)."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Create copy of nums\n2. For i = 0, 2, 4, ... (step by 2):\n   - If i+1 exists:\n     → swap result[i] with result[i+1]\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func swapAllPairs(nums []int) []int {\n    result := make([]int, len(nums))\n    copy(result, nums)\n    \n    for i := 0; i < len(result)-1; i += 2 {\n        result[i], result[i+1] = result[i+1], result[i]\n    }\n    \n    return result\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v12",
+            "title": "Bubble Sort One Pass",
+            "description": "Write <code>func bubbleSortOnePass(nums []int) []int</code> that performs one pass of bubble sort. Compare each pair of adjacent elements and swap if they're in wrong order. This makes the largest element \"bubble\" to the end.",
+            "functionSignature": "func bubbleSortOnePass(nums []int) []int",
+            "testCases": [
+              {
+                "input": "[]int{3, 1, 4, 2}",
+                "output": "[1, 3, 2, 4]",
+                "note": "after one pass, 4 bubbles to end"
+              },
+              {
+                "input": "[]int{5, 3, 8, 1}",
+                "output": "[3, 5, 1, 8]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Compare each adjacent pair. If left > right, swap them. After one full pass, the largest element will be at the end."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Create a copy. Loop through i from 0 to len-2. For each i, if result[i] > result[i+1], swap them."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Create copy of nums\n2. For i from 0 to len-2:\n   - result[i] > result[i+1]?\n     → swap them\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func bubbleSortOnePass(nums []int) []int {\n    result := make([]int, len(nums))\n    copy(result, nums)\n    \n    for i := 0; i < len(result)-1; i++ {\n        if result[i] > result[i+1] {\n            result[i], result[i+1] = result[i+1], result[i]\n        }\n    }\n    \n    return result\n}",
             "difficulty": 3
           }
         ]
@@ -6163,6 +7054,108 @@ window.moduleData = {
             ],
             "solution": "func lengthMatchesPos(words []string) bool {\n    for i, word := range words {\n        if len(word) != i+1 { return false }\n    }\n    return true\n}",
             "difficulty": 2
+          },
+          {
+            "id": "v10",
+            "title": "Find All Peaks",
+            "description": "Write <code>func findAllPeaks(nums []int) []int</code> that returns the indices where an element is greater than both its neighbors. First and last elements cannot be peaks.",
+            "functionSignature": "func findAllPeaks(nums []int) []int",
+            "testCases": [
+              {
+                "input": "[]int{1, 3, 2, 4, 1}",
+                "output": "[1, 3]",
+                "note": "nums[1]=3 > neighbors (1,2); nums[3]=4 > neighbors (2,1)"
+              },
+              {
+                "input": "[]int{1, 2, 3, 4}",
+                "output": "[]",
+                "note": "monotonic increasing, no peaks"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "A peak is at index i where nums[i] > nums[i-1] AND nums[i] > nums[i+1]. Loop from index 1 to len-2 (excluding first and last)."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Create empty result slice. Loop i from 1 to len(nums)-2. If nums[i] > nums[i-1] && nums[i] > nums[i+1], append i to result."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. result := []int{}\n2. For i from 1 to len-2:\n   - nums[i] > both neighbors?\n     → append i to result\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func findAllPeaks(nums []int) []int {\n    result := []int{}\n    \n    for i := 1; i < len(nums)-1; i++ {\n        if nums[i] > nums[i-1] && nums[i] > nums[i+1] {\n            result = append(result, i)\n        }\n    }\n    \n    return result\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v11",
+            "title": "Longest Increasing Sequence",
+            "description": "Write <code>func longestIncreasingLength(nums []int) int</code> that finds the length of the longest consecutive increasing subsequence.",
+            "functionSignature": "func longestIncreasingLength(nums []int) int",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 1, 2, 3, 4, 5}",
+                "output": "5",
+                "note": "sequence 1,2,3,4,5 at end"
+              },
+              {
+                "input": "[]int{5, 4, 3, 2, 1}",
+                "output": "1",
+                "note": "all decreasing, max streak is 1"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Track the current streak length and the maximum streak seen so far. When nums[i] > nums[i-1], increment streak. Otherwise, reset streak to 1."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "currentStreak := 1, maxStreak := 1. For each i from 1 to end: if nums[i] > nums[i-1], currentStreak++, else currentStreak = 1. Update maxStreak if currentStreak is larger."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. currentStreak = 1, maxStreak = 1\n2. For i from 1 to len:\n   - Increasing? → currentStreak++\n   - Not? → currentStreak = 1\n   - Update maxStreak\n3. Return maxStreak</pre>"
+              }
+            ],
+            "solution": "func longestIncreasingLength(nums []int) int {\n    if len(nums) == 0 { return 0 }\n    \n    currentStreak := 1\n    maxStreak := 1\n    \n    for i := 1; i < len(nums); i++ {\n        if nums[i] > nums[i-1] {\n            currentStreak++\n            if currentStreak > maxStreak {\n                maxStreak = currentStreak\n            }\n        } else {\n            currentStreak = 1\n        }\n    }\n    \n    return maxStreak\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v12",
+            "title": "Count Direction Changes",
+            "description": "Write <code>func countDirectionChanges(nums []int) int</code> that counts how many times the sequence changes from increasing to decreasing or vice versa.",
+            "functionSignature": "func countDirectionChanges(nums []int) int",
+            "testCases": [
+              {
+                "input": "[]int{1, 3, 2, 4, 3}",
+                "output": "3",
+                "note": "up(1→3), down(3→2), up(2→4), down(4→3) = 3 changes"
+              },
+              {
+                "input": "[]int{1, 2, 3}",
+                "output": "0",
+                "note": "monotonic increasing, no direction changes"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Track whether you're currently going up or down. When the direction switches, increment the change counter."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Start with direction based on first two elements. For each next element, determine new direction. If it differs from previous direction, count a change."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Determine initial direction\n2. changes := 0\n3. For each next pair:\n   - Determine new direction\n   - Different from previous? → changes++\n   - Update previous direction\n4. Return changes</pre>"
+              }
+            ],
+            "solution": "func countDirectionChanges(nums []int) int {\n    if len(nums) < 2 { return 0 }\n    \n    changes := 0\n    var prevDirection string\n    \n    for i := 1; i < len(nums); i++ {\n        var currentDirection string\n        if nums[i] > nums[i-1] {\n            currentDirection = \"up\"\n        } else if nums[i] < nums[i-1] {\n            currentDirection = \"down\"\n        } else {\n            continue\n        }\n        \n        if prevDirection != \"\" && currentDirection != prevDirection {\n            changes++\n        }\n        prevDirection = currentDirection\n    }\n    \n    return changes\n}",
+            "difficulty": 3
           }
         ]
       }
