@@ -349,6 +349,18 @@
             session.breakMinutes = 0;
         }
 
+        if (typeof session.longBreakMinutes !== 'number') {
+            session.longBreakMinutes = 15;
+        }
+
+        if (typeof session.completedCycles !== 'number') {
+            session.completedCycles = 0;
+        }
+
+        if (typeof session.cyclesBeforeLongBreak !== 'number') {
+            session.cyclesBeforeLongBreak = 4;
+        }
+
         if (!session.phase) {
             session.phase = 'focus';
         }
@@ -359,6 +371,9 @@
     function getPhaseDurationSeconds(session) {
         if (session.phase === 'break') {
             return (session.breakMinutes || 0) * 60;
+        }
+        if (session.phase === 'longBreak') {
+            return (session.longBreakMinutes || 15) * 60;
         }
         return (session.focusMinutes || 0) * 60;
     }
@@ -373,22 +388,27 @@
 
     function parseDurationValue(value) {
         if (typeof value === 'number') {
-            return { focusMinutes: value, breakMinutes: 0 };
+            return { focusMinutes: value, breakMinutes: 0, longBreakMinutes: 15 };
         }
 
         const raw = String(value || '').trim();
         if (raw.includes('-')) {
-            const [focus, rest] = raw.split('-').map(Number);
+            const parts = raw.split('-').map(Number);
+            const focus = Number.isFinite(parts[0]) ? parts[0] : 25;
+            const shortBreak = Number.isFinite(parts[1]) ? parts[1] : 5;
+            const longBreak = Number.isFinite(parts[2]) ? parts[2] : 15;
             return {
-                focusMinutes: Number.isFinite(focus) ? focus : 25,
-                breakMinutes: Number.isFinite(rest) ? rest : 5
+                focusMinutes: focus,
+                breakMinutes: shortBreak,
+                longBreakMinutes: longBreak
             };
         }
 
         const minutes = Number(raw);
         return {
             focusMinutes: Number.isFinite(minutes) ? minutes : 25,
-            breakMinutes: 0
+            breakMinutes: 0,
+            longBreakMinutes: 15
         };
     }
 
@@ -416,9 +436,9 @@
             <div class="session-duration-row">
                 <label for="floating-session-duration">Duration</label>
                 <select id="floating-session-duration" class="session-duration-select">
-                    <option value="25-5">25/5</option>
-                    <option value="50-10">50/10</option>
-                    <option value="90-20">90/20</option>
+                    <option value="25-5-15">25/5/15</option>
+                    <option value="50-10-15">50/10/15</option>
+                    <option value="90-20-30">90/20/30</option>
                 </select>
             </div>
         `;
@@ -495,12 +515,15 @@
     }
 
     function seedPausedSession(minutes) {
-        const { focusMinutes, breakMinutes } = parseDurationValue(minutes);
+        const { focusMinutes, breakMinutes, longBreakMinutes } = parseDurationValue(minutes);
         setSession({
             status: 'paused',
             phase: 'focus',
             focusMinutes,
             breakMinutes,
+            longBreakMinutes,
+            completedCycles: 0,
+            cyclesBeforeLongBreak: 4,
             remainingSeconds: focusMinutes * 60,
             hidden: false
         });
@@ -510,7 +533,8 @@
         const session = normalizeSession(getSession());
         const focusMinutes = session?.focusMinutes || session?.minutes || 25;
         const breakMinutes = session?.breakMinutes || 0;
-        seedPausedSession(`${focusMinutes}-${breakMinutes}`);
+        const longBreakMinutes = session?.longBreakMinutes || 15;
+        seedPausedSession(`${focusMinutes}-${breakMinutes}-${longBreakMinutes}`);
         updateSessionTimer();
     }
 
@@ -527,6 +551,9 @@
                 phase: session.phase || 'focus',
                 focusMinutes: session.focusMinutes || session.minutes,
                 breakMinutes: session.breakMinutes || 0,
+                longBreakMinutes: session.longBreakMinutes || 15,
+                completedCycles: session.completedCycles || 0,
+                cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
                 startAt: Date.now() - elapsedSeconds * 1000,
                 hidden: false
             });
@@ -537,6 +564,9 @@
                 phase: session.phase || 'focus',
                 focusMinutes: session.focusMinutes || session.minutes,
                 breakMinutes: session.breakMinutes || 0,
+                longBreakMinutes: session.longBreakMinutes || 15,
+                completedCycles: session.completedCycles || 0,
+                cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
                 remainingSeconds,
                 hidden: false
             });
@@ -622,13 +652,25 @@
         const countdownText = formatCountdown(remainingSeconds * 1000);
         const pct = Math.min(1, Math.max(0, 1 - remainingSeconds / totalSeconds));
         const progressWidth = `${Math.round(pct * 100)}%`;
-        const statusLabel = session.status === 'paused'
-            ? 'Stopped'
-            : (session.phase === 'break' ? 'Break' : 'Focus block');
-        const labelMinutes = session.phase === 'break'
-            ? (session.breakMinutes || 0)
-            : (session.focusMinutes || 0);
-        const labelText = `${statusLabel} • ${labelMinutes} min`;
+
+        let statusLabel = 'Stopped';
+        let labelMinutes = session.focusMinutes || 0;
+
+        if (session.status !== 'paused') {
+            if (session.phase === 'longBreak') {
+                statusLabel = 'Long break';
+                labelMinutes = session.longBreakMinutes || 15;
+            } else if (session.phase === 'break') {
+                statusLabel = 'Break';
+                labelMinutes = session.breakMinutes || 0;
+            } else {
+                statusLabel = 'Focus block';
+                labelMinutes = session.focusMinutes || 0;
+            }
+        }
+
+        const cycleInfo = ` • ${session.completedCycles || 0}/${session.cyclesBeforeLongBreak || 4}`;
+        const labelText = `${statusLabel} • ${labelMinutes} min${cycleInfo}`;
         const toggleLabel = session.status === 'paused' ? 'Start' : 'Pause';
         const showToggle = !(dashboardTimer && session.status === 'paused');
 
@@ -643,17 +685,25 @@
         if (floatingTimer) {
             const duration = floatingTimer.querySelector('.session-duration-select');
             if (duration) {
-                duration.value = `${session.focusMinutes || 25}-${session.breakMinutes || 0}`;
+                const longBreak = session.longBreakMinutes || 15;
+                duration.value = `${session.focusMinutes || 25}-${session.breakMinutes || 0}-${longBreak}`;
             }
         }
 
         if (session.status === 'running' && remainingSeconds <= 0) {
+            // Focus session completed - increment cycle and start break
             if (session.phase === 'focus' && session.breakMinutes > 0) {
+                const newCompletedCycles = (session.completedCycles || 0) + 1;
+                const needsLongBreak = newCompletedCycles % (session.cyclesBeforeLongBreak || 4) === 0;
+
                 setSession({
                     status: 'running',
-                    phase: 'break',
+                    phase: needsLongBreak ? 'longBreak' : 'break',
                     focusMinutes: session.focusMinutes,
                     breakMinutes: session.breakMinutes,
+                    longBreakMinutes: session.longBreakMinutes || 15,
+                    completedCycles: newCompletedCycles,
+                    cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
                     startAt: Date.now(),
                     hidden: false
                 });
@@ -661,11 +711,32 @@
                 return;
             }
 
+            // Break completed - automatically start next focus session
+            if ((session.phase === 'break' || session.phase === 'longBreak') && session.focusMinutes > 0) {
+                setSession({
+                    status: 'running',
+                    phase: 'focus',
+                    focusMinutes: session.focusMinutes,
+                    breakMinutes: session.breakMinutes,
+                    longBreakMinutes: session.longBreakMinutes || 15,
+                    completedCycles: session.completedCycles || 0,
+                    cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
+                    startAt: Date.now(),
+                    hidden: false
+                });
+                updateSessionTimer();
+                return;
+            }
+
+            // Fallback: if no break configured, pause at focus
             setSession({
                 status: 'paused',
                 phase: 'focus',
                 focusMinutes: session.focusMinutes,
                 breakMinutes: session.breakMinutes,
+                longBreakMinutes: session.longBreakMinutes || 15,
+                completedCycles: session.completedCycles || 0,
+                cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
                 remainingSeconds: session.focusMinutes * 60,
                 hidden: false
             });
@@ -684,12 +755,15 @@
     }
 
     function startSession(minutes) {
-        const { focusMinutes, breakMinutes } = parseDurationValue(minutes);
+        const { focusMinutes, breakMinutes, longBreakMinutes } = parseDurationValue(minutes);
         setSession({
             status: 'running',
             phase: 'focus',
             focusMinutes,
             breakMinutes,
+            longBreakMinutes,
+            completedCycles: 0,
+            cyclesBeforeLongBreak: 4,
             startAt: Date.now(),
             hidden: false
         });
@@ -701,9 +775,9 @@
     }
 
     function updateSessionDuration(minutes) {
-        const { focusMinutes, breakMinutes } = parseDurationValue(minutes);
+        const { focusMinutes, breakMinutes, longBreakMinutes } = parseDurationValue(minutes);
         if (!Number.isFinite(focusMinutes) || focusMinutes <= 0) return;
-        seedPausedSession(`${focusMinutes}-${breakMinutes}`);
+        seedPausedSession(`${focusMinutes}-${breakMinutes}-${longBreakMinutes}`);
         updateSessionTimer();
     }
 
