@@ -1430,6 +1430,72 @@
             ],
             "solution": "func diceTotal(rolls []int) int {\n    sum := 0\n    for _, roll := range rolls {\n        if roll < 1 || roll > 6 { return -1 }\n        sum += roll\n    }\n    return sum\n}",
             "difficulty": 2
+          },
+          {
+            "id": "v12",
+            "title": "Compound Interest",
+            "description": "Write <code>func compoundInterest(deposits []float64, rate float64) float64</code> that calculates compound interest where each deposit earns interest at rate (as decimal) per period. Process deposits in order, adding interest to running balance before adding next deposit.",
+            "functionSignature": "func compoundInterest(deposits []float64, rate float64) float64",
+            "testCases": [
+              {
+                "input": "[]float64{100.0, 100.0}, 0.10",
+                "output": "221.0",
+                "note": "Period 1: 100. Period 2: 100*1.1 + 100 = 210. Final: 210*1.1 = 231 (approx)"
+              },
+              {
+                "input": "[]float64{1000.0}, 0.05",
+                "output": "1050.0"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Each period, you apply interest to the current balance, then add the new deposit."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Keep a running balance. For each deposit: balance = balance * (1 + rate), then balance += deposit."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. balance := 0.0\n2. For each deposit:\n   - balance *= (1 + rate)\n   - balance += deposit\n3. Return balance</pre>"
+              }
+            ],
+            "solution": "func compoundInterest(deposits []float64, rate float64) float64 {\n    balance := 0.0\n    for _, deposit := range deposits {\n        balance = balance * (1 + rate)\n        balance += deposit\n    }\n    return balance\n}",
+            "difficulty": 3
+          },
+          {
+            "id": "v13",
+            "title": "Running Max Product",
+            "description": "Write <code>func runningMaxProduct(nums []int) []int</code> that returns a slice where each element is the maximum product of any two consecutive elements seen so far (including current position).",
+            "functionSignature": "func runningMaxProduct(nums []int) []int",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 4}",
+                "output": "[]int{0, 2, 6, 12}",
+                "note": "Position 0: no pair (0), Pos 1: max(1*2)=2, Pos 2: max(1*2, 2*3)=6, Pos 3: max(1*2, 2*3, 3*4)=12"
+              },
+              {
+                "input": "[]int{5, 1, 3, 2}",
+                "output": "[]int{0, 5, 5, 6}"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "At each position, you need to track the maximum product of consecutive pairs seen up to that point."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Keep track of maxProduct as you go. At position i, calculate nums[i-1]*nums[i] and update maxProduct if it's larger."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. result := []int{0}, maxProduct := 0\n2. For i from 1 to len:\n   - product := nums[i-1] * nums[i]\n   - if product > maxProduct: maxProduct = product\n   - append maxProduct to result\n3. Return result</pre>"
+              }
+            ],
+            "solution": "func runningMaxProduct(nums []int) []int {\n    result := []int{0}\n    maxProduct := 0\n    for i := 1; i < len(nums); i++ {\n        product := nums[i-1] * nums[i]\n        if product > maxProduct {\n            maxProduct = product\n        }\n        result = append(result, maxProduct)\n    }\n    return result\n}",
+            "difficulty": 3
           }
         ]
       },
@@ -2147,6 +2213,117 @@
             ],
             "solution": "func messagePriority(msg string) string {\n    if strings.Contains(msg, \"ASAP\") { return \"URGENT\" }\n    if strings.HasPrefix(msg, \"Important\") { return \"High\" }\n    return \"Normal\"\n}",
             "difficulty": 2
+          },
+          {
+            "id": "v11",
+            "title": "BMI Category",
+            "description": "Write <code>func bmiCategory(bmi float64) string</code> returning \"Underweight\" (bmi < 18.5), \"Normal\" (18.5-24.9), \"Overweight\" (25-29.9), or \"Obese\" (30+).",
+            "functionSignature": "func bmiCategory(bmi float64) string",
+            "testCases": [
+              {
+                "input": "22.5",
+                "output": "\"Normal\""
+              },
+              {
+                "input": "17.0",
+                "output": "\"Underweight\""
+              },
+              {
+                "input": "31.5",
+                "output": "\"Obese\""
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Multiple ranges to check. What order should you check them to avoid incorrect matches?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Check from lowest to highest using upper bounds: if bmi < 18.5, if bmi < 25, if bmi < 30, else."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>if bmi < 18.5 { return \"Underweight\" }\nif bmi < 25 { return \"Normal\" }\nif bmi < 30 { return \"Overweight\" }\nreturn \"Obese\"</pre>"
+              }
+            ],
+            "solution": "func bmiCategory(bmi float64) string {\n    if bmi < 18.5 { return \"Underweight\" }\n    if bmi < 25 { return \"Normal\" }\n    if bmi < 30 { return \"Overweight\" }\n    return \"Obese\"\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v12",
+            "title": "Water State",
+            "description": "Write <code>func waterState(temp int) string</code> returning \"ice\" (temp <= 0), \"water\" (1-99), or \"steam\" (temp >= 100). Temperatures in Celsius.",
+            "functionSignature": "func waterState(temp int) string",
+            "testCases": [
+              {
+                "input": "25",
+                "output": "\"water\""
+              },
+              {
+                "input": "-5",
+                "output": "\"ice\""
+              },
+              {
+                "input": "100",
+                "output": "\"steam\""
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Three states with specific temperature boundaries. What's the cleanest order to check them?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Check boundaries in order: if temp <= 0 (ice), else if temp >= 100 (steam), else (water)."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>if temp <= 0 { return \"ice\" }\nif temp >= 100 { return \"steam\" }\nreturn \"water\"</pre>"
+              }
+            ],
+            "solution": "func waterState(temp int) string {\n    if temp <= 0 { return \"ice\" }\n    if temp >= 100 { return \"steam\" }\n    return \"water\"\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v13",
+            "title": "Discount Calculator",
+            "description": "Write <code>func discount(price int, isPremium bool, quantity int) int</code>. Premium members get 20% off. Non-premium get 10% off if quantity >= 5, else no discount. Return final price.",
+            "functionSignature": "func discount(price int, isPremium bool, quantity int) int",
+            "testCases": [
+              {
+                "input": "100, true, 1",
+                "output": "80",
+                "note": "Premium: 20% off"
+              },
+              {
+                "input": "100, false, 6",
+                "output": "90",
+                "note": "Non-premium bulk: 10% off"
+              },
+              {
+                "input": "100, false, 3",
+                "output": "100",
+                "note": "Non-premium small: no discount"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Multiple conditions that interact: membership status AND quantity. Check premium first since it's simpler."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "if isPremium → 20% off. else if quantity >= 5 → 10% off. else → no discount."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>if isPremium { return price * 80 / 100 }\nif quantity >= 5 { return price * 90 / 100 }\nreturn price</pre>"
+              }
+            ],
+            "solution": "func discount(price int, isPremium bool, quantity int) int {\n    if isPremium { return price * 80 / 100 }\n    if quantity >= 5 { return price * 90 / 100 }\n    return price\n}",
+            "difficulty": 1
           }
         ]
       },
@@ -4151,6 +4328,139 @@
             ],
             "solution": "func balancedBrackets(s string) bool {\n    count := 0\n    for _, c := range s {\n        if c == '[' { count++ }\n        if c == ']' { count-- }\n        if count < 0 { return false }\n    }\n    return count == 0\n}",
             "difficulty": 3
+          },
+          {
+            "id": "v10",
+            "title": "First Last Equal",
+            "description": "Write <code>func firstLastEqual(nums []int) bool</code> - true if first element equals last element.",
+            "functionSignature": "func firstLastEqual(nums []int) bool",
+            "testCases": [
+              {
+                "input": "[]int{5, 2, 3, 5}",
+                "output": "true"
+              },
+              {
+                "input": "[]int{1, 2, 3}",
+                "output": "false"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "You need to compare the first and last elements. What are their indices?"
+              },
+              {
+                "title": "💡 Hint",
+                "content": "First element is at index 0, last is at index len(nums)-1. Just compare them directly."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. Get first element: nums[0]\n2. Get last element: nums[len(nums)-1]\n3. Return whether they're equal</pre>"
+              }
+            ],
+            "solution": "func firstLastEqual(nums []int) bool {\n    if len(nums) == 0 { return true }\n    return nums[0] == nums[len(nums)-1]\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v11",
+            "title": "No Decreases",
+            "description": "Write <code>func noDecreases(nums []int) bool</code> - true if array never decreases (each element >= previous). Adjacent pair comparison.",
+            "functionSignature": "func noDecreases(nums []int) bool",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 2, 3}",
+                "output": "true"
+              },
+              {
+                "input": "[]int{1, 3, 2, 4}",
+                "output": "false",
+                "note": "3→2 is a decrease"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Check adjacent pairs: each element should be >= the one before it."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Loop from index 1 onwards. Compare nums[i] with nums[i-1]. If nums[i] < nums[i-1], return false."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. For i from 1 to len:\n   - If nums[i] < nums[i-1] → return false\n2. Return true</pre>"
+              }
+            ],
+            "solution": "func noDecreases(nums []int) bool {\n    for i := 1; i < len(nums); i++ {\n        if nums[i] < nums[i-1] { return false }\n    }\n    return true\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v12",
+            "title": "Sum Symmetry",
+            "description": "Write <code>func sumSymmetry(nums []int) bool</code> - true if sum of first half equals sum of second half. Assume even length. Two-pointer to compare halves.",
+            "functionSignature": "func sumSymmetry(nums []int) bool",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 3, 2, 1}",
+                "output": "true",
+                "note": "1+2+3 = 3+2+1"
+              },
+              {
+                "input": "[]int{1, 2, 3, 4}",
+                "output": "false",
+                "note": "1+2 ≠ 3+4"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Calculate sum of first half, then sum of second half, then compare."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Loop from 0 to mid to get first sum. Loop from mid to end to get second sum. Compare them."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. mid := len/2\n2. sum1 := sum of nums[0:mid]\n3. sum2 := sum of nums[mid:]\n4. Return sum1 == sum2</pre>"
+              }
+            ],
+            "solution": "func sumSymmetry(nums []int) bool {\n    mid := len(nums) / 2\n    sum1, sum2 := 0, 0\n    for i := 0; i < mid; i++ {\n        sum1 += nums[i]\n    }\n    for i := mid; i < len(nums); i++ {\n        sum2 += nums[i]\n    }\n    return sum1 == sum2\n}",
+            "difficulty": 1
+          },
+          {
+            "id": "v13",
+            "title": "Distance Increasing",
+            "description": "Write <code>func distanceIncreasing(nums []int) bool</code> - true if distance between adjacent elements is always increasing. Distance = abs(nums[i] - nums[i-1]).",
+            "functionSignature": "func distanceIncreasing(nums []int) bool",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 5, 10}",
+                "output": "true",
+                "note": "Distances: 1, 3, 5 (increasing)"
+              },
+              {
+                "input": "[]int{1, 3, 4, 8}",
+                "output": "false",
+                "note": "Distances: 2, 1, 4 (not increasing)"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Calculate distance between each adjacent pair. Check if distances form an increasing sequence."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "Track previous distance. For each pair, calculate current distance, compare with previous, update previous."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. prevDist := first pair distance\n2. For each subsequent pair:\n   - Calculate currDist\n   - If currDist <= prevDist → return false\n   - prevDist = currDist\n3. Return true</pre>"
+              }
+            ],
+            "solution": "func distanceIncreasing(nums []int) bool {\n    if len(nums) < 3 { return true }\n    abs := func(x int) int {\n        if x < 0 { return -x }\n        return x\n    }\n    prevDist := abs(nums[1] - nums[0])\n    for i := 2; i < len(nums); i++ {\n        currDist := abs(nums[i] - nums[i-1])\n        if currDist <= prevDist { return false }\n        prevDist = currDist\n    }\n    return true\n}",
+            "difficulty": 1
           }
         ]
       },
@@ -4482,6 +4792,106 @@
             ],
             "solution": "func reverseWords(words []string) {\n    for i, j := 0, len(words)-1; i < j; i, j = i+1, j-1 {\n        words[i], words[j] = words[j], words[i]\n    }\n}",
             "difficulty": 2
+          },
+          {
+            "id": "v11",
+            "title": "Reverse Outer Pairs",
+            "difficulty": 1,
+            "description": "Write <code>func reverseOuterPairs(nums []int, k int)</code> that swaps k pairs from both ends: swap nums[0]↔nums[len-1], nums[1]↔nums[len-2], ..., k times. Two-pointer inward movement.",
+            "functionSignature": "func reverseOuterPairs(nums []int, k int)",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 4, 5, 6}, 2",
+                "output": "[6, 5, 3, 4, 2, 1]",
+                "note": "Swap 2 pairs from ends"
+              },
+              {
+                "input": "[]int{1, 2, 3, 4}, 1",
+                "output": "[4, 2, 3, 1]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Start with pointers at both ends. Swap, move both inward, repeat k times."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "left = 0, right = len-1. Loop k times: swap nums[left] with nums[right], then left++, right--."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. left := 0, right := len-1\n2. For i from 0 to k:\n   - Swap nums[left] ↔ nums[right]\n   - left++, right--</pre>"
+              }
+            ],
+            "solution": "func reverseOuterPairs(nums []int, k int) {\n    left, right := 0, len(nums)-1\n    for i := 0; i < k && left < right; i++ {\n        nums[left], nums[right] = nums[right], nums[left]\n        left++\n        right--\n    }\n}"
+          },
+          {
+            "id": "v12",
+            "title": "Outer to Inner Copy",
+            "difficulty": 1,
+            "description": "Write <code>func outerToInner(nums []int)</code> that copies outer elements to inner positions moving inward: [1,2,3,4,5,6] → [1,1,6,6,5,6]. Two pointers copy inward.",
+            "functionSignature": "func outerToInner(nums []int)",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 4, 5, 6}",
+                "output": "[1, 1, 6, 6, 5, 6]",
+                "note": "Outer values copy toward center"
+              },
+              {
+                "input": "[]int{10, 20, 30, 40}",
+                "output": "[10, 10, 40, 40]"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Start pointers at ends. Copy the outer values to the next inner positions, move inward."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "left = 0, right = len-1. While left < right-1: save outer values, move pointers inward, write saved values."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. left := 0, right := len-1\n2. While left < right-1:\n   - Copy nums[left] to nums[left+1]\n   - Copy nums[right] to nums[right-1]\n   - left++, right--</pre>"
+              }
+            ],
+            "solution": "func outerToInner(nums []int) {\n    left, right := 0, len(nums)-1\n    for left < right-1 {\n        leftVal, rightVal := nums[left], nums[right]\n        left++\n        right--\n        nums[left] = leftVal\n        nums[right] = rightVal\n    }\n}"
+          },
+          {
+            "id": "v13",
+            "title": "Reverse Alternating Pairs",
+            "difficulty": 1,
+            "description": "Write <code>func reverseAlternating(nums []int)</code> that reverses every other pair from outside in: swap positions 0↔last, skip next pair, swap 2↔(last-2), etc. Two pointers with conditional swapping.",
+            "functionSignature": "func reverseAlternating(nums []int)",
+            "testCases": [
+              {
+                "input": "[]int{1, 2, 3, 4, 5, 6, 7, 8}",
+                "output": "[8, 2, 7, 4, 5, 6, 3, 1]",
+                "note": "Swap pairs at positions (0,7) and (2,5), skip (1,6) and (3,4)"
+              },
+              {
+                "input": "[]int{1, 2, 3, 4}",
+                "output": "[4, 2, 3, 1]",
+                "note": "Swap (0,3), skip (1,2)"
+              }
+            ],
+            "hints": [
+              {
+                "title": "🤔 Think about it",
+                "content": "Start pointers at ends. Swap, move inward by 2 (skip next pair), swap again, repeat."
+              },
+              {
+                "title": "💡 Hint",
+                "content": "left = 0, right = len-1. While left < right: swap them, then left += 2, right -= 2 (to skip next pair)."
+              },
+              {
+                "title": "🔧 Pattern",
+                "content": "<pre>1. left := 0, right := len-1\n2. While left < right:\n   - Swap nums[left] ↔ nums[right]\n   - left += 2, right -= 2</pre>"
+              }
+            ],
+            "solution": "func reverseAlternating(nums []int) {\n    left, right := 0, len(nums)-1\n    for left < right {\n        nums[left], nums[right] = nums[right], nums[left]\n        left += 2\n        right -= 2\n    }\n}"
           }
         ]
       },

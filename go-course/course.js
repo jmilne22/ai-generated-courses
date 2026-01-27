@@ -644,6 +644,20 @@
         });
     }
 
+    // Helper function to pick a variant while avoiding the current one
+    function pickVariantFromPool(pool, currentVariant) {
+        if (!pool || pool.length === 0) return null;
+
+        // If there's only 1 variant, we have no choice but to return it
+        if (pool.length === 1) return pool[0];
+
+        // Try to pick a different variant from the current one
+        const available = pool.filter(v => !currentVariant || v.id !== currentVariant.id);
+        const finalPool = available.length > 0 ? available : pool;
+
+        return finalPool[Math.floor(Math.random() * finalPool.length)];
+    }
+
     function shuffleChallenges() {
         if (!variantsData || !variantsData.challenges) return;
 
@@ -657,34 +671,38 @@
             challenges.forEach(challenge => {
                 const easyVariants = challenge.variants.filter(v => getVariantDifficulty(v, challenge) === 1);
                 if (easyVariants.length === 0) {
-                    // No easy variants, skip this challenge
+                    // No easy variants, try medium as fallback
+                    const mediumVariants = challenge.variants.filter(v => getVariantDifficulty(v, challenge) === 2);
+                    if (mediumVariants.length === 0) return;
+
+                    const picked = pickVariantFromPool(mediumVariants, currentChallengeVariants[challenge.id]);
+                    if (picked) currentChallengeVariants[challenge.id] = picked;
                     return;
                 }
-                const current = currentChallengeVariants[challenge.id];
-                const available = easyVariants.filter(v => !current || v.id !== current.id);
-                const pool = available.length > 0 ? available : easyVariants;
-                currentChallengeVariants[challenge.id] = pool[Math.floor(Math.random() * pool.length)];
+                const picked = pickVariantFromPool(easyVariants, currentChallengeVariants[challenge.id]);
+                if (picked) currentChallengeVariants[challenge.id] = picked;
             });
         } else if (difficultyMode === 'hard') {
             // Hard mode: Only show hard variants
             challenges.forEach(challenge => {
                 const hardVariants = challenge.variants.filter(v => getVariantDifficulty(v, challenge) === 3);
                 if (hardVariants.length === 0) {
-                    // No hard variants, skip this challenge
+                    // No hard variants, try medium as fallback
+                    const mediumVariants = challenge.variants.filter(v => getVariantDifficulty(v, challenge) === 2);
+                    if (mediumVariants.length === 0) return;
+
+                    const picked = pickVariantFromPool(mediumVariants, currentChallengeVariants[challenge.id]);
+                    if (picked) currentChallengeVariants[challenge.id] = picked;
                     return;
                 }
-                const current = currentChallengeVariants[challenge.id];
-                const available = hardVariants.filter(v => !current || v.id !== current.id);
-                const pool = available.length > 0 ? available : hardVariants;
-                currentChallengeVariants[challenge.id] = pool[Math.floor(Math.random() * pool.length)];
+                const picked = pickVariantFromPool(hardVariants, currentChallengeVariants[challenge.id]);
+                if (picked) currentChallengeVariants[challenge.id] = picked;
             });
         } else if (difficultyMode === 'mixed') {
             // Original random shuffle
             challenges.forEach(challenge => {
-                const current = currentChallengeVariants[challenge.id];
-                const available = challenge.variants.filter(v => !current || v.id !== current.id);
-                const pool = available.length > 0 ? available : challenge.variants;
-                currentChallengeVariants[challenge.id] = pool[Math.floor(Math.random() * pool.length)];
+                const picked = pickVariantFromPool(challenge.variants, currentChallengeVariants[challenge.id]);
+                if (picked) currentChallengeVariants[challenge.id] = picked;
             });
         } else if (difficultyMode === 'balanced') {
             // Balanced shuffle - ensure difficulty distribution
@@ -731,15 +749,15 @@
                     }
                 }
 
-                // Pick random variant of target difficulty
+                // Pick random variant of target difficulty, avoiding current one
                 const pool = variantsByDifficulty[targetDifficulty];
                 if (pool && pool.length > 0) {
-                    currentChallengeVariants[challenge.id] = pool[Math.floor(Math.random() * pool.length)];
+                    const picked = pickVariantFromPool(pool, currentChallengeVariants[challenge.id]);
+                    if (picked) currentChallengeVariants[challenge.id] = picked;
                 } else {
                     // Fallback to any variant if no variants at target difficulty
-                    currentChallengeVariants[challenge.id] = challenge.variants[
-                        Math.floor(Math.random() * challenge.variants.length)
-                    ];
+                    const picked = pickVariantFromPool(challenge.variants, currentChallengeVariants[challenge.id]);
+                    if (picked) currentChallengeVariants[challenge.id] = picked;
                 }
             });
         } else if (difficultyMode === 'progressive') {
@@ -771,11 +789,11 @@
 
                 const pool = variantsByDifficulty[targetDifficulty];
                 if (pool && pool.length > 0) {
-                    currentChallengeVariants[challenge.id] = pool[Math.floor(Math.random() * pool.length)];
+                    const picked = pickVariantFromPool(pool, currentChallengeVariants[challenge.id]);
+                    if (picked) currentChallengeVariants[challenge.id] = picked;
                 } else {
-                    currentChallengeVariants[challenge.id] = challenge.variants[
-                        Math.floor(Math.random() * challenge.variants.length)
-                    ];
+                    const picked = pickVariantFromPool(challenge.variants, currentChallengeVariants[challenge.id]);
+                    if (picked) currentChallengeVariants[challenge.id] = picked;
                 }
             });
         }
