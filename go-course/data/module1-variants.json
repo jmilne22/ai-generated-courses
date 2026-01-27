@@ -299,6 +299,102 @@
               "Use <code>for i := 2; i <= 10; i += 2</code>"
             ],
             "solution": "for i := 2; i <= 10; i += 2 {\n    fmt.Println(i)\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Count by Twos",
+            "description": "Write a program that prints odd numbers from 1 to 9.",
+            "hints": [
+              "Use <code>for i := 1; i <= 9; i += 2</code>"
+            ],
+            "solution": "for i := 1; i <= 9; i += 2 {\n    fmt.Println(i)\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Sum First N Numbers",
+            "description": "Write a program that calculates and prints the sum of numbers from 1 to 5.",
+            "hints": [
+              "Create a <code>sum</code> variable",
+              "Add each number: <code>sum += i</code>"
+            ],
+            "solution": "sum := 0\nfor i := 1; i <= 5; i++ {\n    sum += i\n}\nfmt.Println(sum)  // 15"
+          },
+          {
+            "id": "v6",
+            "title": "Multiplication Table Row",
+            "description": "Write a program that prints the 3 times table from 3x1 to 3x5.",
+            "hints": [
+              "Loop from 1 to 5",
+              "Print <code>3 * i</code> each time"
+            ],
+            "solution": "for i := 1; i <= 5; i++ {\n    fmt.Printf(\"3 x %d = %d\\n\", i, 3*i)\n}"
+          },
+          {
+            "id": "v7",
+            "title": "Print Squares",
+            "description": "Write a program that prints the square of numbers from 1 to 4.",
+            "hints": [
+              "Square is <code>i * i</code>"
+            ],
+            "solution": "for i := 1; i <= 4; i++ {\n    fmt.Println(i * i)\n}"
+          },
+          {
+            "id": "v8",
+            "title": "Count Down by Threes",
+            "description": "Write a program that counts down from 15 to 0 by threes (15, 12, 9, 6, 3, 0).",
+            "hints": [
+              "Start at 15, use <code>i -= 3</code>"
+            ],
+            "solution": "for i := 15; i >= 0; i -= 3 {\n    fmt.Println(i)\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Fibonacci First N",
+            "description": "Write a program that prints the first 7 Fibonacci numbers (1, 1, 2, 3, 5, 8, 13).",
+            "hints": [
+              "Start with <code>a, b := 1, 1</code>",
+              "Each new number is the sum of the previous two"
+            ],
+            "solution": "a, b := 1, 1\nfor i := 0; i < 7; i++ {\n    fmt.Println(a)\n    a, b = b, a+b\n}"
+          },
+          {
+            "id": "v10",
+            "title": "Factorial",
+            "description": "Write a program that calculates and prints 5! (5 factorial = 5 \u00d7 4 \u00d7 3 \u00d7 2 \u00d7 1 = 120).",
+            "hints": [
+              "Start with <code>result := 1</code>",
+              "Multiply by each number: <code>result *= i</code>"
+            ],
+            "solution": "result := 1\nfor i := 1; i <= 5; i++ {\n    result *= i\n}\nfmt.Println(result)  // 120"
+          },
+          {
+            "id": "v11",
+            "title": "Skip Count by Fives",
+            "description": "Write a program that counts from 0 to 25 by fives (0, 5, 10, 15, 20, 25).",
+            "hints": [
+              "Use <code>for i := 0; i <= 25; i += 5</code>"
+            ],
+            "solution": "for i := 0; i <= 25; i += 5 {\n    fmt.Println(i)\n}"
+          },
+          {
+            "id": "v12",
+            "title": "Print Star Pattern",
+            "description": "Write a program that prints a triangle pattern of stars (1 star, then 2 stars, then 3 stars).",
+            "hints": [
+              "Outer loop controls rows",
+              "Inner loop prints stars: <code>for j := 0; j < i; j++</code>"
+            ],
+            "solution": "for i := 1; i <= 3; i++ {\n    for j := 0; j < i; j++ {\n        fmt.Print(\"*\")\n    }\n    fmt.Println()\n}"
+          },
+          {
+            "id": "v13",
+            "title": "Power of Two",
+            "description": "Write a program that prints powers of 2 from 2^0 to 2^5 (1, 2, 4, 8, 16, 32).",
+            "hints": [
+              "Start with <code>power := 1</code>",
+              "Double each time: <code>power *= 2</code>"
+            ],
+            "solution": "power := 1\nfor i := 0; i <= 5; i++ {\n    fmt.Println(power)\n    power *= 2\n}"
           }
         ]
       },
@@ -332,6 +428,100 @@
               "Chain if/else if based on temperature thresholds"
             ],
             "solution": "func tempFeel(celsius int) string {\n    if celsius < 0 {\n        return \"freezing\"\n    } else if celsius <= 15 {\n        return \"cold\"\n    } else if celsius <= 25 {\n        return \"warm\"\n    }\n    return \"hot\"\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Grade Letter",
+            "description": "Write <code>func gradeLetter(score int) string</code> that returns \"A\" (>=90), \"B\" (>=80), \"C\" (>=70), \"D\" (>=60), or \"F\" (<60).",
+            "hints": [
+              "Use chained if/else if statements",
+              "Check highest grade first"
+            ],
+            "solution": "func gradeLetter(score int) string {\n    if score >= 90 {\n        return \"A\"\n    } else if score >= 80 {\n        return \"B\"\n    } else if score >= 70 {\n        return \"C\"\n    } else if score >= 60 {\n        return \"D\"\n    }\n    return \"F\"\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Voting Eligibility",
+            "description": "Write <code>func canVote(age int) string</code> that returns \"can vote\" if age >= 18, else \"too young\".",
+            "hints": [
+              "Simple comparison with 18"
+            ],
+            "solution": "func canVote(age int) string {\n    if age >= 18 {\n        return \"can vote\"\n    }\n    return \"too young\"\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Discount Eligibility",
+            "description": "Write <code>func getDiscount(age int) string</code> that returns \"senior discount\" (>=65), \"student discount\" (<=25), or \"no discount\".",
+            "hints": [
+              "Check senior first, then student, then default"
+            ],
+            "solution": "func getDiscount(age int) string {\n    if age >= 65 {\n        return \"senior discount\"\n    } else if age <= 25 {\n        return \"student discount\"\n    }\n    return \"no discount\"\n}"
+          },
+          {
+            "id": "v7",
+            "title": "Positive or Negative",
+            "description": "Write <code>func posNegZero(n int) string</code> that returns \"positive\", \"negative\", or \"zero\".",
+            "hints": [
+              "Check if n > 0, n < 0, or else it's zero"
+            ],
+            "solution": "func posNegZero(n int) string {\n    if n > 0 {\n        return \"positive\"\n    } else if n < 0 {\n        return \"negative\"\n    }\n    return \"zero\"\n}"
+          },
+          {
+            "id": "v8",
+            "title": "Speed Limit",
+            "description": "Write <code>func speedCheck(speed int) string</code> that returns \"safe\" (<=60), \"warning\" (61-80), or \"ticket\" (>80).",
+            "hints": [
+              "Use ranges for different categories"
+            ],
+            "solution": "func speedCheck(speed int) string {\n    if speed <= 60 {\n        return \"safe\"\n    } else if speed <= 80 {\n        return \"warning\"\n    }\n    return \"ticket\"\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Age Category",
+            "description": "Write <code>func ageCategory(age int) string</code> that returns \"child\" if age < 13, \"teen\" if age < 20, else \"adult\".",
+            "hints": [
+              "Use multiple if/else if statements",
+              "Check conditions from smallest to largest"
+            ],
+            "solution": "func ageCategory(age int) string {\n    if age < 13 {\n        return \"child\"\n    } else if age < 20 {\n        return \"teen\"\n    }\n    return \"adult\"\n}"
+          },
+          {
+            "id": "v10",
+            "title": "BMI Category",
+            "description": "Write <code>func bmiCategory(bmi float64) string</code> that returns \"underweight\" if bmi < 18.5, \"normal\" if bmi < 25, else \"overweight\".",
+            "hints": [
+              "Use <code>else if</code> for the middle condition"
+            ],
+            "solution": "func bmiCategory(bmi float64) string {\n    if bmi < 18.5 {\n        return \"underweight\"\n    } else if bmi < 25 {\n        return \"normal\"\n    }\n    return \"overweight\"\n}"
+          },
+          {
+            "id": "v11",
+            "title": "Season from Month",
+            "description": "Write <code>func season(month int) string</code> that returns \"winter\" for 12-2, \"spring\" for 3-5, \"summer\" for 6-8, \"fall\" for 9-11.",
+            "hints": [
+              "Use multiple if/else if conditions",
+              "Check ranges like <code>month >= 3 && month <= 5</code>"
+            ],
+            "solution": "func season(month int) string {\n    if month == 12 || month <= 2 {\n        return \"winter\"\n    } else if month <= 5 {\n        return \"spring\"\n    } else if month <= 8 {\n        return \"summer\"\n    }\n    return \"fall\"\n}"
+          },
+          {
+            "id": "v12",
+            "title": "Weekend or Weekday",
+            "description": "Write <code>func dayType(day string) string</code> that returns \"weekend\" if day is \"Saturday\" or \"Sunday\", else \"weekday\".",
+            "hints": [
+              "Use <code>||</code> (OR) operator",
+              "Check: <code>if day == \"Saturday\" || day == \"Sunday\"</code>"
+            ],
+            "solution": "func dayType(day string) string {\n    if day == \"Saturday\" || day == \"Sunday\" {\n        return \"weekend\"\n    }\n    return \"weekday\"\n}"
+          },
+          {
+            "id": "v13",
+            "title": "Password Strength",
+            "description": "Write <code>func passwordStrength(length int) string</code> that returns \"weak\" if length < 8, \"medium\" if length < 12, else \"strong\".",
+            "hints": [
+              "Simple if/else if chain based on length thresholds"
+            ],
+            "solution": "func passwordStrength(length int) string {\n    if length < 8 {\n        return \"weak\"\n    } else if length < 12 {\n        return \"medium\"\n    }\n    return \"strong\"\n}"
           }
         ]
       },
@@ -367,6 +557,103 @@
               "Create: <code>foods := []string{\"pizza\", \"sushi\", \"tacos\"}</code>"
             ],
             "solution": "foods := []string{\"pizza\", \"sushi\", \"tacos\"}\nfor _, food := range foods {\n    fmt.Println(food)\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Sum Slice",
+            "description": "Create a slice of numbers, then calculate and print their sum.",
+            "hints": [
+              "Create a sum variable before the loop",
+              "Add each number: <code>sum += num</code>"
+            ],
+            "solution": "nums := []int{10, 20, 30}\nsum := 0\nfor _, num := range nums {\n    sum += num\n}\nfmt.Println(sum)  // 60"
+          },
+          {
+            "id": "v5",
+            "title": "Count Items",
+            "description": "Create a slice of fruits and print how many items are in it.",
+            "hints": [
+              "Use <code>len(fruits)</code> to get the count"
+            ],
+            "solution": "fruits := []string{\"apple\", \"banana\", \"orange\", \"grape\"}\nfmt.Println(len(fruits))  // 4"
+          },
+          {
+            "id": "v6",
+            "title": "Names List",
+            "description": "Create a slice of names and print each with a greeting: \"Hello, Alice!\"",
+            "hints": [
+              "Use <code>fmt.Printf(\"Hello, %s!\\n\", name)</code>"
+            ],
+            "solution": "names := []string{\"Alice\", \"Bob\", \"Charlie\"}\nfor _, name := range names {\n    fmt.Printf(\"Hello, %s!\\n\", name)\n}"
+          },
+          {
+            "id": "v7",
+            "title": "Test Scores",
+            "description": "Create a slice of test scores and print each one with its position: \"Test 1: 85\"",
+            "hints": [
+              "Use the index in the range loop",
+              "Add 1 to the index for human-readable numbering"
+            ],
+            "solution": "scores := []int{85, 92, 78, 95}\nfor i, score := range scores {\n    fmt.Printf(\"Test %d: %d\\n\", i+1, score)\n}"
+          },
+          {
+            "id": "v8",
+            "title": "Reverse Print",
+            "description": "Create a slice of 3 animals and print them in reverse order using a regular for loop.",
+            "hints": [
+              "Start from <code>len(animals)-1</code>",
+              "Count down: <code>i--</code>"
+            ],
+            "solution": "animals := []string{\"cat\", \"dog\", \"bird\"}\nfor i := len(animals) - 1; i >= 0; i-- {\n    fmt.Println(animals[i])\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Find Maximum",
+            "description": "Write <code>func findMax(nums []int) int</code> that returns the largest number in the slice.",
+            "hints": [
+              "Start with <code>max := nums[0]</code>",
+              "Use range to compare each number"
+            ],
+            "solution": "func findMax(nums []int) int {\n    max := nums[0]\n    for _, n := range nums {\n        if n > max {\n            max = n\n        }\n    }\n    return max\n}"
+          },
+          {
+            "id": "v10",
+            "title": "Find Minimum",
+            "description": "Write <code>func findMin(nums []int) int</code> that returns the smallest number in the slice.",
+            "hints": [
+              "Start with <code>min := nums[0]</code>",
+              "Compare each number: <code>if n < min</code>"
+            ],
+            "solution": "func findMin(nums []int) int {\n    min := nums[0]\n    for _, n := range nums {\n        if n < min {\n            min = n\n        }\n    }\n    return min\n}"
+          },
+          {
+            "id": "v11",
+            "title": "Calculate Average",
+            "description": "Write <code>func average(nums []float64) float64</code> that returns the average of all numbers.",
+            "hints": [
+              "Sum all numbers first",
+              "Divide by length: <code>sum / float64(len(nums))</code>"
+            ],
+            "solution": "func average(nums []float64) float64 {\n    sum := 0.0\n    for _, n := range nums {\n        sum += n\n    }\n    return sum / float64(len(nums))\n}"
+          },
+          {
+            "id": "v12",
+            "title": "Contains Check",
+            "description": "Write <code>func contains(items []string, target string) bool</code> that returns true if target is in items.",
+            "hints": [
+              "Use range to check each item",
+              "Return true immediately when found"
+            ],
+            "solution": "func contains(items []string, target string) bool {\n    for _, item := range items {\n        if item == target {\n            return true\n        }\n    }\n    return false\n}"
+          },
+          {
+            "id": "v13",
+            "title": "First N Elements",
+            "description": "Write <code>func firstN(items []string, n int) []string</code> that returns the first n elements of the slice.",
+            "hints": [
+              "Use slice syntax: <code>items[:n]</code>"
+            ],
+            "solution": "func firstN(items []string, n int) []string {\n    return items[:n]\n}"
           }
         ]
       },
@@ -401,6 +688,102 @@
               "Map syntax: <code>map[string]string{\"France\": \"Paris\"}</code>"
             ],
             "solution": "capitals := map[string]string{\n    \"France\": \"Paris\",\n    \"Japan\":  \"Tokyo\",\n}\nfor country, capital := range capitals {\n    fmt.Printf(\"%s: %s\\n\", country, capital)\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Inventory Count",
+            "description": "Create a map of product names to quantities in stock, then print each item and count.",
+            "hints": [
+              "Map syntax: <code>map[string]int{\"shirt\": 15}</code>"
+            ],
+            "solution": "inventory := map[string]int{\n    \"shirt\": 15,\n    \"pants\": 8,\n    \"hat\":   20,\n}\nfor item, count := range inventory {\n    fmt.Printf(\"%s: %d in stock\\n\", item, count)\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Student Grades",
+            "description": "Create a map of student names to their letter grades, then print each student and grade.",
+            "hints": [
+              "Map syntax: <code>map[string]string{\"Alice\": \"A\"}</code>"
+            ],
+            "solution": "grades := map[string]string{\n    \"Alice\": \"A\",\n    \"Bob\":   \"B\",\n    \"Carol\": \"A\",\n}\nfor student, grade := range grades {\n    fmt.Printf(\"%s: %s\\n\", student, grade)\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Phone Book",
+            "description": "Create a map of names to phone numbers, then print each entry.",
+            "hints": [
+              "Phone numbers can be strings: <code>\"555-1234\"</code>"
+            ],
+            "solution": "phonebook := map[string]string{\n    \"Alice\": \"555-1234\",\n    \"Bob\":   \"555-5678\",\n}\nfor name, phone := range phonebook {\n    fmt.Printf(\"%s: %s\\n\", name, phone)\n}"
+          },
+          {
+            "id": "v7",
+            "title": "Menu Prices",
+            "description": "Create a map of menu items to their prices (use integers for cents), then print the menu.",
+            "hints": [
+              "Store cents as int: 250 for $2.50",
+              "Divide by 100.0 when printing"
+            ],
+            "solution": "menu := map[string]int{\n    \"burger\": 850,\n    \"fries\":  350,\n    \"soda\":   200,\n}\nfor item, cents := range menu {\n    fmt.Printf(\"%s: $%.2f\\n\", item, float64(cents)/100.0)\n}"
+          },
+          {
+            "id": "v8",
+            "title": "Room Numbers",
+            "description": "Create a map of employee names to their office room numbers, then print the directory.",
+            "hints": [
+              "Map syntax: <code>map[string]int{\"Alice\": 101}</code>"
+            ],
+            "solution": "offices := map[string]int{\n    \"Alice\": 101,\n    \"Bob\":   102,\n    \"Carol\": 105,\n}\nfor name, room := range offices {\n    fmt.Printf(\"%s - Room %d\\n\", name, room)\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Most Common Value",
+            "description": "Write <code>func mostCommon(counts map[string]int) string</code> that returns the key with the highest value.",
+            "hints": [
+              "Track max value and corresponding key",
+              "Loop through map with range"
+            ],
+            "solution": "func mostCommon(counts map[string]int) string {\n    maxKey := \"\"\n    maxVal := 0\n    for k, v := range counts {\n        if v > maxVal {\n            maxVal = v\n            maxKey = k\n        }\n    }\n    return maxKey\n}"
+          },
+          {
+            "id": "v10",
+            "title": "Merge Maps",
+            "description": "Write <code>func mergeMaps(m1, m2 map[string]int) map[string]int</code> that combines both maps (m2 overwrites m1 on conflicts).",
+            "hints": [
+              "Create new result map",
+              "Copy all from m1, then all from m2"
+            ],
+            "solution": "func mergeMaps(m1, m2 map[string]int) map[string]int {\n    result := make(map[string]int)\n    for k, v := range m1 {\n        result[k] = v\n    }\n    for k, v := range m2 {\n        result[k] = v\n    }\n    return result\n}"
+          },
+          {
+            "id": "v11",
+            "title": "Filter by Value",
+            "description": "Write <code>func filterByValue(m map[string]int, threshold int) map[string]int</code> that returns only entries where value >= threshold.",
+            "hints": [
+              "Create new map for results",
+              "Only add entries that meet the condition"
+            ],
+            "solution": "func filterByValue(m map[string]int, threshold int) map[string]int {\n    result := make(map[string]int)\n    for k, v := range m {\n        if v >= threshold {\n            result[k] = v\n        }\n    }\n    return result\n}"
+          },
+          {
+            "id": "v12",
+            "title": "Key Exists Multiple",
+            "description": "Write <code>func hasAllKeys(m map[string]int, keys []string) bool</code> that returns true if all keys exist in the map.",
+            "hints": [
+              "Loop through keys slice",
+              "Use comma-ok idiom: <code>_, ok := m[key]</code>"
+            ],
+            "solution": "func hasAllKeys(m map[string]int, keys []string) bool {\n    for _, key := range keys {\n        if _, ok := m[key]; !ok {\n            return false\n        }\n    }\n    return true\n}"
+          },
+          {
+            "id": "v13",
+            "title": "Invert Map",
+            "description": "Write <code>func invertMap(m map[string]string) map[string]string</code> that swaps keys and values.",
+            "hints": [
+              "Create new map where values become keys",
+              "Loop: <code>result[v] = k</code>"
+            ],
+            "solution": "func invertMap(m map[string]string) map[string]string {\n    result := make(map[string]string)\n    for k, v := range m {\n        result[v] = k\n    }\n    return result\n}"
           }
         ]
       },
@@ -436,6 +819,106 @@
               "Use <code>fmt.Printf(\"%T\", age)</code> to print type"
             ],
             "solution": "age := 25\nheight := 5.9\nname := \"Alice\"\nfmt.Printf(\"age: %d (%T)\\n\", age, age)\nfmt.Printf(\"height: %.1f (%T)\\n\", height, height)\nfmt.Printf(\"name: %s (%T)\\n\", name, name)"
+          },
+          {
+            "id": "v4",
+            "title": "Calculate Area",
+            "description": "Create variables for width (5.0) and height (3.0), calculate the area, and print it.",
+            "hints": [
+              "Area is width * height",
+              "Use <code>:=</code> for short declaration"
+            ],
+            "solution": "width := 5.0\nheight := 3.0\narea := width * height\nfmt.Println(area)  // 15"
+          },
+          {
+            "id": "v5",
+            "title": "String Concatenation",
+            "description": "Create variables for first name and last name, then create and print a full name.",
+            "hints": [
+              "Concatenate with <code>+</code>",
+              "Don't forget the space between names"
+            ],
+            "solution": "firstName := \"John\"\nlastName := \"Doe\"\nfullName := firstName + \" \" + lastName\nfmt.Println(fullName)  // John Doe"
+          },
+          {
+            "id": "v6",
+            "title": "Boolean Logic",
+            "description": "Create two boolean variables, then print their AND and OR results.",
+            "hints": [
+              "AND: <code>a && b</code>",
+              "OR: <code>a || b</code>"
+            ],
+            "solution": "a := true\nb := false\nfmt.Println(a && b)  // false\nfmt.Println(a || b)  // true"
+          },
+          {
+            "id": "v7",
+            "title": "Temperature Conversion",
+            "description": "Create a celsius variable (25), convert it to Fahrenheit (F = C * 9/5 + 32), and print both.",
+            "hints": [
+              "Formula: <code>fahrenheit := celsius * 9 / 5 + 32</code>",
+              "Use float64 for decimal precision"
+            ],
+            "solution": "celsius := 25.0\nfahrenheit := celsius * 9 / 5 + 32\nfmt.Printf(\"%.1fC = %.1fF\\n\", celsius, fahrenheit)  // 25.0C = 77.0F"
+          },
+          {
+            "id": "v8",
+            "title": "Shopping Total",
+            "description": "Create variables for three item prices, calculate the total, then apply a 10% discount and print the final price.",
+            "hints": [
+              "Total: <code>price1 + price2 + price3</code>",
+              "Discount: <code>total * 0.9</code>"
+            ],
+            "solution": "item1 := 10.0\nitem2 := 25.5\nitem3 := 8.75\ntotal := item1 + item2 + item3\nfinal := total * 0.9\nfmt.Printf(\"Total: $%.2f, After discount: $%.2f\\n\", total, final)"
+          },
+          {
+            "id": "v9",
+            "title": "Pythagorean Theorem",
+            "description": "Write a program that calculates the hypotenuse c given sides a=3 and b=4 using c = sqrt(a\u00b2 + b\u00b2). Print the result.",
+            "hints": [
+              "Use <code>math.Sqrt()</code> function",
+              "Formula: <code>c := math.Sqrt(a*a + b*b)</code>"
+            ],
+            "solution": "import \"math\"\n\na := 3.0\nb := 4.0\nc := math.Sqrt(a*a + b*b)\nfmt.Println(c)  // 5"
+          },
+          {
+            "id": "v10",
+            "title": "Compound Interest",
+            "description": "Write a program that calculates compound interest. Given principal=1000, rate=0.05, time=2, calculate amount = principal * (1 + rate)^time. Print result.",
+            "hints": [
+              "Use <code>math.Pow()</code> for exponentiation",
+              "Formula: <code>amount := principal * math.Pow(1+rate, time)</code>"
+            ],
+            "solution": "import \"math\"\n\nprincipal := 1000.0\nrate := 0.05\ntime := 2.0\namount := principal * math.Pow(1+rate, time)\nfmt.Println(amount)  // 1102.5"
+          },
+          {
+            "id": "v11",
+            "title": "Temperature Conversion",
+            "description": "Write a program that converts 100\u00b0F to Celsius using the formula C = (F - 32) * 5/9. Print the result.",
+            "hints": [
+              "Use parentheses for correct order of operations",
+              "Formula: <code>celsius := (fahrenheit - 32) * 5 / 9</code>"
+            ],
+            "solution": "fahrenheit := 100.0\ncelsius := (fahrenheit - 32) * 5 / 9\nfmt.Println(celsius)  // 37.777..."
+          },
+          {
+            "id": "v12",
+            "title": "Circle Circumference",
+            "description": "Write a program that calculates the circumference of a circle with radius 7 using C = 2\u03c0r. Print the result.",
+            "hints": [
+              "Use <code>math.Pi</code> constant",
+              "Formula: <code>circumference := 2 * math.Pi * radius</code>"
+            ],
+            "solution": "import \"math\"\n\nradius := 7.0\ncircumference := 2 * math.Pi * radius\nfmt.Println(circumference)  // 43.98..."
+          },
+          {
+            "id": "v13",
+            "title": "Distance Formula",
+            "description": "Write a program that calculates distance between points (1,2) and (4,6) using d = sqrt((x2-x1)\u00b2 + (y2-y1)\u00b2). Print result.",
+            "hints": [
+              "Calculate differences first: <code>dx := x2 - x1</code>",
+              "Use <code>math.Sqrt(dx*dx + dy*dy)</code>"
+            ],
+            "solution": "import \"math\"\n\nx1, y1 := 1.0, 2.0\nx2, y2 := 4.0, 6.0\ndx := x2 - x1\ndy := y2 - y1\ndist := math.Sqrt(dx*dx + dy*dy)\nfmt.Println(dist)  // 5"
           }
         ]
       },
@@ -471,6 +954,106 @@
               "Last char: <code>string(s[len(s)-1])</code>"
             ],
             "solution": "func firstLast(s string) (string, string) {\n    return string(s[0]), string(s[len(s)-1])\n}\n\n// Usage:\nf, l := firstLast(\"hello\")\nfmt.Println(f, l)  // h o"
+          },
+          {
+            "id": "v4",
+            "title": "Split Name",
+            "description": "Write <code>func splitName(fullName string) (string, string)</code> that splits \"John Doe\" into first and last name (assume one space).",
+            "hints": [
+              "Find the space with a simple loop or assume fixed position",
+              "For warmup, you can hardcode the split at index 4 for \"John Doe\""
+            ],
+            "solution": "func splitName(fullName string) (string, string) {\n    // Simple version: find space\n    for i, ch := range fullName {\n        if ch == ' ' {\n            return fullName[:i], fullName[i+1:]\n        }\n    }\n    return fullName, \"\"\n}\n\n// Usage:\nfirst, last := splitName(\"John Doe\")\nfmt.Println(first, last)  // John Doe"
+          },
+          {
+            "id": "v5",
+            "title": "Circle Properties",
+            "description": "Write <code>func circleProps(radius float64) (float64, float64)</code> that returns circumference and area (use 3.14 for pi).",
+            "hints": [
+              "Circumference: <code>2 * pi * radius</code>",
+              "Area: <code>pi * radius * radius</code>"
+            ],
+            "solution": "func circleProps(radius float64) (float64, float64) {\n    pi := 3.14\n    circumference := 2 * pi * radius\n    area := pi * radius * radius\n    return circumference, area\n}\n\n// Usage:\nc, a := circleProps(5.0)\nfmt.Printf(\"Circumference: %.2f, Area: %.2f\\n\", c, a)"
+          },
+          {
+            "id": "v6",
+            "title": "Bounds Check",
+            "description": "Write <code>func inRange(n, min, max int) (bool, string)</code> that returns true/\"in range\" if n is between min and max, else false/\"out of range\".",
+            "hints": [
+              "Check if <code>n >= min && n <= max</code>",
+              "Return both the boolean and a message"
+            ],
+            "solution": "func inRange(n, min, max int) (bool, string) {\n    if n >= min && n <= max {\n        return true, \"in range\"\n    }\n    return false, \"out of range\"\n}\n\n// Usage:\nok, msg := inRange(15, 10, 20)\nfmt.Println(ok, msg)  // true in range"
+          },
+          {
+            "id": "v7",
+            "title": "Quotient and Remainder",
+            "description": "Write <code>func divide(dividend, divisor int) (int, int)</code> that returns quotient and remainder.",
+            "hints": [
+              "Quotient: <code>dividend / divisor</code>",
+              "Remainder: <code>dividend % divisor</code>"
+            ],
+            "solution": "func divide(dividend, divisor int) (int, int) {\n    quotient := dividend / divisor\n    remainder := dividend % divisor\n    return quotient, remainder\n}\n\n// Usage:\nq, r := divide(17, 5)\nfmt.Println(q, r)  // 3 2"
+          },
+          {
+            "id": "v8",
+            "title": "String Info",
+            "description": "Write <code>func stringInfo(s string) (int, string)</code> that returns the length and the first character as a string.",
+            "hints": [
+              "Length: <code>len(s)</code>",
+              "First char: <code>string(s[0])</code>"
+            ],
+            "solution": "func stringInfo(s string) (int, string) {\n    length := len(s)\n    firstChar := string(s[0])\n    return length, firstChar\n}\n\n// Usage:\nlen, first := stringInfo(\"hello\")\nfmt.Println(len, first)  // 5 h"
+          },
+          {
+            "id": "v9",
+            "title": "Parse Int with Error",
+            "description": "Write <code>func parsePositive(s string) (int, error)</code> that converts string to int. Return error if conversion fails or number is negative.",
+            "hints": [
+              "Use <code>strconv.Atoi(s)</code> to convert",
+              "Check if result < 0 and return custom error"
+            ],
+            "solution": "import (\n    \"errors\"\n    \"strconv\"\n)\n\nfunc parsePositive(s string) (int, error) {\n    n, err := strconv.Atoi(s)\n    if err != nil {\n        return 0, err\n    }\n    if n < 0 {\n        return 0, errors.New(\"negative number\")\n    }\n    return n, nil\n}"
+          },
+          {
+            "id": "v10",
+            "title": "Validate Range",
+            "description": "Write <code>func validateRange(n, min, max int) (int, bool)</code> that returns (n, true) if n is in [min,max], else (0, false).",
+            "hints": [
+              "Check condition: <code>n >= min && n <= max</code>",
+              "Return the value with a boolean flag"
+            ],
+            "solution": "func validateRange(n, min, max int) (int, bool) {\n    if n >= min && n <= max {\n        return n, true\n    }\n    return 0, false\n}"
+          },
+          {
+            "id": "v11",
+            "title": "String Split at Position",
+            "description": "Write <code>func splitAt(s string, pos int) (string, string, bool)</code> that splits string at position. Return false if pos is out of bounds.",
+            "hints": [
+              "Check if <code>pos >= 0 && pos <= len(s)</code>",
+              "Use slice notation: <code>s[:pos]</code> and <code>s[pos:]</code>"
+            ],
+            "solution": "func splitAt(s string, pos int) (string, string, bool) {\n    if pos < 0 || pos > len(s) {\n        return \"\", \"\", false\n    }\n    return s[:pos], s[pos:], true\n}"
+          },
+          {
+            "id": "v12",
+            "title": "Find First Occurrence",
+            "description": "Write <code>func findFirst(items []string, target string) (int, bool)</code> that returns (index, true) if found, else (-1, false).",
+            "hints": [
+              "Use range to get both index and value",
+              "Return immediately when target is found"
+            ],
+            "solution": "func findFirst(items []string, target string) (int, bool) {\n    for i, item := range items {\n        if item == target {\n            return i, true\n        }\n    }\n    return -1, false\n}"
+          },
+          {
+            "id": "v13",
+            "title": "Min and Max",
+            "description": "Write <code>func minMax(nums []int) (int, int)</code> that returns both the minimum and maximum values in one call.",
+            "hints": [
+              "Initialize both to first element",
+              "Update both in one loop using range"
+            ],
+            "solution": "func minMax(nums []int) (int, int) {\n    min, max := nums[0], nums[0]\n    for _, n := range nums {\n        if n < min {\n            min = n\n        }\n        if n > max {\n            max = n\n        }\n    }\n    return min, max\n}"
           }
         ]
       }

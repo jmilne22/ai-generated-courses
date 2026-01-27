@@ -186,7 +186,8 @@
     const currentVariants = {};
     const currentWarmupVariants = {};
     const currentChallengeVariants = {};
-    let currentConceptFilter = null; // null = show all
+    let currentConceptFilter = null; // null = show all (for challenges)
+    let currentWarmupConceptFilter = null; // null = show all (for warmups)
 
     // Unified difficulty mode: 'mixed', 'balanced', 'progressive', 'easy', 'hard'
     let difficultyMode = 'balanced';
@@ -329,6 +330,7 @@
 
     function loadVariants() {
         variantsData = window.variantsDataEmbedded;
+        setupWarmupConceptFilter();  // Setup warmup filter
         shuffleWarmups();
         // Setup filters in reverse order (they insert before container, so last becomes first)
         setupConceptFilter();        // Will be 2nd (pattern filter)
@@ -337,11 +339,59 @@
         shuffleVariants();
     }
 
+    function getUniqueWarmupConcepts() {
+        if (!variantsData || !variantsData.warmups) return [];
+        const concepts = new Set();
+        variantsData.warmups.forEach(w => {
+            if (w.concept) concepts.add(w.concept);
+        });
+        return Array.from(concepts).sort();
+    }
+
+    function setupWarmupConceptFilter() {
+        const container = document.getElementById('warmups-container');
+        if (!container) return;
+
+        // Check if filter already exists
+        if (document.getElementById('warmup-concept-filter')) return;
+
+        const concepts = getUniqueWarmupConcepts();
+        if (concepts.length === 0) return;
+
+        const filterDiv = document.createElement('div');
+        filterDiv.id = 'warmup-concept-filter';
+        filterDiv.className = 'concept-filter';
+        filterDiv.innerHTML = `
+            <span class="concept-filter-label">🎯 Focus on a specific concept:</span>
+            <div class="concept-filter-buttons">
+                <button class="concept-btn active" data-concept="">All Concepts</button>
+                ${concepts.map(c => `<button class="concept-btn" data-concept="${c}">${c}</button>`).join('')}
+            </div>
+        `;
+
+        container.parentNode.insertBefore(filterDiv, container);
+
+        // Add click handlers
+        filterDiv.querySelectorAll('.concept-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterDiv.querySelectorAll('.concept-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentWarmupConceptFilter = btn.dataset.concept || null;
+                shuffleWarmups();
+            });
+        });
+    }
+
     function shuffleWarmups() {
         if (!variantsData || !variantsData.warmups) return;
 
+        // Filter warmups by concept if active
+        const warmups = currentWarmupConceptFilter
+            ? variantsData.warmups.filter(w => w.concept === currentWarmupConceptFilter)
+            : variantsData.warmups;
+
         // Pick a random variant for each warmup
-        variantsData.warmups.forEach(warmup => {
+        warmups.forEach(warmup => {
             const current = currentWarmupVariants[warmup.id];
             const available = warmup.variants.filter(v => !current || v.id !== current.id);
             const pool = available.length > 0 ? available : warmup.variants;
@@ -368,9 +418,81 @@
         const container = document.getElementById('warmups-container');
         if (!container || !variantsData || !variantsData.warmups) return;
 
+        // Filter warmups by concept if active
+        const warmups = currentWarmupConceptFilter
+            ? variantsData.warmups.filter(w => w.concept === currentWarmupConceptFilter)
+            : variantsData.warmups;
+
         let html = '';
 
-        variantsData.warmups.forEach((warmup, idx) => {
+        if (warmups.length === 0) {
+            html = '<p style="color: var(--text-dim); text-align: center;">No warmups match this filter.</p>';
+            container.innerHTML = html;
+            return;
+        }
+
+        // When filtering by concept, show 5 random variants for practice
+        if (currentWarmupConceptFilter) {
+            // Collect all variants from the filtered warmup(s)
+            const allVariants = [];
+            warmups.forEach(warmup => {
+                warmup.variants.forEach(variant => {
+                    allVariants.push({ variant, warmup });
+                });
+            });
+
+            // Shuffle and pick 5
+            const shuffled = allVariants.sort(() => Math.random() - 0.5);
+            const selected = shuffled.slice(0, 5);
+
+            html += `<p style="color: var(--green-bright); font-size: 0.9rem; margin: 0 0 1rem; font-weight: 600;">Practicing: ${currentWarmupConceptFilter} (${selected.length} of ${allVariants.length} variants)</p>`;
+
+            selected.forEach((item, idx) => {
+                const conceptLink = window.conceptLinks[item.warmup.concept];
+                const conceptHtml = conceptLink
+                    ? `<a href="${conceptLink}" class="concept-link" style="color: var(--green-dim); opacity: 0.8;">(${item.warmup.concept} ↗)</a>`
+                    : `<span style="font-size: 0.75rem; opacity: 0.6; color: var(--text-dim);">(${item.warmup.concept})</span>`;
+
+                html += `<div class="exercise">
+                    <h4>Warmup ${idx + 1}: ${item.variant.title} ${conceptHtml}</h4>
+                    <p>${item.variant.description}</p>`;
+
+                // Add hints
+                if (item.variant.hints) {
+                    item.variant.hints.forEach((hint) => {
+                        const title = typeof hint === 'object' ? hint.title : '💡 Hint';
+                        const content = typeof hint === 'object' ? hint.content : hint;
+                        html += `<details>
+                            <summary>${title}</summary>
+                            <div class="hint-content">${content}</div>
+                        </details>`;
+                    });
+                }
+
+                // Add solution
+                html += `<details>
+                    <summary>✅ Solution</summary>
+                    <div class="hint-content"><pre>${escapeHtml(item.variant.solution)}</pre></div>
+                </details>`;
+
+                // Add expected output if available
+                if (item.variant.expected) {
+                    html += `<div class="expected">
+                        <div class="expected-title">Expected Output</div>
+                        <pre>${escapeHtml(item.variant.expected)}</pre>
+                    </div>`;
+                }
+
+                html += '</div>';
+            });
+
+            container.innerHTML = html;
+            container.querySelectorAll('.exercise').forEach(initThinkingTimer);
+            return;
+        }
+
+        // No filter active - show one variant per warmup
+        warmups.forEach((warmup, idx) => {
             const variant = currentWarmupVariants[warmup.id];
             const num = idx + 1;
 
@@ -401,6 +523,14 @@
                 <summary>✅ Solution</summary>
                 <div class="hint-content"><pre>${escapeHtml(variant.solution)}</pre></div>
             </details>`;
+
+            // Add expected output if available
+            if (variant.expected) {
+                html += `<div class="expected">
+                    <div class="expected-title">Expected Output</div>
+                    <pre>${escapeHtml(variant.expected)}</pre>
+                </div>`;
+            }
 
             html += '</div>';
         });
