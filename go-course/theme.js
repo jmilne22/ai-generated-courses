@@ -95,15 +95,19 @@
         const startParam = params.get(SESSION_PARAM_START);
         const minutesParam = params.get(SESSION_PARAM_MINUTES);
 
-        if (!startParam || !minutesParam) return null;
+        if (!minutesParam) return null;
 
-        const startAt = Number(startParam);
+        let startAt = startParam ? Number(startParam) : null;
         const minutes = Number(minutesParam);
         if (!Number.isFinite(startAt) || !Number.isFinite(minutes) || minutes <= 0) return null;
 
         const paused = params.get(SESSION_PARAM_PAUSED) === '1';
         const remainingParam = params.get(SESSION_PARAM_REMAINING);
         const remainingSeconds = remainingParam ? Number(remainingParam) : null;
+
+        if (!Number.isFinite(startAt)) {
+            startAt = Date.now();
+        }
 
         return {
             startAt,
@@ -276,6 +280,18 @@
         const floatingTimer = document.getElementById('floating-session-timer');
 
         if (!session) {
+            if (dashboardTimer) {
+                const durationSelect = document.getElementById('session-duration');
+                const minutes = durationSelect ? Number(durationSelect.value) || 25 : 25;
+                setSessionInUrl({
+                    startAt: Date.now(),
+                    minutes,
+                    paused: true,
+                    remainingSeconds: minutes * 60
+                });
+                updateSessionTimer();
+                return;
+            }
             if (dashboardTimer) dashboardTimer.hidden = true;
             if (floatingTimer) floatingTimer.remove();
             if (sessionInterval) {
