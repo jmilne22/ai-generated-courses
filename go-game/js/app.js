@@ -49,6 +49,14 @@
             var levelSpan = item.querySelector('.nav-level');
             if (levelSpan && skill) levelSpan.textContent = 'LV ' + skill.level;
         });
+
+        // Update confidant ranks in sidebar
+        document.querySelectorAll('.nav-item[data-view^="confidant-"]').forEach(function(item) {
+            var confId = item.dataset.view.replace('confidant-', '');
+            var conf = window.GameState.getConfidant(confId);
+            var levelSpan = item.querySelector('.nav-level');
+            if (levelSpan && conf) levelSpan.textContent = 'Rank ' + conf.rank;
+        });
     }
 
     function buildSidebar() {
@@ -84,11 +92,39 @@
         html += navItem('projects', 'Side Projects', '\u2692');
         html += '</div>';
 
+        // PART-TIME JOBS
+        html += '<div class="nav-section"><div class="nav-section-title">Part-Time</div>';
+        html += navItem('jobs', 'Jobs', '💼');
+        html += '</div>';
+
         // STATUS section
         html += '<div class="nav-section"><div class="nav-section-title">Status</div>';
         html += navItem('stats', 'Stats', 'S');
         html += navItem('calendar', 'Calendar', 'C');
         html += navItem('exams', 'Exams', 'E');
+        html += '</div>';
+
+        // CONFIDANTS
+        html += '<div class="nav-section"><div class="nav-section-title">Confidants</div>';
+        var confidantList = [
+            { id: 'morgana', icon: '🐱', name: 'Morgana' },
+            { id: 'makoto', icon: '📚', name: 'Makoto' },
+            { id: 'futaba', icon: '🦊', name: 'Futaba' }
+        ];
+        confidantList.forEach(function(c) {
+            var confState = window.GameState ? window.GameState.getConfidant(c.id) : { rank: 1, unlocked: false };
+            if (confState.unlocked) {
+                html += '<div class="nav-item" data-view="confidant-' + c.id + '">' +
+                    '<span class="nav-icon">' + c.icon + '</span>' +
+                    '<span class="nav-label">' + c.name + '</span>' +
+                    '<span class="nav-level">Rank ' + confState.rank + '</span></div>';
+            } else {
+                html += '<div class="nav-item locked" style="opacity:0.4;pointer-events:none">' +
+                    '<span class="nav-icon">🔒</span>' +
+                    '<span class="nav-label">' + c.name + '</span>' +
+                    '<span class="nav-level">Locked</span></div>';
+            }
+        });
         html += '</div>';
 
         // VELVET ROOM
@@ -148,6 +184,17 @@
             return;
         }
 
+        // Handle confidant views
+        if (viewId.startsWith('confidant-')) {
+            var confidantView = document.getElementById('view-confidant');
+            if (confidantView) {
+                confidantView.classList.add('active');
+                var confidantId = viewId.replace('confidant-', '');
+                if (window.Confidants) window.Confidants.renderConfidantView(confidantId);
+            }
+            return;
+        }
+
         // Show target view
         var target = document.getElementById('view-' + viewId);
         if (target) {
@@ -163,7 +210,11 @@
                 if (window.Mementos) window.Mementos.renderMementosView();
                 break;
             case 'palace':
-                renderPalaceView();
+                if (window.PalaceMode) {
+                    window.PalaceMode.renderPalaceView();
+                } else {
+                    renderPalaceView();
+                }
                 break;
             case 'stats':
                 if (window.Skills) window.Skills.renderStatsView();
@@ -179,6 +230,9 @@
                 break;
             case 'velvet':
                 if (window.VelvetRoom) window.VelvetRoom.renderVelvetRoom();
+                break;
+            case 'jobs':
+                if (window.Jobs) window.Jobs.renderJobsView();
                 break;
             case 'settings':
                 renderSettingsView();

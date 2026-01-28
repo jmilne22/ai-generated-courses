@@ -54,7 +54,31 @@
         { topic: 'Strings', question: 'How do you efficiently build a string from many parts?', answers: ['strings.Builder', 'Concatenation with +', 'fmt.Sprintf in a loop', 'bytes.Buffer only'], correct: 0, difficulty: 3 },
         { topic: 'Gotchas', question: 'What does fmt.Println(len("\uD83C\uDF89")) print?', answers: ['4 (bytes, not characters)', '1', '2', 'Error'], correct: 0, difficulty: 3 },
         { topic: 'Gotchas', question: 'What happens if you use := with an already declared variable?', answers: ['Error, unless at least one var on the left is new', 'Overwrites the variable', 'Creates a new variable', 'Always works fine'], correct: 0, difficulty: 3 },
-        { topic: 'Gotchas', question: 'What does _ (underscore) mean in Go?', answers: ['Discard/ignore that value', 'Private variable', 'Null value', 'Wildcard'], correct: 0, difficulty: 1 }
+        { topic: 'Gotchas', question: 'What does _ (underscore) mean in Go?', answers: ['Discard/ignore that value', 'Private variable', 'Null value', 'Wildcard'], correct: 0, difficulty: 1 },
+        // Type System questions
+        { topic: 'Pointers', question: 'What does the * operator do with a pointer?', answers: ['Dereferences (gets the value)', 'Gets the address', 'Multiplies', 'Creates a pointer'], correct: 0, difficulty: 1 },
+        { topic: 'Pointers', question: 'What does the & operator do?', answers: ['Gets the address of a variable', 'Dereferences a pointer', 'Bitwise AND', 'Creates a reference'], correct: 0, difficulty: 1 },
+        { topic: 'Pointers', question: 'What is the zero value of a pointer?', answers: ['nil', '0', 'null', 'undefined'], correct: 0, difficulty: 1 },
+        { topic: 'Pointers', question: 'Why use pointers in function parameters?', answers: ['To modify the original value', 'For faster execution', 'Required by Go', 'To return multiple values'], correct: 0, difficulty: 2 },
+        { topic: 'Pointers', question: 'What happens if you dereference a nil pointer?', answers: ['Panic (runtime error)', 'Returns zero value', 'Compilation error', 'Returns nil'], correct: 0, difficulty: 2 },
+        { topic: 'Structs', question: 'How do you access a struct field?', answers: ['dot notation: s.Field', 'bracket notation: s["Field"]', 'arrow: s->Field', 'get function: get(s, Field)'], correct: 0, difficulty: 1 },
+        { topic: 'Structs', question: 'What is the zero value of a struct field?', answers: ['Zero value of its type', 'nil', 'undefined', 'Must be initialized'], correct: 0, difficulty: 1 },
+        { topic: 'Structs', question: 'Which fields are exported from a package?', answers: ['Capitalized fields', 'All fields', 'Fields with export keyword', 'Fields in main package'], correct: 0, difficulty: 1 },
+        { topic: 'Structs', question: 'Can you compare structs with ==?', answers: ['Yes, if all fields are comparable', 'Never', 'Always', 'Only with reflect.DeepEqual'], correct: 0, difficulty: 2 },
+        { topic: 'Structs', question: 'What are struct tags used for?', answers: ['Metadata for encoding (JSON, etc)', 'Documentation', 'Type checking', 'Memory alignment'], correct: 0, difficulty: 2 },
+        { topic: 'Methods', question: 'What is a method receiver?', answers: ['The type the method is attached to', 'The return value', 'The first parameter', 'The caller'], correct: 0, difficulty: 1 },
+        { topic: 'Methods', question: 'When should you use a pointer receiver?', answers: ['When the method modifies the receiver', 'Always', 'Never', 'Only for large structs'], correct: 0, difficulty: 2 },
+        { topic: 'Methods', question: 'Can you call a pointer method on a value?', answers: ['Yes, Go auto-converts', 'No, compilation error', 'Only in main package', 'Only with explicit &'], correct: 0, difficulty: 2 },
+        { topic: 'Methods', question: 'What interface does String() string implement?', answers: ['fmt.Stringer', 'io.Writer', 'fmt.Formatter', 'error'], correct: 0, difficulty: 2 },
+        { topic: 'Interfaces', question: 'How does a type implement an interface in Go?', answers: ['Implicitly, by having the methods', 'With implements keyword', 'By extending the interface', 'With a decorator'], correct: 0, difficulty: 1 },
+        { topic: 'Interfaces', question: 'What is the empty interface (any)?', answers: ['Accepts any type', 'Has no methods defined', 'Both A and B', 'Causes compilation error'], correct: 2, difficulty: 2 },
+        { topic: 'Interfaces', question: 'What does a type assertion do?', answers: ['Extracts concrete type from interface', 'Converts between types', 'Checks for nil', 'Creates an interface'], correct: 0, difficulty: 2 },
+        { topic: 'Interfaces', question: 'What does the "comma ok" pattern return for type assertion?', answers: ['value, bool (success)', 'value, error', 'value only', 'bool only'], correct: 0, difficulty: 2 },
+        { topic: 'Interfaces', question: 'What is a type switch?', answers: ['Switch on interface\'s concrete type', 'Switch with type parameters', 'Generic switch statement', 'Switch that returns types'], correct: 0, difficulty: 2 },
+        { topic: 'Embedding', question: 'What does struct embedding promote?', answers: ['Fields and methods', 'Only fields', 'Only methods', 'Nothing automatically'], correct: 0, difficulty: 2 },
+        { topic: 'Embedding', question: 'Is embedding the same as inheritance?', answers: ['No, it\'s composition', 'Yes, exactly the same', 'Only for interfaces', 'Depends on the type'], correct: 0, difficulty: 2 },
+        { topic: 'Embedding', question: 'How do you access shadowed embedded methods?', answers: ['Through the embedded type name', 'Cannot access them', 'With super keyword', 'With parent keyword'], correct: 0, difficulty: 3 },
+        { topic: 'Embedding', question: 'Can you embed multiple types in one struct?', answers: ['Yes', 'No, only one', 'Only interfaces', 'Only pointers'], correct: 0, difficulty: 2 }
     ];
 
     var EXAMS = [
@@ -62,6 +86,7 @@
         { id: 'midterm_2', name: 'Midterm Exam 2', subtitle: 'Collections', questionsCount: 7, timePerQuestion: 18, requiredExercises: 15, statBoost: 'knowledge', topics: ['Slices', 'Maps', 'Loops', 'Strings'] },
         { id: 'final_1', name: 'Final Exam', subtitle: 'Algorithms & Patterns', questionsCount: 10, timePerQuestion: 15, requiredExercises: 30, statBoost: 'knowledge', topics: ['Two Pointers', 'Sliding Window', 'Binary Search', 'Recursion', 'Stack', 'Map Tracking', 'Complexity'] },
         { id: 'midterm_3', name: 'Midterm Exam 3', subtitle: 'Advanced Patterns', questionsCount: 8, timePerQuestion: 15, requiredExercises: 50, statBoost: 'proficiency', topics: ['Complexity', 'Map Tracking', 'Errors', 'Gotchas', 'Strings'] },
+        { id: 'type_system', name: 'Type System Exam', subtitle: 'Pointers, Structs & Interfaces', questionsCount: 10, timePerQuestion: 15, requiredExercises: 40, statBoost: 'guts', topics: ['Pointers', 'Structs', 'Methods', 'Interfaces', 'Embedding'] },
         { id: 'final_2', name: 'Final Exam 2', subtitle: 'Mastery', questionsCount: 12, timePerQuestion: 12, requiredExercises: 80, statBoost: 'proficiency', topics: null }
     ];
 

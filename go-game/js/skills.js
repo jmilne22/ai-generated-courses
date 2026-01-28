@@ -99,28 +99,60 @@
         if (trainBtn) {
             trainBtn.addEventListener('click', function() {
                 if (window.GameAudio) window.GameAudio.playMenuSelect();
-                // Switch to training ground with concept filter
-                if (window.App) window.App.navigateTo('training');
+
                 // Find the concept name for this skill
                 var conceptName = null;
-                if (exerciseData && exerciseData.challenges) {
-                    exerciseData.challenges.forEach(function(c) {
-                        if (c.concept && conceptKey(c.concept) === skillKey) {
-                            conceptName = c.concept;
-                        }
-                    });
+                var exerciseData = window.Combat ? window.Combat.getExerciseData() : null;
+                var conceptKey = window.GameState ? window.GameState.conceptToSkillKey : function(c) { return c; };
+
+                if (exerciseData) {
+                    // Check warmups
+                    if (exerciseData.warmups) {
+                        exerciseData.warmups.forEach(function(w) {
+                            if (w.concept && conceptKey(w.concept) === skillKey) {
+                                conceptName = w.concept;
+                            }
+                        });
+                    }
+                    // Check challenges
+                    if (exerciseData.challenges) {
+                        exerciseData.challenges.forEach(function(c) {
+                            if (c.concept && conceptKey(c.concept) === skillKey) {
+                                conceptName = c.concept;
+                            }
+                        });
+                    }
                 }
-                if (conceptName && window.Combat) {
-                    setTimeout(function() {
+
+                // Navigate to training ground
+                if (window.App) window.App.navigateTo('training');
+
+                // Set the filter after a short delay to let the view render
+                setTimeout(function() {
+                    if (conceptName && window.Combat) {
                         window.Combat.setConceptFilter(conceptName);
-                        // Also click the matching concept button
+
+                        // Update UI to show active filter
                         var btns = document.querySelectorAll('#challenge-concept-filter .concept-btn');
                         btns.forEach(function(b) {
                             b.classList.remove('active');
                             if (b.dataset.concept === conceptName) b.classList.add('active');
                         });
-                    }, 100);
-                }
+
+                        // Also set warmup filter
+                        var warmupBtns = document.querySelectorAll('#warmup-concept-filter .concept-btn');
+                        warmupBtns.forEach(function(b) {
+                            b.classList.remove('active');
+                            if (b.dataset.concept === conceptName) b.classList.add('active');
+                        });
+
+                        // Scroll to challenges section
+                        var challengesSection = document.querySelector('#challenges-container');
+                        if (challengesSection) {
+                            challengesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }
+                }, 150);
             });
         }
     }

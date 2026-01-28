@@ -173,6 +173,22 @@
             });
         }
 
+        // Confidant Tip (from any unlocked confidant)
+        if (window.Confidants && exercise.concept) {
+            var skillKey = window.GameState ? window.GameState.conceptToSkillKey(exercise.concept) : null;
+            if (skillKey) {
+                var confTip = window.Confidants.getConfidantTip(skillKey);
+                if (confTip) {
+                    var tipClass = confTip.confidantId === 'morgana' ? 'morgana-tip' :
+                                   confTip.confidantId === 'futaba' ? 'futaba-tip' :
+                                   confTip.confidantId === 'makoto' ? 'makoto-tip' : 'confidant-tip';
+                    html += '<details class="' + tipClass + '"><summary>' + confTip.title +
+                        ' <span class="party-assist-label">[' + confTip.member + ']</span></summary>' +
+                        '<div class="hint-content">' + confTip.content + '</div></details>';
+                }
+            }
+        }
+
         // Solution
         html += '<details><summary>Solution</summary>' +
             '<div class="hint-content"><pre>' + escapeHtml(variant.solution) + '</pre></div></details>';
@@ -648,6 +664,8 @@
         shuffleChallenges: shuffleChallenges,
         setConceptFilter: function(concept) {
             currentConceptFilter = concept || null;
+            currentWarmupConceptFilter = concept || null;
+            shuffleWarmups();
             shuffleChallenges();
         }
     };

@@ -13,7 +13,12 @@
     "Switch": "#lesson-if",
     "Binary Search": "#lesson-slices",
     "Stack Pattern": "#lesson-slices",
-    "String Building": "#lesson-slices"
+    "String Building": "#lesson-slices",
+    "Pointers": "#lesson-pointers",
+    "Structs": "#lesson-structs",
+    "Methods": "#lesson-methods",
+    "Interfaces": "#lesson-interfaces",
+    "Embedding": "#lesson-embedding"
   },
   "sharedContent": {
     "advanced_1": {
@@ -10842,6 +10847,1175 @@
               }
             ],
             "solution": "func lengthOfLongestSubstring(s string) int {\n    lastSeen := map[byte]int{}\n    left, maxLen := 0, 0\n    for right := 0; right < len(s); right++ {\n        if idx, ok := lastSeen[s[right]]; ok && idx >= left {\n            left = idx + 1\n        }\n        lastSeen[s[right]] = right\n        if right-left+1 > maxLen {\n            maxLen = right - left + 1\n        }\n    }\n    return maxLen\n}"
+          }
+        ]
+      },
+      {
+        "id": "pointers_1",
+        "concept": "Pointers",
+        "difficulty": 2,
+        "patternPrimer": {
+          "bruteForce": "Pass values directly - but changes won't persist outside the function.",
+          "bestApproach": "Use pointers to modify values in place. Remember: & gets address, * dereferences.",
+          "typical": "O(1) for pointer operations"
+        },
+        "variants": [
+          {
+            "id": "v1",
+            "title": "Double It",
+            "difficulty": 1,
+            "description": "Write <code>func double(n *int)</code> that doubles the value at the pointer.",
+            "functionSignature": "func double(n *int)",
+            "testCases": [
+              { "input": "x := 5; double(&x)", "output": "x == 10" },
+              { "input": "x := 0; double(&x)", "output": "x == 0" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "To modify a value through a pointer, you need to dereference it with <code>*</code>" },
+              { "title": "💡 Hint", "content": "<code>*n</code> gives you the value. <code>*n = something</code> sets it." },
+              { "title": "🔧 Pattern", "content": "<pre>*n = *n * 2</pre>" }
+            ],
+            "solution": "func double(n *int) {\n    *n = *n * 2\n}"
+          },
+          {
+            "id": "v2",
+            "title": "Increment Value",
+            "difficulty": 1,
+            "description": "Write <code>func increment(n *int)</code> that adds 1 to the value at the pointer.",
+            "functionSignature": "func increment(n *int)",
+            "testCases": [
+              { "input": "x := 5; increment(&x)", "output": "x == 6" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Dereference and increment: <code>*n++</code> or <code>*n = *n + 1</code>" }
+            ],
+            "solution": "func increment(n *int) {\n    *n++\n}"
+          },
+          {
+            "id": "v3",
+            "title": "Swap Values",
+            "difficulty": 1,
+            "description": "Write <code>func swap(a, b *int)</code> that swaps two integers via pointers.",
+            "functionSignature": "func swap(a, b *int)",
+            "testCases": [
+              { "input": "x, y := 1, 2; swap(&x, &y)", "output": "x == 2, y == 1" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Classic swap needs a temp variable. But you're swapping what the pointers point TO." },
+              { "title": "💡 Hint", "content": "Go can do parallel assignment: <code>*a, *b = *b, *a</code>" }
+            ],
+            "solution": "func swap(a, b *int) {\n    *a, *b = *b, *a\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Set to Zero",
+            "difficulty": 1,
+            "description": "Write <code>func reset(n *int)</code> that sets the pointed value to 0.",
+            "functionSignature": "func reset(n *int)",
+            "testCases": [
+              { "input": "x := 42; reset(&x)", "output": "x == 0" }
+            ],
+            "hints": [
+              { "title": "💡 Hint", "content": "<code>*n = 0</code>" }
+            ],
+            "solution": "func reset(n *int) {\n    *n = 0\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Nil Check",
+            "difficulty": 2,
+            "description": "Write <code>func safeDouble(n *int) int</code> that returns doubled value, or 0 if pointer is nil.",
+            "functionSignature": "func safeDouble(n *int) int",
+            "testCases": [
+              { "input": "x := 5; safeDouble(&x)", "output": "10" },
+              { "input": "safeDouble(nil)", "output": "0" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Always check for nil before dereferencing!" },
+              { "title": "💡 Hint", "content": "<code>if n == nil { return 0 }</code>" }
+            ],
+            "solution": "func safeDouble(n *int) int {\n    if n == nil {\n        return 0\n    }\n    return *n * 2\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Increment All",
+            "difficulty": 2,
+            "description": "Write <code>func incrementAll(nums []*int)</code> that adds 1 to each value pointed to.",
+            "functionSignature": "func incrementAll(nums []*int)",
+            "testCases": [
+              { "input": "a, b := 1, 2; incrementAll([]*int{&a, &b})", "output": "a == 2, b == 3" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Loop through the slice of pointers, dereference each one." },
+              { "title": "💡 Hint", "content": "<code>for _, p := range nums { *p++ }</code>" }
+            ],
+            "solution": "func incrementAll(nums []*int) {\n    for _, p := range nums {\n        *p++\n    }\n}"
+          },
+          {
+            "id": "v7",
+            "title": "Max Via Pointer",
+            "difficulty": 2,
+            "description": "Write <code>func setToMax(target *int, vals []int)</code> that sets target to the max value in vals.",
+            "functionSignature": "func setToMax(target *int, vals []int)",
+            "testCases": [
+              { "input": "x := 0; setToMax(&x, []int{3, 7, 2})", "output": "x == 7" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Find the max, then assign it through the pointer." },
+              { "title": "💡 Hint", "content": "After finding max: <code>*target = maxVal</code>" }
+            ],
+            "solution": "func setToMax(target *int, vals []int) {\n    if len(vals) == 0 {\n        return\n    }\n    max := vals[0]\n    for _, v := range vals[1:] {\n        if v > max {\n            max = v\n        }\n    }\n    *target = max\n}"
+          },
+          {
+            "id": "v8",
+            "title": "Scale Array",
+            "difficulty": 2,
+            "description": "Write <code>func scale(nums []int, factor int)</code> that multiplies each element by factor in-place.",
+            "functionSignature": "func scale(nums []int, factor int)",
+            "testCases": [
+              { "input": "nums := []int{1, 2, 3}; scale(nums, 2)", "output": "nums == [2, 4, 6]" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Slices are reference types - modifying elements affects the original." },
+              { "title": "💡 Hint", "content": "<code>for i := range nums { nums[i] *= factor }</code>" }
+            ],
+            "solution": "func scale(nums []int, factor int) {\n    for i := range nums {\n        nums[i] *= factor\n    }\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Return New or Modify",
+            "difficulty": 3,
+            "description": "Write <code>func getOrCreate(p **int) *int</code> that returns *p if not nil, else creates new int(0) and sets *p to it.",
+            "functionSignature": "func getOrCreate(p **int) *int",
+            "testCases": [
+              { "input": "var ptr *int; getOrCreate(&ptr)", "output": "*ptr == 0" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Double pointer lets you modify where a pointer points." },
+              { "title": "💡 Hint", "content": "<code>if *p == nil { *p = new(int) }</code>" }
+            ],
+            "solution": "func getOrCreate(p **int) *int {\n    if *p == nil {\n        *p = new(int)\n    }\n    return *p\n}"
+          },
+          {
+            "id": "v10",
+            "title": "Pointer Arithmetic Alternative",
+            "difficulty": 3,
+            "description": "Write <code>func sumViaPointers(nums []int) int</code> using a pointer to iterate (Go doesn't have pointer arithmetic, but you can use index + address).",
+            "functionSignature": "func sumViaPointers(nums []int) int",
+            "testCases": [
+              { "input": "sumViaPointers([]int{1, 2, 3})", "output": "6" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "In Go, use <code>&nums[i]</code> to get pointer to element i." },
+              { "title": "💡 Hint", "content": "Loop with index, get pointer, dereference and add." }
+            ],
+            "solution": "func sumViaPointers(nums []int) int {\n    sum := 0\n    for i := range nums {\n        p := &nums[i]\n        sum += *p\n    }\n    return sum\n}"
+          },
+          {
+            "id": "v11",
+            "title": "Value vs Reference",
+            "difficulty": 1,
+            "description": "What prints? <code>x := 5; y := x; y = 10; fmt.Println(x)</code> - Why doesn't x change?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "In Go, assignment copies the value. y gets a COPY of x." },
+              { "title": "💡 Hint", "content": "x stays 5 because y is independent. To share, you'd need pointers." }
+            ],
+            "solution": "x := 5\ny := x   // y gets a COPY of 5\ny = 10   // only changes y\nfmt.Println(x)  // 5 - x unchanged"
+          },
+          {
+            "id": "v12",
+            "title": "Pointer Comparison",
+            "difficulty": 2,
+            "description": "Given <code>a := 5; b := 5; pa := &a; pb := &b</code> - is <code>pa == pb</code>? Is <code>*pa == *pb</code>?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Pointer comparison checks if they point to the SAME memory address." },
+              { "title": "💡 Hint", "content": "pa != pb (different addresses), but *pa == *pb (same value)." }
+            ],
+            "solution": "a := 5\nb := 5\npa := &a\npb := &b\n\nfmt.Println(pa == pb)   // false - different addresses\nfmt.Println(*pa == *pb) // true - same value"
+          },
+          {
+            "id": "v13",
+            "title": "Return Pointer from Function",
+            "difficulty": 2,
+            "description": "Write <code>func newInt(val int) *int</code> that returns a pointer to a new int with the given value.",
+            "functionSignature": "func newInt(val int) *int",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Go allows returning pointers to local variables - they escape to heap." },
+              { "title": "💡 Hint", "content": "<code>return &val</code> or use <code>new(int)</code>" }
+            ],
+            "solution": "func newInt(val int) *int {\n    return &val  // Go moves this to heap\n}"
+          },
+          {
+            "id": "v14",
+            "title": "Why Pointer Failed",
+            "difficulty": 2,
+            "description": "Bug hunt: <code>func broken(n *int) { n = new(int); *n = 42 }</code> - Why doesn't the caller see 42?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "The function receives a COPY of the pointer. Reassigning n only changes the local copy." },
+              { "title": "💡 Hint", "content": "To change where a pointer points, you need **int (pointer to pointer)." }
+            ],
+            "solution": "func broken(n *int) {\n    n = new(int)  // Changes LOCAL copy of pointer\n    *n = 42       // Modifies the new int, not caller's\n}\n\n// Caller's pointer still points to original!\n// Fix: func fixed(n **int) or return *int"
+          },
+          {
+            "id": "v15",
+            "title": "Slice Already Reference",
+            "difficulty": 2,
+            "description": "Write <code>func doubleAll(nums []int)</code> - do you need a pointer? Why or why not?",
+            "functionSignature": "func doubleAll(nums []int)",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Slices contain a pointer to the underlying array. Modifying elements works!" },
+              { "title": "💡 Hint", "content": "No pointer needed for modifying elements. Pointer needed only for append/reslice." }
+            ],
+            "solution": "func doubleAll(nums []int) {\n    for i := range nums {\n        nums[i] *= 2  // Works! Slice header has pointer to array\n    }\n}\n\n// But if you need to GROW the slice (append), use *[]int"
+          },
+          {
+            "id": "v16",
+            "title": "Map is Reference Type",
+            "difficulty": 2,
+            "description": "Write <code>func addEntry(m map[string]int, k string, v int)</code> - why no pointer needed?",
+            "functionSignature": "func addEntry(m map[string]int, k string, v int)",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Maps are reference types - the map value IS a pointer to the data structure." }
+            ],
+            "solution": "func addEntry(m map[string]int, k string, v int) {\n    m[k] = v  // Works! Map is already a reference type\n}"
+          },
+          {
+            "id": "v17",
+            "title": "Pointer in Struct",
+            "difficulty": 3,
+            "description": "Define <code>Node</code> struct with Value int and Next *Node for a linked list node.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Self-referential structs require pointers - can't embed Node directly." }
+            ],
+            "solution": "type Node struct {\n    Value int\n    Next  *Node  // Must be pointer - can't embed Node in Node\n}\n\n// Create linked list: 1 -> 2 -> 3\nn3 := &Node{Value: 3, Next: nil}\nn2 := &Node{Value: 2, Next: n3}\nn1 := &Node{Value: 1, Next: n2}"
+          },
+          {
+            "id": "v18",
+            "title": "String Pointer Optional",
+            "difficulty": 3,
+            "description": "Why use <code>*string</code> instead of <code>string</code>? Write a struct field that's \"optional\" (can be absent vs empty).",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Empty string \"\" vs not-provided are different! Pointer can be nil." },
+              { "title": "💡 Hint", "content": "Common in JSON APIs: null vs \"\" have different meanings." }
+            ],
+            "solution": "type UserUpdate struct {\n    Name *string  // nil = don't update, \"\" = set to empty\n}\n\n// Checking:\nif u.Name != nil {\n    // Field was provided\n    actualName := *u.Name  // Could be \"\" or \"John\"\n}"
+          },
+          {
+            "id": "v19",
+            "title": "Pointer vs new()",
+            "difficulty": 1,
+            "description": "What's the difference between <code>p := &int{}</code> (error!), <code>p := new(int)</code>, and <code>x := 0; p := &x</code>?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "<code>new(T)</code> allocates zeroed memory and returns *T. Can't do &literal for primitives." }
+            ],
+            "solution": "// These work:\np1 := new(int)      // *int pointing to 0\nx := 0; p2 := &x    // *int pointing to x\n\n// This doesn't work:\n// p := &5          // Can't take address of literal\n\n// But structs can use &Type{}:\np3 := &Point{X: 1}  // Works for composite literals"
+          },
+          {
+            "id": "v20",
+            "title": "Modify String Characters",
+            "difficulty": 3,
+            "description": "Strings are immutable. To 'modify' a string, what type do you convert to? Write code to uppercase first char.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Convert to []byte or []rune, modify, convert back. Pointers won't help here!" },
+              { "title": "💡 Hint", "content": "For ASCII: []byte. For Unicode: []rune" }
+            ],
+            "solution": "func upperFirst(s string) string {\n    if s == \"\" {\n        return s\n    }\n    runes := []rune(s)\n    runes[0] = unicode.ToUpper(runes[0])\n    return string(runes)\n}\n\n// Strings are immutable - no pointer can change them in place"
+          }
+        ]
+      },
+      {
+        "id": "structs_1",
+        "concept": "Structs",
+        "difficulty": 2,
+        "patternPrimer": {
+          "bruteForce": "Use separate variables for related data.",
+          "bestApproach": "Group related data into structs. Use pointers when you need to modify.",
+          "typical": "O(1) for field access"
+        },
+        "variants": [
+          {
+            "id": "v1",
+            "title": "Create a Point",
+            "difficulty": 1,
+            "description": "Define a <code>Point</code> struct with X and Y int fields. Create one at (3, 4).",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Structs group related data. Fields are capitalized if exported." },
+              { "title": "💡 Hint", "content": "<code>type Point struct { X, Y int }</code>" }
+            ],
+            "solution": "type Point struct {\n    X, Y int\n}\n\np := Point{X: 3, Y: 4}\nfmt.Println(p)"
+          },
+          {
+            "id": "v2",
+            "title": "Player Stats",
+            "difficulty": 1,
+            "description": "Define a <code>Player</code> with Name (string), HP (int), Level (int). Create \"Joker\" with 100 HP at level 1.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Each field gets a type. String for text, int for numbers." },
+              { "title": "💡 Hint", "content": "<code>Player{Name: \"Joker\", HP: 100, Level: 1}</code>" }
+            ],
+            "solution": "type Player struct {\n    Name  string\n    HP    int\n    Level int\n}\n\np := Player{Name: \"Joker\", HP: 100, Level: 1}\nfmt.Println(p)"
+          },
+          {
+            "id": "v3",
+            "title": "Default Values",
+            "difficulty": 1,
+            "description": "Create a <code>Config</code> struct with Host string and Port int. What are the zero values when you do <code>Config{}</code>?",
+            "hints": [
+              { "title": "💡 Hint", "content": "String zero value is \"\", int zero value is 0" }
+            ],
+            "solution": "type Config struct {\n    Host string\n    Port int\n}\n\nc := Config{}\nfmt.Println(c.Host)  // \"\" (empty string)\nfmt.Println(c.Port)  // 0"
+          },
+          {
+            "id": "v4",
+            "title": "Rectangle Area",
+            "difficulty": 2,
+            "description": "Define <code>Rectangle</code> with Width and Height. Write <code>func area(r Rectangle) int</code>.",
+            "functionSignature": "func area(r Rectangle) int",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Access fields with dot notation: r.Width" },
+              { "title": "💡 Hint", "content": "Area = width × height" }
+            ],
+            "solution": "type Rectangle struct {\n    Width, Height int\n}\n\nfunc area(r Rectangle) int {\n    return r.Width * r.Height\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Struct Pointer",
+            "difficulty": 2,
+            "description": "Write <code>func levelUp(p *Player)</code> that increments the player's Level by 1.",
+            "functionSignature": "func levelUp(p *Player)",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "To modify a struct, pass a pointer to it." },
+              { "title": "💡 Hint", "content": "Go lets you use <code>p.Level</code> even with pointers (auto-deref)." }
+            ],
+            "solution": "func levelUp(p *Player) {\n    p.Level++\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Nested Structs",
+            "difficulty": 2,
+            "description": "Define <code>Address</code> with City string. Define <code>Person</code> with Name string and Home Address. Create a person in Tokyo.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Structs can contain other structs as fields." },
+              { "title": "💡 Hint", "content": "<code>Person{Name: \"Ren\", Home: Address{City: \"Tokyo\"}}</code>" }
+            ],
+            "solution": "type Address struct {\n    City string\n}\n\ntype Person struct {\n    Name string\n    Home Address\n}\n\np := Person{Name: \"Ren\", Home: Address{City: \"Tokyo\"}}\nfmt.Println(p.Home.City)  // Tokyo"
+          },
+          {
+            "id": "v7",
+            "title": "Constructor Function",
+            "difficulty": 2,
+            "description": "Write <code>func NewPlayer(name string) *Player</code> that creates a Player with 100 HP, level 1.",
+            "functionSignature": "func NewPlayer(name string) *Player",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Return a pointer to a new struct with default values set." },
+              { "title": "💡 Hint", "content": "<code>return &Player{Name: name, HP: 100, Level: 1}</code>" }
+            ],
+            "solution": "func NewPlayer(name string) *Player {\n    return &Player{\n        Name:  name,\n        HP:    100,\n        Level: 1,\n    }\n}"
+          },
+          {
+            "id": "v8",
+            "title": "Struct Comparison",
+            "difficulty": 2,
+            "description": "Write <code>func samePoint(a, b Point) bool</code> that checks if two points are equal.",
+            "functionSignature": "func samePoint(a, b Point) bool",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Structs with comparable fields can use == directly!" },
+              { "title": "💡 Hint", "content": "<code>return a == b</code>" }
+            ],
+            "solution": "func samePoint(a, b Point) bool {\n    return a == b\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Slice of Structs",
+            "difficulty": 3,
+            "description": "Write <code>func totalHP(players []Player) int</code> that sums all players' HP.",
+            "functionSignature": "func totalHP(players []Player) int",
+            "testCases": [
+              { "input": "[]Player{{HP: 50}, {HP: 30}}", "output": "80" }
+            ],
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Range over slice, access HP field of each." }
+            ],
+            "solution": "func totalHP(players []Player) int {\n    total := 0\n    for _, p := range players {\n        total += p.HP\n    }\n    return total\n}"
+          },
+          {
+            "id": "v10",
+            "title": "Anonymous Struct",
+            "difficulty": 3,
+            "description": "Create an inline anonymous struct with Name and Age fields for quick one-off data grouping.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "You can define struct type inline without naming it." },
+              { "title": "💡 Hint", "content": "<code>person := struct { Name string; Age int }{\"Joker\", 17}</code>" }
+            ],
+            "solution": "person := struct {\n    Name string\n    Age  int\n}{\"Joker\", 17}\n\nfmt.Println(person.Name, person.Age)"
+          },
+          {
+            "id": "v11",
+            "title": "Struct Tags",
+            "difficulty": 2,
+            "description": "Add a JSON tag to make <code>Name</code> field serialize as <code>\"player_name\"</code> in JSON.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Struct tags are string literals after the type, read by reflection." },
+              { "title": "💡 Hint", "content": "Use backticks: <code>Name string `json:\"player_name\"`</code>" }
+            ],
+            "solution": "type Player struct {\n    Name  string `json:\"player_name\"`\n    HP    int    `json:\"hp\"`\n    Level int    `json:\"level,omitempty\"`\n}\n\n// omitempty skips zero values in JSON output"
+          },
+          {
+            "id": "v12",
+            "title": "Struct Copy",
+            "difficulty": 2,
+            "description": "Given <code>p1 := Player{Name: \"Joker\"}</code>, what happens with <code>p2 := p1; p2.Name = \"Skull\"</code>?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Struct assignment creates a COPY. p1 and p2 are independent." }
+            ],
+            "solution": "p1 := Player{Name: \"Joker\"}\np2 := p1           // p2 is a COPY\np2.Name = \"Skull\"  // Only changes p2\n\nfmt.Println(p1.Name)  // Joker (unchanged)\nfmt.Println(p2.Name)  // Skull"
+          },
+          {
+            "id": "v13",
+            "title": "Pointer Field Gotcha",
+            "difficulty": 3,
+            "description": "If struct has <code>Items *[]string</code>, does copying the struct give independent Items?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Copying struct copies the pointer, not what it points to. Shallow copy!" }
+            ],
+            "solution": "type Inventory struct {\n    Items *[]string\n}\n\nitems := []string{\"sword\"}\ni1 := Inventory{Items: &items}\ni2 := i1  // Copies pointer, not slice!\n\n*i2.Items = append(*i2.Items, \"shield\")\nfmt.Println(*i1.Items)  // [sword shield] - both see it!"
+          },
+          {
+            "id": "v14",
+            "title": "Struct as Map Key",
+            "difficulty": 2,
+            "description": "Can you use a struct as a map key? Create a map with Point keys.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Structs with comparable fields can be map keys (no slices/maps/functions inside)." }
+            ],
+            "solution": "type Point struct{ X, Y int }\n\n// Works! Point fields are comparable\nvisited := make(map[Point]bool)\nvisited[Point{0, 0}] = true\nvisited[Point{1, 2}] = true\n\nif visited[Point{0, 0}] {\n    fmt.Println(\"Been there!\")\n}"
+          },
+          {
+            "id": "v15",
+            "title": "Empty Struct",
+            "difficulty": 2,
+            "description": "What is <code>struct{}</code> used for? Create a set of strings using it.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Empty struct has size 0. Perfect for sets where you only care about keys." }
+            ],
+            "solution": "// Set implementation with zero memory for values\nset := make(map[string]struct{})\n\nset[\"apple\"] = struct{}{}  // Add\nset[\"banana\"] = struct{}{}\n\n// Check membership\nif _, exists := set[\"apple\"]; exists {\n    fmt.Println(\"Found!\")\n}"
+          },
+          {
+            "id": "v16",
+            "title": "Private vs Public Fields",
+            "difficulty": 1,
+            "description": "In a package, which fields are accessible from outside: <code>Name</code>, <code>name</code>, <code>HP</code>, <code>hp</code>?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Capital letter = exported (public). Lowercase = unexported (private)." }
+            ],
+            "solution": "type Player struct {\n    Name  string  // Exported - visible outside package\n    name  string  // Unexported - package-private\n    HP    int     // Exported\n    hp    int     // Unexported\n}\n\n// From another package:\n// p.Name works, p.name doesn't compile"
+          },
+          {
+            "id": "v17",
+            "title": "Struct Initialization Patterns",
+            "difficulty": 2,
+            "description": "Show 3 ways to create a Player: named fields, positional, and zero value then assign.",
+            "hints": [
+              { "title": "💡 Hint", "content": "Named is safest, positional requires exact order, zero value works for optional setup." }
+            ],
+            "solution": "// Named fields (recommended)\np1 := Player{Name: \"Joker\", HP: 100}\n\n// Positional (fragile - breaks if order changes)\np2 := Player{\"Skull\", 80, 1}\n\n// Zero value + assignment\nvar p3 Player\np3.Name = \"Panther\"\np3.HP = 90"
+          },
+          {
+            "id": "v18",
+            "title": "Check Zero Struct",
+            "difficulty": 2,
+            "description": "Write <code>func isEmpty(p Player) bool</code> that checks if p is the zero value.",
+            "functionSignature": "func isEmpty(p Player) bool",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Compare to the zero value of the type: <code>Player{}</code>" }
+            ],
+            "solution": "func isEmpty(p Player) bool {\n    return p == Player{}  // Compare to zero value\n}\n\n// Only works if all fields are comparable!"
+          },
+          {
+            "id": "v19",
+            "title": "Struct Method vs Function",
+            "difficulty": 1,
+            "description": "What's the difference between <code>func GetHP(p Player) int</code> and <code>func (p Player) GetHP() int</code>?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Method is attached to type. Call differs: GetHP(p) vs p.GetHP()" }
+            ],
+            "solution": "// Function - standalone\nfunc GetHP(p Player) int { return p.HP }\nhp := GetHP(player)\n\n// Method - attached to Player\nfunc (p Player) GetHP() int { return p.HP }\nhp := player.GetHP()  // Cleaner, more OOP-like"
+          },
+          {
+            "id": "v20",
+            "title": "Flexible Options Pattern",
+            "difficulty": 3,
+            "description": "Design a <code>ServerConfig</code> struct with sensible defaults. Use constructor to fill defaults.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Constructor functions let you set defaults, validate, or compute derived fields." }
+            ],
+            "solution": "type ServerConfig struct {\n    Host    string\n    Port    int\n    Timeout int\n}\n\nfunc NewServerConfig() *ServerConfig {\n    return &ServerConfig{\n        Host:    \"localhost\",\n        Port:    8080,\n        Timeout: 30,\n    }\n}\n\n// Usage: config := NewServerConfig()\n// config.Port = 3000  // Override if needed"
+          }
+        ]
+      },
+      {
+        "id": "methods_1",
+        "concept": "Methods",
+        "difficulty": 2,
+        "patternPrimer": {
+          "bruteForce": "Pass struct to function as first argument.",
+          "bestApproach": "Attach methods to types with receivers. Use pointer receivers to modify.",
+          "typical": "O(1) for method call"
+        },
+        "variants": [
+          {
+            "id": "v1",
+            "title": "Basic Method",
+            "difficulty": 1,
+            "description": "Add a method <code>(p Point) IsOrigin() bool</code> that returns true if X and Y are both 0.",
+            "functionSignature": "func (p Point) IsOrigin() bool",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Method syntax: <code>func (receiver Type) Name() ReturnType</code>" },
+              { "title": "💡 Hint", "content": "<code>return p.X == 0 && p.Y == 0</code>" }
+            ],
+            "solution": "func (p Point) IsOrigin() bool {\n    return p.X == 0 && p.Y == 0\n}"
+          },
+          {
+            "id": "v2",
+            "title": "Counter Inc",
+            "difficulty": 1,
+            "description": "Create <code>Counter</code> struct with Value int. Add <code>(c *Counter) Inc()</code> that increments it.",
+            "functionSignature": "func (c *Counter) Inc()",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "To modify the struct, use a pointer receiver <code>*Counter</code>." },
+              { "title": "💡 Hint", "content": "<code>c.Value++</code>" }
+            ],
+            "solution": "type Counter struct {\n    Value int\n}\n\nfunc (c *Counter) Inc() {\n    c.Value++\n}"
+          },
+          {
+            "id": "v3",
+            "title": "Getter Method",
+            "difficulty": 1,
+            "description": "Add <code>(p Player) GetHP() int</code> that returns the player's HP.",
+            "functionSignature": "func (p Player) GetHP() int",
+            "hints": [
+              { "title": "💡 Hint", "content": "Value receiver is fine for getters - no modification needed." }
+            ],
+            "solution": "func (p Player) GetHP() int {\n    return p.HP\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Point Distance",
+            "difficulty": 2,
+            "description": "Add <code>(p Point) DistanceFromOrigin() float64</code> that returns distance from (0,0).",
+            "functionSignature": "func (p Point) DistanceFromOrigin() float64",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Distance formula: sqrt(x² + y²). Use <code>math.Sqrt</code>." }
+            ],
+            "solution": "func (p Point) DistanceFromOrigin() float64 {\n    return math.Sqrt(float64(p.X*p.X + p.Y*p.Y))\n}"
+          },
+          {
+            "id": "v5",
+            "title": "String Method",
+            "difficulty": 2,
+            "description": "Add <code>String() string</code> method to Player that returns \"Name (Lv.X)\".",
+            "functionSignature": "func (p Player) String() string",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "This makes Player implement fmt.Stringer - fmt.Println will use it!" },
+              { "title": "💡 Hint", "content": "<code>fmt.Sprintf(\"%s (Lv.%d)\", p.Name, p.Level)</code>" }
+            ],
+            "solution": "func (p Player) String() string {\n    return fmt.Sprintf(\"%s (Lv.%d)\", p.Name, p.Level)\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Heal Method",
+            "difficulty": 2,
+            "description": "Add <code>(p *Player) Heal(amount int)</code> that adds HP, capped at 100.",
+            "functionSignature": "func (p *Player) Heal(amount int)",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Add the amount, then cap at max." }
+            ],
+            "solution": "func (p *Player) Heal(amount int) {\n    p.HP += amount\n    if p.HP > 100 {\n        p.HP = 100\n    }\n}"
+          },
+          {
+            "id": "v7",
+            "title": "TakeDamage Method",
+            "difficulty": 2,
+            "description": "Add <code>(p *Player) TakeDamage(amount int) bool</code> that reduces HP and returns true if player died (HP <= 0).",
+            "functionSignature": "func (p *Player) TakeDamage(amount int) bool",
+            "hints": [
+              { "title": "💡 Hint", "content": "Subtract damage, then check if HP <= 0." }
+            ],
+            "solution": "func (p *Player) TakeDamage(amount int) bool {\n    p.HP -= amount\n    return p.HP <= 0\n}"
+          },
+          {
+            "id": "v8",
+            "title": "Chain Methods",
+            "difficulty": 3,
+            "description": "Make <code>(c *Counter) Add(n int) *Counter</code> return the counter for chaining: <code>c.Add(1).Add(2)</code>",
+            "functionSignature": "func (c *Counter) Add(n int) *Counter",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Return the receiver to enable chaining." },
+              { "title": "💡 Hint", "content": "<code>return c</code> at the end" }
+            ],
+            "solution": "func (c *Counter) Add(n int) *Counter {\n    c.Value += n\n    return c\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Move Point",
+            "difficulty": 3,
+            "description": "Add <code>(p *Point) Move(dx, dy int) *Point</code> that shifts the point and returns it for chaining.",
+            "functionSignature": "func (p *Point) Move(dx, dy int) *Point",
+            "hints": [
+              { "title": "💡 Hint", "content": "Add dx to X, dy to Y, return p." }
+            ],
+            "solution": "func (p *Point) Move(dx, dy int) *Point {\n    p.X += dx\n    p.Y += dy\n    return p\n}"
+          },
+          {
+            "id": "v10",
+            "title": "Method on Alias",
+            "difficulty": 3,
+            "description": "Create type <code>Celsius float64</code> and add method <code>(c Celsius) ToFahrenheit() float64</code>.",
+            "functionSignature": "func (c Celsius) ToFahrenheit() float64",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "You can add methods to any named type, even type aliases." },
+              { "title": "💡 Hint", "content": "F = C × 9/5 + 32" }
+            ],
+            "solution": "type Celsius float64\n\nfunc (c Celsius) ToFahrenheit() float64 {\n    return float64(c)*9/5 + 32\n}"
+          },
+          {
+            "id": "v11",
+            "title": "Value vs Pointer Receiver",
+            "difficulty": 2,
+            "description": "When should you use <code>(p Player)</code> vs <code>(p *Player)</code> as receiver?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Pointer: to modify, for large structs, for consistency. Value: small immutable data." }
+            ],
+            "solution": "// Use POINTER receiver when:\n// 1. Method needs to modify the struct\nfunc (p *Player) TakeDamage(d int) { p.HP -= d }\n\n// 2. Struct is large (avoid copying)\n// 3. Consistency - if one method needs pointer, use for all\n\n// Use VALUE receiver when:\n// 1. Read-only, small struct\nfunc (p Point) Distance() float64 { ... }"
+          },
+          {
+            "id": "v12",
+            "title": "Method Set Rules",
+            "difficulty": 3,
+            "description": "Given <code>func (p *Player) Heal()</code>, can you call <code>player.Heal()</code> where player is not a pointer?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Go auto-converts <code>player.Heal()</code> to <code>(&player).Heal()</code> for you!" }
+            ],
+            "solution": "func (p *Player) Heal() { p.HP = 100 }\n\nplayer := Player{HP: 50}\nplayer.Heal()  // Works! Go does (&player).Heal()\n\n// But in interfaces, method sets matter:\n// *Player has ALL methods\n// Player only has value receiver methods"
+          },
+          {
+            "id": "v13",
+            "title": "Method Expression",
+            "difficulty": 3,
+            "description": "Get the <code>Heal</code> method as a function value and call it. Use method expression syntax.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "<code>(*Player).Heal</code> gives you a function that takes *Player as first arg." }
+            ],
+            "solution": "func (p *Player) Heal() { p.HP = 100 }\n\n// Method expression - receiver becomes first param\nhealFunc := (*Player).Heal\n\nplayer := &Player{HP: 50}\nhealFunc(player)  // Same as player.Heal()"
+          },
+          {
+            "id": "v14",
+            "title": "Method Value",
+            "difficulty": 3,
+            "description": "Bind a method to a specific instance and pass it as a callback.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "<code>player.Heal</code> (without parens) is a function bound to that player." }
+            ],
+            "solution": "player := &Player{Name: \"Joker\", HP: 50}\n\n// Method value - bound to specific instance\ncallback := player.Heal\n\n// Later...\ncallback()  // Heals THIS player\nfmt.Println(player.HP)  // 100"
+          },
+          {
+            "id": "v15",
+            "title": "Methods on Primitives",
+            "difficulty": 2,
+            "description": "Create <code>type ID int</code> with method <code>(id ID) String() string</code> that formats as \"ID-0001\".",
+            "functionSignature": "func (id ID) String() string",
+            "hints": [
+              { "title": "💡 Hint", "content": "<code>fmt.Sprintf(\"ID-%04d\", id)</code>" }
+            ],
+            "solution": "type ID int\n\nfunc (id ID) String() string {\n    return fmt.Sprintf(\"ID-%04d\", id)\n}\n\nplayerID := ID(42)\nfmt.Println(playerID)  // ID-0042"
+          },
+          {
+            "id": "v16",
+            "title": "Builder Pattern",
+            "difficulty": 3,
+            "description": "Create a Builder for Player that chains: <code>NewPlayerBuilder().Name(\"x\").HP(100).Build()</code>",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Each method returns the builder pointer for chaining." }
+            ],
+            "solution": "type PlayerBuilder struct {\n    player Player\n}\n\nfunc NewPlayerBuilder() *PlayerBuilder {\n    return &PlayerBuilder{}\n}\n\nfunc (b *PlayerBuilder) Name(n string) *PlayerBuilder {\n    b.player.Name = n\n    return b\n}\n\nfunc (b *PlayerBuilder) HP(hp int) *PlayerBuilder {\n    b.player.HP = hp\n    return b\n}\n\nfunc (b *PlayerBuilder) Build() Player {\n    return b.player\n}"
+          },
+          {
+            "id": "v17",
+            "title": "Nil Receiver",
+            "difficulty": 3,
+            "description": "Write a method that works even when called on nil: <code>func (p *Player) SafeName() string</code>",
+            "functionSignature": "func (p *Player) SafeName() string",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Methods can be called on nil pointers! Just check nil first." }
+            ],
+            "solution": "func (p *Player) SafeName() string {\n    if p == nil {\n        return \"<nil>\"\n    }\n    return p.Name\n}\n\nvar player *Player  // nil\nfmt.Println(player.SafeName())  // <nil> - no panic!"
+          },
+          {
+            "id": "v18",
+            "title": "Receiver Copy Trap",
+            "difficulty": 2,
+            "description": "Bug hunt: Why doesn't this work? <code>func (p Player) SetName(n string) { p.Name = n }</code>",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Value receiver gets a COPY. Changes don't affect the original." }
+            ],
+            "solution": "// BROKEN - value receiver copies\nfunc (p Player) SetName(n string) {\n    p.Name = n  // Modifies the copy only!\n}\n\n// FIXED - pointer receiver\nfunc (p *Player) SetName(n string) {\n    p.Name = n  // Modifies the original\n}"
+          },
+          {
+            "id": "v19",
+            "title": "Slice Type Method",
+            "difficulty": 2,
+            "description": "Create <code>type Party []Player</code> with method <code>(p Party) TotalHP() int</code>.",
+            "functionSignature": "func (p Party) TotalHP() int",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "You can add methods to any named type, including slice types!" }
+            ],
+            "solution": "type Party []Player\n\nfunc (p Party) TotalHP() int {\n    total := 0\n    for _, player := range p {\n        total += player.HP\n    }\n    return total\n}\n\nparty := Party{{HP: 100}, {HP: 80}}\nfmt.Println(party.TotalHP())  // 180"
+          },
+          {
+            "id": "v20",
+            "title": "Method Promotes Through Embed",
+            "difficulty": 3,
+            "description": "If <code>Engine</code> has <code>Start()</code> method and <code>Car</code> embeds Engine, what's <code>car.Start()</code> equivalent to?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Embedding promotes methods. <code>car.Start()</code> calls <code>car.Engine.Start()</code>" }
+            ],
+            "solution": "type Engine struct{}\nfunc (e Engine) Start() { fmt.Println(\"Vroom!\") }\n\ntype Car struct {\n    Engine  // Embedded\n    Model string\n}\n\ncar := Car{Model: \"GTR\"}\ncar.Start()         // Calls car.Engine.Start()\ncar.Engine.Start()  // Same thing, explicit"
+          }
+        ]
+      },
+      {
+        "id": "interfaces_1",
+        "concept": "Interfaces",
+        "difficulty": 3,
+        "patternPrimer": {
+          "bruteForce": "Use type switches everywhere to handle different types.",
+          "bestApproach": "Define interfaces for common behavior. Types implement implicitly by having the methods.",
+          "typical": "O(1) for interface method dispatch"
+        },
+        "variants": [
+          {
+            "id": "v1",
+            "title": "Speaker Interface",
+            "difficulty": 1,
+            "description": "Define <code>Speaker</code> interface with <code>Speak() string</code>. Make <code>Dog</code> and <code>Cat</code> implement it.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Interfaces are implicit - just implement the method!" },
+              { "title": "💡 Hint", "content": "<code>type Speaker interface { Speak() string }</code>" }
+            ],
+            "solution": "type Speaker interface {\n    Speak() string\n}\n\ntype Dog struct{}\nfunc (d Dog) Speak() string { return \"Woof!\" }\n\ntype Cat struct{}\nfunc (c Cat) Speak() string { return \"Meow!\" }"
+          },
+          {
+            "id": "v2",
+            "title": "Use Interface",
+            "difficulty": 1,
+            "description": "Write <code>func announce(s Speaker)</code> that prints what the speaker says.",
+            "functionSignature": "func announce(s Speaker)",
+            "hints": [
+              { "title": "💡 Hint", "content": "Just call <code>s.Speak()</code> - works for any Speaker!" }
+            ],
+            "solution": "func announce(s Speaker) {\n    fmt.Println(s.Speak())\n}"
+          },
+          {
+            "id": "v3",
+            "title": "Shape Interface",
+            "difficulty": 2,
+            "description": "Define <code>Shape</code> interface with <code>Area() float64</code>. Implement for Circle (with Radius).",
+            "functionSignature": "func (c Circle) Area() float64",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Circle area = π × r². Use <code>math.Pi</code>." }
+            ],
+            "solution": "type Shape interface {\n    Area() float64\n}\n\ntype Circle struct {\n    Radius float64\n}\n\nfunc (c Circle) Area() float64 {\n    return math.Pi * c.Radius * c.Radius\n}"
+          },
+          {
+            "id": "v4",
+            "title": "Rectangle Shape",
+            "difficulty": 2,
+            "description": "Implement Shape interface for <code>Rectangle</code> with Width and Height.",
+            "functionSignature": "func (r Rectangle) Area() float64",
+            "hints": [
+              { "title": "💡 Hint", "content": "<code>return r.Width * r.Height</code>" }
+            ],
+            "solution": "type Rectangle struct {\n    Width, Height float64\n}\n\nfunc (r Rectangle) Area() float64 {\n    return r.Width * r.Height\n}"
+          },
+          {
+            "id": "v5",
+            "title": "Total Area",
+            "difficulty": 2,
+            "description": "Write <code>func totalArea(shapes []Shape) float64</code> that sums all areas.",
+            "functionSignature": "func totalArea(shapes []Shape) float64",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Loop through, call Area() on each - polymorphism!" }
+            ],
+            "solution": "func totalArea(shapes []Shape) float64 {\n    var total float64\n    for _, s := range shapes {\n        total += s.Area()\n    }\n    return total\n}"
+          },
+          {
+            "id": "v6",
+            "title": "Type Assertion",
+            "difficulty": 2,
+            "description": "Write <code>func getRadius(s Shape) (float64, bool)</code> that returns radius if s is a Circle.",
+            "functionSignature": "func getRadius(s Shape) (float64, bool)",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Use type assertion with comma-ok: <code>c, ok := s.(Circle)</code>" }
+            ],
+            "solution": "func getRadius(s Shape) (float64, bool) {\n    c, ok := s.(Circle)\n    if !ok {\n        return 0, false\n    }\n    return c.Radius, true\n}"
+          },
+          {
+            "id": "v7",
+            "title": "Type Switch",
+            "difficulty": 3,
+            "description": "Write <code>func describeShape(s Shape) string</code> that returns \"circle\", \"rectangle\", or \"unknown\".",
+            "functionSignature": "func describeShape(s Shape) string",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Use type switch: <code>switch s.(type)</code>" }
+            ],
+            "solution": "func describeShape(s Shape) string {\n    switch s.(type) {\n    case Circle:\n        return \"circle\"\n    case Rectangle:\n        return \"rectangle\"\n    default:\n        return \"unknown\"\n    }\n}"
+          },
+          {
+            "id": "v8",
+            "title": "Empty Interface",
+            "difficulty": 3,
+            "description": "Write <code>func printType(v any)</code> that prints the value's type using <code>%T</code>.",
+            "functionSignature": "func printType(v any)",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "<code>any</code> (or <code>interface{}</code>) accepts any type." }
+            ],
+            "solution": "func printType(v any) {\n    fmt.Printf(\"%T\\n\", v)\n}"
+          },
+          {
+            "id": "v9",
+            "title": "Stringer Interface",
+            "difficulty": 3,
+            "description": "Make <code>Player</code> implement <code>fmt.Stringer</code> by adding <code>String() string</code>.",
+            "functionSignature": "func (p Player) String() string",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "fmt.Stringer requires String() string method." }
+            ],
+            "solution": "func (p Player) String() string {\n    return fmt.Sprintf(\"%s (Lv.%d, HP:%d)\", p.Name, p.Level, p.HP)\n}"
+          },
+          {
+            "id": "v10",
+            "title": "Multiple Interfaces",
+            "difficulty": 3,
+            "description": "Define <code>ReadWriter</code> interface that combines <code>Reader</code> (Read) and <code>Writer</code> (Write) methods.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Interfaces can embed other interfaces." },
+              { "title": "💡 Hint", "content": "<code>type ReadWriter interface { Reader; Writer }</code>" }
+            ],
+            "solution": "type Reader interface {\n    Read(p []byte) (n int, err error)\n}\n\ntype Writer interface {\n    Write(p []byte) (n int, err error)\n}\n\ntype ReadWriter interface {\n    Reader\n    Writer\n}"
+          },
+          {
+            "id": "v11",
+            "title": "Implicit Implementation",
+            "difficulty": 1,
+            "description": "Does Dog need to declare it implements Speaker? What keyword is missing compared to Java/C#?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Go has NO 'implements' keyword. Just have the methods!" }
+            ],
+            "solution": "type Speaker interface {\n    Speak() string\n}\n\ntype Dog struct{}\n\n// Just implement the method - no declaration needed!\nfunc (d Dog) Speak() string { return \"Woof!\" }\n\n// Dog automatically satisfies Speaker\nvar s Speaker = Dog{}  // Works!"
+          },
+          {
+            "id": "v12",
+            "title": "Compile-Time Check",
+            "difficulty": 2,
+            "description": "How do you verify at compile time that Dog implements Speaker?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Assign to a variable of interface type. Use blank identifier if unused." }
+            ],
+            "solution": "type Speaker interface {\n    Speak() string\n}\n\ntype Dog struct{}\nfunc (d Dog) Speak() string { return \"Woof!\" }\n\n// Compile-time check (common pattern)\nvar _ Speaker = Dog{}      // Value\nvar _ Speaker = (*Dog)(nil) // Pointer - checks *Dog implements Speaker"
+          },
+          {
+            "id": "v13",
+            "title": "Accept Interface Return Struct",
+            "difficulty": 2,
+            "description": "Why is \"accept interfaces, return structs\" a Go best practice?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Interfaces in params = flexibility. Concrete returns = clarity for callers." }
+            ],
+            "solution": "// GOOD: Accept interface - works with any io.Reader\nfunc Process(r io.Reader) error {\n    // Can use *os.File, *bytes.Buffer, http.Response.Body...\n}\n\n// GOOD: Return concrete type\nfunc NewPlayer() *Player {  // Not returning some interface\n    return &Player{HP: 100}\n}\n\n// Caller knows exactly what they get"
+          },
+          {
+            "id": "v14",
+            "title": "Nil Interface Gotcha",
+            "difficulty": 3,
+            "description": "Why does this panic? <code>var p *Player = nil; var s Speaker = p; s.Speak()</code>",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Interface has (type, value). s is not nil - it has type *Player, value nil." }
+            ],
+            "solution": "var p *Player = nil\nvar s Speaker = p  // s is NOT nil!\n\n// s has: (type: *Player, value: nil)\n// s != nil, but calling method panics because *Player is nil\n\n// Fix: Check the concrete value\nif p == nil {\n    // Don't assign to interface\n}"
+          },
+          {
+            "id": "v15",
+            "title": "Error Interface",
+            "difficulty": 2,
+            "description": "The <code>error</code> type is an interface. What method must you implement?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "<code>type error interface { Error() string }</code>" }
+            ],
+            "solution": "// Custom error type\ntype ValidationError struct {\n    Field string\n    Msg   string\n}\n\nfunc (e ValidationError) Error() string {\n    return fmt.Sprintf(\"%s: %s\", e.Field, e.Msg)\n}\n\n// Now it's an error:\nvar err error = ValidationError{\"name\", \"required\"}\nfmt.Println(err)  // name: required"
+          },
+          {
+            "id": "v16",
+            "title": "Small Interfaces",
+            "difficulty": 2,
+            "description": "Why does Go prefer small interfaces (1-2 methods) like io.Reader, io.Writer, fmt.Stringer?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Smaller = more types can satisfy it = more flexibility." }
+            ],
+            "solution": "// io.Reader has ONE method\ntype Reader interface {\n    Read(p []byte) (n int, err error)\n}\n\n// Tons of types implement it:\n// *os.File, *bytes.Buffer, *strings.Reader,\n// net.Conn, http.Response.Body, gzip.Reader...\n\n// Big interfaces = fewer implementers = less useful"
+          },
+          {
+            "id": "v17",
+            "title": "Interface Nil Check",
+            "difficulty": 3,
+            "description": "Write <code>func isNil(i interface{}) bool</code> that returns true only if the underlying value is nil.",
+            "functionSignature": "func isNil(i interface{}) bool",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Use reflection: <code>reflect.ValueOf(i).IsNil()</code> but handle nil interface itself." }
+            ],
+            "solution": "func isNil(i interface{}) bool {\n    if i == nil {\n        return true\n    }\n    v := reflect.ValueOf(i)\n    switch v.Kind() {\n    case reflect.Ptr, reflect.Map, reflect.Slice, reflect.Chan, reflect.Func:\n        return v.IsNil()\n    }\n    return false\n}"
+          },
+          {
+            "id": "v18",
+            "title": "Interface Composition",
+            "difficulty": 2,
+            "description": "Create <code>Attacker</code> (Attack), <code>Defender</code> (Defend), then <code>Fighter</code> combining both.",
+            "hints": [
+              { "title": "💡 Hint", "content": "Embed interfaces in an interface to combine them." }
+            ],
+            "solution": "type Attacker interface {\n    Attack() int\n}\n\ntype Defender interface {\n    Defend(damage int) int\n}\n\ntype Fighter interface {\n    Attacker\n    Defender\n}\n\n// Player must have BOTH methods to be a Fighter"
+          },
+          {
+            "id": "v19",
+            "title": "Duck Typing Power",
+            "difficulty": 2,
+            "description": "You have a third-party <code>Database</code> struct. Without modifying it, make it satisfy your <code>Storage</code> interface.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "If Database already has the methods Storage needs, it ALREADY satisfies it!" }
+            ],
+            "solution": "// Your interface\ntype Storage interface {\n    Get(key string) (string, error)\n    Set(key, value string) error\n}\n\n// Third-party Database (you can't modify)\ntype Database struct { ... }\nfunc (d *Database) Get(key string) (string, error) { ... }\nfunc (d *Database) Set(key, value string) error { ... }\n\n// It ALREADY satisfies Storage - no changes needed!\nvar s Storage = &Database{}"
+          },
+          {
+            "id": "v20",
+            "title": "Wrapper for Missing Method",
+            "difficulty": 3,
+            "description": "If ThirdPartyDB has <code>Fetch</code> but you need <code>Get</code>, how do you adapt it?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Create a wrapper type that embeds it and adds the needed method." }
+            ],
+            "solution": "// ThirdParty has Fetch, not Get\ntype ThirdPartyDB struct{}\nfunc (t *ThirdPartyDB) Fetch(key string) string { ... }\n\n// Your interface wants Get\ntype Storage interface {\n    Get(key string) string\n}\n\n// Adapter wrapper\ntype DBAdapter struct {\n    *ThirdPartyDB\n}\n\nfunc (a *DBAdapter) Get(key string) string {\n    return a.Fetch(key)  // Delegate\n}\n\nvar s Storage = &DBAdapter{&ThirdPartyDB{}}"
+          }
+        ]
+      },
+      {
+        "id": "embedding_1",
+        "concept": "Embedding",
+        "difficulty": 3,
+        "patternPrimer": {
+          "bruteForce": "Manually delegate to contained struct for each method.",
+          "bestApproach": "Embed the struct to get automatic field and method promotion.",
+          "typical": "O(1) for promoted access"
+        },
+        "variants": [
+          {
+            "id": "v1",
+            "title": "Embed for Fields",
+            "difficulty": 1,
+            "description": "Embed <code>Person</code> (Name string) into <code>Employee</code>. Access Name directly on Employee.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Embedding promotes fields. No dot needed for embedded struct's fields." },
+              { "title": "💡 Hint", "content": "<code>type Employee struct { Person; Role string }</code>" }
+            ],
+            "solution": "type Person struct {\n    Name string\n}\n\ntype Employee struct {\n    Person\n    Role string\n}\n\ne := Employee{Person: Person{Name: \"Joker\"}, Role: \"Thief\"}\nfmt.Println(e.Name)  // Works! Promoted from Person"
+          },
+          {
+            "id": "v2",
+            "title": "Create Embedded",
+            "difficulty": 1,
+            "description": "Create an Employee with Name \"Makoto\" and Role \"Strategist\" using embedded Person.",
+            "hints": [
+              { "title": "💡 Hint", "content": "<code>Employee{Person: Person{Name: \"Makoto\"}, Role: \"Strategist\"}</code>" }
+            ],
+            "solution": "e := Employee{\n    Person: Person{Name: \"Makoto\"},\n    Role:   \"Strategist\",\n}\nfmt.Println(e.Name, e.Role)"
+          },
+          {
+            "id": "v3",
+            "title": "Embed for Methods",
+            "difficulty": 2,
+            "description": "Person has <code>Greet() string</code>. Embed into Employee. Call Greet on Employee.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Methods are promoted too! Employee gets Person's methods." }
+            ],
+            "solution": "type Person struct {\n    Name string\n}\n\nfunc (p Person) Greet() string {\n    return \"Hi, I'm \" + p.Name\n}\n\ntype Employee struct {\n    Person\n    Role string\n}\n\ne := Employee{Person: Person{Name: \"Ann\"}, Role: \"Artist\"}\nfmt.Println(e.Greet())  // Hi, I'm Ann"
+          },
+          {
+            "id": "v4",
+            "title": "Access Embedded",
+            "difficulty": 2,
+            "description": "Given Employee embedding Person, access the Person struct directly to call its original method.",
+            "hints": [
+              { "title": "💡 Hint", "content": "<code>e.Person.Greet()</code> accesses embedded type explicitly." }
+            ],
+            "solution": "// Access embedded struct directly\nfmt.Println(e.Person.Greet())  // Same as e.Greet() unless overridden"
+          },
+          {
+            "id": "v5",
+            "title": "Override Embedded",
+            "difficulty": 2,
+            "description": "Employee has its own <code>Greet()</code> that includes Role. Override the embedded Person's Greet.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Define method on Employee - it shadows the embedded one." }
+            ],
+            "solution": "func (e Employee) Greet() string {\n    return fmt.Sprintf(\"Hi, I'm %s the %s\", e.Name, e.Role)\n}\n\n// e.Greet() uses Employee's version\n// e.Person.Greet() still uses Person's version"
+          },
+          {
+            "id": "v6",
+            "title": "Pointer Embed",
+            "difficulty": 2,
+            "description": "Embed <code>*Logger</code> (pointer) in Service. Why might you embed a pointer?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Embedding pointer allows nil, sharing same logger, and modifying embedded." }
+            ],
+            "solution": "type Logger struct {\n    Prefix string\n}\n\nfunc (l *Logger) Log(msg string) {\n    fmt.Println(l.Prefix + \": \" + msg)\n}\n\ntype Service struct {\n    *Logger  // Pointer embedding\n}\n\n// Logger can be nil, shared, or swapped"
+          },
+          {
+            "id": "v7",
+            "title": "Multiple Embeds",
+            "difficulty": 3,
+            "description": "Embed both <code>Logger</code> (Log method) and <code>Counter</code> (Inc method) into Service.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "You can embed multiple types. All their methods get promoted." }
+            ],
+            "solution": "type Logger struct{}\nfunc (l Logger) Log(msg string) { fmt.Println(msg) }\n\ntype Counter struct{ Value int }\nfunc (c *Counter) Inc() { c.Value++ }\n\ntype Service struct {\n    Logger\n    Counter\n}\n\ns := Service{}\ns.Log(\"Starting\")  // From Logger\ns.Inc()            // From Counter"
+          },
+          {
+            "id": "v8",
+            "title": "Interface via Embedding",
+            "difficulty": 3,
+            "description": "Make Employee implement <code>Greeter</code> interface automatically via embedded Person's method.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "If embedded type implements an interface, the outer type does too!" }
+            ],
+            "solution": "type Greeter interface {\n    Greet() string\n}\n\n// Person implements Greeter\n// Employee embeds Person\n// Therefore Employee implements Greeter!\n\nfunc sayHi(g Greeter) {\n    fmt.Println(g.Greet())\n}\n\ne := Employee{Person: Person{Name: \"Ann\"}, Role: \"Artist\"}\nsayHi(e)  // Works!"
+          },
+          {
+            "id": "v9",
+            "title": "Field Name Collision",
+            "difficulty": 3,
+            "description": "Both Person and Address have a Name field. Embed both - how do you access each Name?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Ambiguous fields must be accessed through the embedded type name." }
+            ],
+            "solution": "type Person struct{ Name string }\ntype Address struct{ Name string }  // Street name\n\ntype Contact struct {\n    Person\n    Address\n}\n\nc := Contact{\n    Person:  Person{Name: \"Joker\"},\n    Address: Address{Name: \"Main St\"},\n}\n// c.Name is ambiguous - compile error\nfmt.Println(c.Person.Name)   // Joker\nfmt.Println(c.Address.Name)  // Main St"
+          },
+          {
+            "id": "v10",
+            "title": "Embedding Interface",
+            "difficulty": 3,
+            "description": "Embed <code>io.Reader</code> interface in a struct to require it at construction time.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "You can embed interfaces in structs - they become required dependencies." }
+            ],
+            "solution": "type MyReader struct {\n    io.Reader  // Embedded interface\n    buffer []byte\n}\n\n// Must provide a Reader when creating:\nr := MyReader{\n    Reader: strings.NewReader(\"hello\"),\n}\n\n// Can call Read directly:\nbuf := make([]byte, 5)\nr.Read(buf)"
+          },
+          {
+            "id": "v11",
+            "title": "Embedding vs Composition",
+            "difficulty": 2,
+            "description": "What's the difference between embedding <code>Logger</code> and having field <code>log Logger</code>?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Embedding promotes methods. Named field requires explicit access." }
+            ],
+            "solution": "// EMBEDDING - methods promoted\ntype Service1 struct {\n    Logger  // s.Log() works\n}\n\n// COMPOSITION - explicit access\ntype Service2 struct {\n    log Logger  // s.log.Log() needed\n}\n\n// Embedding: more concise, auto interface satisfaction\n// Composition: more explicit, better encapsulation"
+          },
+          {
+            "id": "v12",
+            "title": "Embedding for Code Reuse",
+            "difficulty": 2,
+            "description": "Create <code>BaseStats</code> with HP, Attack. Embed into both <code>Warrior</code> and <code>Mage</code>.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Embedding is Go's way to share code - not inheritance!" }
+            ],
+            "solution": "type BaseStats struct {\n    HP     int\n    Attack int\n}\n\nfunc (b BaseStats) IsAlive() bool { return b.HP > 0 }\n\ntype Warrior struct {\n    BaseStats\n    Armor int\n}\n\ntype Mage struct {\n    BaseStats\n    Mana int\n}\n\nw := Warrior{BaseStats: BaseStats{HP: 100, Attack: 20}, Armor: 10}\nw.IsAlive()  // Promoted from BaseStats"
+          },
+          {
+            "id": "v13",
+            "title": "Override Keeps Original",
+            "difficulty": 2,
+            "description": "Warrior overrides <code>Attack()</code>. Can you still call BaseStats's version?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Yes! Access through the embedded type explicitly." }
+            ],
+            "solution": "type BaseStats struct{ ATK int }\nfunc (b BaseStats) Attack() int { return b.ATK }\n\ntype Warrior struct {\n    BaseStats\n    Rage int\n}\n\nfunc (w Warrior) Attack() int {\n    return w.BaseStats.Attack() + w.Rage  // Call original!\n}\n\n// w.Attack() - uses Warrior's\n// w.BaseStats.Attack() - uses original"
+          },
+          {
+            "id": "v14",
+            "title": "Embed for Interface",
+            "difficulty": 3,
+            "description": "Make <code>LoggingReader</code> satisfy <code>io.Reader</code> by embedding, then intercept reads.",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Embed io.Reader, but add your own Read that wraps it." }
+            ],
+            "solution": "type LoggingReader struct {\n    io.Reader  // Satisfies interface via embedding\n    count int\n}\n\nfunc (l *LoggingReader) Read(p []byte) (int, error) {\n    n, err := l.Reader.Read(p)  // Call embedded\n    l.count += n\n    fmt.Printf(\"Read %d bytes\\n\", n)\n    return n, err\n}\n\n// Decorator pattern!"
+          },
+          {
+            "id": "v15",
+            "title": "Shallow Copy Issue",
+            "difficulty": 3,
+            "description": "If <code>Outer</code> embeds <code>*Inner</code> (pointer), what happens when you copy Outer?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Copying Outer copies the pointer, not Inner. Both share Inner!" }
+            ],
+            "solution": "type Inner struct{ Value int }\ntype Outer struct {\n    *Inner  // Embedded pointer\n}\n\na := Outer{Inner: &Inner{Value: 1}}\nb := a  // Copies pointer!\n\nb.Value = 99\nfmt.Println(a.Value)  // 99 - same Inner!"
+          },
+          {
+            "id": "v16",
+            "title": "Embedding Mutex",
+            "difficulty": 3,
+            "description": "Embed <code>sync.Mutex</code> into a struct for thread-safe counter. How do you lock it?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Mutex methods get promoted. c.Lock() and c.Unlock() work directly!" }
+            ],
+            "solution": "type SafeCounter struct {\n    sync.Mutex  // Embedded - Lock/Unlock promoted\n    count int\n}\n\nfunc (c *SafeCounter) Inc() {\n    c.Lock()        // Promoted from sync.Mutex\n    defer c.Unlock()\n    c.count++\n}\n\nfunc (c *SafeCounter) Value() int {\n    c.Lock()\n    defer c.Unlock()\n    return c.count\n}"
+          },
+          {
+            "id": "v17",
+            "title": "Is-A vs Has-A",
+            "difficulty": 2,
+            "description": "In OOP, is embedding more like 'is-a' (inheritance) or 'has-a' (composition)?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Go says it's composition. Car has-a Engine, not Car is-a Engine." }
+            ],
+            "solution": "// Embedding is COMPOSITION, not inheritance!\n\ntype Engine struct{}\nfunc (e Engine) Start() {}\n\ntype Car struct {\n    Engine  // Car HAS-A Engine\n}\n\n// Car is NOT a subtype of Engine\n// You CAN'T do: var e Engine = Car{}  // Compile error!\n\n// Embedding = method forwarding, not polymorphism"
+          },
+          {
+            "id": "v18",
+            "title": "Embedding Order Matters",
+            "difficulty": 3,
+            "description": "If A embeds B, and B embeds C, does A get C's methods? What's the lookup order?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Yes, methods propagate up. Shallow embedding wins over deep." }
+            ],
+            "solution": "type C struct{}\nfunc (C) Method() string { return \"C\" }\n\ntype B struct{ C }\nfunc (B) Method() string { return \"B\" }\n\ntype A struct{ B }\n\na := A{}\na.Method()    // \"B\" - B's version (shallower)\na.B.Method()  // \"B\"\na.B.C.Method() // \"C\" - explicit access to C"
+          },
+          {
+            "id": "v19",
+            "title": "Anonymous Field Syntax",
+            "difficulty": 1,
+            "description": "How do you access an embedded field? What is the implicit field name?",
+            "hints": [
+              { "title": "🤔 Think about it", "content": "Embedded type name becomes the field name." }
+            ],
+            "solution": "type Logger struct{ Prefix string }\n\ntype App struct {\n    Logger  // Embedded - field name is \"Logger\"\n}\n\na := App{Logger: Logger{Prefix: \"app\"}}\n\n// Access promoted field\na.Prefix       // Works! Promoted\n\n// Access embedded struct directly\na.Logger.Prefix  // Also works, explicit"
+          },
+          {
+            "id": "v20",
+            "title": "Constructor with Embedded",
+            "difficulty": 2,
+            "description": "Write a constructor for <code>Player</code> that embeds <code>Stats</code> and initializes all fields.",
+            "hints": [
+              { "title": "💡 Hint", "content": "Initialize the embedded struct inside the composite literal." }
+            ],
+            "solution": "type Stats struct {\n    HP, MP, ATK, DEF int\n}\n\ntype Player struct {\n    Name string\n    Stats\n}\n\nfunc NewPlayer(name string) *Player {\n    return &Player{\n        Name: name,\n        Stats: Stats{\n            HP:  100,\n            MP:  50,\n            ATK: 10,\n            DEF: 5,\n        },\n    }\n}\n\np := NewPlayer(\"Joker\")\np.HP  // 100 - promoted"
           }
         ]
       }

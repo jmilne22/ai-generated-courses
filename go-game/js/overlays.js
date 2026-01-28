@@ -278,10 +278,126 @@
         showSkillLevelUp(e.detail);
     });
 
+    // === Confidant Rank Up ===
+    function showConfidantRankUp(detail) {
+        return new Promise(function(resolve) {
+            var confidantId = detail.confidantId;
+            var newRank = detail.newRank;
+
+            // Get confidant info
+            var conf = window.Confidants && window.Confidants.CONFIDANTS[confidantId];
+            if (!conf) {
+                resolve();
+                return;
+            }
+
+            var dialog = conf.rankDialog && conf.rankDialog[newRank - 1] || 'Your bond has deepened!';
+
+            if (window.GameAudio) window.GameAudio.playLevelUp();
+
+            var overlay = document.createElement('div');
+            overlay.className = 'confidant-rankup-overlay';
+            overlay.innerHTML =
+                '<div class="confidant-rankup-card">' +
+                    '<div class="rankup-header">' +
+                        '<div class="rankup-icon">' + conf.icon + '</div>' +
+                        '<div class="rankup-title">RANK UP!</div>' +
+                    '</div>' +
+                    '<div class="rankup-name">' + conf.name + '</div>' +
+                    '<div class="rankup-arcana">' + conf.arcana + ' Arcana</div>' +
+                    '<div class="rankup-rank">' + newRank + '</div>' +
+                    '<div class="rankup-dialog">"' + dialog + '"</div>' +
+                    '<div class="rankup-dismiss">click to continue</div>' +
+                '</div>';
+
+            document.body.appendChild(overlay);
+
+            // Particles
+            setTimeout(function() {
+                particleBurst(window.innerWidth / 2, window.innerHeight / 2, 20, 'var(--purple)');
+            }, 200);
+
+            var dismissed = false;
+            function dismiss() {
+                if (dismissed) return;
+                dismissed = true;
+                overlay.classList.add('fade-out');
+                setTimeout(function() { overlay.remove(); resolve(); }, 300);
+            }
+            overlay.addEventListener('click', dismiss);
+            setTimeout(function() { if (overlay.parentNode) dismiss(); }, 5000);
+        });
+    }
+
+    window.addEventListener('confidantRankUp', function(e) {
+        enqueueEvent(function() {
+            return showConfidantRankUp(e.detail);
+        });
+    });
+
+    // === Confidant Unlocked ===
+    function showConfidantUnlocked(detail) {
+        return new Promise(function(resolve) {
+            var confidantId = detail.confidantId;
+
+            var conf = window.Confidants && window.Confidants.CONFIDANTS[confidantId];
+            if (!conf) {
+                resolve();
+                return;
+            }
+
+            if (window.GameAudio) window.GameAudio.playLevelUp();
+
+            var overlay = document.createElement('div');
+            overlay.className = 'confidant-unlock-overlay';
+            overlay.innerHTML =
+                '<div class="confidant-unlock-card">' +
+                    '<div class="unlock-banner">NEW CONFIDANT</div>' +
+                    '<div class="unlock-icon">' + conf.icon + '</div>' +
+                    '<div class="unlock-name">' + conf.name + '</div>' +
+                    '<div class="unlock-arcana">' + conf.arcana + ' Arcana</div>' +
+                    '<div class="unlock-title">' + conf.title + '</div>' +
+                    '<div class="unlock-domain">' + conf.domain + '</div>' +
+                    '<div class="unlock-greeting">"' + conf.greeting + '"</div>' +
+                    '<button class="unlock-btn" onclick="this.closest(\'.confidant-unlock-overlay\').click()">Let\'s Go!</button>' +
+                '</div>';
+
+            document.body.appendChild(overlay);
+
+            screenShake(4, 300);
+
+            // Multiple particle bursts
+            setTimeout(function() {
+                particleBurst(window.innerWidth / 2 - 100, window.innerHeight / 2, 15, 'var(--purple)');
+            }, 100);
+            setTimeout(function() {
+                particleBurst(window.innerWidth / 2 + 100, window.innerHeight / 2, 15, 'var(--cyan)');
+            }, 200);
+
+            var dismissed = false;
+            function dismiss() {
+                if (dismissed) return;
+                dismissed = true;
+                overlay.classList.add('fade-out');
+                setTimeout(function() { overlay.remove(); resolve(); }, 300);
+            }
+            overlay.addEventListener('click', dismiss);
+            setTimeout(function() { if (overlay.parentNode) dismiss(); }, 8000);
+        });
+    }
+
+    window.addEventListener('confidantUnlocked', function(e) {
+        enqueueEvent(function() {
+            return showConfidantUnlocked(e.detail);
+        });
+    });
+
     window.Overlays = {
         showAllOutAttack: showAllOutAttack,
         showGradeScreen: showGradeScreen,
         showLevelUp: showLevelUp,
-        showSkillLevelUp: showSkillLevelUp
+        showSkillLevelUp: showSkillLevelUp,
+        showConfidantRankUp: showConfidantRankUp,
+        showConfidantUnlocked: showConfidantUnlocked
     };
 })();

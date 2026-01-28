@@ -784,6 +784,298 @@
     margin-top: 0.25rem;
 }
 
+/* === Enhanced Mementos Requests === */
+.mementos-streak-card {
+    background: linear-gradient(135deg, #1a0a1a 0%, #2a0a0a 100%);
+    border: 2px solid var(--red);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+.streak-flames {
+    font-size: 2rem;
+}
+
+.streak-info {
+    flex: 1;
+}
+
+.streak-count {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--red);
+    line-height: 1;
+}
+
+.streak-label {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.streak-meta {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.streak-multiplier {
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.mementos-message {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text);
+    font-style: italic;
+    text-align: center;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background: rgba(139, 92, 246, 0.1);
+    border-left: 3px solid var(--purple);
+}
+
+.requests-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.requests-header span:first-child {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.requests-date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.requests-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.request-card {
+    background: linear-gradient(135deg, #1a0a2e 0%, #0a1a2e 100%);
+    border: 2px solid var(--purple);
+    border-left: 4px solid var(--purple);
+    padding: 1rem 1.25rem;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    transition: all 0.2s;
+}
+
+.request-card:hover {
+    border-color: var(--cyan);
+    transform: translateX(4px);
+}
+
+.request-card.complete {
+    border-color: var(--green);
+    background: linear-gradient(135deg, #0a2e0a 0%, #0a1a2e 100%);
+}
+
+.request-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.request-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.request-title-area {
+    flex: 1;
+}
+
+.request-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.request-client {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--cyan);
+    margin-top: 0.15rem;
+}
+
+.request-reward {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--gold);
+    font-weight: 600;
+}
+
+.request-dialog {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--text);
+    font-style: italic;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.request-task {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.request-task-text {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text);
+}
+
+.request-check {
+    color: var(--green);
+    font-weight: bold;
+}
+
+.request-progress {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.request-progress-bar {
+    height: 4px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.request-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), var(--cyan));
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.request-card.complete .request-progress-fill {
+    background: var(--green);
+}
+
+.mementos-bonus {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+
+.mementos-bonus.earned {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, #2a2a0a 0%, #1a1a0a 100%);
+}
+
+.bonus-label {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.25rem;
+}
+
+.bonus-amount {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--gold);
+    font-weight: 700;
+}
+
+.bonus-status {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+}
+
+.mementos-bonus.earned .bonus-status {
+    color: var(--green);
+}
+
+.mementos-action {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.mementos-btn {
+    background: linear-gradient(135deg, var(--purple) 0%, #6a3a96 100%);
+    border: 3px solid #000;
+    color: #fff;
+    padding: 0.75rem 2rem;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    cursor: pointer;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    transition: all 0.2s;
+}
+
+.mementos-btn:hover {
+    transform: translateY(-2px) skewX(-2deg);
+    box-shadow: 4px 4px 0 #000;
+}
+
+.mementos-complete {
+    text-align: center;
+    padding: 2rem;
+}
+
+.complete-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.complete-text {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.complete-sub {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.5rem;
+}
+
 /* === Projects / Side Requests === */
 .project-list {
     display: grid;

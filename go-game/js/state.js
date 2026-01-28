@@ -28,7 +28,13 @@
         'sorting':         { label: 'Sorting', icon: '^' },
         'linked-list':     { label: 'Linked List', icon: '->' },
         'bit-manipulation':{ label: 'Bit Manipulation', icon: '&' },
-        'string-building': { label: 'String Building', icon: '+' }
+        'string-building': { label: 'String Building', icon: '+' },
+        // Type System skills
+        'pointers':        { label: 'Pointers', icon: '*' },
+        'structs':         { label: 'Structs', icon: '{}' },
+        'interfaces':      { label: 'Interfaces', icon: 'I' },
+        'methods':         { label: 'Methods', icon: '.' },
+        'embedding':       { label: 'Embedding', icon: '@' }
     };
 
     // Concept name (from JSON) -> skill key mapping
@@ -67,7 +73,23 @@
         'Valid Brackets': 'stack',
         'Palindrome Check': 'two-pointers',
         'Slice Operations': 'slices',
-        'Map Counting': 'maps'
+        'Map Counting': 'maps',
+        // Type System concepts
+        'Pointers': 'pointers',
+        'Pointer Basics': 'pointers',
+        'Pass by Reference': 'pointers',
+        'Dereferencing': 'pointers',
+        'Structs': 'structs',
+        'Struct Basics': 'structs',
+        'Struct Methods': 'methods',
+        'Methods': 'methods',
+        'Receiver Functions': 'methods',
+        'Interfaces': 'interfaces',
+        'Interface Basics': 'interfaces',
+        'Type Assertion': 'interfaces',
+        'Embedding': 'embedding',
+        'Composition': 'embedding',
+        'Struct Embedding': 'embedding'
     };
 
     // Palace definitions (concept-based)
@@ -107,14 +129,26 @@
             concepts: ['map-tracking', 'linked-list', 'bit-manipulation'],
             theme: 'Data Structures',
             boss: 'Data Structure Challenge'
+        },
+        shido: {
+            name: "Shido's Cruiser",
+            concepts: ['pointers', 'structs', 'methods'],
+            theme: 'Type System',
+            boss: 'Build a Data Model'
+        },
+        mementos_depths: {
+            name: "Mementos Depths",
+            concepts: ['interfaces', 'embedding'],
+            theme: 'Polymorphism',
+            boss: 'Interface Challenge'
         }
     };
 
     // Stat mapping (concept-based)
     var STAT_MAP = {
-        knowledge:   ['recursion', 'binary-search', 'stack', 'sorting'],
-        proficiency: ['slices', 'maps', 'strings', 'string-building'],
-        guts:        ['two-pointers', 'sliding-window', 'linked-list', 'bit-manipulation'],
+        knowledge:   ['recursion', 'binary-search', 'stack', 'sorting', 'interfaces', 'embedding'],
+        proficiency: ['slices', 'maps', 'strings', 'string-building', 'structs', 'methods'],
+        guts:        ['two-pointers', 'sliding-window', 'linked-list', 'bit-manipulation', 'pointers'],
         charm:       [],  // earned from streaks and perfect grades
         kindness:    ['variables', 'for-loops', 'conditionals', 'functions', 'switch']
     };
@@ -141,7 +175,13 @@
         'linked-list':     { name: 'Seth',          arcana: 'Tower' },
         'bit-manipulation':{ name: 'Mot',           arcana: 'Death' },
         'switch':          { name: 'Inugami',       arcana: 'Hanged Man' },
-        'string-building': { name: 'Kelpie',        arcana: 'Strength' }
+        'string-building': { name: 'Kelpie',        arcana: 'Strength' },
+        // Type System Personas
+        'pointers':        { name: 'Orthrus',       arcana: 'Hanged Man' },
+        'structs':         { name: 'Eligor',        arcana: 'Emperor' },
+        'methods':         { name: 'Berith',        arcana: 'Hierophant' },
+        'interfaces':      { name: 'Forneus',       arcana: 'Hierophant' },
+        'embedding':       { name: 'Hecatoncheires', arcana: 'Hanged Man' }
     };
 
     function createDefaultState() {
@@ -172,6 +212,11 @@
             palaces: palaces,
             exams: {},
             mementos: { lastDate: null, completed: [] },
+            confidants: {
+                morgana: { rank: 1, points: 0, unlocked: true, tipsUnlocked: [] },
+                futaba: { rank: 1, points: 0, unlocked: false, tipsUnlocked: [] },
+                makoto: { rank: 1, points: 0, unlocked: false, tipsUnlocked: [] }
+            },
             settings: { sound: true, timerSeconds: 45 }
         };
     }
@@ -189,6 +234,17 @@
                     });
                     if (!state.mastery) state.mastery = {};
                     if (!state.settings) state.settings = { sound: true, timerSeconds: 45 };
+                    if (!state.confidants) {
+                        state.confidants = {
+                            morgana: { rank: 1, points: 0, unlocked: true, tipsUnlocked: [] },
+                            futaba: { rank: 1, points: 0, unlocked: false, tipsUnlocked: [] },
+                            makoto: { rank: 1, points: 0, unlocked: false, tipsUnlocked: [] }
+                        };
+                    } else {
+                        // Ensure new confidants exist
+                        if (!state.confidants.futaba) state.confidants.futaba = { rank: 1, points: 0, unlocked: false, tipsUnlocked: [] };
+                        if (!state.confidants.makoto) state.confidants.makoto = { rank: 1, points: 0, unlocked: false, tipsUnlocked: [] };
+                    }
                     return state;
                 }
             }
@@ -550,6 +606,40 @@
         updateSetting: function(key, value) {
             state.settings[key] = value;
             save(state);
+        },
+        // Confidant methods
+        getConfidants: function() { return state.confidants; },
+        getConfidant: function(id) {
+            return state.confidants[id] || { rank: 0, points: 0, unlocked: false, tipsUnlocked: [] };
+        },
+        addConfidantPoints: function(id, points) {
+            if (!state.confidants[id]) return false;
+            var conf = state.confidants[id];
+            conf.points += points;
+            // Check for rank up (10 points per rank)
+            var pointsNeeded = conf.rank * 10;
+            if (conf.points >= pointsNeeded && conf.rank < 10) {
+                conf.rank++;
+                conf.points = 0;
+                save(state);
+                window.dispatchEvent(new CustomEvent('confidantRankUp', {
+                    detail: { confidantId: id, newRank: conf.rank }
+                }));
+                return true;
+            }
+            save(state);
+            return false;
+        },
+        unlockConfidantTip: function(id, tipId) {
+            if (!state.confidants[id]) return;
+            if (state.confidants[id].tipsUnlocked.indexOf(tipId) === -1) {
+                state.confidants[id].tipsUnlocked.push(tipId);
+                save(state);
+            }
+        },
+        isConfidantTipUnlocked: function(id, tipId) {
+            if (!state.confidants[id]) return false;
+            return state.confidants[id].tipsUnlocked.indexOf(tipId) !== -1;
         },
         save: function() { save(state); },
         resetState: function() {

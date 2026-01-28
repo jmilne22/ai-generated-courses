@@ -1,0 +1,377 @@
+/* ============================================================
+   Go Grind - Confidant System Styles
+   ============================================================ */
+
+/* === Confidant Header === */
+.confidant-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #1a1a3e 0%, #0a1a2e 100%);
+    border: 2px solid var(--purple);
+    margin-bottom: 1.5rem;
+    clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
+}
+
+.confidant-icon {
+    font-size: 4rem;
+    line-height: 1;
+}
+
+.confidant-info {
+    flex: 1;
+}
+
+.confidant-name {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.confidant-arcana {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.confidant-title {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+}
+
+.confidant-rank {
+    text-align: center;
+}
+
+.rank-label {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.rank-value {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+/* === Progress Bar === */
+.confidant-progress {
+    margin-bottom: 1.5rem;
+}
+
+.progress-label {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    height: 8px;
+    background: var(--bg-lighter);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), var(--cyan));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+.confidant-maxed {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--gold);
+    text-align: center;
+    padding: 1rem;
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+    margin-bottom: 1.5rem;
+    letter-spacing: 3px;
+}
+
+/* === Domain === */
+.confidant-domain {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+
+.domain-label {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.25rem;
+}
+
+.domain-value {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* === Description === */
+.confidant-desc {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.desc-greeting {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text);
+    font-style: italic;
+    margin-bottom: 0.75rem;
+    padding-left: 1rem;
+    border-left: 3px solid var(--purple);
+}
+
+.desc-text {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+
+/* === Tips Section === */
+.confidant-tips {
+    margin-bottom: 1.5rem;
+}
+
+.tips-header {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.tip-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    padding: 1rem;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    transition: all 0.2s;
+}
+
+.tip-card.unlocked {
+    border-color: var(--green);
+    border-left: 4px solid var(--green);
+}
+
+.tip-card.locked {
+    opacity: 0.5;
+    border-left: 4px solid var(--border);
+}
+
+.tip-card:hover {
+    transform: translateX(4px);
+}
+
+.tip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.tip-title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.tip-rank {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+}
+
+.tip-content {
+    font-size: 0.85rem;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+}
+
+.tip-trigger {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--cyan);
+}
+
+.tip-locked {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-style: italic;
+}
+
+/* === How To === */
+.confidant-howto {
+    background: var(--bg-lighter);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.howto-title {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+}
+
+.howto-text {
+    font-size: 0.85rem;
+    color: var(--text);
+    line-height: 1.5;
+}
+
+/* === Confidant List (Sidebar/Menu) === */
+.confidant-list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    transition: all 0.2s;
+}
+
+.confidant-list-item:hover {
+    border-color: var(--purple);
+    transform: translateX(4px);
+}
+
+.conf-icon {
+    font-size: 1.5rem;
+}
+
+.conf-details {
+    flex: 1;
+}
+
+.conf-name {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.conf-arcana {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--purple);
+}
+
+.conf-rank {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--gold);
+}
+
+/* === Confidant Tips in Hints === */
+.morgana-tip {
+    background: linear-gradient(135deg, #1a2a1a 0%, #0a1a2e 100%);
+    border: 2px solid var(--green);
+    border-left: 4px solid var(--green);
+}
+
+.morgana-tip summary {
+    color: var(--green) !important;
+}
+
+.futaba-tip {
+    background: linear-gradient(135deg, #2a1a2a 0%, #1a0a2e 100%);
+    border: 2px solid #ff6b35;
+    border-left: 4px solid #ff6b35;
+}
+
+.futaba-tip summary {
+    color: #ff6b35 !important;
+}
+
+.makoto-tip {
+    background: linear-gradient(135deg, #1a1a2a 0%, #0a1a3e 100%);
+    border: 2px solid #4a90d9;
+    border-left: 4px solid #4a90d9;
+}
+
+.makoto-tip summary {
+    color: #4a90d9 !important;
+}
+
+.confidant-tip {
+    background: linear-gradient(135deg, #2a2a1a 0%, #1a1a2e 100%);
+    border: 2px solid var(--purple);
+    border-left: 4px solid var(--purple);
+}
+
+.confidant-tip summary {
+    color: var(--purple) !important;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .confidant-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .confidant-rank {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .rank-value {
+        font-size: 2.5rem;
+    }
+
+    .tip-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}

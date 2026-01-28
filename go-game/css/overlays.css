@@ -403,6 +403,262 @@
     100% { transform: translate(var(--dx, 0), var(--dy, 0)) scale(0); opacity: 0; }
 }
 
+/* === Confidant Rank Up Overlay === */
+.confidant-rankup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(20, 10, 40, 0.95) 0%, rgba(40, 20, 80, 0.95) 100%);
+    cursor: pointer;
+    animation: fadeIn 0.3s ease;
+}
+
+.confidant-rankup-overlay.fade-out {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.confidant-rankup-card {
+    background: linear-gradient(135deg, #1a1a4e 0%, #2a2a6e 100%);
+    border: 4px solid var(--purple);
+    padding: 2rem 3rem;
+    min-width: 340px;
+    max-width: 420px;
+    text-align: center;
+    clip-path: polygon(20px 0, 100% 0, calc(100% - 20px) 100%, 0 100%);
+    animation: p5-slide-in 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+    box-shadow: 0 0 60px rgba(139, 92, 246, 0.3);
+}
+
+.rankup-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.rankup-icon {
+    font-size: 3rem;
+    animation: pulse 1s ease infinite;
+}
+
+.rankup-title {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+}
+
+.rankup-name {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 0.25rem;
+}
+
+.rankup-arcana {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+}
+
+.rankup-rank {
+    font-family: var(--font-display);
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+    animation: rankPulse 0.5s ease-out;
+}
+
+@keyframes rankPulse {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.rankup-dialog {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text);
+    font-style: italic;
+    margin: 1.5rem 0 1rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid var(--purple);
+}
+
+.rankup-dismiss {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: #666;
+    letter-spacing: 1px;
+    margin-top: 1rem;
+}
+
+/* === Confidant Unlocked Overlay === */
+.confidant-unlock-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(10, 20, 40, 0.98) 0%, rgba(30, 40, 80, 0.98) 100%);
+    cursor: pointer;
+    animation: fadeIn 0.4s ease;
+}
+
+.confidant-unlock-overlay.fade-out {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+.confidant-unlock-card {
+    background: linear-gradient(135deg, #0a1a2e 0%, #1a2a4e 50%, #2a3a6e 100%);
+    border: 4px solid var(--cyan);
+    padding: 2.5rem 3rem;
+    min-width: 380px;
+    max-width: 480px;
+    text-align: center;
+    clip-path: polygon(25px 0, 100% 0, calc(100% - 25px) 100%, 0 100%);
+    animation: unlockSlide 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+    box-shadow: 0 0 80px rgba(34, 211, 238, 0.2);
+    position: relative;
+}
+
+@keyframes unlockSlide {
+    from { transform: translateY(50px) scale(0.9); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.unlock-banner {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, var(--purple), var(--cyan));
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    padding: 0.5rem 2rem;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+.unlock-icon {
+    font-size: 5rem;
+    margin: 1rem 0;
+    animation: unlockBounce 0.6s ease-out 0.3s both;
+}
+
+@keyframes unlockBounce {
+    0% { transform: scale(0) rotate(-20deg); }
+    60% { transform: scale(1.2) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+.unlock-name {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 0.25rem;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.unlock-arcana {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+}
+
+.unlock-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+}
+
+.unlock-domain {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 215, 0, 0.1);
+    display: inline-block;
+}
+
+.unlock-greeting {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text);
+    font-style: italic;
+    margin: 1rem 0 1.5rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid var(--cyan);
+    text-align: left;
+}
+
+.unlock-btn {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--cyan) 100%);
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 0.75rem 2.5rem;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    cursor: pointer;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    transition: all 0.2s;
+}
+
+.unlock-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+}
+
 /* === Responsive === */
 @media (max-width: 600px) {
     .grade-card {
@@ -413,5 +669,29 @@
 
     .skill-levelup-banner {
         width: 280px;
+    }
+
+    .confidant-rankup-card,
+    .confidant-unlock-card {
+        min-width: auto;
+        margin: 0 1rem;
+        padding: 1.5rem;
+    }
+
+    .rankup-title {
+        font-size: 1.5rem;
+        letter-spacing: 3px;
+    }
+
+    .rankup-rank {
+        font-size: 4rem;
+    }
+
+    .unlock-name {
+        font-size: 1.8rem;
+    }
+
+    .unlock-icon {
+        font-size: 4rem;
     }
 }

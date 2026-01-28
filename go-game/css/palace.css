@@ -1,0 +1,496 @@
+/* ============================================================
+   Go Grind - Palace Infiltration Mode Styles
+   ============================================================ */
+
+/* === Infiltration Header === */
+.infiltration-header {
+    background: linear-gradient(90deg, var(--red) 0%, var(--bg-card) 50%);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
+}
+
+.infiltration-palace {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.infiltration-floor {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--gold);
+}
+
+/* === Status Bar === */
+.infiltration-status {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.security-meter {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    padding: 0.75rem 1rem;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+
+.security-label, .timer-label, .xp-label {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.25rem;
+}
+
+.security-bar {
+    height: 8px;
+    background: var(--bg-lighter);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+
+.security-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), #ffcc00, var(--red));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.security-text {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--red);
+    text-align: right;
+}
+
+.floor-timer, .run-xp {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    padding: 0.75rem 1rem;
+    text-align: center;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+
+.timer-value {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: #fff;
+}
+
+.timer-value.urgent {
+    color: var(--red);
+    animation: pulse 0.5s ease-in-out infinite;
+}
+
+.xp-value {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--gold);
+}
+
+/* === Floor Type === */
+.floor-type {
+    background: linear-gradient(135deg, #1a1a3e 0%, #0a1a2e 100%);
+    border: 2px solid var(--purple);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+.floor-type-name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.floor-type-desc {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+/* === Exercises === */
+.infiltration-exercises {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.infiltration-exercise {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    padding: 1rem 1.25rem;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    transition: all 0.2s;
+}
+
+.infiltration-exercise.active {
+    border-color: var(--red);
+    box-shadow: 0 0 20px rgba(230, 0, 18, 0.2);
+}
+
+.infiltration-exercise.completed {
+    border-color: var(--green);
+    opacity: 0.7;
+}
+
+.infiltration-exercise.locked {
+    opacity: 0.4;
+}
+
+.exercise-number {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.25rem;
+}
+
+.exercise-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.exercise-concept {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--cyan);
+    margin-bottom: 0.5rem;
+}
+
+.exercise-status {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--text-dim);
+}
+
+.infiltration-exercise.completed .exercise-status {
+    color: var(--green);
+}
+
+.exercise-xp {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--gold);
+}
+
+.engage-btn {
+    background: linear-gradient(135deg, var(--red) 0%, #cc0010 100%);
+    border: 2px solid #000;
+    color: #fff;
+    padding: 0.5rem 1.5rem;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    transition: all 0.2s;
+}
+
+.engage-btn:hover {
+    transform: translateY(-2px) skewX(-2deg);
+    box-shadow: 3px 3px 0 #000;
+}
+
+/* === Actions === */
+.infiltration-actions {
+    text-align: center;
+}
+
+.retreat-btn {
+    background: transparent;
+    border: 2px solid var(--text-dim);
+    color: var(--text-dim);
+    padding: 0.5rem 1.5rem;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.retreat-btn:hover {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+/* === Exercise Overlay === */
+.infiltration-exercise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.infiltration-exercise-modal {
+    background: var(--bg-dark);
+    border: 3px solid var(--red);
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
+}
+
+.modal-header {
+    background: linear-gradient(90deg, var(--red) 0%, var(--bg-card) 50%);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.modal-content {
+    padding: 1.5rem;
+}
+
+.modal-content h3 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.modal-content p {
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.infiltration-hint, .infiltration-solution {
+    margin: 0.5rem 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.infiltration-hint summary, .infiltration-solution summary {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    color: var(--text);
+    font-weight: 600;
+    background: rgba(230, 0, 18, 0.1);
+}
+
+.infiltration-hint summary:hover, .infiltration-solution summary:hover {
+    background: rgba(230, 0, 18, 0.2);
+}
+
+.modal-actions {
+    padding: 1rem 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    border-top: 1px solid var(--border);
+}
+
+.complete-btn {
+    background: linear-gradient(135deg, var(--green) 0%, #1a8a1a 100%);
+    border: 2px solid #000;
+    color: #fff;
+    padding: 0.75rem 2rem;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+.complete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 0 #000;
+}
+
+.cancel-btn {
+    background: transparent;
+    border: 2px solid var(--border);
+    color: var(--text-dim);
+    padding: 0.75rem 1.5rem;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.cancel-btn:hover {
+    border-color: var(--text);
+    color: var(--text);
+}
+
+/* === Result Screens === */
+.infiltration-result {
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+.result-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+
+.result-title {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    margin-bottom: 0.5rem;
+}
+
+.infiltration-result.victory .result-title {
+    color: var(--gold);
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+.infiltration-result.retreat .result-title {
+    color: var(--text-dim);
+}
+
+.result-palace {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--purple);
+    margin-bottom: 2rem;
+}
+
+.result-reason {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: var(--text);
+    margin-bottom: 2rem;
+}
+
+.result-stats {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    padding: 1.5rem;
+    max-width: 400px;
+    margin: 0 auto 2rem;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+.stat, .stat-row {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--text);
+    margin: 0.5rem 0;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.stat-row.bonus {
+    color: var(--cyan);
+}
+
+.stat-row.total {
+    font-size: 1.1rem;
+    color: var(--gold);
+    font-weight: 700;
+    border-top: 1px solid var(--border);
+    padding-top: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.return-btn {
+    background: linear-gradient(135deg, var(--red) 0%, #cc0010 100%);
+    border: 3px solid #000;
+    color: #fff;
+    padding: 0.75rem 2.5rem;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    cursor: pointer;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+.return-btn:hover {
+    transform: translateY(-2px) skewX(-2deg);
+    box-shadow: 4px 4px 0 #000;
+}
+
+/* === Infiltrate Button on Palace List === */
+.infiltrate-btn {
+    background: linear-gradient(135deg, var(--purple) 0%, #6a3a96 100%);
+    border: 2px solid #000;
+    color: #fff;
+    padding: 0.5rem 1.5rem;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    margin-top: 0.75rem;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    transition: all 0.2s;
+}
+
+.infiltrate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 0 #000;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .infiltration-status {
+        grid-template-columns: 1fr;
+    }
+
+    .infiltration-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+
+    .floor-type {
+        flex-direction: column;
+        gap: 0.25rem;
+        text-align: center;
+    }
+
+    .result-title {
+        font-size: 1.8rem;
+    }
+}
