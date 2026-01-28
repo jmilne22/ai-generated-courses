@@ -492,13 +492,7 @@
         timer.innerHTML = `
             <div class="session-timer-header">
                 <span class="session-title">Session</span>
-                <div class="countdown-wrapper">
-                    <svg class="circular-progress" width="100" height="100" viewBox="0 0 100 100">
-                        <circle class="progress-ring-bg" cx="50" cy="50" r="45" />
-                        <circle class="progress-ring-circle" cx="50" cy="50" r="45" />
-                    </svg>
-                    <span class="session-countdown" id="floating-session-countdown">25:00</span>
-                </div>
+                <span class="session-countdown" id="floating-session-countdown">25:00</span>
             </div>
             <div class="session-progress">
                 <div class="session-progress-bar" id="floating-session-progress"></div>
@@ -534,17 +528,11 @@
     }) {
         const dashboardTimer = document.getElementById('session-timer');
 
-        // Calculate circular progress percentage (0-100)
-        const progressPercent = parseFloat(progressWidth);
-        const circumference = 2 * Math.PI * 45; // radius = 45
-        const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
-
         if (dashboardTimer) {
             const countdown = document.getElementById('session-countdown');
             const progress = document.getElementById('session-progress');
             const label = document.getElementById('session-label');
             const toggleBtn = dashboardTimer.querySelector('[data-session-action="toggle"]');
-            let circularProgress = dashboardTimer.querySelector('.circular-progress');
 
             dashboardTimer.hidden = false;
             if (countdown) countdown.textContent = countdownText;
@@ -552,14 +540,6 @@
             if (label) label.textContent = labelText;
             if (toggleBtn && toggleLabel) toggleBtn.textContent = toggleLabel;
             if (toggleBtn) toggleBtn.hidden = !showToggle;
-
-            // Update circular progress
-            if (circularProgress) {
-                const circle = circularProgress.querySelector('.progress-ring-circle');
-                if (circle) {
-                    circle.style.strokeDashoffset = strokeDashoffset;
-                }
-            }
 
             bindTimerControls(dashboardTimer);
             return;
@@ -570,21 +550,12 @@
         const progress = floating.querySelector('#floating-session-progress');
         const label = floating.querySelector('#floating-session-label');
         const toggleBtn = floating.querySelector('[data-session-action="toggle"]');
-        let circularProgress = floating.querySelector('.circular-progress');
 
         if (countdown) countdown.textContent = countdownText;
         if (progress) progress.style.width = progressWidth;
         if (label) label.textContent = labelText;
         if (toggleBtn && toggleLabel) toggleBtn.textContent = toggleLabel;
         if (toggleBtn) toggleBtn.hidden = !showToggle;
-
-        // Update circular progress
-        if (circularProgress) {
-            const circle = circularProgress.querySelector('.progress-ring-circle');
-            if (circle) {
-                circle.style.strokeDashoffset = strokeDashoffset;
-            }
-        }
     }
 
     function bindTimerControls(root) {
