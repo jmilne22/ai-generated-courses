@@ -103,6 +103,12 @@
             options: [
                 { value: 'persona5-dark', label: 'Dark' }
             ]
+        },
+        {
+            label: 'Factorio',
+            options: [
+                { value: 'factorio-dark', label: 'Dark' }
+            ]
         }
     ];
 
