@@ -118,15 +118,12 @@
     }
 
     function renderStudyOverlay(article) {
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
         var overlay = document.createElement('div');
         overlay.className = 'study-overlay';
         overlay.id = 'study-overlay';
 
-        var title = is4X ? 'Field Manual Review' : 'Library Study Session';
-        var subtitle = is4X ? 'Intelligence Brief: ' + article.title : 'Studying: ' + article.title;
+        var title = 'Library Study Session';
+        var subtitle = 'Studying: ' + article.title;
 
         var html = '<div class="study-modal">';
 
@@ -167,9 +164,9 @@
         var skillLabel = article.skill || 'General';
 
         html += '<div class="study-rewards-preview">';
-        html += '<div class="reward-label">' + (is4X ? 'Mission Rewards:' : 'Study Rewards:') + '</div>';
-        html += '<div class="reward-item">+' + estimatedXP + ' ' + (is4X ? 'Production' : 'XP') + ' (' + skillLabel + ')</div>';
-        html += '<div class="reward-item">+' + CONFIG.buffDuration + ' ' + (is4X ? 'operations' : 'exercises') + ' with ' + Math.round((CONFIG.buffMultiplier - 1) * 100) + '% ' + (is4X ? 'PP' : 'XP') + ' bonus</div>';
+        html += '<div class="reward-label">Study Rewards:</div>';
+        html += '<div class="reward-item">+' + estimatedXP + ' XP (' + skillLabel + ')</div>';
+        html += '<div class="reward-item">+' + CONFIG.buffDuration + ' exercises with ' + Math.round((CONFIG.buffMultiplier - 1) * 100) + '% XP bonus</div>';
         html += '</div>';
 
         // Buttons
@@ -253,9 +250,6 @@
     }
 
     function showStudyComplete(xpEarned, skillKey) {
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
         var overlay = document.createElement('div');
         overlay.className = 'grade-overlay study-complete-overlay';
 
@@ -263,13 +257,13 @@
         var skillLabel = skillDefs[skillKey] ? skillDefs[skillKey].label : (skillKey || 'General');
 
         var html = '<div class="study-complete-modal">';
-        html += '<div class="study-complete-icon">' + (is4X ? '\u{1F4D6}' : '\u{2728}') + '</div>';
-        html += '<h2>' + (is4X ? 'Intel Acquired!' : 'Study Complete!') + '</h2>';
+        html += '<div class="study-complete-icon">\u{2728}</div>';
+        html += '<h2>Study Complete!</h2>';
         html += '<div class="study-complete-rewards">';
-        html += '<div class="reward-line">+' + xpEarned + ' ' + (is4X ? 'Production' : 'XP') + ' (' + skillLabel + ')</div>';
-        html += '<div class="reward-line buff">+' + CONFIG.buffDuration + ' ' + (is4X ? 'ops' : 'exercises') + ' with ' + Math.round((CONFIG.buffMultiplier - 1) * 100) + '% bonus</div>';
+        html += '<div class="reward-line">+' + xpEarned + ' XP (' + skillLabel + ')</div>';
+        html += '<div class="reward-line buff">+' + CONFIG.buffDuration + ' exercises with ' + Math.round((CONFIG.buffMultiplier - 1) * 100) + '% bonus</div>';
         html += '</div>';
-        html += '<p class="study-complete-hint">' + (is4X ? 'Your next operations in this technology will be more effective.' : 'Your understanding has deepened. Practice to reinforce!') + '</p>';
+        html += '<p class="study-complete-hint">Your understanding has deepened. Practice to reinforce!</p>';
         html += '<button class="study-btn primary" onclick="this.closest(\'.study-complete-overlay\').remove()">Continue</button>';
         html += '</div>';
 

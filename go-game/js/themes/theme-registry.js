@@ -184,39 +184,6 @@
     }
 
     /**
-     * Get military rank for a level (4X theme)
-     */
-    function getRankForLevel(level) {
-        if (!activeTheme || !activeTheme.ranks) {
-            return null;
-        }
-        // Find the highest rank that the level qualifies for
-        var rank = null;
-        for (var i = 0; i < activeTheme.ranks.length; i++) {
-            if (level >= activeTheme.ranks[i].minLevel) {
-                rank = activeTheme.ranks[i];
-            }
-        }
-        return rank;
-    }
-
-    /**
-     * Get era info for a level (4X theme)
-     */
-    function getEraForLevel(level) {
-        if (!activeTheme || !activeTheme.eras) {
-            return null;
-        }
-        var era = null;
-        for (var i = 0; i < activeTheme.eras.length; i++) {
-            if (level >= activeTheme.eras[i].minLevel) {
-                era = activeTheme.eras[i];
-            }
-        }
-        return era;
-    }
-
-    /**
      * Initialize theme from localStorage or default
      */
     function init() {
@@ -255,8 +222,6 @@
         getConfidantInfo: getConfidantInfo,
         getPersonaInfo: getPersonaInfo,
         getSkillInfo: getSkillInfo,
-        getRankForLevel: getRankForLevel,
-        getEraForLevel: getEraForLevel,
         init: init
     };
 

@@ -7,21 +7,16 @@
 
     // Get theme labels
     function getLabels() {
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
         return {
-            title: is4X ? 'Campaign Analytics' : 'Progress Analytics',
-            activity: is4X ? 'Operations Activity' : 'Activity',
-            grades: is4X ? 'Commendation Distribution' : 'Grade Distribution',
-            concepts: is4X ? 'Doctrine Proficiency' : 'Concept Mastery',
-            weekly: is4X ? 'Weekly Deployment' : 'Weekly Progress',
-            recent: is4X ? 'Recent Operations' : 'Recent Activity',
-            noData: is4X ? 'No operations data yet. Deploy to the field!' : 'No data yet. Complete some exercises!',
-            exercises: is4X ? 'ops' : 'exercises',
-            gradeNames: is4X
-                ? { S: 'DSC', A: 'OM', B: 'BS', C: 'SAT', F: 'CM' }
-                : { S: 'S', A: 'A', B: 'B', C: 'C', F: 'F' }
+            title: 'Progress Analytics',
+            activity: 'Activity',
+            grades: 'Grade Distribution',
+            concepts: 'Concept Mastery',
+            weekly: 'Weekly Progress',
+            recent: 'Recent Activity',
+            noData: 'No data yet. Complete some exercises!',
+            exercises: 'exercises',
+            gradeNames: { S: 'S', A: 'A', B: 'B', C: 'C', F: 'F' }
         };
     }
 

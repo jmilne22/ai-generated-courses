@@ -478,31 +478,26 @@
             return;
         }
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-        var themeConfidant = is4X && T.getConfidantInfo ? T.getConfidantInfo(confidantId) : null;
-
         var confState = window.GameState.getConfidant(confidantId);
         var currentRank = confState.rank || 1;
         var currentPoints = confState.points || 0;
         var pointsNeeded = pointsForNextRank(currentRank);
         var pct = Math.min(100, Math.floor((currentPoints / pointsNeeded) * 100));
 
-        // Themed labels
-        var displayName = themeConfidant ? themeConfidant.name : conf.name;
-        var displayTitle = themeConfidant ? themeConfidant.title : conf.title;
-        var displayArcana = themeConfidant ? (themeConfidant.ambassador || 'Faction Alliance') : (conf.arcana + ' Arcana');
-        var displayIcon = is4X ? (T.getIcon('embassy', '🏛️')) : conf.icon;
-        var rankLabel = is4X ? 'RELATIONS' : 'RANK';
-        var progressLabel = is4X ? 'Next Level' : 'Next Rank';
-        var maxedLabel = is4X ? 'MAXIMUM ALLIANCE' : 'MAX RANK ACHIEVED';
-        var domainLabel = is4X ? 'SPECIALTY' : 'EXPERTISE';
-        var tipsHeader = is4X ? 'RATIFIED TREATIES' : 'UNLOCKED WISDOM';
-        var tipLabel = is4X ? 'Treaty' : 'Rank';
-        var tipTriggerLabel = is4X ? 'Applies to' : 'Appears in';
-        var tipLockedPrefix = is4X ? 'Reach Level' : 'Reach Rank';
-        var howtoTitle = is4X ? 'HOW TO IMPROVE RELATIONS' : 'HOW TO RANK UP';
+        // Labels
+        var displayName = conf.name;
+        var displayTitle = conf.title;
+        var displayArcana = conf.arcana + ' Arcana';
+        var displayIcon = conf.icon;
+        var rankLabel = 'RANK';
+        var progressLabel = 'Next Rank';
+        var maxedLabel = 'MAX RANK ACHIEVED';
+        var domainLabel = 'EXPERTISE';
+        var tipsHeader = 'UNLOCKED WISDOM';
+        var tipLabel = 'Rank';
+        var tipTriggerLabel = 'Appears in';
+        var tipLockedPrefix = 'Reach Rank';
+        var howtoTitle = 'HOW TO RANK UP';
 
         var html = '';
 
@@ -531,15 +526,15 @@
         }
 
         // Domain
-        var domainValue = themeConfidant ? themeConfidant.specialty : conf.domain;
+        var domainValue = conf.domain;
         html += '<div class="confidant-domain">';
         html += '<div class="domain-label">' + domainLabel + '</div>';
         html += '<div class="domain-value">' + domainValue + '</div>';
         html += '</div>';
 
         // Description
-        var descGreeting = themeConfidant ? ('"' + (themeConfidant.description || '') + '"') : ('"' + conf.greeting + '"');
-        var descText = themeConfidant ? '' : conf.description;
+        var descGreeting = '"' + conf.greeting + '"';
+        var descText = conf.description;
         html += '<div class="confidant-desc">';
         html += '<div class="desc-greeting">' + descGreeting + '</div>';
         if (descText) {
@@ -563,7 +558,7 @@
             html += '</div>';
             if (isUnlocked) {
                 html += '<div class="tip-content">' + tip.content + '</div>';
-                html += '<div class="tip-trigger">' + tipTriggerLabel + ': ' + tip.trigger + ' ' + (is4X ? 'operations' : 'exercises') + '</div>';
+                html += '<div class="tip-trigger">' + tipTriggerLabel + ': ' + tip.trigger + ' exercises</div>';
             } else {
                 html += '<div class="tip-locked">' + tipLockedPrefix + ' ' + tip.rank + ' to unlock</div>';
             }
@@ -576,13 +571,8 @@
         // How to rank up
         html += '<div class="confidant-howto">';
         html += '<div class="howto-title">' + howtoTitle + '</div>';
-        if (is4X) {
-            html += '<div class="howto-text">Complete operations to improve diplomatic relations with ' + displayName + '. ';
-            html += 'Each completion earns influence. Treaties unlock as intel during operations!</div>';
-        } else {
-            html += '<div class="howto-text">Complete exercises to build your relationship with ' + conf.name + '. ';
-            html += 'Each completion earns points. Tips will appear as hints during exercises!</div>';
-        }
+        html += '<div class="howto-text">Complete exercises to build your relationship with ' + conf.name + '. ';
+        html += 'Each completion earns points. Tips will appear as hints during exercises!</div>';
         html += '</div>';
 
         view.innerHTML = html;
@@ -592,10 +582,7 @@
     function renderConfidantsList() {
         var html = '';
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-        var rankWord = is4X ? 'Level' : 'Rank';
+        var rankWord = 'Rank';
 
         Object.keys(CONFIDANTS).forEach(function(id) {
             var conf = CONFIDANTS[id];
@@ -603,11 +590,9 @@
 
             if (!confState.unlocked) return;
 
-            // Get themed info
-            var themeConfidant = is4X && T.getConfidantInfo ? T.getConfidantInfo(id) : null;
-            var displayName = themeConfidant ? themeConfidant.name : conf.name;
-            var displayArcana = themeConfidant ? themeConfidant.title : conf.arcana;
-            var displayIcon = is4X ? (T.getIcon('embassy', '🏛️')) : conf.icon;
+            var displayName = conf.name;
+            var displayArcana = conf.arcana;
+            var displayIcon = conf.icon;
 
             html += '<div class="confidant-list-item" data-confidant="' + id + '">';
             html += '<span class="conf-icon">' + displayIcon + '</span>';
@@ -718,14 +703,9 @@
 
         var conf = CONFIDANTS[selected.confidantId];
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-        var themeConfidant = is4X && T.getConfidantInfo ? T.getConfidantInfo(selected.confidantId) : null;
-
-        var displayName = themeConfidant ? themeConfidant.ambassador : conf.name;
-        var displayIcon = is4X ? (T.getIcon('treaty', '📜')) : conf.icon;
-        var tipLabel = is4X ? 'Intel' : 'Tip';
+        var displayName = conf.name;
+        var displayIcon = conf.icon;
+        var tipLabel = 'Tip';
 
         return {
             title: displayIcon + ' ' + displayName + '\'s ' + tipLabel + ': ' + selected.tip.title,

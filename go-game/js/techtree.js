@@ -1,12 +1,11 @@
 /**
- * Go Grind - Tech Tree Visualization (4X Theme)
- * Visual representation of skill/technology dependencies and progression.
+ * Go Grind - Tech Tree Visualization
+ * Visual representation of skill dependencies and progression.
  */
 (function() {
     'use strict';
 
     // Tech tree structure - skills organized by tier with dependencies
-    // Based on existing techTier data from theme-4x-strategy.js
     var TECH_TREE = {
         tiers: [
             {

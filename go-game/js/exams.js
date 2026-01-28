@@ -271,22 +271,15 @@
         var view = document.getElementById('view-exams');
         if (!view || !window.GameState) return;
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
+        // Labels
+        var scheduleTitle = 'Exam Schedule';
+        var xpLabel = 'XP';
+        var exerciseWord = 'exercises';
+        var takeExamLabel = 'TAKE EXAM';
+        var questionsLabel = 'questions';
 
-        // Themed labels
-        var scheduleTitle = is4X ? 'Staff College Examinations' : 'Exam Schedule';
-        var xpLabel = is4X ? 'PP' : 'XP';
-        var exerciseWord = is4X ? 'operations' : 'exercises';
-        var takeExamLabel = is4X ? 'BEGIN EVALUATION' : 'TAKE EXAM';
-        var questionsLabel = is4X ? 'tactical scenarios' : 'questions';
-
-        // Themed grade display
+        // Grade display
         var gradeDisplay = function(grade) {
-            if (is4X && T.getTheme && T.getTheme().gradeShort) {
-                return T.getTheme().gradeShort[grade] || grade;
-            }
             return grade;
         };
 
@@ -303,12 +296,8 @@
             if (!available) cls += ' locked';
             else if (result) cls += ' completed';
 
-            // Themed exam names for 4X
             var examName = exam.name;
             var examSubtitle = exam.subtitle;
-            if (is4X) {
-                examName = examName.replace('Midterm Exam', 'Field Assessment').replace('Final Exam', 'Strategic Evaluation').replace('Type System Exam', 'Systems Analysis');
-            }
 
             html += '<div class="' + cls + '" data-exam-id="' + exam.id + '">';
             if (result) {

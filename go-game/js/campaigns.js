@@ -337,52 +337,32 @@
         var view = document.getElementById('view-palace');
         if (!view || !infiltration) return;
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
         var floor = infiltration.floors[infiltration.currentFloor];
         var palaceDefs = window.GameState.getPalaceDefs();
         var palace = palaceDefs[infiltration.palaceKey];
 
-        // Get themed names
-        var palaceInfo = is4X && T.getPalaceInfo ? T.getPalaceInfo(infiltration.palaceKey) : null;
-        var locationName = palaceInfo ? palaceInfo.name : palace.name;
+        // Get names
+        var locationName = palace.name;
 
-        // Themed labels
-        var floorLabel = is4X ? 'SECTOR' : 'FLOOR';
-        var securityLabel = is4X ? 'ENEMY ALERT' : 'SECURITY LEVEL';
-        var timeLabel = is4X ? 'MISSION CLOCK' : 'TIME REMAINING';
-        var xpLabel = is4X ? 'PRODUCTION' : 'RUN XP';
-        var enemyLabel = is4X ? 'Target' : 'Shadow';
-        var defeatedLabel = is4X ? 'ELIMINATED' : 'DEFEATED';
-        var engageLabel = is4X ? 'ENGAGE TARGET' : 'ENGAGE';
-        var retreatLabel = is4X ? 'TACTICAL WITHDRAWAL (Keep 50% PP)' : 'RETREAT (Keep 50% XP)';
-        var retreatConfirm = is4X ? 'Execute tactical withdrawal? You\'ll retain 50% of earned Production.' : 'Retreat from the palace? You\'ll keep 50% of earned XP.';
+        // Labels
+        var floorLabel = 'FLOOR';
+        var securityLabel = 'SECURITY LEVEL';
+        var timeLabel = 'TIME REMAINING';
+        var xpLabel = 'RUN XP';
+        var enemyLabel = 'Shadow';
+        var defeatedLabel = 'DEFEATED';
+        var engageLabel = 'ENGAGE';
+        var retreatLabel = 'RETREAT (Keep 50% XP)';
+        var retreatConfirm = 'Retreat from the palace? You\'ll keep 50% of earned XP.';
 
-        // Themed floor types for 4X
         var floorTypeName = floor.type.name;
         var floorTypeDesc = floor.type.desc;
-        if (is4X) {
-            var floorTypeMap = {
-                'Shadow Patrol': { name: 'Standard Engagement', desc: 'Regular enemy forces' },
-                'Treasure Room': { name: 'Supply Cache', desc: 'Bonus production available' },
-                'Safe Room': { name: 'Forward Operating Base', desc: 'Alert level reduced' },
-                'Elite Shadows': { name: 'Heavy Resistance', desc: 'Elite forces - high reward' },
-                'Ambush!': { name: 'Time-Critical Operation', desc: 'Enemy counterattack imminent' }
-            };
-            var mapped = floorTypeMap[floor.type.name];
-            if (mapped) {
-                floorTypeName = mapped.name;
-                floorTypeDesc = mapped.desc;
-            }
-        }
 
         var html = '';
 
         // Header
         html += '<div class="infiltration-header">';
-        html += '<div class="infiltration-palace">' + (is4X ? '⚔️ ' : '') + locationName + '</div>';
+        html += '<div class="infiltration-palace">' + locationName + '</div>';
         html += '<div class="infiltration-floor">' + floorLabel + ' ' + floor.number + ' / ' + CONFIG.floorsPerRun + '</div>';
         html += '</div>';
 
@@ -427,7 +407,7 @@
 
             if (statusClass === 'completed') {
                 html += '<div class="exercise-status">' + defeatedLabel + '</div>';
-                html += '<div class="exercise-xp">+' + (exData.xpEarned || 0) + ' ' + (is4X ? 'PP' : 'XP') + '</div>';
+                html += '<div class="exercise-xp">+' + (exData.xpEarned || 0) + ' XP</div>';
             } else if (statusClass === 'active') {
                 html += '<div class="exercise-title">' + exData.variant.title + '</div>';
                 html += '<div class="exercise-concept">' + (exData.exercise.concept || '') + '</div>';
@@ -458,7 +438,7 @@
 
         document.getElementById('retreat-btn').addEventListener('click', function() {
             if (confirm(retreatConfirm)) {
-                forceRetreat(is4X ? 'Tactical withdrawal executed.' : 'You chose to retreat.');
+                forceRetreat('You chose to retreat.');
             }
         });
 
@@ -548,17 +528,13 @@
         var view = document.getElementById('view-palace');
         if (!view) return;
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
-        // Themed labels
-        var icon = is4X ? '🏳️' : '🏃';
-        var title = is4X ? 'TACTICAL WITHDRAWAL' : 'RETREAT';
-        var floorLabel = is4X ? 'Sectors Secured' : 'Floors Cleared';
-        var xpLabel = is4X ? 'Production Salvaged' : 'XP Earned';
-        var securityLabel = is4X ? 'Final Alert Level' : 'Final Security';
-        var returnLabel = is4X ? 'Return to War Council' : 'Return to Palace Select';
+        // Labels
+        var icon = '\u{1F3C3}';
+        var title = 'RETREAT';
+        var floorLabel = 'Floors Cleared';
+        var xpLabel = 'XP Earned';
+        var securityLabel = 'Final Security';
+        var returnLabel = 'Return to Palace Select';
 
         var html = '<div class="infiltration-result retreat">';
         html += '<div class="result-icon">' + icon + '</div>';
@@ -584,24 +560,18 @@
         var view = document.getElementById('view-palace');
         if (!view) return;
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
+        var locationName = infiltration.palaceKey.toUpperCase() + '\'S PALACE';
 
-        // Get themed palace name
-        var palaceInfo = is4X && T.getPalaceInfo ? T.getPalaceInfo(infiltration.palaceKey) : null;
-        var locationName = palaceInfo ? palaceInfo.name : (infiltration.palaceKey.toUpperCase() + '\'S PALACE');
-
-        // Themed labels
-        var icon = is4X ? '🏆' : '🎭';
-        var title = is4X ? 'CAMPAIGN VICTORY' : 'INFILTRATION COMPLETE';
-        var floorLabel = is4X ? 'Sectors Secured' : 'Floors Cleared';
-        var baseLabel = is4X ? 'Base Production' : 'Base XP';
-        var bonusLabel = is4X ? 'Combat Bonus' : 'Bonus XP';
-        var totalLabel = is4X ? 'Total Production' : 'Total XP';
-        var securityLabel = is4X ? 'Final Alert Level' : 'Final Security';
-        var perfectLabel = is4X ? 'Flawless Sectors' : 'Perfect Floors';
-        var continueLabel = is4X ? 'Return to Command' : 'Continue';
+        // Labels
+        var icon = '\u{1F3AD}';
+        var title = 'INFILTRATION COMPLETE';
+        var floorLabel = 'Floors Cleared';
+        var baseLabel = 'Base XP';
+        var bonusLabel = 'Bonus XP';
+        var totalLabel = 'Total XP';
+        var securityLabel = 'Final Security';
+        var perfectLabel = 'Perfect Floors';
+        var continueLabel = 'Continue';
 
         var html = '<div class="infiltration-result victory">';
         html += '<div class="result-icon">' + icon + '</div>';
@@ -643,169 +613,48 @@
             return;
         }
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
         var palaces = window.GameState.getPalaces();
         var palaceDefs = window.GameState.getPalaceDefs();
         var skillDefs = window.GameState.getSkillDefs();
 
-        // Get war statistics from gamification if available
-        var warStats = window.Gamification ? window.Gamification.getStatistics() : null;
-
         var html = '';
 
-        if (is4X) {
-            // 4X THEMED: ACTIVE WARS VIEW
-            html += '<div class="section-header">';
-            html += '<h2>⚔️ ACTIVE WARS</h2>';
-            html += '<div class="section-subtitle">Campaign fronts across the Go Empire</div>';
+        // PERSONA 5 THEMED: PALACE INFILTRATION
+        html += '<div class="section-header">';
+        html += '<h2>PALACE INFILTRATION</h2>';
+        html += '<div class="section-subtitle">Timed dungeon runs through skill clusters</div>';
+        html += '</div>';
+
+        html += '<div class="palace-list">';
+
+        Object.keys(palaceDefs).forEach(function(key) {
+            var def = palaceDefs[key];
+            var palace = palaces[key] || { progress: 0, unlocked: false, defeated: false };
+            var pct = Math.round(palace.progress * 100);
+
+            html += '<div class="palace-item ' + (palace.defeated ? 'defeated' : '') + '">';
+            html += '<div class="palace-name">' + def.name + '</div>';
+            html += '<div class="palace-concepts">' + def.concepts.map(function(c) {
+                return skillDefs[c] ? skillDefs[c].label : c;
+            }).join(', ') + ' &bull; ' + def.theme + '</div>';
+            html += '<div class="palace-bar"><div class="palace-bar-fill" style="width:' + pct + '%"></div></div>';
+            html += '<div class="palace-status"><span>' + pct + '%</span>';
+            if (palace.defeated) {
+                html += '<span class="boss-defeated">BOSS DEFEATED</span>';
+            } else if (pct >= CONFIG.bossThreshold) {
+                html += '<span class="boss-available">BOSS AVAILABLE</span>';
+            } else {
+                html += '<span>Boss at ' + CONFIG.bossThreshold + '%</span>';
+            }
             html += '</div>';
 
-            // Empire overview bar
-            var totalPct = 0;
-            var totalWars = 0;
-            var conqueredCount = 0;
-            Object.keys(palaceDefs).forEach(function(key) {
-                var palace = palaces[key] || { progress: 0 };
-                totalPct += Math.round(palace.progress * 100);
-                totalWars++;
-                if (palace.defeated) conqueredCount++;
-            });
-            var avgControl = Math.round(totalPct / totalWars);
-
-            html += '<div class="war-overview" style="background:var(--surface-color);border:2px solid var(--border-color);padding:1rem;margin-bottom:1.5rem;border-radius:8px">';
-            html += '<div style="display:flex;justify-content:space-between;margin-bottom:0.5rem">';
-            html += '<span style="color:var(--text-dim)">TOTAL TERRITORIAL CONTROL</span>';
-            html += '<span style="color:var(--gold);font-family:var(--font-mono)">' + avgControl + '%</span>';
-            html += '</div>';
-            html += '<div class="palace-bar" style="height:12px"><div class="palace-bar-fill" style="width:' + avgControl + '%;background:linear-gradient(90deg,var(--success),var(--gold))"></div></div>';
-            html += '<div style="display:flex;justify-content:space-between;margin-top:0.75rem;font-size:0.8rem">';
-            html += '<span>Territories Conquered: <strong style="color:var(--gold)">' + conqueredCount + '/' + totalWars + '</strong></span>';
-            html += '<span>Active Campaigns: <strong style="color:var(--accent)">' + (totalWars - conqueredCount) + '</strong></span>';
-            html += '</div>';
-            html += '</div>';
-
-            html += '<div class="palace-list">';
-
-            Object.keys(palaceDefs).forEach(function(key) {
-                var def = palaceDefs[key];
-                var palace = palaces[key] || { progress: 0, unlocked: false, defeated: false };
-                var pct = Math.round(palace.progress * 100);
-
-                // Get themed palace info
-                var palaceInfo = T.getPalaceInfo ? T.getPalaceInfo(key) : null;
-                var warName = palaceInfo ? palaceInfo.warName : ('The ' + def.name + ' Campaign');
-                var territoryName = palaceInfo ? palaceInfo.name : def.name;
-                var territoryTheme = palaceInfo ? palaceInfo.theme : def.theme;
-
-                // War status
-                var warStatus = 'NEUTRAL';
-                var statusClass = '';
-                if (palace.defeated) {
-                    warStatus = 'CONQUERED';
-                    statusClass = 'conquered';
-                } else if (pct >= CONFIG.bossThreshold) {
-                    warStatus = 'VICTORY IMMINENT';
-                    statusClass = 'victory-imminent';
-                } else if (pct > 0) {
-                    warStatus = 'AT WAR';
-                    statusClass = 'at-war';
-                }
-
-                html += '<div class="palace-item war-campaign-card ' + statusClass + ' ' + (palace.defeated ? 'defeated' : '') + '">';
-
-                // War header
-                html += '<div class="war-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">';
-                html += '<div class="war-name" style="font-weight:bold;color:var(--gold)">' + warName + '</div>';
-                html += '<div class="war-status ' + statusClass + '" style="font-size:0.75rem;padding:0.25rem 0.5rem;border-radius:4px;background:var(--bg-card)">' + warStatus + '</div>';
-                html += '</div>';
-
-                // Territory info
-                html += '<div class="palace-name" style="font-size:1.1rem">' + territoryName + '</div>';
-                html += '<div class="palace-concepts" style="color:var(--text-dim);font-size:0.8rem">';
-                html += 'Theater: ' + def.concepts.map(function(c) {
-                    var skillInfo = T.getSkillInfo ? T.getSkillInfo(c) : null;
-                    return skillInfo ? skillInfo.label : (skillDefs[c] ? skillDefs[c].label : c);
-                }).join(', ');
-                html += '</div>';
-
-                // Front line progress
-                html += '<div style="margin-top:0.75rem">';
-                html += '<div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:0.25rem">';
-                html += '<span style="color:var(--text-dim)">FRONT LINE</span>';
-                html += '<span style="color:var(--gold)">' + pct + '% Controlled</span>';
-                html += '</div>';
-                html += '<div class="palace-bar"><div class="palace-bar-fill" style="width:' + pct + '%"></div></div>';
-                html += '</div>';
-
-                // War statistics (if available)
-                html += '<div class="war-stats" style="display:flex;gap:1rem;margin-top:0.75rem;font-size:0.75rem;color:var(--text-dim)">';
-                html += '<span>Est. Victory: ' + CONFIG.bossThreshold + '%</span>';
-                if (pct > 0 && !palace.defeated) {
-                    var remaining = CONFIG.bossThreshold - pct;
-                    html += '<span style="color:var(--accent)">~' + Math.ceil(remaining / 15) + ' ops to victory</span>';
-                }
-                html += '</div>';
-
-                // Status message and button
-                html += '<div class="palace-status" style="margin-top:0.75rem">';
-                if (palace.defeated) {
-                    html += '<span class="boss-defeated" style="color:var(--success)">🏴 TERRITORY ANNEXED</span>';
-                } else if (pct >= CONFIG.bossThreshold) {
-                    html += '<span class="boss-available" style="color:var(--gold)">⚔️ FINAL ASSAULT READY</span>';
-                } else {
-                    html += '<span style="color:var(--text-dim)">Annexation Battle at ' + CONFIG.bossThreshold + '% control</span>';
-                }
-                html += '</div>';
-
-                // Launch button
-                var btnLabel = palace.defeated ? 'PATROL TERRITORY' : (pct >= CONFIG.bossThreshold ? 'LAUNCH FINAL ASSAULT' : 'CONTINUE CAMPAIGN');
-                html += '<button class="infiltrate-btn" data-palace="' + key + '" style="margin-top:1rem">' + btnLabel + '</button>';
-
-                html += '</div>';
-            });
+            // Infiltrate button
+            html += '<button class="infiltrate-btn" data-palace="' + key + '">INFILTRATE</button>';
 
             html += '</div>';
-        } else {
-            // PERSONA 5 THEMED: PALACE INFILTRATION
-            html += '<div class="section-header">';
-            html += '<h2>PALACE INFILTRATION</h2>';
-            html += '<div class="section-subtitle">Timed dungeon runs through skill clusters</div>';
-            html += '</div>';
+        });
 
-            html += '<div class="palace-list">';
-
-            Object.keys(palaceDefs).forEach(function(key) {
-                var def = palaceDefs[key];
-                var palace = palaces[key] || { progress: 0, unlocked: false, defeated: false };
-                var pct = Math.round(palace.progress * 100);
-
-                html += '<div class="palace-item ' + (palace.defeated ? 'defeated' : '') + '">';
-                html += '<div class="palace-name">' + def.name + '</div>';
-                html += '<div class="palace-concepts">' + def.concepts.map(function(c) {
-                    return skillDefs[c] ? skillDefs[c].label : c;
-                }).join(', ') + ' &bull; ' + def.theme + '</div>';
-                html += '<div class="palace-bar"><div class="palace-bar-fill" style="width:' + pct + '%"></div></div>';
-                html += '<div class="palace-status"><span>' + pct + '%</span>';
-                if (palace.defeated) {
-                    html += '<span class="boss-defeated">BOSS DEFEATED</span>';
-                } else if (pct >= CONFIG.bossThreshold) {
-                    html += '<span class="boss-available">BOSS AVAILABLE</span>';
-                } else {
-                    html += '<span>Boss at ' + CONFIG.bossThreshold + '%</span>';
-                }
-                html += '</div>';
-
-                // Infiltrate button
-                html += '<button class="infiltrate-btn" data-palace="' + key + '">INFILTRATE</button>';
-
-                html += '</div>';
-            });
-
-            html += '</div>';
-        }
+        html += '</div>';
 
         view.innerHTML = html;
 
@@ -821,221 +670,12 @@
         });
     }
 
-    // Track view mode for 4X theme
-    var conquestViewMode = 'list'; // 'list' or 'map'
-
-    // Render Conquest Map (visual territory map for 4X theme)
-    function renderConquestMap() {
-        var view = document.getElementById('view-palace');
-        if (!view || !window.GameState) return;
-
-        var T = window.ThemeRegistry;
-        var palaces = window.GameState.getPalaces();
-        var palaceDefs = window.GameState.getPalaceDefs();
-
-        var html = '';
-
-        // Header with view toggle
-        html += '<div class="section-header">';
-        html += '<h2>🗺️ CONQUEST MAP</h2>';
-        html += '<div class="section-subtitle">The Go Empire - Territorial Overview</div>';
-        html += '</div>';
-
-        // View toggle buttons
-        html += '<div class="view-toggle" style="display:flex;gap:0.5rem;margin-bottom:1rem">';
-        html += '<button class="toggle-btn ' + (conquestViewMode === 'list' ? '' : 'active') + '" id="view-map-btn" style="padding:0.5rem 1rem;background:' + (conquestViewMode === 'map' ? 'var(--accent)' : 'var(--surface-color)') + ';color:var(--text);border:1px solid var(--border-color);cursor:pointer">🗺️ Map View</button>';
-        html += '<button class="toggle-btn ' + (conquestViewMode === 'list' ? 'active' : '') + '" id="view-list-btn" style="padding:0.5rem 1rem;background:' + (conquestViewMode === 'list' ? 'var(--accent)' : 'var(--surface-color)') + ';color:var(--text);border:1px solid var(--border-color);cursor:pointer">📋 List View</button>';
-        html += '</div>';
-
-        // Calculate statistics
-        var totalTerritories = Object.keys(palaceDefs).length;
-        var conqueredCount = 0;
-        var atWarCount = 0;
-        var totalControl = 0;
-
-        Object.keys(palaceDefs).forEach(function(key) {
-            var palace = palaces[key] || { progress: 0, defeated: false };
-            totalControl += Math.round(palace.progress * 100);
-            if (palace.defeated) conqueredCount++;
-            else if (palace.progress > 0) atWarCount++;
-        });
-
-        var avgControl = Math.round(totalControl / totalTerritories);
-
-        // Empire stats bar
-        html += '<div class="empire-stats" style="background:var(--surface-color);border:2px solid var(--border-color);padding:1rem;margin-bottom:1.5rem;border-radius:8px">';
-        html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center">';
-        html += '<div><div style="font-size:1.5rem;color:var(--gold)">' + conqueredCount + '</div><div style="font-size:0.75rem;color:var(--text-dim)">Conquered</div></div>';
-        html += '<div><div style="font-size:1.5rem;color:var(--accent)">' + atWarCount + '</div><div style="font-size:0.75rem;color:var(--text-dim)">At War</div></div>';
-        html += '<div><div style="font-size:1.5rem;color:var(--text-dim)">' + (totalTerritories - conqueredCount - atWarCount) + '</div><div style="font-size:0.75rem;color:var(--text-dim)">Unexplored</div></div>';
-        html += '<div><div style="font-size:1.5rem;color:var(--success)">' + avgControl + '%</div><div style="font-size:0.75rem;color:var(--text-dim)">Total Control</div></div>';
-        html += '</div>';
-        html += '</div>';
-
-        // The actual map - arranged in a pyramid/tree style
-        html += '<div class="conquest-map" style="position:relative;padding:2rem;background:var(--bg-card);border:2px solid var(--border-color);border-radius:8px;min-height:400px">';
-
-        // Map legend
-        html += '<div class="map-legend" style="position:absolute;top:0.5rem;right:0.5rem;font-size:0.7rem;color:var(--text-dim)">';
-        html += '<span style="color:var(--success)">■</span> Conquered ';
-        html += '<span style="color:var(--gold)">■</span> Victory Imminent ';
-        html += '<span style="color:var(--accent)">■</span> At War ';
-        html += '<span style="color:var(--text-dim)">■</span> Neutral/Locked';
-        html += '</div>';
-
-        // Territory positions (arranged in tiers)
-        var tiers = [
-            ['mementos_depths'],           // Top - Final
-            ['shido', 'sae', 'okumura'],   // Tier 4 - Advanced
-            ['futaba', 'kaneshiro'],        // Tier 3 - Intermediate
-            ['madarame'],                   // Tier 2 - Early
-            ['kamoshida']                   // Bottom - Starting
-        ];
-
-        var tierTop = 20;
-        tiers.forEach(function(tierKeys, tierIdx) {
-            var tierCount = tierKeys.length;
-            var spacing = 100 / (tierCount + 1);
-
-            tierKeys.forEach(function(key, idx) {
-                if (!palaceDefs[key]) return;
-
-                var def = palaceDefs[key];
-                var palace = palaces[key] || { progress: 0, defeated: false };
-                var pct = Math.round(palace.progress * 100);
-
-                // Get themed info
-                var palaceInfo = T && T.getPalaceInfo ? T.getPalaceInfo(key) : null;
-                var territoryName = palaceInfo ? palaceInfo.name : def.name;
-
-                // Determine status and color
-                var status = 'neutral';
-                var borderColor = 'var(--border-color)';
-                var bgColor = 'var(--surface-color)';
-                var statusIcon = '⬜';
-
-                if (palace.defeated) {
-                    status = 'conquered';
-                    borderColor = 'var(--success)';
-                    bgColor = 'rgba(45,90,39,0.3)';
-                    statusIcon = '🏴';
-                } else if (pct >= CONFIG.bossThreshold) {
-                    status = 'victory-imminent';
-                    borderColor = 'var(--gold)';
-                    bgColor = 'rgba(201,162,39,0.2)';
-                    statusIcon = '⚔️';
-                } else if (pct > 0) {
-                    status = 'at-war';
-                    borderColor = 'var(--accent)';
-                    bgColor = 'rgba(var(--accent-rgb),0.2)';
-                    statusIcon = '🔥';
-                } else {
-                    // Check if locked (would need prerequisite logic)
-                    statusIcon = '⬜';
-                }
-
-                var leftPct = spacing * (idx + 1);
-
-                html += '<div class="territory-node" data-territory="' + key + '" style="';
-                html += 'position:absolute;';
-                html += 'top:' + tierTop + '%;';
-                html += 'left:' + leftPct + '%;';
-                html += 'transform:translate(-50%,-50%);';
-                html += 'width:120px;';
-                html += 'padding:0.75rem;';
-                html += 'background:' + bgColor + ';';
-                html += 'border:2px solid ' + borderColor + ';';
-                html += 'border-radius:8px;';
-                html += 'text-align:center;';
-                html += 'cursor:pointer;';
-                html += 'transition:all 0.2s;';
-                html += '">';
-
-                html += '<div style="font-size:1.2rem">' + statusIcon + '</div>';
-                html += '<div style="font-size:0.75rem;font-weight:bold;color:var(--text);margin:0.25rem 0">' + territoryName + '</div>';
-                html += '<div style="font-size:0.65rem;color:var(--text-dim)">' + def.theme + '</div>';
-
-                // Mini progress bar
-                html += '<div style="height:4px;background:var(--bg-dark);border-radius:2px;margin-top:0.5rem;overflow:hidden">';
-                html += '<div style="height:100%;width:' + pct + '%;background:' + borderColor + '"></div>';
-                html += '</div>';
-                html += '<div style="font-size:0.6rem;color:var(--text-dim);margin-top:0.25rem">' + pct + '%</div>';
-
-                html += '</div>';
-            });
-
-            tierTop += 18; // Move down for next tier
-        });
-
-        // Draw connection lines (using CSS pseudo-elements or SVG would be better, but for simplicity using borders)
-        html += '<div class="map-connections" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0.3">';
-        html += '<svg width="100%" height="100%" style="position:absolute;top:0;left:0">';
-        // Simple vertical lines connecting tiers (approximate positions)
-        html += '<line x1="50%" y1="25%" x2="50%" y2="80%" stroke="var(--border-color)" stroke-width="2" stroke-dasharray="5,5"/>';
-        html += '<line x1="25%" y1="25%" x2="50%" y2="40%" stroke="var(--border-color)" stroke-width="2" stroke-dasharray="5,5"/>';
-        html += '<line x1="75%" y1="25%" x2="50%" y2="40%" stroke="var(--border-color)" stroke-width="2" stroke-dasharray="5,5"/>';
-        html += '</svg>';
-        html += '</div>';
-
-        html += '</div>'; // conquest-map
-
-        // Instructions
-        html += '<div style="text-align:center;margin-top:1rem;font-size:0.8rem;color:var(--text-dim)">';
-        html += 'Click a territory to begin or continue your campaign';
-        html += '</div>';
-
-        view.innerHTML = html;
-
-        // Bind view toggle
-        document.getElementById('view-map-btn').addEventListener('click', function() {
-            conquestViewMode = 'map';
-            renderConquestMap();
-        });
-
-        document.getElementById('view-list-btn').addEventListener('click', function() {
-            conquestViewMode = 'list';
-            renderPalaceView();
-        });
-
-        // Bind territory clicks
-        view.querySelectorAll('.territory-node').forEach(function(node) {
-            node.addEventListener('click', function() {
-                var palaceKey = node.dataset.territory;
-                if (window.Combat && window.Combat.getExerciseData) {
-                    startInfiltration(palaceKey, window.Combat.getExerciseData());
-                }
-            });
-
-            // Hover effect
-            node.addEventListener('mouseenter', function() {
-                node.style.transform = 'translate(-50%,-50%) scale(1.05)';
-                node.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
-            });
-            node.addEventListener('mouseleave', function() {
-                node.style.transform = 'translate(-50%,-50%) scale(1)';
-                node.style.boxShadow = 'none';
-            });
-        });
-    }
-
     // Export with generic name, keep alias for compatibility
     var api = {
         start: startInfiltration,
         startInfiltration: startInfiltration, // Alias
-        render: function() {
-            // For 4X theme in map mode, show the conquest map
-            var T = window.ThemeRegistry;
-            var is4X = T && T.getThemeId() === '4x-strategy';
-
-            if (is4X && conquestViewMode === 'map') {
-                renderConquestMap();
-            } else {
-                renderPalaceView();
-            }
-        },
-        renderPalaceView: function() { this.render(); }, // Alias
-        renderMap: renderConquestMap,
-        renderConquestMap: renderConquestMap, // Alias
+        render: renderPalaceView,
+        renderPalaceView: renderPalaceView, // Alias
         isActive: function() { return infiltration && infiltration.status === 'active'; }
     };
 

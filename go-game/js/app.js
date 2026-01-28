@@ -125,14 +125,7 @@
         var xpLabel = T ? T.getTerm('xp', 'XP') : 'XP';
         var exerciseLabel = T ? T.getTerm('exercises', 'shadows') : 'shadows';
 
-        // Check for 4X theme - show military rank instead of level
         var levelDisplay = levelLabel + ' ' + player.level;
-        if (T && T.getThemeId() === '4x-strategy') {
-            var rank = T.getRankForLevel(player.level);
-            if (rank) {
-                levelDisplay = rank.insignia + ' ' + rank.name;
-            }
-        }
 
         if (nameEl) nameEl.textContent = T ? T.getTerm('playerName', player.name) : player.name;
         if (levelEl) levelEl.textContent = levelDisplay + ' \u2022 ' + completedCount + ' ' + exerciseLabel;
@@ -170,14 +163,13 @@
         // Next Objective Widget
         if (window.Goals) {
             var nextObj = window.Goals.getNextObjective();
-            var is4X = T && T.getThemeId() === '4x-strategy';
             if (nextObj) {
-                var territoryName = is4X ? nextObj.territoryName4X : nextObj.territoryNameP5;
-                var objDesc = is4X ? nextObj.objective.description4X : nextObj.objective.descriptionP5;
+                var territoryName = nextObj.territoryNameP5;
+                var objDesc = nextObj.objective.descriptionP5;
                 var progress = nextObj.objective.status;
 
                 html += '<div class="next-objective-widget" data-view="goals">';
-                html += '<div class="next-objective-label">' + (is4X ? 'Current Objective' : 'Next Target') + '</div>';
+                html += '<div class="next-objective-label">Next Target</div>';
                 html += '<div class="next-objective-territory">' + territoryName + '</div>';
                 html += '<div class="next-objective-task">' + objDesc + '</div>';
                 if (nextObj.objective.type !== 'boss') {
@@ -187,21 +179,17 @@
             }
         }
 
-        // Get theme-aware labels
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
         // GOALS/OBJECTIVES section (at top for visibility)
-        var goalsTitle = is4X ? 'OBJECTIVES' : 'STORY';
-        html += '<div class="nav-section"><div class="nav-section-title">' + goalsTitle + '</div>';
-        html += navItem('goals', is4X ? 'Victory Conditions' : 'Phantom Thieves', is4X ? '🏆' : '🎭');
+        html += '<div class="nav-section"><div class="nav-section-title">STORY</div>';
+        html += navItem('goals', 'Phantom Thieves', '🎭');
         html += '</div>';
 
         // COMBAT/WARFARE section
         var combatTitle = T ? T.getTerm('navCombat', 'Combat') : 'Combat';
         html += '<div class="nav-section"><div class="nav-section-title">' + combatTitle + '</div>';
-        html += navItem('training', T ? T.getTerm('training', 'Training Ground') : 'Training Ground', is4X ? '⚔️' : 'T');
-        html += navItem('mementos', T ? T.getTerm('daily', 'Mementos') : 'Mementos', is4X ? '📋' : 'M');
-        html += navItem('palace', T ? T.getTerm('palaces', 'Palaces') : 'Palaces', is4X ? '🗺️' : 'P');
+        html += navItem('training', T ? T.getTerm('training', 'Training Ground') : 'Training Ground', 'T');
+        html += navItem('mementos', T ? T.getTerm('daily', 'Mementos') : 'Mementos', 'M');
+        html += navItem('palace', T ? T.getTerm('palaces', 'Palaces') : 'Palaces', 'P');
         html += '</div>';
 
         // SKILLS/TECHNOLOGIES section
@@ -215,40 +203,32 @@
             // Get theme-specific skill info
             var skillInfo = T ? T.getSkillInfo(key) : null;
             var skillLabel = skillInfo ? skillInfo.label : def.label;
-            var techTier = skillInfo && skillInfo.techTier ? ' [' + skillInfo.techTier + ']' : '';
-
-            // For 4X, show tech tier or rank
-            var levelDisplay = is4X && skillInfo ? techTier : levelLabel + ' ' + skill.level;
-            if (is4X) {
-                var rank = T.getRankForLevel(skill.level);
-                levelDisplay = rank ? rank.insignia : levelLabel + ' ' + skill.level;
-            }
 
             html += '<div class="nav-item" data-view="skill-' + key + '">' +
-                '<span class="nav-icon">' + (is4X ? '🔬' : (def.icon || '\u2022')) + '</span>' +
+                '<span class="nav-icon">' + (def.icon || '\u2022') + '</span>' +
                 '<span class="nav-label">' + skillLabel + '</span>' +
-                '<span class="nav-level skill-level-badge">' + levelDisplay + '</span></div>';
+                '<span class="nav-level skill-level-badge">' + levelLabel + ' ' + skill.level + '</span></div>';
         });
         html += '</div>';
 
         // PROJECTS/STRATEGIC section
         var requestsTitle = T ? T.getTerm('navRequests', 'Requests') : 'Requests';
         html += '<div class="nav-section"><div class="nav-section-title">' + requestsTitle + '</div>';
-        html += navItem('projects', T ? T.getTerm('projects', 'Side Projects') : 'Side Projects', is4X ? '📋' : '\u2692');
+        html += navItem('projects', T ? T.getTerm('projects', 'Side Projects') : 'Side Projects', '\u2692');
         html += '</div>';
 
         // PART-TIME/DOMESTIC JOBS
         var partTimeTitle = T ? T.getTerm('navPartTime', 'Part-Time') : 'Part-Time';
         html += '<div class="nav-section"><div class="nav-section-title">' + partTimeTitle + '</div>';
-        html += navItem('jobs', T ? T.getTerm('jobs', 'Jobs') : 'Jobs', is4X ? '🏭' : '💼');
+        html += navItem('jobs', T ? T.getTerm('jobs', 'Jobs') : 'Jobs', '💼');
         html += '</div>';
 
         // STATUS/ADMINISTRATION section
         var statusTitle = T ? T.getTerm('navStatus', 'Status') : 'Status';
         html += '<div class="nav-section"><div class="nav-section-title">' + statusTitle + '</div>';
-        html += navItem('stats', T ? T.getTerm('stats', 'Stats') : 'Stats', is4X ? '📊' : 'S');
-        html += navItem('calendar', T ? T.getTerm('calendar', 'Calendar') : 'Calendar', is4X ? '📅' : 'C');
-        html += navItem('exams', T ? T.getTerm('exams', 'Exams') : 'Exams', is4X ? '🎓' : 'E');
+        html += navItem('stats', T ? T.getTerm('stats', 'Stats') : 'Stats', 'S');
+        html += navItem('calendar', T ? T.getTerm('calendar', 'Calendar') : 'Calendar', 'C');
+        html += navItem('exams', T ? T.getTerm('exams', 'Exams') : 'Exams', 'E');
         html += '</div>';
 
         // CONFIDANTS/DIPLOMACY
@@ -263,8 +243,8 @@
             var confState = window.GameState ? window.GameState.getConfidant(c.id) : { rank: 1, unlocked: false };
             var confInfo = T ? T.getConfidantInfo(c.id) : null;
             var confName = confInfo ? confInfo.name : c.p5Name;
-            var confIcon = is4X ? c.stratIcon : c.p5Icon;
-            var rankLabel = is4X ? 'Rel. ' : 'Rank ';
+            var confIcon = c.p5Icon;
+            var rankLabel = 'Rank ';
 
             if (confState.unlocked) {
                 html += '<div class="nav-item" data-view="confidant-' + c.id + '">' +
@@ -280,16 +260,15 @@
         });
         html += '</div>';
 
-        // KNOWLEDGE / INTELLIGENCE section
-        var knowledgeTitle = is4X ? 'Intelligence' : 'Knowledge';
-        html += '<div class="nav-section"><div class="nav-section-title">' + knowledgeTitle + '</div>';
-        html += navItem('library', is4X ? 'War College' : 'Library', is4X ? '📚' : '📖');
+        // KNOWLEDGE section
+        html += '<div class="nav-section"><div class="nav-section-title">Knowledge</div>';
+        html += navItem('library', 'Library', '📖');
         html += '</div>';
 
-        // VELVET ROOM / HIGH COMMAND
+        // VELVET ROOM
         var velvetTitle = T ? T.getTerm('navVelvetRoom', 'Velvet Room') : 'Velvet Room';
         html += '<div class="nav-section"><div class="nav-section-title">' + velvetTitle + '</div>';
-        html += navItem('velvet', T ? T.getTerm('compendium', 'Compendium') : 'Compendium', is4X ? '🎖️' : 'V');
+        html += navItem('velvet', T ? T.getTerm('compendium', 'Compendium') : 'Compendium', 'V');
         html += '</div>';
 
         // SETTINGS/SYSTEM
@@ -428,16 +407,15 @@
         var palaceDefs = window.GameState.getPalaceDefs();
         var skillDefs = window.GameState.getSkillDefs();
         var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
 
         // Get objectives if Goals module is loaded
         var territories = window.Goals ? window.Goals.getAllTerritoryProgress() : {};
 
         // Theme-aware labels
-        var pageTitle = is4X ? 'Territorial Conquest' : 'Palace Infiltration';
-        var defeatedLabel = is4X ? 'CONQUERED' : 'HEART CHANGED';
-        var availableLabel = is4X ? 'READY TO ANNEX' : 'BOSS AVAILABLE';
-        var bossPrefix = is4X ? 'Final Battle: ' : 'Boss: ';
+        var pageTitle = 'Palace Infiltration';
+        var defeatedLabel = 'HEART CHANGED';
+        var availableLabel = 'BOSS AVAILABLE';
+        var bossPrefix = 'Boss: ';
 
         var html = '<div class="section-title" style="margin-top:0">' + pageTitle + '</div>';
         html += '<div class="palace-list">';
@@ -468,7 +446,7 @@
 
             // Status line with objectives count
             html += '<div class="palace-status">';
-            html += '<span>' + territory.completedCount + '/' + territory.totalCount + ' ' + (is4X ? 'objectives' : 'tasks') + ' (' + pct + '%)</span>';
+            html += '<span>' + territory.completedCount + '/' + territory.totalCount + ' tasks (' + pct + '%)</span>';
             if (palace.defeated) {
                 html += '<span class="boss-defeated palace-status conquered">' + defeatedLabel + '</span>';
             } else if (palace.unlocked) {
@@ -480,7 +458,7 @@
             if (!palace.defeated && territory.objectives) {
                 var nextObj = territory.objectives.find(function(o) { return !o.status.complete; });
                 if (nextObj) {
-                    var objDesc = is4X ? nextObj.description4X : nextObj.descriptionP5;
+                    var objDesc = nextObj.descriptionP5;
                     html += '<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--accent);margin-top:0.5rem;padding:0.5rem;background:var(--bg-dark);border-radius:4px">';
                     html += '<span style="color:var(--text-dim)">Next: </span>' + objDesc;
                     if (nextObj.type !== 'boss') {
@@ -612,119 +590,6 @@
         var view = document.getElementById('view-goals');
         if (!view || !window.GameState || !window.Goals) return;
 
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
-        if (is4X) {
-            render4XVictoryConditions(view);
-        } else {
-            renderP5StoryProgress(view);
-        }
-    }
-
-    function render4XVictoryConditions(view) {
-        var progress = window.Goals.getVictoryProgress();
-        var conditions = window.Goals.getVictoryConditions();
-        var overall = window.Goals.getOverallCompletion();
-        var nearest = window.Goals.getNearestVictory();
-
-        var html = '<div class="victory-conditions">';
-
-        // Header
-        html += '<div class="victory-header">';
-        html += '<h2>Victory Conditions</h2>';
-        html += '<div class="overall-progress">Overall Campaign Progress: ' + overall + '%</div>';
-        html += '</div>';
-
-        // Nearest victory highlight
-        if (nearest && nearest.progress.pct < 100) {
-            html += '<div class="nearest-victory">';
-            html += '<div class="nearest-victory-label">Nearest Victory</div>';
-            html += '<div class="nearest-victory-name">' + nearest.condition.name4X + '</div>';
-            html += '<div class="nearest-victory-pct">' + nearest.progress.pct + '% complete (' + (100 - nearest.progress.pct) + '% remaining)</div>';
-            html += '</div>';
-        }
-
-        // Victory condition cards
-        Object.keys(conditions).forEach(function(key) {
-            var vc = conditions[key];
-            var p = progress[key];
-            var isComplete = p.pct >= 100;
-
-            html += '<div class="victory-card' + (isComplete ? ' complete' : '') + '">';
-            html += '<div class="victory-card-header">';
-            html += '<span class="victory-icon">' + vc.icon4X + '</span>';
-            html += '<span class="victory-name">' + vc.name4X + '</span>';
-            html += '<span class="victory-pct">' + p.pct + '%</span>';
-            html += '</div>';
-            html += '<div class="victory-description">' + vc.description4X + '</div>';
-            html += '<div class="victory-progress-bar"><div class="victory-progress-fill" style="width:' + p.pct + '%"></div></div>';
-            html += '<div class="victory-detail">' + p.current + ' / ' + p.total + ' complete</div>';
-            html += '</div>';
-        });
-
-        // Conquest Map
-        html += '<div class="section-title" style="margin-top:2rem">Conquest Map</div>';
-        html += renderConquestMap();
-
-        // Tech Tree
-        if (window.TechTree) {
-            html += '<div class="section-title" style="margin-top:2rem">Technology Research Tree</div>';
-            html += window.TechTree.render();
-        }
-
-        html += '</div>';
-        view.innerHTML = html;
-
-        // Bind territory clicks
-        view.querySelectorAll('.conquest-territory').forEach(function(el) {
-            el.addEventListener('click', function() {
-                var palaceKey = el.dataset.palace;
-                if (palaceKey) {
-                    showTerritoryDetail(palaceKey);
-                }
-            });
-        });
-
-        // Bind tech tree node clicks
-        view.querySelectorAll('.tech-node').forEach(function(node) {
-            node.addEventListener('click', function() {
-                var skillKey = node.dataset.skill;
-                if (skillKey) {
-                    navigateTo('skill-' + skillKey);
-                }
-            });
-        });
-    }
-
-    function renderConquestMap() {
-        var territories = window.Goals.getAllTerritoryProgress();
-        var palaces = window.GameState.getPalaces();
-
-        var html = '<div class="conquest-map">';
-
-        var order = ['kamoshida', 'madarame', 'kaneshiro', 'futaba', 'okumura', 'sae', 'shido', 'mementos_depths'];
-        var icons = ['🏰', '🏛️', '🏦', '🔬', '🚀', '🎰', '🚢', '🌑'];
-
-        order.forEach(function(key, idx) {
-            var territory = territories[key];
-            var palace = palaces[key] || {};
-            var statusClass = palace.defeated ? 'conquered' : (territory.pct > 0 ? 'at-war' : 'locked');
-            var statusText = palace.defeated ? 'CONQUERED' : (territory.pct > 0 ? territory.pct + '% CONTROL' : 'LOCKED');
-
-            html += '<div class="conquest-territory ' + statusClass + '" data-palace="' + key + '">';
-            html += '<div class="conquest-territory-icon">' + icons[idx] + '</div>';
-            html += '<div class="conquest-territory-name">' + territory.name4X + '</div>';
-            html += '<div class="conquest-territory-status">' + statusText + '</div>';
-            html += '<div class="conquest-territory-bar"><div class="conquest-territory-bar-fill" style="width:' + territory.pct + '%"></div></div>';
-            html += '</div>';
-        });
-
-        html += '</div>';
-        return html;
-    }
-
-    function renderP5StoryProgress(view) {
         var progress = window.Goals.getVictoryProgress();
         var territories = window.Goals.getAllTerritoryProgress();
         var palaces = window.GameState.getPalaces();
@@ -811,13 +676,11 @@
         var territory = window.Goals.getTerritoryObjectives(palaceKey);
         if (!territory) return;
 
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
         var palaces = window.GameState.getPalaces();
         var palace = palaces[palaceKey] || {};
 
-        var name = is4X ? territory.name4X : territory.nameP5;
-        var statusText = palace.defeated ? (is4X ? 'CONQUERED' : 'HEART CHANGED') : (is4X ? 'AT WAR' : 'INFILTRATING');
+        var name = territory.nameP5;
+        var statusText = palace.defeated ? 'HEART CHANGED' : 'INFILTRATING';
 
         // Create modal
         var overlay = document.createElement('div');
@@ -838,7 +701,7 @@
 
         html += '<div class="territory-objectives">';
         territory.objectives.forEach(function(obj) {
-            var desc = is4X ? obj.description4X : obj.descriptionP5;
+            var desc = obj.descriptionP5;
             var isComplete = obj.status.complete;
 
             html += '<div class="objective-item' + (isComplete ? ' complete' : '') + '">';

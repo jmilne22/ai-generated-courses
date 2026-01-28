@@ -269,11 +269,9 @@
         }
     };
 
-    // Get the appropriate job definitions based on theme
+    // Get job definitions
     function getJobs() {
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-        return is4X ? JOBS_4X : JOBS_PERSONA;
+        return JOBS_PERSONA;
     }
 
     // Legacy reference for backward compatibility
@@ -546,17 +544,13 @@
         var view = document.getElementById('view-jobs');
         if (!view || !window.GameState) return;
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
-        // Themed labels
-        var headerTitle = is4X ? 'Domestic Programs' : 'Part-Time Jobs';
-        var headerSubtitle = is4X ? 'Run programs to earn Production and boost National Power' : 'Work shifts to earn XP and stat boosts';
-        var xpLabel = is4X ? 'PP' : 'XP';
-        var shiftLabel = is4X ? 'Rotations' : 'Shifts';
-        var workBtnLabel = is4X ? 'Run Program' : 'Work Shift';
-        var reqLabel = is4X ? 'Requires Era' : 'Requires Level';
+        // Labels
+        var headerTitle = 'Part-Time Jobs';
+        var headerSubtitle = 'Work shifts to earn XP and stat boosts';
+        var xpLabel = 'XP';
+        var shiftLabel = 'Shifts';
+        var workBtnLabel = 'Work Shift';
+        var reqLabel = 'Requires Level';
 
         var jobs = getJobState();
         var playerLevel = window.GameState.getPlayer().level;
@@ -575,12 +569,7 @@
             var unlocked = playerLevel >= job.unlockLevel;
             var rankInfo = getJobRank(jobState.shiftsWorked);
 
-            // Themed rank titles for 4X
             var rankTitle = rankInfo.title;
-            if (is4X) {
-                var rankTitles4X = { 'Newbie': 'Initiated', 'Known': 'Operational', 'Regular': 'Established', 'Skilled': 'Advanced', 'Veteran': 'Exemplary' };
-                rankTitle = rankTitles4X[rankInfo.title] || rankInfo.title;
-            }
 
             html += '<div class="job-card ' + (unlocked ? '' : 'locked') + '" data-job="' + jobId + '">';
             html += '<div class="job-card-header">';
@@ -599,19 +588,12 @@
                 html += '<div class="job-skills">';
                 job.skills.forEach(function(skill) {
                     var skillLabel = skill.replace('-', ' ');
-                    if (is4X && T.getSkillInfo) {
-                        var themeSkill = T.getSkillInfo(skill);
-                        if (themeSkill) skillLabel = themeSkill.label;
-                    }
                     html += '<span class="job-skill-tag">' + skillLabel + '</span>';
                 });
                 html += '</div>';
                 html += '<div class="job-stats">';
                 html += '<span class="job-wage">' + job.wage + ' ' + xpLabel + ' base</span>';
                 var statLabel = job.statBoost;
-                if (is4X && T.getStatLabel) {
-                    statLabel = T.getStatLabel(job.statBoost);
-                }
                 html += '<span class="job-stat-boost">+' + statLabel + '</span>';
                 html += '</div>';
                 html += '<div class="job-progress">';

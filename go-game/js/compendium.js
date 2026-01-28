@@ -154,16 +154,11 @@
         var skillDefs = window.GameState.getSkillDefs();
         var fusions = getFusionState();
         var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
 
-        // Theme-aware labels
-        var sectionTitle = is4X ? 'Combined Arms Operations' : 'Persona Fusion';
-        var quote = is4X
-            ? '"Supreme Commander, shall we coordinate a joint operation?"'
-            : '"Welcome to the Velvet Room... Shall we perform a fusion?"';
-        var desc = is4X
-            ? 'Combine technologies (Tier 3+) to unlock advanced joint operations.'
-            : 'Combine mastered skills (Level 3+) to unlock new challenge types.';
+        // Labels
+        var sectionTitle = 'Persona Fusion';
+        var quote = '"Welcome to the Velvet Room... Shall we perform a fusion?"';
+        var desc = 'Combine mastered skills (Level 3+) to unlock new challenge types.';
 
         var html = '<div class="velvet-section-title">' + sectionTitle + '</div>';
         html += '<div class="fusion-intro">';
@@ -179,66 +174,38 @@
         html += '<div class="fusion-slot" data-slot="0">';
         if (selectedIngredients[0]) {
             var def0 = skillDefs[selectedIngredients[0]];
-            var skill0 = window.GameState.getSkill(selectedIngredients[0]);
             var skillInfo0 = T ? T.getSkillInfo(selectedIngredients[0]) : null;
-            var generalInfo0 = is4X && T ? T.getPersonaInfo(selectedIngredients[0]) : null;
-            var rank0 = is4X && T ? T.getRankForLevel(skill0.level) : null;
             var label0 = skillInfo0 ? skillInfo0.label : (def0 ? def0.label : selectedIngredients[0]);
 
             html += '<div class="slot-content filled">';
-            if (is4X && generalInfo0) {
-                html += '<div class="slot-general-portrait">';
-                html += '<div class="slot-insignia">' + (rank0 ? rank0.insignia : '⬧') + '</div>';
-                html += '<div class="slot-portrait">👤</div>';
-                html += '</div>';
-                html += '<div class="slot-general-info">';
-                html += '<div class="slot-name">' + generalInfo0.name + '</div>';
-                html += '<div class="slot-tech">' + label0 + '</div>';
-                html += '</div>';
-            } else {
-                html += '<div class="slot-name">' + label0 + '</div>';
-            }
-            html += '<button class="slot-remove" onclick="VelvetRoom.removeIngredient(0)">×</button>';
+            html += '<div class="slot-name">' + label0 + '</div>';
+            html += '<button class="slot-remove" onclick="VelvetRoom.removeIngredient(0)">\u00D7</button>';
             html += '</div>';
         } else {
-            html += '<div class="slot-content empty">' + (is4X ? 'Select General' : 'Select Skill') + '</div>';
+            html += '<div class="slot-content empty">Select Skill</div>';
         }
         html += '</div>';
 
-        // Plus/Combat sign
-        html += '<div class="fusion-operator">' + (is4X ? '⚔️' : '+') + '</div>';
+        // Plus sign
+        html += '<div class="fusion-operator">+</div>';
 
         html += '<div class="fusion-slot" data-slot="1">';
         if (selectedIngredients[1]) {
             var def1 = skillDefs[selectedIngredients[1]];
-            var skill1 = window.GameState.getSkill(selectedIngredients[1]);
             var skillInfo1 = T ? T.getSkillInfo(selectedIngredients[1]) : null;
-            var generalInfo1 = is4X && T ? T.getPersonaInfo(selectedIngredients[1]) : null;
-            var rank1 = is4X && T ? T.getRankForLevel(skill1.level) : null;
             var label1 = skillInfo1 ? skillInfo1.label : (def1 ? def1.label : selectedIngredients[1]);
 
             html += '<div class="slot-content filled">';
-            if (is4X && generalInfo1) {
-                html += '<div class="slot-general-portrait">';
-                html += '<div class="slot-insignia">' + (rank1 ? rank1.insignia : '⬧') + '</div>';
-                html += '<div class="slot-portrait">👤</div>';
-                html += '</div>';
-                html += '<div class="slot-general-info">';
-                html += '<div class="slot-name">' + generalInfo1.name + '</div>';
-                html += '<div class="slot-tech">' + label1 + '</div>';
-                html += '</div>';
-            } else {
-                html += '<div class="slot-name">' + label1 + '</div>';
-            }
-            html += '<button class="slot-remove" onclick="VelvetRoom.removeIngredient(1)">×</button>';
+            html += '<div class="slot-name">' + label1 + '</div>';
+            html += '<button class="slot-remove" onclick="VelvetRoom.removeIngredient(1)">\u00D7</button>';
             html += '</div>';
         } else {
-            html += '<div class="slot-content empty">' + (is4X ? 'Select General' : 'Select Skill') + '</div>';
+            html += '<div class="slot-content empty">Select Skill</div>';
         }
         html += '</div>';
 
-        // Equals/Result sign
-        html += '<div class="fusion-operator">' + (is4X ? '➜' : '=') + '</div>';
+        // Equals sign
+        html += '<div class="fusion-operator">=</div>';
 
         // Result slot
         html += '<div class="fusion-result">';
@@ -248,40 +215,34 @@
                 var alreadyUnlocked = isFusionUnlocked(result.key);
                 var canPerform = canFuse(result.key);
                 html += '<div class="result-content ' + (alreadyUnlocked ? 'unlocked' : canPerform ? 'available' : 'locked') + '">';
-                if (is4X) {
-                    html += '<div class="result-operation-badge">JOINT OPERATION</div>';
-                }
                 html += '<div class="result-icon">' + result.recipe.icon + '</div>';
                 html += '<div class="result-name">' + result.recipe.name + '</div>';
-                if (is4X) {
-                    html += '<div class="result-desc">' + result.recipe.description + '</div>';
-                }
                 if (alreadyUnlocked) {
-                    html += '<div class="result-status unlocked">' + (is4X ? '✓ Operational' : 'Already Unlocked') + '</div>';
+                    html += '<div class="result-status unlocked">Already Unlocked</div>';
                 } else if (canPerform) {
-                    html += '<button class="fusion-btn" onclick="VelvetRoom.fuse(\'' + result.key + '\')">' + (is4X ? '🎯 Deploy Operation' : 'Fuse!') + '</button>';
+                    html += '<button class="fusion-btn" onclick="VelvetRoom.fuse(\'' + result.key + '\')">Fuse!</button>';
                 } else {
-                    html += '<div class="result-status locked">' + (is4X ? 'Generals not ready (Tier 3 required)' : 'Skills not mastered') + '</div>';
+                    html += '<div class="result-status locked">Skills not mastered</div>';
                 }
                 html += '</div>';
             } else {
                 html += '<div class="result-content no-result">';
                 html += '<div class="result-icon">?</div>';
-                html += '<div class="result-name">' + (is4X ? 'No joint operation available' : 'No fusion available') + '</div>';
+                html += '<div class="result-name">No fusion available</div>';
                 html += '</div>';
             }
         } else {
             html += '<div class="result-content empty">';
             html += '<div class="result-icon">?</div>';
-            html += '<div class="result-name">' + (is4X ? 'Select two Generals' : 'Select two skills') + '</div>';
+            html += '<div class="result-name">Select two skills</div>';
             html += '</div>';
         }
         html += '</div>';
         html += '</div>'; // fusion-slots
 
         // Available skills to select
-        var skillsLabel = is4X ? 'Available Technologies' : 'Available Skills';
-        var levelLabel = is4X ? 'Tier' : 'LV';
+        var skillsLabel = 'Available Skills';
+        var levelLabel = 'LV';
 
         html += '<div class="fusion-skills">';
         html += '<div class="fusion-skills-label">' + skillsLabel + '</div>';
@@ -313,7 +274,7 @@
 
         // Unlocked fusions
         var unlockedFusions = fusions.unlocked || [];
-        var unlockedTitle = is4X ? 'Active Joint Operations' : 'Unlocked Fusions';
+        var unlockedTitle = 'Unlocked Fusions';
         if (unlockedFusions.length > 0) {
             html += '<div class="velvet-section-title">' + unlockedTitle + '</div>';
             html += '<div class="unlocked-fusions-grid">';
@@ -335,9 +296,9 @@
         }
 
         // Available recipes preview
-        var recipesTitle = is4X ? 'Operation Blueprints' : 'Fusion Recipes';
-        var readyLabel = is4X ? 'Ready to deploy!' : 'Ready to fuse!';
-        var requiresLabel = is4X ? 'Requires Tier 3 in both technologies' : 'Requires LV3 in both skills';
+        var recipesTitle = 'Fusion Recipes';
+        var readyLabel = 'Ready to fuse!';
+        var requiresLabel = 'Requires LV3 in both skills';
 
         html += '<div class="velvet-section-title">' + recipesTitle + '</div>';
         html += '<div class="recipe-preview-grid">';
@@ -361,7 +322,7 @@
             });
             html += '</div>';
             if (unlocked) {
-                html += '<div class="recipe-status">✓ ' + (is4X ? 'Operational' : 'Unlocked') + '</div>';
+                html += '<div class="recipe-status">\u2713 Unlocked</div>';
             } else if (canMake) {
                 html += '<div class="recipe-status available">' + readyLabel + '</div>';
             } else {
@@ -379,7 +340,6 @@
         if (!view || !window.GameState) return;
 
         var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
 
         var personas = window.GameState.getPersonas();
         var personaDefs = window.GameState.getPersonaDefs();
@@ -389,32 +349,26 @@
         var discoveredCount = Object.keys(personas).length;
         var totalCount = Object.keys(personaDefs).length;
         var totalMasteryXP = 0;
-        var totalRankStars = 0;
         Object.keys(personas).forEach(function(k) {
             totalMasteryXP += personas[k].masteryXP || 0;
-            var skill = skills[k] || { level: 1 };
-            if (is4X && T) {
-                var rank = T.getRankForLevel(skill.level);
-                if (rank) totalRankStars += rank.id;
-            }
         });
 
         var html = '<div class="velvet-room-view">';
 
-        // Theme-aware header
-        var pageTitle = is4X ? 'Hall of Generals' : 'Velvet Room';
-        var pageSubtitle = is4X ? 'Your Empire\'s Greatest Military Minds' : 'Persona Compendium';
+        // Header
+        var pageTitle = 'Velvet Room';
+        var pageSubtitle = 'Persona Compendium';
 
         html += '<div class="velvet-header">' +
             '<div class="velvet-title view-title">' + pageTitle + '</div>' +
             '<div class="velvet-subtitle">' + pageSubtitle + '</div>' +
         '</div>';
 
-        // Theme-aware stats
-        var stat1Label = is4X ? 'Recruited' : 'Discovered';
-        var stat2Label = is4X ? 'Roster' : 'Completion';
-        var stat3Label = is4X ? 'Total Rank Stars' : 'Total Mastery XP';
-        var stat3Value = is4X ? totalRankStars : totalMasteryXP;
+        // Stats
+        var stat1Label = 'Discovered';
+        var stat2Label = 'Completion';
+        var stat3Label = 'Total Mastery XP';
+        var stat3Value = totalMasteryXP;
 
         html += '<div class="compendium-stats">' +
             '<div class="compendium-stat"><div class="compendium-stat-value">' + discoveredCount + '/' + totalCount + '</div><div class="compendium-stat-label">' + stat1Label + '</div></div>' +
@@ -425,21 +379,16 @@
         // Fusion section
         html += renderFusionSection();
 
-        // Persona/General grid
-        var gridTitle = is4X ? 'Generals' : 'Personas';
+        // Persona grid
+        var gridTitle = 'Personas';
         html += '<div class="velvet-section-title">' + gridTitle + '</div>';
         html += '<div class="persona-grid">';
 
-        // Sort: discovered first, then by skill level (for 4X, higher rank first)
+        // Sort: discovered first, then alphabetically
         var allKeys = Object.keys(personaDefs).sort(function(a, b) {
             var aDisc = !!personas[a];
             var bDisc = !!personas[b];
             if (aDisc !== bDisc) return bDisc - aDisc;
-            if (is4X) {
-                var aSkill = skills[a] || { level: 1 };
-                var bSkill = skills[b] || { level: 1 };
-                if (aSkill.level !== bSkill.level) return bSkill.level - aSkill.level;
-            }
             return (personaDefs[a].name || '').localeCompare(personaDefs[b].name || '');
         });
 
@@ -447,70 +396,34 @@
             var def = personaDefs[key];
             var persona = personas[key];
             var discovered = !!persona;
-            var skill = skills[key] || { level: 1 };
             var skillDef = skillDefs[key];
             var masteryPct = persona ? Math.min(100, Math.round((persona.masteryXP || 0) / 500 * 100)) : 0;
 
-            if (is4X) {
-                // 4X General card
-                var generalInfo = T ? T.getPersonaInfo(key) : null;
-                var skillInfo = T ? T.getSkillInfo(key) : null;
-                var rank = T ? T.getRankForLevel(skill.level) : null;
+            // P5 Persona card
+            var icons = {
+                'Fool': '\u2606', 'Magician': '\u2605', 'Priestess': '\u263E',
+                'Lovers': '\u2665', 'Chariot': '\u2694', 'Temperance': '\u2696',
+                'Hanged Man': '\u2629', 'Death': '\u2620', 'Star': '\u2605',
+                'Judgement': '\u2696', 'Tower': '\u26A1', 'Strength': '\u2694',
+                'Empress': '\u2654', 'Hierophant': '\u2638', 'Fortune': '\u2740',
+                'Hermit': '\u263C'
+            };
+            var icon = icons[def.arcana] || '\u2605';
 
-                var generalName = generalInfo ? generalInfo.name : (def.name || '???');
-                var generalTitle = generalInfo ? generalInfo.title : '';
-                var generalBranch = generalInfo ? generalInfo.branch : (def.arcana || '');
-                var techLabel = skillInfo ? skillInfo.label : (skillDef ? skillDef.label : key);
-                var rankInsignia = rank ? rank.insignia : '⬧';
-                var rankName = rank ? rank.name : 'Unranked';
+            html += '<div class="persona-card ' + (discovered ? '' : 'locked') + '" data-skill="' + key + '">';
+            html += '<div class="persona-icon">' + icon + '</div>';
+            html += '<div class="persona-name">' + (discovered ? def.name : '???') + '</div>';
+            html += '<div class="persona-concept">' + (skillDef ? skillDef.label : key) + '</div>';
+            html += '<div class="persona-arcana">' + def.arcana + '</div>';
 
-                html += '<div class="persona-card general-card ' + (discovered ? '' : 'locked') + '" data-skill="' + key + '">';
-                html += '<div class="persona-icon general-portrait rank-insignia">' + (discovered ? rankInsignia : '🔒') + '</div>';
-                html += '<div class="persona-name general-name">' + (discovered ? generalName : '???') + '</div>';
-                if (discovered && generalTitle) {
-                    html += '<div class="general-title">"' + generalTitle + '"</div>';
-                }
-                html += '<div class="persona-concept">' + techLabel + '</div>';
-                html += '<div class="persona-arcana general-branch">' + generalBranch + '</div>';
-
-                if (discovered) {
-                    html += '<div class="persona-level general-rank">' + rankName + '</div>';
-                    html += '<div class="persona-mastery-bar"><div class="persona-mastery-fill" style="width:' + masteryPct + '%"></div></div>';
-                    html += '<div class="general-stats">';
-                    html += '<span>Campaigns: ' + (persona.level || 1) + '</span>';
-                    html += '</div>';
-                } else {
-                    html += '<div class="persona-fusion-hint">Complete ' + techLabel + ' operations to recruit</div>';
-                }
-
-                html += '</div>';
+            if (discovered) {
+                html += '<div class="persona-level">LV ' + (persona.level || 1) + '</div>';
+                html += '<div class="persona-mastery-bar"><div class="persona-mastery-fill" style="width:' + masteryPct + '%"></div></div>';
             } else {
-                // P5 Persona card (original)
-                var icons = {
-                    'Fool': '\u2606', 'Magician': '\u2605', 'Priestess': '\u263E',
-                    'Lovers': '\u2665', 'Chariot': '\u2694', 'Temperance': '\u2696',
-                    'Hanged Man': '\u2629', 'Death': '\u2620', 'Star': '\u2605',
-                    'Judgement': '\u2696', 'Tower': '\u26A1', 'Strength': '\u2694',
-                    'Empress': '\u2654', 'Hierophant': '\u2638', 'Fortune': '\u2740',
-                    'Hermit': '\u263C'
-                };
-                var icon = icons[def.arcana] || '\u2605';
-
-                html += '<div class="persona-card ' + (discovered ? '' : 'locked') + '" data-skill="' + key + '">';
-                html += '<div class="persona-icon">' + icon + '</div>';
-                html += '<div class="persona-name">' + (discovered ? def.name : '???') + '</div>';
-                html += '<div class="persona-concept">' + (skillDef ? skillDef.label : key) + '</div>';
-                html += '<div class="persona-arcana">' + def.arcana + '</div>';
-
-                if (discovered) {
-                    html += '<div class="persona-level">LV ' + (persona.level || 1) + '</div>';
-                    html += '<div class="persona-mastery-bar"><div class="persona-mastery-fill" style="width:' + masteryPct + '%"></div></div>';
-                } else {
-                    html += '<div class="persona-fusion-hint">Complete ' + (skillDef ? skillDef.label : key) + ' exercises</div>';
-                }
-
-                html += '</div>';
+                html += '<div class="persona-fusion-hint">Complete ' + (skillDef ? skillDef.label : key) + ' exercises</div>';
             }
+
+            html += '</div>';
         });
 
         html += '</div>';
@@ -551,12 +464,9 @@
         var recipe = FUSION_RECIPES[recipeKey];
         if (!recipe) return;
 
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
-        var title = is4X ? 'Joint Operation Established!' : 'Fusion Complete!';
-        var challengesLabel = is4X ? 'New Operations Unlocked:' : 'New Challenges Unlocked:';
-        var btnLabel = is4X ? 'Acknowledged' : 'Excellent';
+        var title = 'Fusion Complete!';
+        var challengesLabel = 'New Challenges Unlocked:';
+        var btnLabel = 'Excellent';
 
         var overlay = document.createElement('div');
         overlay.className = 'fusion-success-overlay';
@@ -583,11 +493,8 @@
         }
     }
 
-    // Render detailed General/Persona dossier
+    // Render detailed Persona profile
     function renderGeneralDossier(skillKey) {
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
         var personas = window.GameState.getPersonas();
         var personaDefs = window.GameState.getPersonaDefs();
         var skills = window.GameState.getSkills();
@@ -600,48 +507,19 @@
 
         if (!def || !persona) return;
 
-        // Get themed info
-        var generalInfo = is4X && T.getPersonaInfo ? T.getPersonaInfo(skillKey) : null;
-        var skillInfo = is4X && T.getSkillInfo ? T.getSkillInfo(skillKey) : null;
-        var rank = is4X && T.getRankForLevel ? T.getRankForLevel(skill.level) : null;
-        var ranks = is4X && T.getTheme() ? T.getTheme().ranks : null;
-
         // Build dossier content
-        var name = generalInfo ? generalInfo.name : def.name;
-        var title = generalInfo ? generalInfo.title : (def.title || '');
-        var branch = generalInfo ? generalInfo.branch : (def.arcana || '');
-        var bio = generalInfo ? generalInfo.bio : '';
-        var techLabel = skillInfo ? skillInfo.label : (skillDef ? skillDef.label : skillKey);
-        var rankInsignia = rank ? rank.insignia : '★';
-        var rankName = rank ? rank.name : 'Level ' + skill.level;
+        var name = def.name;
+        var title = def.title || '';
+        var branch = def.arcana || '';
+        var techLabel = skillDef ? skillDef.label : skillKey;
+        var rankInsignia = '\u2605';
+        var rankName = 'Level ' + skill.level;
 
         // Calculate stats from game state (approximate from available data)
         var masteryXP = persona.masteryXP || 0;
         var operations = Math.floor(masteryXP / 30); // Rough estimate
         var sRankCount = Math.floor(operations * 0.15); // Assume 15% S-rank
         var aRankCount = Math.floor(operations * 0.30);
-
-        // Next rank progress
-        var nextRank = null;
-        var progressToNext = 0;
-        if (ranks) {
-            for (var i = 0; i < ranks.length; i++) {
-                if (skill.level < ranks[i].minLevel) {
-                    nextRank = ranks[i];
-                    var prevMin = i > 0 ? ranks[i - 1].minLevel : 1;
-                    progressToNext = Math.round((skill.level - prevMin) / (nextRank.minLevel - prevMin) * 100);
-                    break;
-                }
-            }
-        }
-
-        // Abilities based on rank (milestones)
-        var abilities = [];
-        if (skill.level >= 10) abilities.push({ name: is4X ? 'Basic Doctrine' : 'Concept Tutorial', level: 10, desc: is4X ? '+10% XP for operations' : 'Tutorial unlocked' });
-        if (skill.level >= 20) abilities.push({ name: is4X ? 'Intel Efficiency' : 'Reduced Hint Penalty', level: 20, desc: is4X ? '-5 PP per intel request' : '-5 XP per hint' });
-        if (skill.level >= 30) abilities.push({ name: is4X ? 'Extended Planning' : 'Timer Extended', level: 30, desc: '+15 seconds' });
-        if (skill.level >= 40) abilities.push({ name: is4X ? 'Production Bonus' : 'XP Multiplier', level: 40, desc: '1.1x bonus' });
-        if (skill.level >= 50) abilities.push({ name: is4X ? 'General Promotion' : 'Persona Evolution', level: 50, desc: is4X ? 'Max rank achieved' : 'Evolution complete' });
 
         // Famous quotes (add some flavor)
         var quotes = {
@@ -652,7 +530,7 @@
             'strings': '"Words are the ammunition of diplomacy."',
             'slices': '"Flexibility is the key to air power."',
             'maps': '"Know the terrain, know the victory."',
-            'pointers': '"A nil pointer is not a mistake—it is an opportunity for clarity."',
+            'pointers': '"A nil pointer is not a mistake\u2014it is an opportunity for clarity."',
             'structs': '"Structure is the foundation of all great empires."',
             'methods': '"Attach your methods to your purpose, and you shall never fail."',
             'interfaces': '"Adaptability is the supreme virtue of a commander."'
@@ -665,8 +543,8 @@
 
         // Header
         html += '<div class="dossier-header">';
-        html += '<button class="dossier-close" onclick="VelvetRoom.closeDossier()">✕</button>';
-        html += '<div class="dossier-title">' + (is4X ? '📋 MILITARY DOSSIER' : '📜 PERSONA PROFILE') + '</div>';
+        html += '<button class="dossier-close" onclick="VelvetRoom.closeDossier()">\u2715</button>';
+        html += '<div class="dossier-title">\u{1F4DC} PERSONA PROFILE</div>';
         html += '</div>';
 
         // Main content
@@ -676,85 +554,54 @@
         html += '<div class="dossier-portrait-section">';
         html += '<div class="dossier-portrait">';
         html += '<div class="portrait-insignia">' + rankInsignia + '</div>';
-        html += '<div class="portrait-icon">👤</div>';
+        html += '<div class="portrait-icon">\u{1F464}</div>';
         html += '</div>';
         html += '<div class="dossier-basic-info">';
         html += '<div class="dossier-name">' + name + '</div>';
         html += '<div class="dossier-subtitle">"' + title + '"</div>';
-        html += '<div class="dossier-branch">' + (is4X ? 'Branch: ' : 'Arcana: ') + branch + '</div>';
-        html += '<div class="dossier-rank">' + (is4X ? 'Rank: ' : 'Level: ') + '<strong>' + rankName + '</strong></div>';
-        html += '<div class="dossier-tech">' + (is4X ? 'Specialty: ' : 'Skill: ') + techLabel + '</div>';
+        html += '<div class="dossier-branch">Arcana: ' + branch + '</div>';
+        html += '<div class="dossier-rank">Level: <strong>' + rankName + '</strong></div>';
+        html += '<div class="dossier-tech">Skill: ' + techLabel + '</div>';
         html += '</div>';
         html += '</div>';
 
-        // Service Record
+        // Statistics
         html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title">' + (is4X ? 'SERVICE RECORD' : 'STATISTICS') + '</div>';
+        html += '<div class="dossier-section-title">STATISTICS</div>';
         html += '<div class="dossier-stats-grid">';
-        html += '<div class="dossier-stat"><span>' + (is4X ? 'Operations' : 'Exercises') + '</span><span>' + operations + '</span></div>';
-        html += '<div class="dossier-stat"><span>' + (is4X ? 'Distinguished Service' : 'S-Rank') + '</span><span>' + sRankCount + '</span></div>';
-        html += '<div class="dossier-stat"><span>' + (is4X ? 'Meritorious' : 'A-Rank') + '</span><span>' + aRankCount + '</span></div>';
-        html += '<div class="dossier-stat"><span>' + (is4X ? 'Days in Service' : 'Days Active') + '</span><span>' + Math.max(1, Math.floor(masteryXP / 50)) + '</span></div>';
+        html += '<div class="dossier-stat"><span>Exercises</span><span>' + operations + '</span></div>';
+        html += '<div class="dossier-stat"><span>S-Rank</span><span>' + sRankCount + '</span></div>';
+        html += '<div class="dossier-stat"><span>A-Rank</span><span>' + aRankCount + '</span></div>';
+        html += '<div class="dossier-stat"><span>Days Active</span><span>' + Math.max(1, Math.floor(masteryXP / 50)) + '</span></div>';
         html += '</div>';
         html += '</div>';
-
-        // Rank Progression
-        if (is4X && nextRank) {
-            html += '<div class="dossier-section">';
-            html += '<div class="dossier-section-title">RANK PROGRESSION</div>';
-            html += '<div class="rank-progress">';
-            html += '<div class="rank-progress-bar"><div class="rank-progress-fill" style="width:' + progressToNext + '%"></div></div>';
-            html += '<div class="rank-progress-label">' + progressToNext + '% to ' + nextRank.name + '</div>';
-            html += '</div>';
-
-            // Rank ladder
-            html += '<div class="rank-ladder">';
-            ranks.forEach(function(r, idx) {
-                var achieved = skill.level >= r.minLevel;
-                var current = rank && r.id === rank.id;
-                html += '<span class="rank-step ' + (achieved ? 'achieved' : '') + (current ? ' current' : '') + '">';
-                html += r.insignia;
-                html += '</span>';
-                if (idx < ranks.length - 1) html += '<span class="rank-connector ' + (achieved ? 'achieved' : '') + '">─</span>';
-            });
-            html += '</div>';
-            html += '</div>';
-        }
 
         // Active Abilities
         html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title">' + (is4X ? 'ACTIVE ABILITIES' : 'UNLOCKED BONUSES') + '</div>';
+        html += '<div class="dossier-section-title">UNLOCKED BONUSES</div>';
         html += '<div class="abilities-list">';
         [10, 20, 30, 40, 50].forEach(function(lvl) {
             var abilityNames = {
-                10: { p5: 'Concept Tutorial', strat: 'Basic Doctrine' },
-                20: { p5: 'Reduced Hint Penalty', strat: 'Intel Efficiency' },
-                30: { p5: 'Timer Extended', strat: 'Extended Planning' },
-                40: { p5: 'XP Multiplier 1.1x', strat: 'Production Bonus 1.1x' },
-                50: { p5: 'Persona Evolution', strat: 'General Promotion' }
+                10: 'Concept Tutorial',
+                20: 'Reduced Hint Penalty',
+                30: 'Timer Extended',
+                40: 'XP Multiplier 1.1x',
+                50: 'Persona Evolution'
             };
             var unlocked = skill.level >= lvl;
-            var abilityName = is4X ? abilityNames[lvl].strat : abilityNames[lvl].p5;
+            var abilityName = abilityNames[lvl];
             html += '<div class="ability-item ' + (unlocked ? 'unlocked' : 'locked') + '">';
-            html += '<span class="ability-check">' + (unlocked ? '✓' : '○') + '</span>';
+            html += '<span class="ability-check">' + (unlocked ? '\u2713' : '\u25CB') + '</span>';
             html += '<span class="ability-name">' + abilityName + '</span>';
-            html += '<span class="ability-level">' + (is4X ? 'Tier ' : 'LV ') + lvl + '</span>';
+            html += '<span class="ability-level">LV ' + lvl + '</span>';
             html += '</div>';
         });
         html += '</div>';
         html += '</div>';
 
-        // Biography (4X only)
-        if (is4X && bio) {
-            html += '<div class="dossier-section">';
-            html += '<div class="dossier-section-title">BIOGRAPHY</div>';
-            html += '<div class="dossier-bio">' + bio + '</div>';
-            html += '</div>';
-        }
-
-        // Famous Quote
+        // Motto
         html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title">' + (is4X ? 'FAMOUS QUOTE' : 'MOTTO') + '</div>';
+        html += '<div class="dossier-section-title">MOTTO</div>';
         html += '<div class="dossier-quote">' + quote + '</div>';
         html += '</div>';
 
@@ -762,7 +609,7 @@
 
         // Footer
         html += '<div class="dossier-footer">';
-        html += '<button class="dossier-btn" onclick="VelvetRoom.closeDossier();if(window.App)window.App.navigateTo(\'skill-' + skillKey + '\')">' + (is4X ? '⚔️ Deploy to Operations' : '🎯 Train This Skill') + '</button>';
+        html += '<button class="dossier-btn" onclick="VelvetRoom.closeDossier();if(window.App)window.App.navigateTo(\'skill-' + skillKey + '\')">\u{1F3AF} Train This Skill</button>';
         html += '</div>';
 
         html += '</div>'; // dossier-modal

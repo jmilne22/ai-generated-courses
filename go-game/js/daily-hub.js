@@ -278,17 +278,13 @@
     }
 
     function getProgressMessage(mementosData) {
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-        var messageSet = is4X ? MILITARY_MESSAGES : PROGRESS_MESSAGES;
-
         var messages;
         if (mementosData.allDone) {
-            messages = messageSet.complete;
+            messages = PROGRESS_MESSAGES.complete;
         } else if (mementosData.completedCount > 0) {
-            messages = messageSet.partial;
+            messages = PROGRESS_MESSAGES.partial;
         } else {
-            messages = messageSet.none;
+            messages = PROGRESS_MESSAGES.none;
         }
         var seed = getDailySeed();
         return messages[seed % messages.length];
@@ -298,32 +294,29 @@
         var view = document.getElementById('view-mementos');
         if (!view || !window.GameState) return;
 
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
         var mementosData = getMementosRequests();
         mementosData = checkProgress(mementosData);
         var streaks = window.GameState.getStreaks();
         var multiplier = getStreakMultiplier();
 
-        // Theme-aware labels
-        var pageTitle = is4X ? 'WAR COUNCIL' : 'MEMENTOS';
-        var pageSubtitle = is4X ? 'Daily Briefing - Priority Directives' : 'The depths of the collective unconscious';
-        var streakIcon = is4X ? '📦' : '🔥';
-        var streakLabel = is4X ? 'SUPPLY LINE' : 'DAY STREAK';
-        var bestLabel = is4X ? 'Longest: ' : 'Best: ';
-        var multiplierLabel = is4X ? 'PP' : 'XP';
-        var requestsLabel = is4X ? 'TODAY\'S DIRECTIVES' : 'TODAY\'S REQUESTS';
-        var fromLabel = is4X ? 'From: ' : 'From: ';
-        var bonusLabel = is4X ? 'MISSION COMPLETE BONUS' : 'COMPLETION BONUS';
-        var directivesLabel = is4X ? 'directives' : 'requests';
-        var actionLabel = is4X ? 'COMMENCE OPERATIONS' : 'INFILTRATE';
-        var completeIcon = is4X ? '🎖️' : '🎭';
-        var completeText = is4X ? 'ALL DIRECTIVES ACCOMPLISHED' : 'ALL REQUESTS FULFILLED';
-        var completeSub = is4X ? 'Return tomorrow for new orders' : 'Return tomorrow for new targets';
+        // Labels
+        var pageTitle = 'MEMENTOS';
+        var pageSubtitle = 'The depths of the collective unconscious';
+        var streakIcon = '\u{1F525}';
+        var streakLabel = 'DAY STREAK';
+        var bestLabel = 'Best: ';
+        var multiplierLabel = 'XP';
+        var requestsLabel = 'TODAY\'S REQUESTS';
+        var fromLabel = 'From: ';
+        var bonusLabel = 'COMPLETION BONUS';
+        var directivesLabel = 'requests';
+        var actionLabel = 'INFILTRATE';
+        var completeIcon = '\u{1F3AD}';
+        var completeText = 'ALL REQUESTS FULFILLED';
+        var completeSub = 'Return tomorrow for new targets';
 
-        // Get appropriate client list
-        var clients = is4X ? MILITARY_ADVISORS : SHADOW_CLIENTS;
+        // Get client list
+        var clients = SHADOW_CLIENTS;
 
         var html = '';
 
@@ -362,25 +355,8 @@
             var client = clients[req.client] || clients[0];
             var statusClass = req.done ? 'complete' : '';
 
-            // Theme the task description
             var taskText = req.task;
-            if (is4X) {
-                taskText = taskText
-                    .replace('exercises', 'operations')
-                    .replace('XP', 'Production')
-                    .replace('challenge', 'operation')
-                    .replace('challenges', 'operations');
-            }
-
-            // Theme the dialog
             var dialog = req.dialog;
-            if (is4X) {
-                dialog = dialog
-                    .replace('shadows', 'enemies')
-                    .replace('shadow', 'enemy')
-                    .replace('Phantom Thieves', 'Command')
-                    .replace('Joker', 'Commander');
-            }
 
             html += '<div class="request-card directive-card ' + statusClass + '">';
 
@@ -425,7 +401,7 @@
         html += '<div class="bonus-label">' + bonusLabel + '</div>';
         html += '<div class="bonus-amount">+' + mementosData.bonusReward + ' ' + multiplierLabel + '</div>';
         if (mementosData.allDone) {
-            html += '<div class="bonus-status">' + (is4X ? 'AWARDED' : 'CLAIMED') + '</div>';
+            html += '<div class="bonus-status">CLAIMED</div>';
         } else {
             html += '<div class="bonus-status">' + mementosData.completedCount + '/' + mementosData.requests.length + ' ' + directivesLabel + '</div>';
         }

@@ -340,28 +340,16 @@
         var gam = getGamificationState();
         if (!gam) return '<div class="daily-challenges-empty">Loading...</div>';
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-        var titleLabel = is4X ? 'Priority Directives' : 'Daily Challenges';
-        var resetLabel = is4X ? 'New orders at 0600' : 'Resets at midnight';
-        var xpLabel = is4X ? 'PP' : 'XP';
-
         var challenges = generateDailyChallenges();
         var html = '<div class="daily-challenges">';
-        html += '<div class="daily-header"><span class="daily-title">' + titleLabel + '</span><span class="daily-reset">' + resetLabel + '</span></div>';
+        html += '<div class="daily-header"><span class="daily-title">Daily Challenges</span><span class="daily-reset">Resets at midnight</span></div>';
 
         challenges.forEach(function(challenge) {
             var isComplete = gam.dailyChallenges.completed.indexOf(challenge.id) >= 0;
-            // Theme challenge name
-            var challengeName = challenge.name;
-            if (is4X) {
-                challengeName = challengeName.replace('exercises', 'operations').replace('XP', 'PP');
-            }
             html += '<div class="daily-challenge ' + (isComplete ? 'complete' : '') + '">' +
                 '<span class="challenge-check">' + (isComplete ? '&#10003;' : '&#9675;') + '</span>' +
-                '<span class="challenge-name">' + challengeName + '</span>' +
-                '<span class="challenge-reward">+' + challenge.xpReward + ' ' + xpLabel + '</span>' +
+                '<span class="challenge-name">' + challenge.name + '</span>' +
+                '<span class="challenge-reward">+' + challenge.xpReward + ' XP</span>' +
             '</div>';
         });
 
@@ -373,18 +361,13 @@
         if (!window.GameState) return '';
         var streaks = window.GameState.getStreaks();
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-        var streakIcon = is4X ? '📦' : (streaks.current > 0 ? '&#128293;' : '&#9898;');
-        var dayWord = is4X ? 'day' : 'day';
-        var bestLabel = is4X ? 'Longest Supply Chain' : 'Best';
+        var streakIcon = streaks.current > 0 ? '&#128293;' : '&#9898;';
 
         var html = '<div class="streak-widget">';
         html += '<div class="streak-flame">' + streakIcon + '</div>';
         html += '<div class="streak-info">';
-        html += '<div class="streak-current">' + streaks.current + ' ' + dayWord + (streaks.current !== 1 ? 's' : '') + '</div>';
-        html += '<div class="streak-best">' + bestLabel + ': ' + streaks.longest + '</div>';
+        html += '<div class="streak-current">' + streaks.current + ' day' + (streaks.current !== 1 ? 's' : '') + '</div>';
+        html += '<div class="streak-best">Best: ' + streaks.longest + '</div>';
         html += '</div></div>';
         return html;
     }
@@ -393,26 +376,9 @@
         var gam = getGamificationState();
         if (!gam) return '';
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-        var achievementsTitle = is4X ? 'Decorations' : 'Achievements';
-
-        // Themed category names
-        var categoryNames = is4X ? {
-            milestone: 'Campaign Medals',
-            grade: 'Commendations',
-            streak: 'Supply Honors',
-            skill: 'Tech Advancements',
-            speed: 'Rapid Operations',
-            concept: 'Specializations',
-            special: 'Distinguished Service',
-            xp: 'Production Awards'
-        } : {};
-
         var unlockedCount = Object.keys(gam.achievements).length;
         var html = '<div class="achievements-header">';
-        html += '<span class="achievements-title">' + achievementsTitle + '</span>';
+        html += '<span class="achievements-title">Achievements</span>';
         html += '<span class="achievements-count">' + unlockedCount + ' / ' + ACHIEVEMENTS.length + '</span>';
         html += '</div>';
 
@@ -427,24 +393,18 @@
 
         Object.keys(categories).forEach(function(cat) {
             html += '<div class="achievement-category">';
-            var catName = is4X && categoryNames[cat] ? categoryNames[cat] : (cat.charAt(0).toUpperCase() + cat.slice(1));
+            var catName = cat.charAt(0).toUpperCase() + cat.slice(1);
             html += '<div class="category-name">' + catName + '</div>';
 
             categories[cat].forEach(function(ach) {
                 var unlocked = gam.achievements[ach.id];
                 if (!showLocked && !unlocked) return;
 
-                // Theme achievement description
-                var desc = ach.desc;
-                if (is4X) {
-                    desc = desc.replace('exercise', 'operation').replace('exercises', 'operations').replace('XP', 'PP');
-                }
-
-                html += '<div class="achievement-item ' + (unlocked ? 'unlocked' : 'locked') + '" title="' + desc + '">';
+                html += '<div class="achievement-item ' + (unlocked ? 'unlocked' : 'locked') + '" title="' + ach.desc + '">';
                 html += '<div class="achievement-icon">' + ach.icon + '</div>';
                 html += '<div class="achievement-info">';
                 html += '<div class="achievement-name">' + ach.name + '</div>';
-                html += '<div class="achievement-desc">' + desc + '</div>';
+                html += '<div class="achievement-desc">' + ach.desc + '</div>';
                 html += '</div></div>';
             });
 
@@ -459,30 +419,6 @@
         var gam = getGamificationState();
         if (!gam || !window.GameState) return '';
 
-        // Theme detection
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
-        // Themed labels
-        var overviewTitle = is4X ? 'Campaign Status' : 'Overview';
-        var exercisesLabel = is4X ? 'Operations Completed' : 'Total Exercises';
-        var xpLabel = is4X ? 'Total Production' : 'Total XP';
-        var levelLabel = is4X ? 'Rank' : 'Player Level';
-        var accuracyLabel = is4X ? 'Efficiency (DSC+OM)' : 'Accuracy (S+A)';
-        var streaksTitle = is4X ? 'Supply Lines' : 'Streaks';
-        var currentStreakLabel = is4X ? 'Active Supply Chain' : 'Current Streak';
-        var longestStreakLabel = is4X ? 'Longest Supply Chain' : 'Longest Streak';
-        var sRankLabel = is4X ? 'Best DSC Streak' : 'Best S-Rank Streak';
-        var gradesTitle = is4X ? 'Commendations' : 'Grades';
-        var perfTitle = is4X ? 'Combat Efficiency' : 'Performance';
-        var hintsLabel = is4X ? 'Intel Requests' : 'Hints Used';
-        var noHintLabel = is4X ? 'Solo Operations' : 'No-Hint Completions';
-        var speedLabel = is4X ? 'Blitz Operations (<15s)' : 'Speed Runs (<15s)';
-        var fastestLabel = is4X ? 'Fastest Op' : 'Fastest Time';
-
-        // Themed grade names
-        var gradeNames = is4X ? { S: 'DSC', A: 'OM', B: 'BS', C: 'SAT', D: 'FAIL' } : { S: 'S', A: 'A', B: 'B', C: 'C', D: 'D' };
-
         var state = window.GameState.getFullState();
         var stats = gam.statistics;
         var streaks = state.streaks || { current: 0, longest: 0 };
@@ -495,39 +431,39 @@
 
         // Overview
         html += '<div class="stat-section">';
-        html += '<div class="stat-section-title">' + overviewTitle + '</div>';
-        html += '<div class="stat-row"><span>' + exercisesLabel + '</span><span>' + completedCount + '</span></div>';
-        html += '<div class="stat-row"><span>' + xpLabel + '</span><span>' + (state.player.totalXP || 0).toLocaleString() + '</span></div>';
-        html += '<div class="stat-row"><span>' + levelLabel + '</span><span>' + state.player.level + '</span></div>';
-        html += '<div class="stat-row"><span>' + accuracyLabel + '</span><span>' + accuracy + '%</span></div>';
+        html += '<div class="stat-section-title">Overview</div>';
+        html += '<div class="stat-row"><span>Total Exercises</span><span>' + completedCount + '</span></div>';
+        html += '<div class="stat-row"><span>Total XP</span><span>' + (state.player.totalXP || 0).toLocaleString() + '</span></div>';
+        html += '<div class="stat-row"><span>Player Level</span><span>' + state.player.level + '</span></div>';
+        html += '<div class="stat-row"><span>Accuracy (S+A)</span><span>' + accuracy + '%</span></div>';
         html += '</div>';
 
         // Streaks
         html += '<div class="stat-section">';
-        html += '<div class="stat-section-title">' + streaksTitle + '</div>';
-        html += '<div class="stat-row"><span>' + currentStreakLabel + '</span><span>' + streaks.current + ' days</span></div>';
-        html += '<div class="stat-row"><span>' + longestStreakLabel + '</span><span>' + streaks.longest + ' days</span></div>';
-        html += '<div class="stat-row"><span>' + sRankLabel + '</span><span>' + stats.maxSRankStreak + '</span></div>';
+        html += '<div class="stat-section-title">Streaks</div>';
+        html += '<div class="stat-row"><span>Current Streak</span><span>' + streaks.current + ' days</span></div>';
+        html += '<div class="stat-row"><span>Longest Streak</span><span>' + streaks.longest + ' days</span></div>';
+        html += '<div class="stat-row"><span>Best S-Rank Streak</span><span>' + stats.maxSRankStreak + '</span></div>';
         html += '</div>';
 
-        // Grades/Commendations
+        // Grades
         html += '<div class="stat-section">';
-        html += '<div class="stat-section-title">' + gradesTitle + '</div>';
+        html += '<div class="stat-section-title">Grades</div>';
         ['S', 'A', 'B', 'C', 'D'].forEach(function(grade) {
             var count = stats.exercisesByGrade[grade] || 0;
             var pct = totalGraded > 0 ? Math.round(count / totalGraded * 100) : 0;
-            html += '<div class="stat-row"><span>' + gradeNames[grade] + '</span><span>' + count + ' (' + pct + '%)</span></div>';
+            html += '<div class="stat-row"><span>' + grade + '</span><span>' + count + ' (' + pct + '%)</span></div>';
         });
         html += '</div>';
 
         // Performance
         html += '<div class="stat-section">';
-        html += '<div class="stat-section-title">' + perfTitle + '</div>';
-        html += '<div class="stat-row"><span>' + hintsLabel + '</span><span>' + stats.hintsUsed + '</span></div>';
-        html += '<div class="stat-row"><span>' + noHintLabel + '</span><span>' + stats.noHintCount + '</span></div>';
-        html += '<div class="stat-row"><span>' + speedLabel + '</span><span>' + stats.speedRunCount + '</span></div>';
+        html += '<div class="stat-section-title">Performance</div>';
+        html += '<div class="stat-row"><span>Hints Used</span><span>' + stats.hintsUsed + '</span></div>';
+        html += '<div class="stat-row"><span>No-Hint Completions</span><span>' + stats.noHintCount + '</span></div>';
+        html += '<div class="stat-row"><span>Speed Runs (<15s)</span><span>' + stats.speedRunCount + '</span></div>';
         if (stats.fastestTime !== null) {
-            html += '<div class="stat-row"><span>' + fastestLabel + '</span><span>' + stats.fastestTime.toFixed(1) + 's</span></div>';
+            html += '<div class="stat-row"><span>Fastest Time</span><span>' + stats.fastestTime.toFixed(1) + 's</span></div>';
         }
         html += '</div>';
 

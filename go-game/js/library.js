@@ -9,25 +9,22 @@
     var currentCategory = 'all';
     var currentArticle = null;
 
-    // Theme-aware labels - kept readable for both themes
+    // Labels
     function getLabels() {
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
         return {
-            title: is4X ? 'War College' : 'Thieves\' Archive',
-            subtitle: is4X ? 'Reference & Documentation' : 'Phantom Knowledge Vault',
+            title: 'Thieves\' Archive',
+            subtitle: 'Phantom Knowledge Vault',
             categories: 'Categories',
             allCategory: 'All',
             articles: 'Articles',
             readTime: 'Read time',
-            relatedOps: is4X ? 'Practice This' : 'Related Exercises',
-            backToList: '← Back',
+            relatedOps: 'Related Exercises',
+            backToList: '\u2190 Back',
             noArticles: 'No articles found.',
             searchPlaceholder: 'Search...',
             conceptLabel: 'Concept',
             difficulty: 'Level',
-            // Category names - keep them understandable
+            // Category names
             catNames: {
                 'fundamentals': 'Fundamentals',
                 'data-structures': 'Data Structures',
@@ -43,20 +40,17 @@
 
     // Get icon for category
     function getCategoryIcon(category) {
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
-
         var icons = {
-            'fundamentals': is4X ? '📋' : '📖',
-            'data-structures': is4X ? '📦' : '🗂️',
-            'concurrency': is4X ? '⚡' : '🔄',
-            'patterns': is4X ? '🎯' : '🧩',
-            'idioms': is4X ? '📜' : '💡',
-            'stdlib': is4X ? '🔧' : '📚',
-            'testing': is4X ? '✅' : '🧪',
-            'performance': is4X ? '⚙️' : '🚀'
+            'fundamentals': '\u{1F4D6}',
+            'data-structures': '\u{1F5C2}',
+            'concurrency': '\u{1F504}',
+            'patterns': '\u{1F9E9}',
+            'idioms': '\u{1F4A1}',
+            'stdlib': '\u{1F4DA}',
+            'testing': '\u{1F9EA}',
+            'performance': '\u{1F680}'
         };
-        return icons[category] || '📄';
+        return icons[category] || '\u{1F4C4}';
     }
 
     // Load library data
@@ -88,8 +82,6 @@
         if (!view) return;
 
         var L = getLabels();
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
 
         var html = '<div class="library-container">';
         html += '<div class="library-header">';
@@ -98,8 +90,8 @@
         html += '</div>';
 
         html += '<div class="library-empty">';
-        html += '<div class="empty-icon">' + (is4X ? '📚' : '📖') + '</div>';
-        html += '<p>' + (is4X ? 'Intelligence database is being compiled...' : 'The archive is being prepared...') + '</p>';
+        html += '<div class="empty-icon">\u{1F4D6}</div>';
+        html += '<p>The archive is being prepared...</p>';
         html += '<p style="color:var(--text-dim);font-size:0.85rem">' +
             'Add reference content to <code>data/library.json</code></p>';
         html += '</div>';
@@ -119,8 +111,6 @@
         }
 
         var L = getLabels();
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
 
         var html = '<div class="library-container">';
 
@@ -213,8 +203,6 @@
 
     function renderArticleCard(article) {
         var L = getLabels();
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
 
         var icon = getCategoryIcon(article.category);
         var catName = L.catNames[article.category] || article.category;
@@ -273,8 +261,6 @@
         }
 
         var L = getLabels();
-        var T = window.ThemeRegistry;
-        var is4X = T && T.getThemeId() === '4x-strategy';
 
         var icon = getCategoryIcon(article.category);
         var catName = L.catNames[article.category] || article.category;
@@ -307,8 +293,8 @@
         html += '</div>';
 
         // Study button
-        var studyLabel = is4X ? 'Begin Field Manual Review' : 'Start Study Session';
-        var studyIcon = is4X ? '\u{1F4CB}' : '\u{1F4D6}';
+        var studyLabel = 'Start Study Session';
+        var studyIcon = '\u{1F4D6}';
         html += '<button class="library-study-btn" data-article-id="' + article.id + '">';
         html += '<span class="study-icon">' + studyIcon + '</span>';
         html += '<span>' + studyLabel + '</span>';
