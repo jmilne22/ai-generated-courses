@@ -1,0 +1,188 @@
+/* ============================================================
+   Go Grind - Velvet Room (Persona Compendium)
+   ============================================================ */
+
+.velvet-room-view {
+    background: linear-gradient(135deg, var(--velvet-bg) 0%, #1a0a3e 50%, var(--velvet-bg) 100%);
+    color: var(--velvet-text);
+    min-height: 100%;
+    margin: -2rem -2.5rem;
+    padding: 2rem 2.5rem;
+}
+
+.velvet-header {
+    text-align: center;
+    padding: 2rem 1rem;
+    border-bottom: 2px solid #4444aa;
+    margin-bottom: 2rem;
+}
+
+.velvet-title {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--velvet-accent);
+    text-transform: uppercase;
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(136, 136, 255, 0.3);
+}
+
+.velvet-subtitle {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: #6666aa;
+    margin-top: 0.5rem;
+    letter-spacing: 2px;
+}
+
+.velvet-section-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--velvet-accent);
+    border-bottom: 1px solid var(--velvet-border);
+    padding-bottom: 0.5rem;
+    margin: 2rem 0 1rem;
+}
+
+/* === Persona Grid === */
+.persona-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.persona-card {
+    background: linear-gradient(135deg, #0f0f3e 0%, #1a1a4e 100%);
+    border: 2px solid var(--velvet-border);
+    padding: 1rem;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    cursor: default;
+}
+
+.persona-card:hover {
+    border-color: var(--velvet-accent);
+    transform: translateY(-2px);
+}
+
+.persona-card.locked {
+    opacity: 0.25;
+    filter: grayscale(1);
+}
+
+.persona-card.locked .persona-name {
+    color: #555;
+}
+
+.persona-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.persona-name {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.persona-concept {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: #6666aa;
+    margin: 0.25rem 0;
+}
+
+.persona-level {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--gold);
+    margin-top: 0.5rem;
+}
+
+.persona-mastery-bar {
+    width: 100%;
+    height: 4px;
+    background: #222244;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+.persona-mastery-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4444aa, var(--velvet-accent));
+    border-radius: 2px;
+}
+
+.persona-arcana {
+    font-size: 0.6rem;
+    color: #555588;
+    margin-top: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.persona-fusion-hint {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: #444477;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+/* === Compendium Stats === */
+.compendium-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.compendium-stat {
+    background: linear-gradient(135deg, #0f0f3e, #1a1a4e);
+    border: 1px solid var(--velvet-border);
+    padding: 1rem;
+    text-align: center;
+}
+
+.compendium-stat-value {
+    font-family: var(--font-mono);
+    font-size: 1.8rem;
+    color: var(--velvet-accent);
+    font-weight: 700;
+}
+
+.compendium-stat-label {
+    font-size: 0.65rem;
+    color: #6666aa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.15rem;
+}
+
+/* === Responsive === */
+@media (max-width: 600px) {
+    .velvet-room-view {
+        margin: -1rem;
+        padding: 1rem;
+    }
+
+    .persona-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+
+    .compendium-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .velvet-title {
+        font-size: 1.8rem;
+        letter-spacing: 4px;
+    }
+}

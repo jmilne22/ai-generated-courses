@@ -1,0 +1,339 @@
+/* ============================================================
+   Go Grind - Base Layout & Reset
+   ============================================================ */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+/* === Layout Grid: Sidebar + Main Panel === */
+.app-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* === Sidebar === */
+.sidebar {
+    background: var(--bg-sidebar);
+    border-right: 3px solid var(--red);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--red) var(--bg-sidebar);
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: var(--bg-sidebar);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--red);
+    border-radius: 2px;
+}
+
+/* === Player Card === */
+.player-card {
+    padding: 1.25rem 1rem;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+}
+
+.player-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--red), transparent);
+}
+
+.player-name {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+.player-level {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--red);
+    margin-top: 0.15rem;
+}
+
+.player-xp-bar {
+    width: 100%;
+    height: 5px;
+    background: var(--bg-lighter);
+    border-radius: 3px;
+    margin: 0.5rem 0 0.25rem;
+    overflow: hidden;
+}
+
+.player-xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--red), var(--red-light));
+    border-radius: 3px;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 6px rgba(230, 0, 18, 0.4);
+}
+
+.player-xp-text {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+}
+
+/* === Sidebar Navigation === */
+.nav-section {
+    padding: 0.75rem 0 0.25rem;
+}
+
+.nav-section-title {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--red);
+    padding: 0 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0.85rem;
+    border-left: 3px solid transparent;
+    position: relative;
+}
+
+.nav-item:hover {
+    color: #fff;
+    background: rgba(230, 0, 18, 0.08);
+    border-left-color: var(--red);
+}
+
+.nav-item.active {
+    color: #fff;
+    background: rgba(230, 0, 18, 0.15);
+    border-left-color: var(--red);
+    font-weight: 600;
+}
+
+.nav-item .nav-icon {
+    font-size: 1rem;
+    width: 1.4rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.nav-item .nav-label {
+    flex: 1;
+}
+
+.nav-item .nav-badge {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    background: var(--red);
+    color: #fff;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-weight: 700;
+}
+
+.nav-item .nav-level {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-dim);
+}
+
+/* === Main Panel === */
+.main-panel {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100vh;
+    padding: 2rem 2.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--red) var(--bg-dark);
+}
+
+.main-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.main-panel::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+.main-panel::-webkit-scrollbar-thumb {
+    background: var(--red);
+    border-radius: 3px;
+}
+
+/* === View containers === */
+.view {
+    display: none;
+    animation: view-fade-in 0.25s ease-out;
+}
+
+.view.active {
+    display: block;
+}
+
+@keyframes view-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Typography === */
+h1, h2, h3, h4 {
+    font-family: var(--font-display);
+}
+
+a {
+    color: var(--cyan);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+pre {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--bg-lighter);
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+}
+
+/* === Utility === */
+.section-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--red);
+    border-bottom: 2px solid var(--red);
+    padding-bottom: 0.5rem;
+    margin: 2rem 0 1rem;
+}
+
+.section-title:first-child {
+    margin-top: 0;
+}
+
+/* === Mobile === */
+@media (max-width: 768px) {
+    .app-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        width: 260px;
+        z-index: 1000;
+        transition: left 0.3s ease;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .mobile-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: var(--bg-sidebar);
+        border-bottom: 2px solid var(--red);
+    }
+
+    .mobile-toggle {
+        background: none;
+        border: 2px solid var(--red);
+        color: var(--red);
+        padding: 0.4rem 0.6rem;
+        cursor: pointer;
+        font-size: 1.2rem;
+        border-radius: 4px;
+    }
+
+    .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 999;
+    }
+
+    .mobile-overlay.active {
+        display: block;
+    }
+
+    .main-panel {
+        padding: 1rem;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-header {
+        display: none;
+    }
+    .mobile-overlay {
+        display: none !important;
+    }
+}
