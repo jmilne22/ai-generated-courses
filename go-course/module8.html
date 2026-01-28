@@ -6,6 +6,7 @@
     <title>Module 8: Building TUIs | Go From Python</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="gamification.css">
 </head>
 <body>
     <div class="container">
@@ -235,6 +236,12 @@ go get github.com/charmbracelet/bubbles   <span class="comment"># Pre-built comp
             </ul>
         </div>
 
+        <div class="exam-section">
+            <div class="exam-section-title">Midterm Exam 2</div>
+            <div class="exam-section-desc">Test your knowledge of Modules 6-8: CLI, Files, YAML & TUIs</div>
+            <button class="exam-section-btn" onclick="window.GamificationUI.startExam('midterm2')">Take Midterm 2</button>
+        </div>
+
         <div class="nav-buttons">
             <a href="module7.html" class="nav-btn">← Module 7</a>
             <a href="module9.html" class="nav-btn primary">Module 9: Error Handling →</a>
@@ -242,5 +249,6 @@ go get github.com/charmbracelet/bubbles   <span class="comment"># Pre-built comp
     </div>
     <script src="theme.js"></script>
     <script src="sidebar.js"></script>
+    <script src="gamification.js"></script>
 </body>
 </html>

@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="gamification.css">
     <style>
         .dashboard-header {
             margin: 2rem 0 2.5rem;
@@ -283,6 +284,35 @@
             </div>
         </div>
 
+        <!-- Gamification Quick Stats -->
+        <div class="progress-stats" style="margin-top: 0;">
+            <div class="stat-card" onclick="window.GamificationUI && window.GamificationUI.openPanel()" style="cursor:pointer">
+                <div class="stat-value" style="color: var(--orange);" id="dash-bucks">0</div>
+                <div class="stat-label">Gopher Bucks</div>
+            </div>
+            <div class="stat-card" onclick="window.GamificationUI && window.GamificationUI.openPanel()" style="cursor:pointer">
+                <div class="stat-value" style="color: var(--red);" id="dash-streak">0</div>
+                <div class="stat-label">Day Streak</div>
+            </div>
+            <div class="stat-card" onclick="window.GamificationUI && window.GamificationUI.openPanel()" style="cursor:pointer">
+                <div class="stat-value" style="color: var(--purple);" id="dash-combo">0</div>
+                <div class="stat-label">Best Combo</div>
+            </div>
+        </div>
+
+        <!-- Exam Grades Overview -->
+        <div id="exam-dashboard-section" style="margin-top: 0;">
+            <div style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.4rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Exam Grades</div>
+            <div class="exam-dashboard-grid" id="exam-dashboard-grid"></div>
+        </div>
+
+        <div class="quick-actions" style="margin-top: 1rem;">
+            <button class="quick-btn" onclick="window.GamificationUI && window.GamificationUI.openPanel()" style="border-color: var(--red); color: var(--red);">
+                <span class="btn-icon" style="font-size: 1.2rem;">&#9733;</span>
+                Phantom Thieves HQ
+            </button>
+        </div>
+
         <div class="module-list">
             <!-- Track 0 -->
             <div class="track-section">
@@ -471,6 +501,7 @@
     </div>
 
     <script src="theme.js"></script>
+    <script src="gamification.js"></script>
     <script>
         // Progress tracking with localStorage
         const STORAGE_KEY = 'go-course-progress';
@@ -659,6 +690,57 @@
                     recordModuleVisit(moduleNum);
                 });
             });
+
+            // Populate gamification dashboard stats
+            setTimeout(() => {
+                if (window.GamificationUI) {
+                    const bucks = document.getElementById('dash-bucks');
+                    const streak = document.getElementById('dash-streak');
+                    const combo = document.getElementById('dash-combo');
+                    if (bucks) bucks.textContent = window.GamificationUI.getBucks().toLocaleString();
+                    if (combo) combo.textContent = window.GamificationUI.getCombo().best;
+                    // Streak from calendar
+                    try {
+                        const cal = JSON.parse(localStorage.getItem('go-course-calendar') || '{}');
+                        const dates = Object.keys(cal).sort().reverse();
+                        let s = 0;
+                        const today = new Date();
+                        today.setHours(0,0,0,0);
+                        for (let i = 0; i < 365; i++) {
+                            const d = new Date(today);
+                            d.setDate(d.getDate() - i);
+                            const key = d.toISOString().split('T')[0];
+                            if (cal[key]) s++;
+                            else if (i > 0) break;
+                        }
+                        if (streak) streak.textContent = s;
+                    } catch {}
+
+                    // Populate exam dashboard
+                    const examGrid = document.getElementById('exam-dashboard-grid');
+                    if (examGrid && window.GamificationUI.getExamState) {
+                        const examState = window.GamificationUI.getExamState();
+                        const exams = [
+                            { id: 'midterm1', label: 'Mid 1' },
+                            { id: 'midterm2', label: 'Mid 2' },
+                            { id: 'final1', label: 'Final 1' },
+                            { id: 'final2', label: 'Final 2' },
+                            { id: 'final3', label: 'Final 3' },
+                        ];
+                        const gradeColors = { S: '#ffcc00', A: '#00ff9d', B: '#00ccff', C: '#ff9900', F: '#ff0044' };
+                        examGrid.innerHTML = exams.map(e => {
+                            const record = examState[e.id];
+                            const grade = record ? (record.bestGrade || record.grade) : null;
+                            return `<div class="exam-dashboard-item ${grade ? 'has-grade' : ''}">
+                                <div class="exam-dashboard-label">${e.label}</div>
+                                <div class="exam-dashboard-grade" style="color: ${grade ? gradeColors[grade] : 'var(--text-dim)'}">
+                                    ${grade || '-'}
+                                </div>
+                            </div>`;
+                        }).join('');
+                    }
+                }
+            }, 100);
         });
     </script>
 </body>

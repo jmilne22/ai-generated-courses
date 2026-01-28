@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="gamification.css">
     <style>
         .reference-grid {
             display: grid;
@@ -74,6 +75,54 @@
             <div class="module-tag">// QUICK REFERENCE</div>
             <h1>Go Cheat Sheet</h1>
             <p class="module-desc">Commands, links, and common errors for quick lookup</p>
+        </div>
+
+        <!-- How This Course Works -->
+        <div class="lesson">
+            <h2>How This Course Works</h2>
+            <p>This course uses a <strong>Persona 5-inspired gamification system</strong> to keep you engaged. Here's a quick rundown of everything you'll encounter.</p>
+
+            <h3>Gopher Bucks</h3>
+            <p>Every exercise you complete earns <strong>Gopher Bucks</strong> -- the course currency. Harder exercises pay more. Spend them in the Shop on energy refills, streak insurance, and perks.</p>
+            <div class="tip">
+                <div class="tip-title">Reward tiers</div>
+                <p>Difficulty 1 = 100 bucks, Difficulty 2 = 250, Difficulty 3 = 500, Difficulty 4 = 750. Combos multiply these!</p>
+            </div>
+
+            <h3>Combo System</h3>
+            <p>Complete exercises <strong>without using hints</strong> to build a combo streak. At <strong>3x combo</strong> your bucks double, and at <strong>5x combo</strong> you trigger an ALL-OUT ATTACK for a <strong>3x multiplier</strong>.</p>
+            <div class="warning">
+                <div class="warning-title">Combo breaker</div>
+                <p>Using a hint resets your combo to zero. Only check "Used hints" if you actually needed them.</p>
+            </div>
+
+            <h3>Your Stats (Pentagon)</h3>
+            <p>Five skill stats tracked on a radar chart: <strong>Syntax, Concurrency, Safety, Design, Performance</strong>. Each exercise gives XP to the relevant stat based on its topic. Open the HQ panel to see your pentagon grow.</p>
+
+            <h3>Confidants</h3>
+            <p>Five NPCs level up alongside your stats: <strong>Gopher Greg</strong> (Syntax), <strong>Channel Chan</strong> (Concurrency), <strong>Error Elena</strong> (Safety), <strong>Interface Iko</strong> (Design), and <strong>Pointer Pete</strong> (Performance). Rank 1 through 10 with rank-up cutscenes.</p>
+
+            <h3>Concept Fusion</h3>
+            <p>When your stats reach certain levels, <strong>advanced Go patterns unlock automatically</strong>. For example, reaching Concurrency Lv.5 + Design Lv.5 unlocks "Concurrent Worker Pool." There are 10 fusions to discover.</p>
+
+            <h3>Exams</h3>
+            <p>Timed exams appear after each module track. <strong>5 questions, 10-minute limit, no hints.</strong> Grades: S (5/5), A (4/5), B (3/5), C (2/5), F (0-1). S-rank pays <strong>3,000 bucks + 500 XP</strong> to all relevant stats.</p>
+            <div class="tip">
+                <div class="tip-title">Retakes</div>
+                <p>Failed exams have a 1-hour cooldown before retaking. You can always retake to improve your grade.</p>
+            </div>
+
+            <h3>Calendar & Energy</h3>
+            <p>You have <strong>5 energy per day</strong> (resets at midnight). Your study streak is tracked on a calendar -- consecutive days build your streak counter.</p>
+
+            <h3>Achievements</h3>
+            <p><strong>22 badges</strong> to collect, from "First Blood" (first exercise) to "Renaissance Gopher" (all stats at Lv.10). Achievement unlocks show a Persona-style popup.</p>
+
+            <h3>Calling Cards</h3>
+            <p>Set a <strong>deadline for yourself</strong> to finish a module. Shorter deadlines = bigger bucks rewards. Complete on time to earn the payout. Think of it as a self-imposed heist deadline.</p>
+
+            <h3>The Shop</h3>
+            <p>Spend your hard-earned Gopher Bucks on energy refills, streak insurance, and other perks. Open the HQ panel and go to the Shop tab.</p>
         </div>
 
         <div class="quick-links">
@@ -297,5 +346,6 @@ go install mvdan.cc/gofumpt@latest</pre>
     </div>
     <script src="theme.js"></script>
     <script src="sidebar.js"></script>
+    <script src="gamification.js"></script>
 </body>
 </html>

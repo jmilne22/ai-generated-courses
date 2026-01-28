@@ -6,6 +6,7 @@
     <title>Module 11: HTTP & API Design | Go From Python</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="gamification.css">
 </head>
 <body>
     <div class="container">
@@ -212,6 +213,12 @@ handler := <span class="func">Chain</span>(myHandler, <span class="func">Logging
             </ul>
         </div>
 
+        <div class="exam-section">
+            <div class="exam-section-title">Final Exam 1</div>
+            <div class="exam-section-desc">Test your knowledge of Modules 9-11: Error Handling, Design Patterns & HTTP</div>
+            <button class="exam-section-btn" onclick="window.GamificationUI.startExam('final1')">Take Final 1</button>
+        </div>
+
         <div class="nav-buttons">
             <a href="module10.html" class="nav-btn">← Module 10</a>
             <a href="module12.html" class="nav-btn primary">Module 12: Concurrency →</a>
@@ -219,5 +226,6 @@ handler := <span class="func">Chain</span>(myHandler, <span class="func">Logging
     </div>
     <script src="theme.js"></script>
     <script src="sidebar.js"></script>
+    <script src="gamification.js"></script>
 </body>
 </html>
