@@ -305,6 +305,15 @@
             html += '<span>' + L.difficulty + ': ' + levelLabel + '</span>';
         }
         html += '</div>';
+
+        // Study button
+        var studyLabel = is4X ? 'Begin Field Manual Review' : 'Start Study Session';
+        var studyIcon = is4X ? '\u{1F4CB}' : '\u{1F4D6}';
+        html += '<button class="library-study-btn" data-article-id="' + article.id + '">';
+        html += '<span class="study-icon">' + studyIcon + '</span>';
+        html += '<span>' + studyLabel + '</span>';
+        html += '</button>';
+
         html += '</div>';
 
         // Article content
@@ -473,6 +482,19 @@
                 currentArticle = null;
                 if (window.GameAudio) window.GameAudio.playMenuSelect();
                 renderLibrary();
+            });
+        }
+
+        // Study button
+        var studyBtn = document.querySelector('.library-study-btn');
+        if (studyBtn && window.Study) {
+            studyBtn.addEventListener('click', function() {
+                var articleId = this.dataset.articleId;
+                var article = libraryData.articles.find(function(a) { return a.id === articleId; });
+                if (article) {
+                    if (window.GameAudio) window.GameAudio.playMenuSelect();
+                    window.Study.startSession(article);
+                }
             });
         }
 

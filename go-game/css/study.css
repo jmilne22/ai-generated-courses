@@ -1,0 +1,339 @@
+/**
+ * Study Mode Styles
+ */
+
+/* Study Overlay */
+.study-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.study-modal {
+    background: var(--bg-card);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.study-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+}
+
+.study-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--accent);
+}
+
+.study-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    margin: 0;
+}
+
+/* Timer Section */
+.study-timer-section {
+    padding: 1rem 1.5rem;
+    background: var(--bg-dark);
+    text-align: center;
+}
+
+.study-timer {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    color: var(--yellow);
+}
+
+.study-timer.complete {
+    color: var(--green);
+}
+
+/* Content Area */
+.study-content {
+    padding: 1.5rem;
+    flex: 1;
+    overflow-y: auto;
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+.study-content h3,
+.study-content h4 {
+    font-family: var(--font-display);
+    color: var(--text);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.study-content h3 {
+    font-size: 1.1rem;
+}
+
+.study-content h4 {
+    font-size: 1rem;
+}
+
+.study-content p {
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.study-content code {
+    background: var(--bg-dark);
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+}
+
+.study-content pre {
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.study-content pre code {
+    background: none;
+    padding: 0;
+}
+
+.study-content ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.study-content li {
+    margin-bottom: 0.5rem;
+}
+
+.study-content strong {
+    color: var(--accent);
+}
+
+/* Rewards Preview */
+.study-rewards-preview {
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-card) 100%);
+    border-top: 1px solid var(--border);
+}
+
+.reward-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+}
+
+.reward-item {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+
+/* Actions */
+.study-actions {
+    padding: 1rem 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    border-top: 1px solid var(--border);
+}
+
+.study-btn {
+    padding: 0.75rem 1.5rem;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.study-btn.primary {
+    background: var(--accent);
+    color: #000;
+}
+
+.study-btn.primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.4);
+}
+
+.study-btn.primary:disabled {
+    background: var(--bg-dark);
+    color: var(--text-dim);
+    cursor: not-allowed;
+}
+
+.study-btn.secondary {
+    background: var(--bg-dark);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.study-btn.secondary:hover {
+    border-color: var(--accent);
+}
+
+/* Study Complete Overlay */
+.study-complete-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.study-complete-modal {
+    background: var(--bg-card);
+    border: 2px solid var(--green);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    max-width: 400px;
+}
+
+.study-complete-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.study-complete-modal h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--green);
+    margin: 0 0 1rem 0;
+}
+
+.study-complete-rewards {
+    background: var(--bg-dark);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.reward-line {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+}
+
+.reward-line:last-child {
+    margin-bottom: 0;
+}
+
+.reward-line.buff {
+    color: var(--accent);
+}
+
+.study-complete-hint {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+}
+
+/* Study Button in Library */
+.library-study-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--accent);
+    color: #000;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 1rem;
+}
+
+.library-study-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.4);
+}
+
+.library-study-btn .study-icon {
+    font-size: 1.1rem;
+}
+
+/* Active Buff Indicator */
+.active-buff-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--yellow) 100%);
+    color: #000;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    font-weight: 600;
+}
+
+.buff-indicator-small {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+}
+
+/* Theme-specific */
+.theme-4x .study-header h2 {
+    color: var(--accent);
+}
+
+.theme-4x .study-modal {
+    border-style: double;
+    border-width: 4px;
+}
+
+.theme-persona5 .study-complete-modal {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .study-modal {
+        max-height: 95vh;
+        border-radius: 8px;
+    }
+
+    .study-header {
+        padding: 1rem;
+    }
+
+    .study-content {
+        padding: 1rem;
+    }
+
+    .study-actions {
+        flex-direction: column;
+    }
+
+    .study-btn {
+        width: 100%;
+    }
+}

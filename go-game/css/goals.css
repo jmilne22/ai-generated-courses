@@ -1,0 +1,476 @@
+/**
+ * Goals & Victory Conditions Styles
+ */
+
+/* Victory Conditions Screen (4X Theme) */
+.victory-conditions {
+    padding: 1.5rem;
+}
+
+.victory-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.victory-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+}
+
+.victory-header .overall-progress {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+.victory-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.victory-card:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+}
+
+.victory-card.complete {
+    border-color: var(--green);
+    background: rgba(0, 255, 0, 0.05);
+}
+
+.victory-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.victory-icon {
+    font-size: 1.5rem;
+}
+
+.victory-name {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.victory-pct {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.victory-card.complete .victory-pct {
+    color: var(--green);
+}
+
+.victory-description {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+}
+
+.victory-progress-bar {
+    height: 8px;
+    background: var(--bg-dark);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.victory-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.victory-card.complete .victory-progress-fill {
+    background: var(--green);
+}
+
+.victory-detail {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+/* Nearest Victory Widget */
+.nearest-victory {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-dark) 100%);
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.nearest-victory-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+}
+
+.nearest-victory-name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.nearest-victory-pct {
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+}
+
+/* Story Progress Screen (P5 Theme) */
+.story-progress {
+    padding: 1.5rem;
+}
+
+.story-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.story-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: var(--red);
+}
+
+.hearts-changed {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    color: var(--text);
+}
+
+.hearts-changed .count {
+    color: var(--red);
+    font-weight: bold;
+}
+
+.palace-story-card {
+    background: var(--bg-card);
+    border-left: 4px solid var(--border);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    position: relative;
+    transition: border-color 0.2s;
+}
+
+.palace-story-card.defeated {
+    border-left-color: var(--red);
+}
+
+.palace-story-card.available {
+    border-left-color: var(--yellow);
+}
+
+.palace-story-card.locked {
+    opacity: 0.5;
+}
+
+.palace-story-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.palace-story-icon {
+    font-size: 1.25rem;
+}
+
+.palace-story-name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.palace-story-status {
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.palace-story-status.defeated {
+    color: var(--red);
+}
+
+.palace-story-status.available {
+    color: var(--yellow);
+}
+
+.palace-story-status.locked {
+    color: var(--text-dim);
+}
+
+.palace-story-theme {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+}
+
+.palace-story-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.palace-story-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-dark);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.palace-story-bar-fill {
+    height: 100%;
+    background: var(--red);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.palace-story-pct {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    min-width: 35px;
+}
+
+/* Territory Objectives */
+.territory-objectives {
+    padding: 1rem;
+}
+
+.objective-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.objective-item:last-child {
+    border-bottom: none;
+}
+
+.objective-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.objective-checkbox.complete {
+    background: var(--green);
+    border-color: var(--green);
+    color: #000;
+}
+
+.objective-checkbox.complete::after {
+    content: '\2713';
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.objective-content {
+    flex: 1;
+}
+
+.objective-description {
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+
+.objective-item.complete .objective-description {
+    text-decoration: line-through;
+    color: var(--text-dim);
+}
+
+.objective-progress {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+/* Next Objective Widget (Sidebar) */
+.next-objective-widget {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.next-objective-widget:hover {
+    border-color: var(--accent);
+}
+
+.next-objective-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+}
+
+.next-objective-territory {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+
+.next-objective-task {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.next-objective-progress {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    margin-top: 0.25rem;
+}
+
+/* Conquest Map (4X) */
+.conquest-map {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.conquest-territory {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.conquest-territory:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+}
+
+.conquest-territory.conquered {
+    border-color: var(--green);
+    background: rgba(0, 255, 0, 0.05);
+}
+
+.conquest-territory.at-war {
+    border-color: var(--yellow);
+    background: rgba(255, 255, 0, 0.05);
+}
+
+.conquest-territory.locked {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.conquest-territory-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.conquest-territory-name {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.conquest-territory-status {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.conquest-territory.conquered .conquest-territory-status {
+    color: var(--green);
+}
+
+.conquest-territory.at-war .conquest-territory-status {
+    color: var(--yellow);
+}
+
+.conquest-territory-bar {
+    height: 4px;
+    background: var(--bg-dark);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.conquest-territory-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s;
+}
+
+.conquest-territory.conquered .conquest-territory-bar-fill {
+    background: var(--green);
+}
+
+/* 4X Theme Overrides */
+.theme-4x .victory-card {
+    border-left: 4px solid var(--accent);
+}
+
+.theme-4x .victory-card.complete {
+    border-left-color: var(--green);
+}
+
+.theme-4x .nearest-victory {
+    border-style: double;
+    border-width: 4px;
+}
+
+/* Persona 5 Theme Overrides */
+.theme-persona5 .palace-story-card {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+}
+
+.theme-persona5 .palace-story-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background: var(--red);
+}
+
+.theme-persona5 .palace-story-card.defeated::before {
+    background: var(--red);
+}

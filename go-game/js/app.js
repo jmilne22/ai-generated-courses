@@ -167,8 +167,34 @@
 
         var html = '';
 
+        // Next Objective Widget
+        if (window.Goals) {
+            var nextObj = window.Goals.getNextObjective();
+            var is4X = T && T.getThemeId() === '4x-strategy';
+            if (nextObj) {
+                var territoryName = is4X ? nextObj.territoryName4X : nextObj.territoryNameP5;
+                var objDesc = is4X ? nextObj.objective.description4X : nextObj.objective.descriptionP5;
+                var progress = nextObj.objective.status;
+
+                html += '<div class="next-objective-widget" data-view="goals">';
+                html += '<div class="next-objective-label">' + (is4X ? 'Current Objective' : 'Next Target') + '</div>';
+                html += '<div class="next-objective-territory">' + territoryName + '</div>';
+                html += '<div class="next-objective-task">' + objDesc + '</div>';
+                if (nextObj.objective.type !== 'boss') {
+                    html += '<div class="next-objective-progress">' + progress.current + ' / ' + progress.target + '</div>';
+                }
+                html += '</div>';
+            }
+        }
+
         // Get theme-aware labels
         var is4X = T && T.getThemeId() === '4x-strategy';
+
+        // GOALS/OBJECTIVES section (at top for visibility)
+        var goalsTitle = is4X ? 'OBJECTIVES' : 'STORY';
+        html += '<div class="nav-section"><div class="nav-section-title">' + goalsTitle + '</div>';
+        html += navItem('goals', is4X ? 'Victory Conditions' : 'Phantom Thieves', is4X ? '🏆' : '🎭');
+        html += '</div>';
 
         // COMBAT/WARFARE section
         var combatTitle = T ? T.getTerm('navCombat', 'Combat') : 'Combat';
@@ -289,6 +315,15 @@
                 }
             });
         });
+
+        // Bind next objective widget click
+        var objWidget = nav.querySelector('.next-objective-widget');
+        if (objWidget) {
+            objWidget.addEventListener('click', function() {
+                navigateTo('goals');
+                if (window.GameAudio) window.GameAudio.playMenuSelect();
+            });
+        }
     }
 
     function navItem(viewId, label, icon) {
@@ -375,6 +410,9 @@
             case 'settings':
                 renderSettingsView();
                 break;
+            case 'goals':
+                renderGoalsView();
+                break;
         }
 
         // Scroll main panel to top
@@ -392,11 +430,13 @@
         var T = window.ThemeRegistry;
         var is4X = T && T.getThemeId() === '4x-strategy';
 
+        // Get objectives if Goals module is loaded
+        var territories = window.Goals ? window.Goals.getAllTerritoryProgress() : {};
+
         // Theme-aware labels
         var pageTitle = is4X ? 'Territorial Conquest' : 'Palace Infiltration';
-        var defeatedLabel = is4X ? 'CONQUERED' : 'BOSS DEFEATED';
+        var defeatedLabel = is4X ? 'CONQUERED' : 'HEART CHANGED';
         var availableLabel = is4X ? 'READY TO ANNEX' : 'BOSS AVAILABLE';
-        var bossLabel = is4X ? 'Annexation at 80%' : 'Boss at 80%';
         var bossPrefix = is4X ? 'Final Battle: ' : 'Boss: ';
 
         var html = '<div class="section-title" style="margin-top:0">' + pageTitle + '</div>';
@@ -405,7 +445,8 @@
         Object.keys(palaceDefs).forEach(function(key) {
             var def = palaceDefs[key];
             var palace = palaces[key] || { progress: 0, unlocked: false, defeated: false };
-            var pct = Math.round(palace.progress * 100);
+            var territory = territories[key] || { pct: 0, completedCount: 0, totalCount: 5, objectives: [] };
+            var pct = territory.pct;
 
             // Get themed palace info
             var palaceInfo = T ? T.getPalaceInfo(key) : null;
@@ -415,23 +456,41 @@
             // Determine status class
             var statusClass = palace.defeated ? 'conquered' : (palace.unlocked ? 'victory-imminent' : (pct > 0 ? 'at-war' : ''));
 
-            html += '<div class="palace-item palace-card ' + (palace.defeated ? 'defeated ' : '') + statusClass + '">';
+            html += '<div class="palace-item palace-card ' + (palace.defeated ? 'defeated ' : '') + statusClass + '" data-palace="' + key + '" style="cursor:pointer">';
             html += '<div class="palace-name">' + palaceName + '</div>';
             html += '<div class="palace-concepts">' + def.concepts.map(function(c) {
                 var skillInfo = T ? T.getSkillInfo(c) : null;
                 return skillInfo ? skillInfo.label : (skillDefs[c] ? skillDefs[c].label : c);
             }).join(', ') + ' &bull; ' + palaceTheme + '</div>';
+
+            // Objectives progress bar
             html += '<div class="palace-bar"><div class="palace-bar-fill" style="width:' + pct + '%"></div></div>';
-            html += '<div class="palace-status"><span>' + pct + '% ' + (is4X ? 'Control' : '') + '</span>';
+
+            // Status line with objectives count
+            html += '<div class="palace-status">';
+            html += '<span>' + territory.completedCount + '/' + territory.totalCount + ' ' + (is4X ? 'objectives' : 'tasks') + ' (' + pct + '%)</span>';
             if (palace.defeated) {
                 html += '<span class="boss-defeated palace-status conquered">' + defeatedLabel + '</span>';
             } else if (palace.unlocked) {
                 html += '<span class="boss-available palace-status">' + availableLabel + '</span>';
-            } else {
-                html += '<span>' + bossLabel + '</span>';
             }
             html += '</div>';
-            if (def.boss) {
+
+            // Show first incomplete objective as hint
+            if (!palace.defeated && territory.objectives) {
+                var nextObj = territory.objectives.find(function(o) { return !o.status.complete; });
+                if (nextObj) {
+                    var objDesc = is4X ? nextObj.description4X : nextObj.descriptionP5;
+                    html += '<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--accent);margin-top:0.5rem;padding:0.5rem;background:var(--bg-dark);border-radius:4px">';
+                    html += '<span style="color:var(--text-dim)">Next: </span>' + objDesc;
+                    if (nextObj.type !== 'boss') {
+                        html += ' <span style="color:var(--text-dim)">(' + nextObj.status.current + '/' + nextObj.status.target + ')</span>';
+                    }
+                    html += '</div>';
+                }
+            }
+
+            if (def.boss && !palace.defeated) {
                 html += '<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim);margin-top:0.25rem">' + bossPrefix + def.boss + '</div>';
             }
             html += '</div>';
@@ -439,6 +498,16 @@
 
         html += '</div>';
         view.innerHTML = html;
+
+        // Bind clicks to show detail modal
+        view.querySelectorAll('.palace-card[data-palace]').forEach(function(el) {
+            el.addEventListener('click', function() {
+                var palaceKey = el.dataset.palace;
+                if (palaceKey && window.Goals) {
+                    showTerritoryDetail(palaceKey);
+                }
+            });
+        });
     }
 
     function renderSettingsView() {
@@ -535,6 +604,266 @@
                     window.GameState.resetState();
                     window.location.reload();
                 }
+            }
+        });
+    }
+
+    function renderGoalsView() {
+        var view = document.getElementById('view-goals');
+        if (!view || !window.GameState || !window.Goals) return;
+
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+
+        if (is4X) {
+            render4XVictoryConditions(view);
+        } else {
+            renderP5StoryProgress(view);
+        }
+    }
+
+    function render4XVictoryConditions(view) {
+        var progress = window.Goals.getVictoryProgress();
+        var conditions = window.Goals.getVictoryConditions();
+        var overall = window.Goals.getOverallCompletion();
+        var nearest = window.Goals.getNearestVictory();
+
+        var html = '<div class="victory-conditions">';
+
+        // Header
+        html += '<div class="victory-header">';
+        html += '<h2>Victory Conditions</h2>';
+        html += '<div class="overall-progress">Overall Campaign Progress: ' + overall + '%</div>';
+        html += '</div>';
+
+        // Nearest victory highlight
+        if (nearest && nearest.progress.pct < 100) {
+            html += '<div class="nearest-victory">';
+            html += '<div class="nearest-victory-label">Nearest Victory</div>';
+            html += '<div class="nearest-victory-name">' + nearest.condition.name4X + '</div>';
+            html += '<div class="nearest-victory-pct">' + nearest.progress.pct + '% complete (' + (100 - nearest.progress.pct) + '% remaining)</div>';
+            html += '</div>';
+        }
+
+        // Victory condition cards
+        Object.keys(conditions).forEach(function(key) {
+            var vc = conditions[key];
+            var p = progress[key];
+            var isComplete = p.pct >= 100;
+
+            html += '<div class="victory-card' + (isComplete ? ' complete' : '') + '">';
+            html += '<div class="victory-card-header">';
+            html += '<span class="victory-icon">' + vc.icon4X + '</span>';
+            html += '<span class="victory-name">' + vc.name4X + '</span>';
+            html += '<span class="victory-pct">' + p.pct + '%</span>';
+            html += '</div>';
+            html += '<div class="victory-description">' + vc.description4X + '</div>';
+            html += '<div class="victory-progress-bar"><div class="victory-progress-fill" style="width:' + p.pct + '%"></div></div>';
+            html += '<div class="victory-detail">' + p.current + ' / ' + p.total + ' complete</div>';
+            html += '</div>';
+        });
+
+        // Conquest Map
+        html += '<div class="section-title" style="margin-top:2rem">Conquest Map</div>';
+        html += renderConquestMap();
+
+        // Tech Tree
+        if (window.TechTree) {
+            html += '<div class="section-title" style="margin-top:2rem">Technology Research Tree</div>';
+            html += window.TechTree.render();
+        }
+
+        html += '</div>';
+        view.innerHTML = html;
+
+        // Bind territory clicks
+        view.querySelectorAll('.conquest-territory').forEach(function(el) {
+            el.addEventListener('click', function() {
+                var palaceKey = el.dataset.palace;
+                if (palaceKey) {
+                    showTerritoryDetail(palaceKey);
+                }
+            });
+        });
+
+        // Bind tech tree node clicks
+        view.querySelectorAll('.tech-node').forEach(function(node) {
+            node.addEventListener('click', function() {
+                var skillKey = node.dataset.skill;
+                if (skillKey) {
+                    navigateTo('skill-' + skillKey);
+                }
+            });
+        });
+    }
+
+    function renderConquestMap() {
+        var territories = window.Goals.getAllTerritoryProgress();
+        var palaces = window.GameState.getPalaces();
+
+        var html = '<div class="conquest-map">';
+
+        var order = ['kamoshida', 'madarame', 'kaneshiro', 'futaba', 'okumura', 'sae', 'shido', 'mementos_depths'];
+        var icons = ['🏰', '🏛️', '🏦', '🔬', '🚀', '🎰', '🚢', '🌑'];
+
+        order.forEach(function(key, idx) {
+            var territory = territories[key];
+            var palace = palaces[key] || {};
+            var statusClass = palace.defeated ? 'conquered' : (territory.pct > 0 ? 'at-war' : 'locked');
+            var statusText = palace.defeated ? 'CONQUERED' : (territory.pct > 0 ? territory.pct + '% CONTROL' : 'LOCKED');
+
+            html += '<div class="conquest-territory ' + statusClass + '" data-palace="' + key + '">';
+            html += '<div class="conquest-territory-icon">' + icons[idx] + '</div>';
+            html += '<div class="conquest-territory-name">' + territory.name4X + '</div>';
+            html += '<div class="conquest-territory-status">' + statusText + '</div>';
+            html += '<div class="conquest-territory-bar"><div class="conquest-territory-bar-fill" style="width:' + territory.pct + '%"></div></div>';
+            html += '</div>';
+        });
+
+        html += '</div>';
+        return html;
+    }
+
+    function renderP5StoryProgress(view) {
+        var progress = window.Goals.getVictoryProgress();
+        var territories = window.Goals.getAllTerritoryProgress();
+        var palaces = window.GameState.getPalaces();
+        var palaceDefs = window.GameState.getPalaceDefs();
+        var domination = progress.domination;
+
+        var html = '<div class="story-progress">';
+
+        // Header
+        html += '<div class="story-header">';
+        html += '<h2>Phantom Thieves Progress</h2>';
+        html += '<div class="hearts-changed">Hearts Changed: <span class="count">' + domination.current + '</span> / ' + domination.total + '</div>';
+        html += '</div>';
+
+        // Palace story cards
+        var order = ['kamoshida', 'madarame', 'kaneshiro', 'futaba', 'okumura', 'sae', 'shido', 'mementos_depths'];
+        var icons = ['🏰', '🎨', '💰', '🔺', '🚀', '🎲', '🚢', '🌑'];
+
+        order.forEach(function(key, idx) {
+            var territory = territories[key];
+            var palace = palaces[key] || {};
+            var def = palaceDefs[key] || {};
+            var statusClass = palace.defeated ? 'defeated' : (territory.pct > 0 ? 'available' : 'locked');
+            var statusText = palace.defeated ? 'HEART CHANGED' : (territory.pct > 0 ? 'INFILTRATING' : 'NOT YET TARGETED');
+
+            html += '<div class="palace-story-card ' + statusClass + '" data-palace="' + key + '">';
+            html += '<div class="palace-story-header">';
+            html += '<span class="palace-story-icon">' + icons[idx] + '</span>';
+            html += '<span class="palace-story-name">' + territory.nameP5 + '</span>';
+            html += '<span class="palace-story-status ' + statusClass + '">' + statusText + '</span>';
+            html += '</div>';
+            html += '<div class="palace-story-theme">' + def.theme + '</div>';
+            if (!palace.defeated) {
+                html += '<div class="palace-story-progress">';
+                html += '<div class="palace-story-bar"><div class="palace-story-bar-fill" style="width:' + territory.pct + '%"></div></div>';
+                html += '<span class="palace-story-pct">' + territory.pct + '%</span>';
+                html += '</div>';
+            }
+            html += '</div>';
+        });
+
+        // Confidant summary
+        html += '<div class="section-title" style="margin-top:2rem">Confidant Bonds</div>';
+        html += renderConfidantSummary();
+
+        html += '</div>';
+        view.innerHTML = html;
+
+        // Bind palace clicks
+        view.querySelectorAll('.palace-story-card').forEach(function(el) {
+            el.addEventListener('click', function() {
+                var palaceKey = el.dataset.palace;
+                if (palaceKey) {
+                    showTerritoryDetail(palaceKey);
+                }
+            });
+        });
+    }
+
+    function renderConfidantSummary() {
+        var confidants = window.GameState.getConfidants();
+        var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;padding:1rem">';
+
+        var confData = [
+            { id: 'morgana', name: 'Morgana', icon: '🐱' },
+            { id: 'makoto', name: 'Makoto', icon: '📚' },
+            { id: 'futaba', name: 'Futaba', icon: '🦊' }
+        ];
+
+        confData.forEach(function(c) {
+            var conf = confidants[c.id] || { rank: 0, unlocked: false };
+            html += '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:1rem;text-align:center">';
+            html += '<div style="font-size:1.5rem;margin-bottom:0.5rem">' + c.icon + '</div>';
+            html += '<div style="font-weight:600">' + c.name + '</div>';
+            html += '<div style="font-family:var(--font-mono);color:var(--text-dim)">Rank ' + conf.rank + ' / 10</div>';
+            html += '</div>';
+        });
+
+        html += '</div>';
+        return html;
+    }
+
+    function showTerritoryDetail(palaceKey) {
+        var territory = window.Goals.getTerritoryObjectives(palaceKey);
+        if (!territory) return;
+
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+        var palaces = window.GameState.getPalaces();
+        var palace = palaces[palaceKey] || {};
+
+        var name = is4X ? territory.name4X : territory.nameP5;
+        var statusText = palace.defeated ? (is4X ? 'CONQUERED' : 'HEART CHANGED') : (is4X ? 'AT WAR' : 'INFILTRATING');
+
+        // Create modal
+        var overlay = document.createElement('div');
+        overlay.className = 'grade-overlay';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem';
+
+        var modal = document.createElement('div');
+        modal.style.cssText = 'background:var(--bg-card);border:2px solid var(--accent);border-radius:12px;padding:1.5rem;max-width:500px;width:100%;max-height:80vh;overflow-y:auto';
+
+        var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">';
+        html += '<h3 style="margin:0;font-family:var(--font-display)">' + name + '</h3>';
+        html += '<span style="font-size:0.75rem;font-weight:bold;color:' + (palace.defeated ? 'var(--green)' : 'var(--yellow)') + '">' + statusText + '</span>';
+        html += '</div>';
+
+        html += '<div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-dim);margin-bottom:1rem">';
+        html += 'Objectives: ' + territory.completedCount + ' / ' + territory.totalCount + ' (' + territory.pct + '%)';
+        html += '</div>';
+
+        html += '<div class="territory-objectives">';
+        territory.objectives.forEach(function(obj) {
+            var desc = is4X ? obj.description4X : obj.descriptionP5;
+            var isComplete = obj.status.complete;
+
+            html += '<div class="objective-item' + (isComplete ? ' complete' : '') + '">';
+            html += '<div class="objective-checkbox' + (isComplete ? ' complete' : '') + '"></div>';
+            html += '<div class="objective-content">';
+            html += '<div class="objective-description">' + desc + '</div>';
+            if (obj.type !== 'boss') {
+                html += '<div class="objective-progress">' + obj.status.current + ' / ' + obj.status.target + '</div>';
+            }
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        html += '<div style="text-align:center;margin-top:1.5rem">';
+        html += '<button class="close-modal-btn" style="background:var(--accent);color:#000;border:none;padding:0.75rem 2rem;font-family:var(--font-display);font-weight:600;cursor:pointer;border-radius:4px">Close</button>';
+        html += '</div>';
+
+        modal.innerHTML = html;
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay || e.target.classList.contains('close-modal-btn')) {
+                document.body.removeChild(overlay);
             }
         });
     }

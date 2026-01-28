@@ -1,0 +1,284 @@
+/**
+ * Tech Tree Styles (4X Theme)
+ */
+
+.tech-tree {
+    padding: 1.5rem;
+}
+
+.tech-tree-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.tech-tree-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--text);
+}
+
+.tech-tree-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    margin: 0;
+}
+
+/* Legend */
+.tech-tree-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 0.75rem;
+    background: var(--bg-dark);
+    border-radius: 6px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    border: 2px solid var(--border);
+}
+
+.legend-item.discovered .legend-dot {
+    background: var(--bg-card);
+    border-color: var(--border);
+}
+
+.legend-item.learning .legend-dot {
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.legend-item.proficient .legend-dot {
+    background: var(--yellow);
+    border-color: var(--yellow);
+}
+
+.legend-item.advanced .legend-dot {
+    background: var(--green);
+    border-color: var(--green);
+}
+
+.legend-item.mastered .legend-dot {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--yellow) 100%);
+    border-color: var(--accent);
+}
+
+/* Tier container */
+.tech-tier {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.tech-tier::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--border);
+    border-radius: 2px;
+}
+
+.tech-tier[data-tier="I"]::before { background: #6b7280; }
+.tech-tier[data-tier="II"]::before { background: #3b82f6; }
+.tech-tier[data-tier="III"]::before { background: #f59e0b; }
+.tech-tier[data-tier="IV"]::before { background: #10b981; }
+.tech-tier[data-tier="V"]::before { background: linear-gradient(180deg, #8b5cf6 0%, #ec4899 100%); }
+
+.tech-tier-header {
+    padding-left: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.tier-name {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+
+.tier-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.tier-progress {
+    font-family: var(--font-mono);
+    color: var(--accent);
+}
+
+/* Skills grid */
+.tech-tier-skills {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+    padding-left: 1.25rem;
+}
+
+/* Tech node */
+.tech-node {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.tech-node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Status-based styling */
+.tech-node.discovered {
+    border-color: var(--border);
+    background: var(--bg-card);
+}
+
+.tech-node.learning {
+    border-color: var(--blue);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.tech-node.proficient {
+    border-color: var(--yellow);
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.tech-node.advanced {
+    border-color: var(--green);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.tech-node.mastered {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15) 0%, rgba(236, 72, 153, 0.1) 100%);
+}
+
+.tech-node.mastered::after {
+    content: '\u2605';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--accent);
+    color: #000;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+}
+
+/* Node content */
+.tech-node-content {
+    text-align: center;
+}
+
+.tech-name {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+
+.tech-level {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+}
+
+.tech-general {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+/* Dependencies */
+.tech-deps {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.deps-label {
+    color: var(--text-dim);
+}
+
+.dep-tag {
+    display: inline-block;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    margin: 0 0.15rem;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+}
+
+.dep-tag.learning { border-color: var(--blue); }
+.dep-tag.proficient { border-color: var(--yellow); }
+.dep-tag.advanced { border-color: var(--green); }
+.dep-tag.mastered { border-color: var(--accent); }
+
+/* Progress bar in node */
+.tech-node-bar {
+    height: 3px;
+    background: var(--bg-dark);
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+.tech-node-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s;
+}
+
+.tech-node.learning .tech-node-bar-fill { background: var(--blue); }
+.tech-node.proficient .tech-node-bar-fill { background: var(--yellow); }
+.tech-node.advanced .tech-node-bar-fill { background: var(--green); }
+
+/* Responsive */
+@media (max-width: 600px) {
+    .tech-tier-skills {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+
+    .tech-tree-legend {
+        gap: 0.5rem;
+    }
+
+    .legend-item {
+        font-size: 0.65rem;
+    }
+}
+
+/* Only show in 4X theme */
+.theme-persona5 .tech-tree {
+    display: none;
+}
