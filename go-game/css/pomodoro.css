@@ -1,0 +1,226 @@
+/* ============================================================
+   Go Grind - Infiltration Timer Styles
+   Persona 5 themed pomodoro timer
+   ============================================================ */
+
+.infiltration-timer {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    transition: all 0.3s ease;
+}
+
+.infiltration-timer.infiltrating {
+    border-color: var(--red);
+    box-shadow: 0 0 20px rgba(230, 0, 18, 0.2);
+}
+
+.infiltration-timer.break {
+    border-color: var(--cyan);
+    box-shadow: 0 0 20px rgba(77, 171, 247, 0.2);
+}
+
+.infiltration-timer.flash {
+    animation: timer-flash 0.5s ease-out;
+}
+
+@keyframes timer-flash {
+    0%, 100% { background: var(--bg-card); }
+    50% { background: rgba(230, 0, 18, 0.3); }
+}
+
+/* Header */
+.timer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.timer-phase {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--red);
+    font-weight: 700;
+}
+
+.infiltration-timer.break .timer-phase {
+    color: var(--cyan);
+}
+
+.infiltration-timer.standby .timer-phase {
+    color: var(--text-dim);
+}
+
+.timer-cycles {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    background: var(--bg-lighter);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* Display */
+.timer-display {
+    text-align: center;
+    margin-bottom: 0.75rem;
+}
+
+.timer-countdown {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 4px;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+}
+
+.infiltration-timer.infiltrating .timer-countdown {
+    color: var(--red);
+    text-shadow: 0 0 30px rgba(230, 0, 18, 0.4);
+    animation: countdown-pulse 2s ease-in-out infinite;
+}
+
+.infiltration-timer.break .timer-countdown {
+    color: var(--cyan);
+    text-shadow: 0 0 30px rgba(77, 171, 247, 0.4);
+}
+
+@keyframes countdown-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+/* Progress bar */
+.timer-progress {
+    height: 6px;
+    background: var(--bg-lighter);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.timer-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--red), var(--red-light));
+    border-radius: 3px;
+    transition: width 1s linear;
+    box-shadow: 0 0 10px rgba(230, 0, 18, 0.5);
+}
+
+.infiltration-timer.break .timer-progress-bar {
+    background: linear-gradient(90deg, var(--cyan), #6bc5ff);
+    box-shadow: 0 0 10px rgba(77, 171, 247, 0.5);
+}
+
+/* Controls */
+.timer-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.timer-btn {
+    flex: 1;
+    background: transparent;
+    border: 2px solid var(--border);
+    color: var(--text);
+    padding: 0.5rem 0.75rem;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+}
+
+.timer-btn:hover {
+    border-color: var(--red);
+    color: var(--red);
+    transform: translateY(-1px);
+}
+
+.timer-btn.primary {
+    background: linear-gradient(135deg, var(--red) 0%, #cc0010 100%);
+    border-color: var(--red);
+    color: #fff;
+}
+
+.timer-btn.primary:hover {
+    background: linear-gradient(135deg, var(--red-light) 0%, var(--red) 100%);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(230, 0, 18, 0.4);
+}
+
+#timer-sound {
+    flex: 0 0 auto;
+    width: 44px;
+}
+
+/* Duration select */
+.timer-duration {
+    display: flex;
+    justify-content: center;
+}
+
+.timer-select {
+    background: var(--bg-lighter);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.4rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.timer-select:hover {
+    border-color: var(--red);
+}
+
+.timer-select:focus {
+    outline: none;
+    border-color: var(--red);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .timer-countdown {
+        font-size: 2.5rem;
+    }
+
+    .timer-btn {
+        padding: 0.4rem 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Sidebar timer variant (compact) */
+.sidebar .infiltration-timer {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.sidebar .timer-countdown {
+    font-size: 2rem;
+}
+
+.sidebar .timer-controls {
+    flex-wrap: wrap;
+}
+
+.sidebar .timer-btn {
+    font-size: 0.7rem;
+    padding: 0.4rem;
+}
+
+.sidebar .timer-duration {
+    margin-top: 0.5rem;
+}

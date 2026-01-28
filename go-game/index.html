@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="css/overlays.css">
     <link rel="stylesheet" href="css/menu.css">
     <link rel="stylesheet" href="css/velvet-room.css">
+    <link rel="stylesheet" href="css/pomodoro.css">
 </head>
 <body>
 
@@ -42,6 +43,9 @@
                 </div>
                 <div class="player-xp-text" id="player-xp-text">0 / 100 XP</div>
             </div>
+
+            <!-- Infiltration Timer -->
+            <div id="timer-container"></div>
 
             <!-- Navigation -->
             <nav id="sidebar-nav"></nav>
@@ -87,6 +91,7 @@
 
     <!-- Scripts (dependency order) -->
     <script src="js/state.js"></script>
+    <script src="js/pomodoro.js"></script>
     <script src="js/audio.js"></script>
     <script src="js/combat.js"></script>
     <script src="js/overlays.js"></script>
