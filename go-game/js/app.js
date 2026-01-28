@@ -254,6 +254,12 @@
         });
         html += '</div>';
 
+        // KNOWLEDGE / INTELLIGENCE section
+        var knowledgeTitle = is4X ? 'Intelligence' : 'Knowledge';
+        html += '<div class="nav-section"><div class="nav-section-title">' + knowledgeTitle + '</div>';
+        html += navItem('library', is4X ? 'War College' : 'Library', is4X ? '📚' : '📖');
+        html += '</div>';
+
         // VELVET ROOM / HIGH COMMAND
         var velvetTitle = T ? T.getTerm('navVelvetRoom', 'Velvet Room') : 'Velvet Room';
         html += '<div class="nav-section"><div class="nav-section-title">' + velvetTitle + '</div>';
@@ -362,6 +368,9 @@
                 break;
             case 'jobs':
                 if (window.Jobs) window.Jobs.renderJobsView();
+                break;
+            case 'library':
+                if (window.Library) window.Library.load();
                 break;
             case 'settings':
                 renderSettingsView();

@@ -128,9 +128,19 @@
             navRequests: 'STRATEGIC',
             navPartTime: 'DOMESTIC',
             navStatus: 'ADMINISTRATION',
+            navKnowledge: 'INTELLIGENCE',
             navConfidants: 'DIPLOMACY',
             navVelvetRoom: 'HIGH COMMAND',
             navSystem: 'SETTINGS',
+
+            // Library/War College terms
+            library: 'War College',
+            librarySubtitle: 'Strategic Knowledge Database',
+            fieldManual: 'Field Manual',
+            fieldManuals: 'Field Manuals',
+            doctrine: 'Doctrine',
+            doctrines: 'Doctrines',
+            clearanceLevel: 'Clearance Level',
 
             // Additional 4X terms
             territory: 'Territory',

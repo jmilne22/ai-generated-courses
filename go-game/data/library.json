@@ -1,0 +1,148 @@
+{
+  "articles": [
+    {
+      "id": "maps-complete",
+      "title": "Maps: Complete Guide",
+      "category": "data-structures",
+      "skill": "Maps",
+      "level": "beginner",
+      "readTime": "8 min",
+      "summary": "Everything you need to know about Go maps: creation, assignment, lookup, deletion, iteration, and common patterns.",
+      "tags": ["maps", "hash", "key-value", "lookup", "delete", "iteration"],
+      "relatedConcepts": ["Maps", "Map Counting Pattern", "Frequency Map", "Map as Set - Have I Seen This?"],
+      "content": "## What's a Map?\n\nA map is an unordered collection of key-value pairs. Keys must be comparable types (strings, ints, etc.), and all keys must be the same type. All values must also be the same type.\n\n## Creating Maps\n\n### Literal Syntax\n```go\nages := map[string]int{\n    \"Alice\": 30,\n    \"Bob\":   25,\n}\n\nprices := map[string]float64{\n    \"apple\":  1.50,\n    \"banana\": 0.75,\n}\n```\n\n### Using make()\n```go\n// Empty map with default capacity\ncounts := make(map[string]int)\n\n// Empty map with hint for capacity\nbigMap := make(map[string]int, 1000)\n```\n\n### Empty Map Literal\n```go\nempty := map[string]int{}\n```\n\n## Assigning Values\n\n```go\nages := make(map[string]int)\n\n// Set a value\nages[\"Charlie\"] = 35\nages[\"Diana\"] = 28\n\n// Update a value\nages[\"Charlie\"] = 36\n```\n\n## Getting Values\n\n```go\n// Simple get (returns zero value if missing)\nage := ages[\"Alice\"]\n\n// Comma-ok idiom (check if key exists)\nage, exists := ages[\"Unknown\"]\nif !exists {\n    fmt.Println(\"Key not found\")\n}\n\n// Common pattern\nif age, ok := ages[\"Bob\"]; ok {\n    fmt.Printf(\"Bob is %d\\n\", age)\n} else {\n    fmt.Println(\"Bob not found\")\n}\n```\n\n## Deleting Keys\n\n```go\ndelete(ages, \"Alice\")\n\n// Safe to delete non-existent key (no error)\ndelete(ages, \"NonExistent\")\n```\n\n## Iteration\n\n```go\n// Iterate over all key-value pairs\nfor name, age := range ages {\n    fmt.Printf(\"%s is %d\\n\", name, age)\n}\n\n// Keys only\nfor name := range ages {\n    fmt.Println(name)\n}\n```\n\n**Warning:** Map iteration order is randomized!\n\n## Counting Pattern\n\n```go\nfunc countWords(words []string) map[string]int {\n    counts := make(map[string]int)\n    for _, word := range words {\n        counts[word]++  // Zero value is 0, so this works\n    }\n    return counts\n}\n```\n\n## Map as Set (Have I Seen This?)\n\n```go\nfunc hasDuplicates(nums []int) bool {\n    seen := make(map[int]bool)\n    for _, n := range nums {\n        if seen[n] {\n            return true\n        }\n        seen[n] = true\n    }\n    return false\n}\n```\n\n## Important Notes\n\n- Maps are **not safe for concurrent access** without synchronization\n- Zero value of a map is `nil` - you must initialize before writing\n- Reading from a `nil` map returns zero values (doesn't panic)\n- Writing to a `nil` map **panics**"
+    },
+    {
+      "id": "slices-complete",
+      "title": "Slices: Complete Guide",
+      "category": "data-structures",
+      "skill": "Slices",
+      "level": "beginner",
+      "readTime": "10 min",
+      "summary": "Master Go slices: creation, appending, slicing, copying, and understanding length vs capacity.",
+      "tags": ["slices", "arrays", "append", "copy", "range", "capacity"],
+      "relatedConcepts": ["Slices & Range", "Filter with Append", "Accumulator Pattern"],
+      "content": "## What's a Slice?\n\nA slice is a dynamically-sized, flexible view into an array. It's Go's primary collection type.\n\n## Creating Slices\n\n### Literal Syntax\n```go\nnums := []int{1, 2, 3, 4, 5}\nnames := []string{\"Alice\", \"Bob\"}\nempty := []int{}\n```\n\n### Using make()\n```go\n// make([]T, length)\ns := make([]int, 5)  // [0, 0, 0, 0, 0]\n\n// make([]T, length, capacity)\nbuffer := make([]int, 0, 100)  // len=0, cap=100\n```\n\n## Length vs Capacity\n\n```go\ns := make([]int, 3, 10)\nfmt.Println(len(s))  // 3 - elements in slice\nfmt.Println(cap(s))  // 10 - room before reallocation\n```\n\n## Accessing Elements\n\n```go\nnums := []int{10, 20, 30}\n\nfirst := nums[0]   // 10\nlast := nums[len(nums)-1]  // 30\n\nnums[1] = 25  // Modify element\n```\n\n## Appending\n\n```go\ns := []int{1, 2}\n\n// Append single element\ns = append(s, 3)\n\n// Append multiple elements\ns = append(s, 4, 5, 6)\n\n// Append another slice (... spreads it)\nother := []int{7, 8}\ns = append(s, other...)\n```\n\n**Important:** `append` may return a new slice - always reassign!\n\n## Slicing (Sub-slices)\n\n```go\na := []int{0, 1, 2, 3, 4}\n\nb := a[1:3]   // [1, 2] - index 1 to 2\nc := a[:3]    // [0, 1, 2] - start to 2\nd := a[2:]    // [2, 3, 4] - index 2 to end\ne := a[:]     // [0, 1, 2, 3, 4] - full copy reference\n```\n\n## Iteration with range\n\n```go\nnums := []int{10, 20, 30}\n\n// Index and value\nfor i, num := range nums {\n    fmt.Printf(\"Index %d: %d\\n\", i, num)\n}\n\n// Value only (ignore index)\nfor _, num := range nums {\n    fmt.Println(num)\n}\n\n// Index only\nfor i := range nums {\n    fmt.Println(i)\n}\n```\n\n## Copying Slices\n\n```go\nsrc := []int{1, 2, 3}\ndst := make([]int, len(src))\ncopy(dst, src)  // Returns number copied\n```\n\n## Filter Pattern\n\n```go\nfunc filterPositive(nums []int) []int {\n    result := []int{}  // or make([]int, 0)\n    for _, n := range nums {\n        if n > 0 {\n            result = append(result, n)\n        }\n    }\n    return result\n}\n```\n\n## Common Gotcha: Shared Backing Array\n\n```go\na := []int{1, 2, 3, 4, 5}\nb := a[1:3]  // b = [2, 3]\n\nb[0] = 99\nfmt.Println(a[1])  // 99 - a was modified!\n```\n\nTo avoid this, use `copy()` or full slice expression `a[1:3:3]`."
+    },
+    {
+      "id": "structs-complete",
+      "title": "Structs: Complete Guide",
+      "category": "data-structures",
+      "skill": "Structs",
+      "level": "beginner",
+      "readTime": "7 min",
+      "summary": "Define custom types with structs: fields, methods, embedding, and JSON tags.",
+      "tags": ["structs", "types", "fields", "methods", "embedding", "json"],
+      "relatedConcepts": ["Structs", "Methods", "Embedding"],
+      "content": "## Defining Structs\n\n```go\ntype Person struct {\n    Name string\n    Age  int\n}\n\ntype Rectangle struct {\n    Width  float64\n    Height float64\n}\n```\n\n## Creating Instances\n\n### Named Fields (Recommended)\n```go\np := Person{Name: \"Alice\", Age: 30}\n```\n\n### Positional (Fragile - Avoid)\n```go\np := Person{\"Alice\", 30}\n```\n\n### Zero Value\n```go\nvar p Person  // Name: \"\", Age: 0\n```\n\n### Pointer\n```go\np := &Person{Name: \"Bob\", Age: 25}\n```\n\n## Accessing Fields\n\n```go\np := Person{Name: \"Alice\", Age: 30}\n\nfmt.Println(p.Name)  // Alice\np.Age = 31           // Modify field\n```\n\n## Methods\n\n### Value Receiver (Can't Modify)\n```go\nfunc (r Rectangle) Area() float64 {\n    return r.Width * r.Height\n}\n\nfunc (p Person) Greeting() string {\n    return \"Hello, \" + p.Name\n}\n```\n\n### Pointer Receiver (Can Modify)\n```go\nfunc (p *Person) Birthday() {\n    p.Age++\n}\n\nfunc (r *Rectangle) Scale(factor float64) {\n    r.Width *= factor\n    r.Height *= factor\n}\n```\n\n## Embedding (Composition)\n\n```go\ntype Employee struct {\n    Person        // Embedded - fields promoted\n    Title  string\n    Salary float64\n}\n\ne := Employee{\n    Person: Person{Name: \"Diana\", Age: 28},\n    Title:  \"Engineer\",\n    Salary: 75000,\n}\n\n// Access promoted fields directly\nfmt.Println(e.Name)       // Diana\nfmt.Println(e.Greeting()) // Hello, Diana\n```\n\n## Struct Tags (JSON, etc.)\n\n```go\ntype User struct {\n    ID        int    `json:\"id\"`\n    Username  string `json:\"username\"`\n    Email     string `json:\"email,omitempty\"`\n    Password  string `json:\"-\"`  // Ignored\n}\n```\n\n## Comparing Structs\n\nStructs are comparable if all fields are comparable:\n\n```go\np1 := Person{Name: \"Alice\", Age: 30}\np2 := Person{Name: \"Alice\", Age: 30}\nfmt.Println(p1 == p2)  // true\n```\n\n## Anonymous Structs\n\n```go\npoint := struct {\n    X, Y int\n}{10, 20}\n```"
+    },
+    {
+      "id": "pointers-complete",
+      "title": "Pointers: Complete Guide",
+      "category": "fundamentals",
+      "skill": "Pointers",
+      "level": "beginner",
+      "readTime": "6 min",
+      "summary": "Understand pointers in Go: when to use them, pointer receivers, and avoiding common mistakes.",
+      "tags": ["pointers", "memory", "reference", "receivers", "nil"],
+      "relatedConcepts": ["Pointers", "Basic Swap Operations", "Swap Pattern"],
+      "content": "## What's a Pointer?\n\nA pointer holds the memory address of a value.\n\n```go\nx := 42\np := &x  // p points to x\n\nfmt.Println(p)   // 0xc0000140a0 (address)\nfmt.Println(*p)  // 42 (value at address)\n```\n\n## Operators\n\n- `&x` - Get address of x\n- `*p` - Dereference (get value at address)\n\n## Modifying Through Pointers\n\n```go\nx := 10\np := &x\n\n*p = 20\nfmt.Println(x)  // 20 - x was modified\n```\n\n## Pointers in Functions\n\n### Without Pointer (Copy)\n```go\nfunc double(n int) {\n    n *= 2  // Only modifies copy\n}\n\nx := 5\ndouble(x)\nfmt.Println(x)  // 5 - unchanged\n```\n\n### With Pointer (Modify Original)\n```go\nfunc double(n *int) {\n    *n *= 2\n}\n\nx := 5\ndouble(&x)\nfmt.Println(x)  // 10 - modified!\n```\n\n## Swap Pattern\n\n```go\nfunc swap(a, b *int) {\n    *a, *b = *b, *a\n}\n\nx, y := 1, 2\nswap(&x, &y)\nfmt.Println(x, y)  // 2, 1\n```\n\n## Pointer Receivers\n\n```go\ntype Counter struct {\n    count int\n}\n\n// Pointer receiver - can modify\nfunc (c *Counter) Increment() {\n    c.count++\n}\n\n// Value receiver - gets copy\nfunc (c Counter) Value() int {\n    return c.count\n}\n```\n\n## When to Use Pointers\n\n1. **Need to modify the original value**\n2. **Large structs** (avoid copying)\n3. **Indicate optional/nullable values**\n\n```go\ntype Config struct {\n    Timeout *time.Duration  // nil means \"use default\"\n}\n```\n\n## Zero Value\n\nThe zero value of a pointer is `nil`:\n\n```go\nvar p *int\nfmt.Println(p)  // <nil>\n\nif p != nil {\n    fmt.Println(*p)  // Safe to dereference\n}\n```\n\n## No Pointer Arithmetic\n\nUnlike C, Go doesn't allow pointer arithmetic. Pointers are safe."
+    },
+    {
+      "id": "interfaces-complete",
+      "title": "Interfaces: Complete Guide",
+      "category": "fundamentals",
+      "skill": "Interfaces",
+      "level": "intermediate",
+      "readTime": "8 min",
+      "summary": "Implicit interfaces, type assertions, type switches, and interface design best practices.",
+      "tags": ["interfaces", "polymorphism", "type assertion", "any", "duck typing"],
+      "relatedConcepts": ["Interfaces"],
+      "content": "## What's an Interface?\n\nAn interface defines a set of methods. Any type that implements those methods satisfies the interface - no explicit declaration needed.\n\n## Defining Interfaces\n\n```go\ntype Reader interface {\n    Read(p []byte) (n int, err error)\n}\n\ntype Stringer interface {\n    String() string\n}\n\ntype Shape interface {\n    Area() float64\n    Perimeter() float64\n}\n```\n\n## Implementing Interfaces\n\n```go\ntype Rectangle struct {\n    Width, Height float64\n}\n\n// Rectangle now satisfies Shape\nfunc (r Rectangle) Area() float64 {\n    return r.Width * r.Height\n}\n\nfunc (r Rectangle) Perimeter() float64 {\n    return 2 * (r.Width + r.Height)\n}\n```\n\n## Using Interfaces\n\n```go\nfunc PrintArea(s Shape) {\n    fmt.Printf(\"Area: %.2f\\n\", s.Area())\n}\n\nr := Rectangle{Width: 10, Height: 5}\nPrintArea(r)  // Works - Rectangle satisfies Shape\n```\n\n## Empty Interface (any)\n\nThe empty interface `interface{}` (or `any` in Go 1.18+) accepts any type:\n\n```go\nfunc Print(v any) {\n    fmt.Println(v)\n}\n\nPrint(42)\nPrint(\"hello\")\nPrint([]int{1, 2, 3})\n```\n\n## Type Assertions\n\n```go\nvar i interface{} = \"hello\"\n\n// Assertion (panics if wrong type)\ns := i.(string)\n\n// Safe assertion with ok\ns, ok := i.(string)\nif ok {\n    fmt.Println(s)\n}\n\n// This would panic:\n// n := i.(int)\n```\n\n## Type Switches\n\n```go\nfunc describe(i interface{}) {\n    switch v := i.(type) {\n    case int:\n        fmt.Printf(\"Integer: %d\\n\", v)\n    case string:\n        fmt.Printf(\"String: %s\\n\", v)\n    case bool:\n        fmt.Printf(\"Boolean: %t\\n\", v)\n    default:\n        fmt.Printf(\"Unknown type: %T\\n\", v)\n    }\n}\n```\n\n## Interface Composition\n\n```go\ntype ReadWriter interface {\n    Reader\n    Writer\n}\n```\n\n## Best Practices\n\n1. **Keep interfaces small** (1-3 methods)\n2. **Define interfaces where used**, not where implemented\n3. **Accept interfaces, return concrete types**\n\n```go\n// Good - accepts interface\nfunc Process(r io.Reader) error { ... }\n\n// Good - returns concrete type\nfunc NewBuffer() *Buffer { ... }\n```"
+    },
+    {
+      "id": "for-loops",
+      "title": "For Loops & Range",
+      "category": "fundamentals",
+      "skill": "For Loops",
+      "level": "beginner",
+      "readTime": "5 min",
+      "summary": "Go's for loop is the only loop construct - learn all its forms including range.",
+      "tags": ["for", "range", "loops", "iteration", "break", "continue"],
+      "relatedConcepts": ["For Loops", "Slices & Range"],
+      "content": "## Basic For Loop\n\n```go\nfor i := 0; i < 5; i++ {\n    fmt.Println(i)\n}\n```\n\n## While-Style Loop\n\n```go\nn := 1\nfor n < 100 {\n    n *= 2\n}\n```\n\n## Infinite Loop\n\n```go\nfor {\n    // Use break to exit\n    if condition {\n        break\n    }\n}\n```\n\n## Range Over Slice\n\n```go\nnums := []int{10, 20, 30}\n\n// Index and value\nfor i, num := range nums {\n    fmt.Printf(\"%d: %d\\n\", i, num)\n}\n\n// Value only\nfor _, num := range nums {\n    fmt.Println(num)\n}\n\n// Index only\nfor i := range nums {\n    fmt.Println(i)\n}\n```\n\n## Range Over Map\n\n```go\nages := map[string]int{\"Alice\": 30, \"Bob\": 25}\n\nfor name, age := range ages {\n    fmt.Printf(\"%s is %d\\n\", name, age)\n}\n\n// Keys only\nfor name := range ages {\n    fmt.Println(name)\n}\n```\n\n## Range Over String\n\n```go\nfor i, r := range \"Hello\" {\n    fmt.Printf(\"%d: %c\\n\", i, r)\n}\n// Note: r is a rune, not byte\n```\n\n## Break and Continue\n\n```go\nfor i := 0; i < 10; i++ {\n    if i == 3 {\n        continue  // Skip this iteration\n    }\n    if i == 7 {\n        break  // Exit loop\n    }\n    fmt.Println(i)\n}\n// Prints: 0, 1, 2, 4, 5, 6\n```\n\n## Labeled Break\n\n```go\nouter:\nfor i := 0; i < 3; i++ {\n    for j := 0; j < 3; j++ {\n        if i == 1 && j == 1 {\n            break outer  // Break out of both loops\n        }\n    }\n}\n```"
+    },
+    {
+      "id": "conditionals",
+      "title": "If/Else & Switch",
+      "category": "fundamentals",
+      "skill": "Conditionals",
+      "level": "beginner",
+      "readTime": "5 min",
+      "summary": "Conditional logic in Go: if statements, switch statements, and the comma-ok idiom.",
+      "tags": ["if", "else", "switch", "conditionals", "branching"],
+      "relatedConcepts": ["If/Else", "Switch", "Branching Logic"],
+      "content": "## Basic If\n\n```go\nif x > 0 {\n    fmt.Println(\"positive\")\n}\n```\n\n## If-Else\n\n```go\nif x > 0 {\n    fmt.Println(\"positive\")\n} else if x < 0 {\n    fmt.Println(\"negative\")\n} else {\n    fmt.Println(\"zero\")\n}\n```\n\n## If with Short Statement\n\n```go\n// Variable scoped to if block\nif err := doSomething(); err != nil {\n    return err\n}\n\n// Common with map lookup\nif val, ok := myMap[key]; ok {\n    fmt.Println(val)\n}\n\n// Common with type assertion\nif s, ok := value.(string); ok {\n    fmt.Println(s)\n}\n```\n\n## Switch Statement\n\n```go\nswitch day {\ncase \"Monday\":\n    fmt.Println(\"Start of week\")\ncase \"Friday\":\n    fmt.Println(\"TGIF!\")\ncase \"Saturday\", \"Sunday\":\n    fmt.Println(\"Weekend!\")\ndefault:\n    fmt.Println(\"Midweek\")\n}\n```\n\n## Switch Without Expression\n\n```go\nswitch {\ncase score >= 90:\n    grade = \"A\"\ncase score >= 80:\n    grade = \"B\"\ncase score >= 70:\n    grade = \"C\"\ndefault:\n    grade = \"F\"\n}\n```\n\n## Switch with Short Statement\n\n```go\nswitch os := runtime.GOOS; os {\ncase \"darwin\":\n    fmt.Println(\"macOS\")\ncase \"linux\":\n    fmt.Println(\"Linux\")\ndefault:\n    fmt.Println(os)\n}\n```\n\n## Type Switch\n\n```go\nswitch v := i.(type) {\ncase int:\n    fmt.Printf(\"int: %d\\n\", v)\ncase string:\n    fmt.Printf(\"string: %s\\n\", v)\ndefault:\n    fmt.Printf(\"unknown: %T\\n\", v)\n}\n```\n\n## Fallthrough (Rare)\n\n```go\nswitch n {\ncase 1:\n    fmt.Println(\"one\")\n    fallthrough  // Continue to next case\ncase 2:\n    fmt.Println(\"one or two\")\n}\n```"
+    },
+    {
+      "id": "error-handling",
+      "title": "Error Handling",
+      "category": "patterns",
+      "skill": "Error Handling",
+      "level": "intermediate",
+      "readTime": "7 min",
+      "summary": "Go's explicit error handling: checking errors, wrapping, custom errors, and best practices.",
+      "tags": ["errors", "error handling", "wrapping", "sentinel errors"],
+      "relatedConcepts": ["Multiple Returns"],
+      "content": "## The Basics\n\nGo functions return errors as values:\n\n```go\nf, err := os.Open(\"file.txt\")\nif err != nil {\n    return err\n}\ndefer f.Close()\n```\n\n## Always Check Errors\n\n```go\n// BAD - ignoring error\ndata, _ := ioutil.ReadFile(\"config.json\")\n\n// GOOD\ndata, err := ioutil.ReadFile(\"config.json\")\nif err != nil {\n    return fmt.Errorf(\"reading config: %w\", err)\n}\n```\n\n## Wrapping Errors\n\nUse `%w` to wrap errors with context:\n\n```go\nif err != nil {\n    return fmt.Errorf(\"connecting to %s: %w\", host, err)\n}\n```\n\n## Checking Wrapped Errors\n\n```go\n// errors.Is - check for specific error\nif errors.Is(err, os.ErrNotExist) {\n    fmt.Println(\"file not found\")\n}\n\n// errors.As - check for error type\nvar pathErr *os.PathError\nif errors.As(err, &pathErr) {\n    fmt.Println(\"path:\", pathErr.Path)\n}\n```\n\n## Creating Errors\n\n```go\n// Simple error\nerr := errors.New(\"something went wrong\")\n\n// Formatted error\nerr := fmt.Errorf(\"invalid value: %d\", value)\n```\n\n## Custom Error Types\n\n```go\ntype ValidationError struct {\n    Field   string\n    Message string\n}\n\nfunc (e *ValidationError) Error() string {\n    return fmt.Sprintf(\"%s: %s\", e.Field, e.Message)\n}\n\n// Usage\nreturn &ValidationError{\n    Field:   \"email\",\n    Message: \"invalid format\",\n}\n```\n\n## Sentinel Errors\n\n```go\nvar ErrNotFound = errors.New(\"not found\")\nvar ErrPermission = errors.New(\"permission denied\")\n\n// Check with errors.Is\nif errors.Is(err, ErrNotFound) {\n    // handle not found\n}\n```\n\n## Don't\n\n- Don't use `panic` for normal errors\n- Don't ignore errors with `_`\n- Don't compare errors with `==` (use `errors.Is`)\n- Don't return `err` without context in deep call stacks"
+    },
+    {
+      "id": "strings-manipulation",
+      "title": "String Manipulation",
+      "category": "fundamentals",
+      "skill": "Strings",
+      "level": "beginner",
+      "readTime": "6 min",
+      "summary": "Working with strings: concatenation, searching, splitting, and the strings package.",
+      "tags": ["strings", "runes", "bytes", "strings package"],
+      "relatedConcepts": ["Strings", "String Manipulation", "Runes + Two-Pointer Swap"],
+      "content": "## String Basics\n\nStrings are immutable sequences of bytes:\n\n```go\ns := \"Hello, World!\"\nfmt.Println(len(s))  // 13 (bytes, not runes)\nfmt.Println(s[0])    // 72 (byte value of 'H')\n```\n\n## Concatenation\n\n```go\n// + operator\nresult := \"Hello\" + \" \" + \"World\"\n\n// fmt.Sprintf\nname := \"Alice\"\ngreeting := fmt.Sprintf(\"Hello, %s!\", name)\n\n// strings.Builder (efficient for many concatenations)\nvar b strings.Builder\nb.WriteString(\"Hello\")\nb.WriteString(\" \")\nb.WriteString(\"World\")\nresult := b.String()\n```\n\n## Common strings Package Functions\n\n```go\nimport \"strings\"\n\n// Contains\nstrings.Contains(\"hello\", \"ell\")  // true\n\n// HasPrefix / HasSuffix\nstrings.HasPrefix(\"hello\", \"he\")  // true\nstrings.HasSuffix(\"hello\", \"lo\")  // true\n\n// Index\nstrings.Index(\"hello\", \"l\")  // 2\n\n// ToUpper / ToLower\nstrings.ToUpper(\"hello\")  // \"HELLO\"\nstrings.ToLower(\"HELLO\")  // \"hello\"\n\n// Split\nstrings.Split(\"a,b,c\", \",\")  // [\"a\", \"b\", \"c\"]\n\n// Join\nstrings.Join([]string{\"a\", \"b\", \"c\"}, \"-\")  // \"a-b-c\"\n\n// Replace\nstrings.Replace(\"hello\", \"l\", \"L\", 1)   // \"heLlo\" (first)\nstrings.ReplaceAll(\"hello\", \"l\", \"L\")    // \"heLLo\" (all)\n\n// Trim\nstrings.TrimSpace(\"  hello  \")  // \"hello\"\nstrings.Trim(\"!!hello!!\", \"!\") // \"hello\"\n```\n\n## Runes (Unicode)\n\n```go\ns := \"Hello, 世界\"\n\n// Iterate over runes (not bytes)\nfor i, r := range s {\n    fmt.Printf(\"%d: %c\\n\", i, r)\n}\n\n// Convert to rune slice for manipulation\nrunes := []rune(s)\nfmt.Println(len(runes))  // 9 (characters)\n```\n\n## String to/from Bytes\n\n```go\n// String to bytes\nb := []byte(\"hello\")\n\n// Bytes to string\ns := string([]byte{72, 101, 108, 108, 111})\n```\n\n## Comparing Strings\n\n```go\na := \"apple\"\nb := \"banana\"\n\nfmt.Println(a == b)   // false\nfmt.Println(a < b)    // true (lexicographic)\n\n// Case-insensitive\nstrings.EqualFold(\"Go\", \"go\")  // true\n```"
+    },
+    {
+      "id": "methods-complete",
+      "title": "Methods: Complete Guide",
+      "category": "fundamentals",
+      "skill": "Methods",
+      "level": "beginner",
+      "readTime": "5 min",
+      "summary": "Attach behavior to types with methods: value vs pointer receivers and when to use each.",
+      "tags": ["methods", "receivers", "types", "structs"],
+      "relatedConcepts": ["Methods", "Structs", "Pointers"],
+      "content": "## What's a Method?\n\nA method is a function with a receiver - it's attached to a type:\n\n```go\ntype Rectangle struct {\n    Width, Height float64\n}\n\n// Method with receiver\nfunc (r Rectangle) Area() float64 {\n    return r.Width * r.Height\n}\n\n// Usage\nrect := Rectangle{Width: 10, Height: 5}\nfmt.Println(rect.Area())  // 50\n```\n\n## Value Receivers\n\nGet a copy of the value - can't modify the original:\n\n```go\nfunc (r Rectangle) Area() float64 {\n    return r.Width * r.Height\n}\n\nfunc (r Rectangle) String() string {\n    return fmt.Sprintf(\"%vx%v\", r.Width, r.Height)\n}\n```\n\n## Pointer Receivers\n\nGet the actual value - can modify it:\n\n```go\nfunc (r *Rectangle) Scale(factor float64) {\n    r.Width *= factor\n    r.Height *= factor\n}\n\nfunc (r *Rectangle) SetWidth(w float64) {\n    r.Width = w\n}\n```\n\n## When to Use Each\n\n**Use Pointer Receiver when:**\n- Method needs to modify the receiver\n- Receiver is a large struct (avoid copying)\n- Consistency (if one method needs pointer, use pointer for all)\n\n**Use Value Receiver when:**\n- Receiver is small and copying is cheap\n- Method doesn't modify the receiver\n- Receiver is a basic type or small struct\n\n## Methods on Any Type\n\n```go\ntype MyInt int\n\nfunc (m MyInt) Double() MyInt {\n    return m * 2\n}\n\ntype MySlice []int\n\nfunc (s MySlice) Sum() int {\n    total := 0\n    for _, v := range s {\n        total += v\n    }\n    return total\n}\n```\n\n## Go Automatically Converts\n\n```go\nrect := Rectangle{10, 5}\nrect.Scale(2)  // Go converts to (&rect).Scale(2)\n\np := &Rectangle{10, 5}\nfmt.Println(p.Area())  // Go converts to (*p).Area()\n```\n\n## Method Expressions\n\n```go\n// Get function value from method\nareaFn := Rectangle.Area\nfmt.Println(areaFn(Rectangle{10, 5}))  // 50\n```"
+    },
+    {
+      "id": "common-patterns",
+      "title": "Common Go Patterns",
+      "category": "patterns",
+      "skill": "Patterns",
+      "level": "intermediate",
+      "readTime": "8 min",
+      "summary": "Essential patterns you'll use constantly: accumulator, filter, find, counting, and more.",
+      "tags": ["patterns", "accumulator", "filter", "find", "counting"],
+      "relatedConcepts": ["Accumulator Pattern", "Filter with Append", "Find Index", "Map Counting Pattern", "Best So Far Pattern"],
+      "content": "## Accumulator Pattern\n\nBuild up a result by processing each element:\n\n```go\nfunc sum(nums []int) int {\n    total := 0  // Identity for addition\n    for _, n := range nums {\n        total += n\n    }\n    return total\n}\n\nfunc product(nums []int) int {\n    result := 1  // Identity for multiplication\n    for _, n := range nums {\n        result *= n\n    }\n    return result\n}\n```\n\n## Filter Pattern\n\nCreate a new slice with elements that match a condition:\n\n```go\nfunc filterPositive(nums []int) []int {\n    result := []int{}\n    for _, n := range nums {\n        if n > 0 {\n            result = append(result, n)\n        }\n    }\n    return result\n}\n```\n\n## Find/Search Pattern\n\nReturn first match or indicate not found:\n\n```go\nfunc findIndex(nums []int, target int) int {\n    for i, n := range nums {\n        if n == target {\n            return i\n        }\n    }\n    return -1  // Not found\n}\n\nfunc contains(nums []int, target int) bool {\n    for _, n := range nums {\n        if n == target {\n            return true\n        }\n    }\n    return false\n}\n```\n\n## Best So Far (Min/Max)\n\nTrack the best value seen:\n\n```go\nfunc max(nums []int) int {\n    if len(nums) == 0 {\n        return 0  // or panic\n    }\n    best := nums[0]\n    for _, n := range nums[1:] {\n        if n > best {\n            best = n\n        }\n    }\n    return best\n}\n```\n\n## Counting Pattern\n\nCount occurrences using a map:\n\n```go\nfunc wordFrequency(words []string) map[string]int {\n    counts := make(map[string]int)\n    for _, word := range words {\n        counts[word]++\n    }\n    return counts\n}\n```\n\n## Map as Set (Seen Before)\n\n```go\nfunc unique(nums []int) []int {\n    seen := make(map[int]bool)\n    result := []int{}\n    for _, n := range nums {\n        if !seen[n] {\n            seen[n] = true\n            result = append(result, n)\n        }\n    }\n    return result\n}\n\nfunc hasDuplicate(nums []int) bool {\n    seen := make(map[int]bool)\n    for _, n := range nums {\n        if seen[n] {\n            return true\n        }\n        seen[n] = true\n    }\n    return false\n}\n```\n\n## Two-Pointer Pattern\n\n```go\nfunc reverseInPlace(s []byte) {\n    left, right := 0, len(s)-1\n    for left < right {\n        s[left], s[right] = s[right], s[left]\n        left++\n        right--\n    }\n}\n```"
+    },
+    {
+      "id": "variables-basics",
+      "title": "Variables & Types",
+      "category": "fundamentals",
+      "skill": "Variables",
+      "level": "beginner",
+      "readTime": "4 min",
+      "summary": "Declaring variables, type inference, zero values, and constants.",
+      "tags": ["variables", "types", "const", "zero values", "declaration"],
+      "relatedConcepts": ["Variables & Assignment"],
+      "content": "## Variable Declaration\n\n### Short Declaration (Most Common)\n```go\nname := \"Alice\"     // string inferred\nage := 30           // int inferred\nprice := 19.99      // float64 inferred\nactive := true      // bool inferred\n```\n\n### Var Declaration\n```go\nvar name string = \"Alice\"\nvar age int = 30\n\n// Type inferred\nvar price = 19.99\n\n// Zero value\nvar count int      // 0\nvar message string // \"\"\nvar flag bool      // false\n```\n\n### Multiple Variables\n```go\nvar a, b, c int\nx, y := 10, 20\nname, age := \"Bob\", 25\n```\n\n## Zero Values\n\nUninitialized variables get zero values:\n\n| Type | Zero Value |\n|------|------------|\n| int, float64 | 0 |\n| string | \"\" |\n| bool | false |\n| pointer, slice, map | nil |\n\n## Constants\n\n```go\nconst Pi = 3.14159\nconst (\n    StatusOK    = 200\n    StatusError = 500\n)\n\n// iota for incrementing\nconst (\n    Sunday = iota  // 0\n    Monday         // 1\n    Tuesday        // 2\n)\n```\n\n## Type Conversions\n\nGo requires explicit conversions:\n\n```go\nvar i int = 42\nvar f float64 = float64(i)\nvar s string = strconv.Itoa(i)\n\n// String to int\nn, err := strconv.Atoi(\"42\")\n```\n\n## Basic Types\n\n```go\n// Integers\nvar i int = 42\nvar i8 int8 = 127\nvar i64 int64 = 9223372036854775807\n\n// Unsigned\nvar u uint = 42\nvar u8 uint8 = 255  // byte\n\n// Floats\nvar f32 float32 = 3.14\nvar f64 float64 = 3.14159265359\n\n// Other\nvar b bool = true\nvar s string = \"hello\"\nvar r rune = 'A'  // int32, Unicode code point\n```"
+    }
+  ]
+}

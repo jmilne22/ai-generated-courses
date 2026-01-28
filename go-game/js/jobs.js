@@ -1,19 +1,19 @@
 /**
- * Go Grind - Part-Time Jobs System
- * P5R-inspired jobs for grinding specific skills with bonuses.
+ * Go Grind - Part-Time Jobs / Domestic Programs System
+ * Theme-aware job system with P5R and 4X strategy variants.
  */
 (function() {
     'use strict';
 
-    // Job definitions - each focuses on specific skills
-    var JOBS = {
+    // Persona 5 themed job definitions
+    var JOBS_PERSONA = {
         'convenience-store': {
             name: 'Convenience Store',
             location: 'Shibuya',
             icon: '🏪',
             description: 'Quick inventory tasks. Good for basics practice.',
             skills: ['variables', 'conditionals', 'for-loops'],
-            wage: 15, // base XP per shift
+            wage: 15,
             statBoost: 'kindness',
             unlockLevel: 1,
             flavor: [
@@ -137,6 +137,148 @@
         }
     };
 
+    // 4X Strategy themed domestic programs
+    var JOBS_4X = {
+        'convenience-store': {
+            name: 'Supply Depot',
+            location: 'Logistics HQ',
+            icon: '📦',
+            description: 'Manage supply chain basics. Foundation training.',
+            skills: ['variables', 'conditionals', 'for-loops'],
+            wage: 15,
+            statBoost: 'kindness',
+            unlockLevel: 1,
+            flavor: [
+                'Supply lines running smoothly.',
+                'Requisition processed efficiently.',
+                'Inventory audit complete. All accounted for.',
+                'High demand today. You kept up.'
+            ]
+        },
+        'beef-bowl-shop': {
+            name: 'Logistics Division',
+            location: 'Central Command',
+            icon: '🚚',
+            description: 'Process deployment orders. Data structure drills.',
+            skills: ['slices', 'maps', 'strings'],
+            wage: 20,
+            statBoost: 'proficiency',
+            unlockLevel: 3,
+            flavor: [
+                'Deployment orders processed flawlessly.',
+                'Division commander commends your efficiency.',
+                'Peak operations handled without delay.',
+                'Your routing algorithms are improving.'
+            ]
+        },
+        'flower-shop': {
+            name: 'Infrastructure Bureau',
+            location: 'Civil Affairs',
+            icon: '🏗️',
+            description: 'Design infrastructure. Composition patterns.',
+            skills: ['structs', 'methods', 'embedding'],
+            wage: 25,
+            statBoost: 'charm',
+            unlockLevel: 5,
+            flavor: [
+                'New facility design approved.',
+                'Infrastructure project ahead of schedule.',
+                'The bureau chief values your input.',
+                'Modular design principles applied well.'
+            ]
+        },
+        'crossroads-bar': {
+            name: 'Intelligence Liaison',
+            location: 'Embassy Row',
+            icon: '🕵️',
+            description: 'Interface with foreign contacts. Abstract protocols.',
+            skills: ['interfaces', 'pointers', 'methods'],
+            wage: 30,
+            statBoost: 'charm',
+            unlockLevel: 7,
+            flavor: [
+                'Productive meeting with foreign attaché.',
+                'Intel gathered from diplomatic channels.',
+                'Quiet evening. Time for analysis.',
+                'Your handlers are impressed.'
+            ]
+        },
+        'triple-seven': {
+            name: 'Quartermaster Corps',
+            location: 'Military District',
+            icon: '🎖️',
+            description: 'Optimize resource allocation. Algorithmic efficiency.',
+            skills: ['binary-search', 'sorting', 'two-pointers'],
+            wage: 25,
+            statBoost: 'guts',
+            unlockLevel: 4,
+            flavor: [
+                'Inventory sorted with optimal efficiency.',
+                'Found the best allocation pattern.',
+                'Night shift operations complete.',
+                'Corps commander impressed by your methods.'
+            ]
+        },
+        'rafflesia': {
+            name: 'Strategic Planning',
+            location: 'War College',
+            icon: '🗺️',
+            description: 'High-level strategy design. Advanced composition.',
+            skills: ['interfaces', 'embedding', 'structs'],
+            wage: 35,
+            statBoost: 'proficiency',
+            unlockLevel: 10,
+            flavor: [
+                'Your strategic proposal gained attention.',
+                'High Command reviewed your analysis.',
+                'The art of strategy becomes clearer.',
+                'Exemplary planning work today.'
+            ]
+        },
+        'syndicate': {
+            name: 'Armaments Bureau',
+            location: 'Industrial Zone',
+            icon: '⚙️',
+            description: 'Debug and maintain systems. Deep analysis.',
+            skills: ['pointers', 'stack', 'recursion'],
+            wage: 30,
+            statBoost: 'guts',
+            unlockLevel: 6,
+            flavor: [
+                'Traced and fixed a critical system fault.',
+                'The chief engineer acknowledges your skill.',
+                'Learned advanced maintenance techniques.',
+                'Precision work under pressure.'
+            ]
+        },
+        'maid-cafe': {
+            name: 'Communications Center',
+            location: 'Signal Corps',
+            icon: '📡',
+            description: 'Process and format messages. String protocols.',
+            skills: ['strings', 'string-building', 'maps'],
+            wage: 20,
+            statBoost: 'charm',
+            unlockLevel: 3,
+            flavor: [
+                'Message traffic handled efficiently.',
+                'Command staff request your encryption work.',
+                'Fellow operators appreciate your support.',
+                'Communication protocols mastered.'
+            ]
+        }
+    };
+
+    // Get the appropriate job definitions based on theme
+    function getJobs() {
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+        return is4X ? JOBS_4X : JOBS_PERSONA;
+    }
+
+    // Legacy reference for backward compatibility
+    var JOBS = JOBS_PERSONA;
+
     // Quick exercises for each skill (used during shifts)
     var SHIFT_EXERCISES = {
         'variables': [
@@ -235,7 +377,8 @@
         var state = window.GameState.getState();
         if (!state.jobs) {
             state.jobs = {};
-            Object.keys(JOBS).forEach(function(id) {
+            // Use JOBS_PERSONA keys for state initialization (IDs are same across themes)
+            Object.keys(JOBS_PERSONA).forEach(function(id) {
                 state.jobs[id] = { shiftsWorked: 0, rank: 1, totalXP: 0 };
             });
             window.GameState.save();
@@ -245,7 +388,7 @@
 
     function isJobUnlocked(jobId) {
         if (!window.GameState) return false;
-        var job = JOBS[jobId];
+        var job = getJobs()[jobId];
         var playerLevel = window.GameState.getPlayer().level;
         return playerLevel >= job.unlockLevel;
     }
@@ -259,7 +402,7 @@
     }
 
     function startShift(jobId) {
-        var job = JOBS[jobId];
+        var job = getJobs()[jobId];
         if (!job || !isJobUnlocked(jobId)) return;
 
         var jobState = getJobState()[jobId];
@@ -425,8 +568,9 @@
 
         html += '<div class="jobs-grid">';
 
-        Object.keys(JOBS).forEach(function(jobId) {
-            var job = JOBS[jobId];
+        var currentJobs = getJobs();
+        Object.keys(currentJobs).forEach(function(jobId) {
+            var job = currentJobs[jobId];
             var jobState = jobs[jobId] || { shiftsWorked: 0, rank: 1, totalXP: 0 };
             var unlocked = playerLevel >= job.unlockLevel;
             var rankInfo = getJobRank(jobState.shiftsWorked);
@@ -501,7 +645,8 @@
     window.Jobs = {
         renderJobsView: renderJobsView,
         startShift: startShift,
-        JOBS: JOBS,
+        getJobs: getJobs,
+        JOBS: JOBS_PERSONA, // backward compat
         getJobState: getJobState,
         isJobUnlocked: isJobUnlocked
     };

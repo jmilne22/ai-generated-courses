@@ -297,6 +297,13 @@
             html += window.Gamification.renderStatistics();
         }
 
+        // Progress Analytics (visual charts)
+        if (window.Analytics) {
+            var analyticsLabel = is4X ? 'Campaign Analytics' : 'Progress Analytics';
+            html += '<div class="section-title">' + analyticsLabel + '</div>';
+            html += window.Analytics.render();
+        }
+
         view.innerHTML = html;
 
         // Bind skill clicks

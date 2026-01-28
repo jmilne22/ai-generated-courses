@@ -115,9 +115,16 @@
             navRequests: 'REQUESTS',
             navPartTime: 'PART-TIME',
             navStatus: 'STATUS',
+            navKnowledge: 'KNOWLEDGE',
             navConfidants: 'CONFIDANTS',
             navVelvetRoom: 'VELVET ROOM',
-            navSystem: 'SYSTEM'
+            navSystem: 'SYSTEM',
+
+            // Library terms
+            library: 'Library',
+            librarySubtitle: 'Phantom Knowledge Vault',
+            document: 'Document',
+            documents: 'Documents'
         },
 
         // Grade labels

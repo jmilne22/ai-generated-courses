@@ -990,3 +990,351 @@
         opacity: 1;
     }
 }
+
+/* ============================================
+   LIBRARY / WAR COLLEGE
+   ============================================ */
+
+.theme-4x .library-search input {
+    border-radius: 0;
+}
+
+.theme-4x .library-search input:focus {
+    border-color: var(--accent);
+}
+
+.theme-4x .library-categories {
+    border-left: 3px solid var(--accent);
+}
+
+.theme-4x .category-btn {
+    border-radius: 0;
+}
+
+.theme-4x .category-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.theme-4x .category-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-dark);
+}
+
+.theme-4x .library-card {
+    border-radius: 0;
+    position: relative;
+}
+
+.theme-4x .library-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--border);
+    transition: background 0.2s;
+}
+
+.theme-4x .library-card:hover::before {
+    background: var(--accent);
+}
+
+.theme-4x .library-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.theme-4x .library-card-level {
+    border-radius: 0;
+}
+
+.theme-4x .library-card-level.level-beginner {
+    color: var(--success);
+    border-color: var(--success);
+}
+
+.theme-4x .library-card-level.level-intermediate {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.theme-4x .library-card-level.level-advanced {
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.theme-4x .library-tag {
+    border-radius: 0;
+    background: var(--bg-darker);
+    border: 1px solid var(--border);
+}
+
+.theme-4x .library-article-header {
+    border-bottom-color: var(--accent);
+}
+
+.theme-4x .library-article-title {
+    position: relative;
+}
+
+.theme-4x .library-article-title::before {
+    content: '//';
+    color: var(--accent);
+    margin-right: 0.5rem;
+}
+
+.theme-4x .library-article-content h2 {
+    border-bottom-color: var(--border);
+    position: relative;
+    padding-left: 1rem;
+}
+
+.theme-4x .library-article-content h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent);
+}
+
+.theme-4x .library-related {
+    border-left: 3px solid var(--accent);
+}
+
+.theme-4x .library-related-link {
+    border-radius: 0;
+}
+
+.theme-4x .library-related-link:hover {
+    background: var(--accent);
+    color: var(--bg-dark);
+}
+
+/* Back button fix */
+.theme-4x .library-back-btn {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    color: var(--text);
+    clip-path: none;
+}
+
+.theme-4x .library-back-btn:hover {
+    border-color: var(--accent);
+    color: var(--bg-dark);
+    background: var(--accent);
+    transform: translateX(-4px);
+}
+
+/* Code blocks in library articles */
+.theme-4x .library-article-content pre {
+    background: var(--bg-darker);
+    border: 2px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 1rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+}
+
+.theme-4x .library-article-content pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: var(--text-bright);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.theme-4x .library-article-content code {
+    background: var(--bg-lighter);
+    border: 1px solid var(--border);
+    padding: 0.15rem 0.4rem;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+}
+
+.theme-4x .library-article-content a {
+    color: var(--accent);
+}
+
+.theme-4x .library-article-content a:hover {
+    color: var(--accent-light);
+}
+
+/* ============================================
+   JOBS / DOMESTIC PROGRAMS
+   ============================================ */
+
+html.theme-4x .jobs-header,
+.theme-4x .jobs-header {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-darker) 100%);
+    border: 2px solid var(--border);
+    clip-path: none;
+    border-left: 4px solid var(--accent);
+    border-radius: 0;
+}
+
+html.theme-4x .jobs-title,
+.theme-4x .jobs-title {
+    color: var(--text-bright);
+}
+
+html.theme-4x .job-card,
+.theme-4x .job-card {
+    clip-path: none;
+    border-left: 3px solid var(--border);
+    border-radius: 0;
+    transition: all 0.2s;
+}
+
+html.theme-4x .job-card:hover,
+.theme-4x .job-card:hover {
+    border-color: var(--accent);
+    border-left-color: var(--accent);
+}
+
+html.theme-4x .job-name,
+.theme-4x .job-name {
+    color: var(--text-bright);
+}
+
+html.theme-4x .job-location,
+.theme-4x .job-location {
+    color: var(--accent);
+}
+
+html.theme-4x .job-rank-badge,
+.theme-4x .job-rank-badge {
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: var(--bg-dark);
+    clip-path: none;
+    border: 1px solid var(--accent);
+    border-radius: 0;
+}
+
+html.theme-4x .job-skill-tag,
+.theme-4x .job-skill-tag {
+    background: rgba(201, 162, 39, 0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+}
+
+html.theme-4x .job-wage,
+.theme-4x .job-wage {
+    color: var(--accent);
+}
+
+html.theme-4x .job-stat-boost,
+.theme-4x .job-stat-boost {
+    color: var(--info);
+}
+
+html.theme-4x .job-work-btn,
+.theme-4x .job-work-btn {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    border: 2px solid var(--border);
+    color: var(--bg-dark);
+    clip-path: none;
+    border-radius: 0;
+    font-weight: 700;
+}
+
+html.theme-4x .job-work-btn:hover,
+.theme-4x .job-work-btn:hover {
+    box-shadow: 0 4px 12px rgba(201, 162, 39, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Job Shift Modal */
+html.theme-4x .job-shift-modal,
+.theme-4x .job-shift-modal {
+    border: 3px solid var(--accent);
+    clip-path: none;
+    border-radius: 0;
+}
+
+html.theme-4x .job-shift-header,
+.theme-4x .job-shift-header {
+    background: linear-gradient(90deg, var(--accent) 0%, var(--bg-card) 70%);
+}
+
+html.theme-4x .job-shift-name,
+.theme-4x .job-shift-name {
+    color: var(--bg-dark);
+}
+
+html.theme-4x .job-shift-rank,
+.theme-4x .job-shift-rank {
+    color: var(--bg-dark);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+html.theme-4x .job-shift-location,
+.theme-4x .job-shift-location {
+    color: var(--accent);
+}
+
+html.theme-4x .job-task-skill,
+.theme-4x .job-task-skill {
+    color: var(--accent);
+}
+
+html.theme-4x .job-shift-input:focus,
+.theme-4x .job-shift-input:focus {
+    border-color: var(--accent);
+}
+
+html.theme-4x .job-shift-submit,
+.theme-4x .job-shift-submit {
+    background: var(--success);
+    border: 2px solid var(--border);
+}
+
+html.theme-4x .job-shift-hint,
+.theme-4x .job-shift-hint {
+    background: rgba(201, 162, 39, 0.1);
+    border-top-color: var(--accent);
+}
+
+html.theme-4x .hint-label,
+.theme-4x .hint-label {
+    color: var(--accent);
+}
+
+html.theme-4x .job-shift-hint code,
+.theme-4x .job-shift-hint code {
+    color: var(--accent);
+}
+
+html.theme-4x .job-result-rankup,
+.theme-4x .job-result-rankup {
+    color: var(--accent);
+    background: rgba(201, 162, 39, 0.2);
+    border-color: var(--accent);
+}
+
+html.theme-4x .job-result-close,
+.theme-4x .job-result-close {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    border: 2px solid var(--border);
+    color: var(--bg-dark);
+    clip-path: none;
+    border-radius: 0;
+}
+
+html.theme-4x .job-result-close:hover,
+.theme-4x .job-result-close:hover {
+    box-shadow: 0 4px 12px rgba(201, 162, 39, 0.3);
+}
+
+html.theme-4x .job-result-stat,
+.theme-4x .job-result-stat {
+    color: var(--accent);
+}

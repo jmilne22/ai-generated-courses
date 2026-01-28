@@ -1,0 +1,380 @@
+/* ============================================================
+   Go Grind - Progress Analytics Styles
+   ============================================================ */
+
+/* === Container === */
+.analytics-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.analytics-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 1rem;
+}
+
+.analytics-section-title {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.analytics-empty {
+    color: var(--text-dim);
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.9rem;
+}
+
+.analytics-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.analytics-col {
+    min-width: 0;
+}
+
+/* === Activity Heatmap === */
+.heatmap-container {
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.heatmap-days {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-right: 0.25rem;
+}
+
+.heatmap-day-label {
+    height: 12px;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    line-height: 12px;
+}
+
+.heatmap-grid {
+    display: flex;
+    gap: 3px;
+}
+
+.heatmap-week {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.heatmap-cell {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    background: var(--bg-darker);
+    border: 1px solid var(--border);
+}
+
+.heatmap-cell.level-1 { background: rgba(230, 0, 18, 0.25); border-color: rgba(230, 0, 18, 0.4); }
+.heatmap-cell.level-2 { background: rgba(230, 0, 18, 0.45); border-color: rgba(230, 0, 18, 0.6); }
+.heatmap-cell.level-3 { background: rgba(230, 0, 18, 0.65); border-color: rgba(230, 0, 18, 0.8); }
+.heatmap-cell.level-4 { background: var(--red); border-color: var(--red); }
+
+.heatmap-cell.future {
+    opacity: 0.3;
+}
+
+.heatmap-legend {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+}
+
+.heatmap-legend .heatmap-cell {
+    width: 10px;
+    height: 10px;
+}
+
+/* === Grade Chart === */
+.grade-chart {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 150px;
+    padding: 0 0.5rem;
+}
+
+.grade-bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    max-width: 60px;
+}
+
+.grade-bar-wrapper {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.grade-bar {
+    width: 70%;
+    min-height: 4px;
+    border-radius: 2px 2px 0 0;
+    transition: height 0.3s ease;
+}
+
+.grade-bar.grade-S { background: linear-gradient(to top, #c9a227, #ffd700); }
+.grade-bar.grade-A { background: linear-gradient(to top, #1a8a1a, #2dd92d); }
+.grade-bar.grade-B { background: linear-gradient(to top, #1a6a8a, #2dd9d9); }
+.grade-bar.grade-C { background: linear-gradient(to top, #6a6a6a, #999999); }
+.grade-bar.grade-F { background: linear-gradient(to top, #8a1a1a, #cc3333); }
+
+.grade-bar-label {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+.grade-bar-label.grade-S { color: var(--gold); }
+.grade-bar-label.grade-A { color: #2dd92d; }
+.grade-bar-label.grade-B { color: #2dd9d9; }
+.grade-bar-label.grade-C { color: #999999; }
+.grade-bar-label.grade-F { color: #cc3333; }
+
+.grade-bar-count {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text);
+}
+
+.grade-bar-pct {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+}
+
+/* === Weekly Progress Chart === */
+.weekly-chart {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 150px;
+    padding: 0 0.25rem;
+}
+
+.weekly-bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.weekly-bar-container.current .weekly-bar {
+    background: var(--red);
+}
+
+.weekly-bar-container.current .weekly-bar-label {
+    color: var(--red);
+    font-weight: 600;
+}
+
+.weekly-bar-wrapper {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.weekly-bar {
+    width: 60%;
+    min-height: 4px;
+    background: var(--cyan);
+    border-radius: 2px 2px 0 0;
+    position: relative;
+    transition: height 0.3s ease;
+}
+
+.weekly-bar-value {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text);
+    white-space: nowrap;
+}
+
+.weekly-bar-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 0.5rem;
+}
+
+/* === Concept Mastery === */
+.concept-mastery-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.concept-mastery-item {
+    padding: 0.5rem 0;
+}
+
+.concept-mastery-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+}
+
+.concept-mastery-name {
+    font-size: 0.9rem;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.concept-mastery-count {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.concept-mastery-bar-bg {
+    height: 8px;
+    background: var(--bg-darker);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.concept-mastery-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--green-bright));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.concept-mastery-pct {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+}
+
+/* === Recent Activity === */
+.recent-activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.recent-activity-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: var(--bg-darker);
+    border: 1px solid var(--border);
+}
+
+.recent-grade {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 700;
+    width: 28px;
+    text-align: center;
+}
+
+.recent-title {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.recent-xp {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--gold);
+}
+
+.recent-time {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    min-width: 50px;
+    text-align: right;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .analytics-row {
+        grid-template-columns: 1fr;
+    }
+
+    .heatmap-container {
+        justify-content: flex-start;
+    }
+
+    .grade-chart,
+    .weekly-chart {
+        height: 120px;
+    }
+
+    .grade-bar-wrapper,
+    .weekly-bar-wrapper {
+        height: 80px;
+    }
+}
+
+/* === 4X Theme Overrides === */
+.theme-4x .heatmap-cell.level-1 { background: rgba(201, 162, 39, 0.25); border-color: rgba(201, 162, 39, 0.4); }
+.theme-4x .heatmap-cell.level-2 { background: rgba(201, 162, 39, 0.45); border-color: rgba(201, 162, 39, 0.6); }
+.theme-4x .heatmap-cell.level-3 { background: rgba(201, 162, 39, 0.65); border-color: rgba(201, 162, 39, 0.8); }
+.theme-4x .heatmap-cell.level-4 { background: var(--accent); border-color: var(--accent); }
+
+.theme-4x .weekly-bar-container.current .weekly-bar {
+    background: var(--accent);
+}
+
+.theme-4x .weekly-bar-container.current .weekly-bar-label {
+    color: var(--accent);
+}
+
+.theme-4x .weekly-bar {
+    background: var(--info);
+}
+
+.theme-4x .concept-mastery-bar {
+    background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+}
+
+.theme-4x .analytics-section {
+    border-left: 3px solid var(--accent);
+}
+
+.theme-4x .recent-activity-item {
+    border-left: 3px solid var(--border);
+}
+
+.theme-4x .recent-activity-item:hover {
+    border-left-color: var(--accent);
+}
