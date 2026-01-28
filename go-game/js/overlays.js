@@ -392,12 +392,40 @@
         });
     });
 
+    // === Achievement/Challenge Notification ===
+    function showNotification(opts) {
+        var type = opts.type || 'achievement';
+        var notification = document.createElement('div');
+        notification.className = 'notification-' + type;
+        notification.innerHTML =
+            '<div class="notification-title">' + (opts.title || 'Notification') + '</div>' +
+            '<div class="notification-message">' + (opts.message || '') + '</div>' +
+            (opts.subtitle ? '<div class="notification-subtitle">' + opts.subtitle + '</div>' : '');
+
+        document.body.appendChild(notification);
+
+        if (window.GameAudio) {
+            if (type === 'achievement') {
+                window.GameAudio.playLevelUp();
+            } else {
+                window.GameAudio.playMenuSelect();
+            }
+        }
+
+        setTimeout(function() {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 4000);
+    }
+
     window.Overlays = {
         showAllOutAttack: showAllOutAttack,
         showGradeScreen: showGradeScreen,
         showLevelUp: showLevelUp,
         showSkillLevelUp: showSkillLevelUp,
         showConfidantRankUp: showConfidantRankUp,
-        showConfidantUnlocked: showConfidantUnlocked
+        showConfidantUnlocked: showConfidantUnlocked,
+        showNotification: showNotification
     };
 })();

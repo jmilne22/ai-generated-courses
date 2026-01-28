@@ -648,6 +648,33 @@
         },
         reload: function() {
             state = load();
+        },
+        // Gamification support
+        getFullState: function() { return state; },
+        addBonusXP: function(amount, reason) {
+            state.player.totalXP += amount;
+            // Check for level up
+            var leveledUp = false;
+            var prevLevel = state.player.level;
+            var prevLevelXP = 0;
+            for (var l = 1; l < state.player.level; l++) {
+                prevLevelXP += xpForLevel(l);
+            }
+            var xpToNext = xpForLevel(state.player.level);
+            while (state.player.totalXP - prevLevelXP >= xpToNext) {
+                prevLevelXP += xpToNext;
+                state.player.level++;
+                xpToNext = xpForLevel(state.player.level);
+                leveledUp = true;
+            }
+            save(state);
+            if (leveledUp) {
+                window.dispatchEvent(new CustomEvent('playerLevelUp', {
+                    detail: { level: state.player.level, prevLevel: prevLevel }
+                }));
+            }
+            console.log('Bonus XP:', amount, reason || '');
+            return amount;
         }
     };
 })();

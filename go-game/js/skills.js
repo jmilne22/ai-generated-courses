@@ -167,6 +167,12 @@
 
         var html = '';
 
+        // Streak widget and daily challenges (if Gamification available)
+        if (window.Gamification) {
+            html += window.Gamification.renderStreakWidget();
+            html += window.Gamification.renderDailyChallenges();
+        }
+
         // Player overview
         html += '<div class="section-title" style="margin-top:0">Player</div>';
         html += '<div class="skill-header">' +
@@ -193,6 +199,12 @@
         });
         html += '</div>';
 
+        // Achievements (if Gamification available)
+        if (window.Gamification) {
+            html += '<div class="section-title">Achievements</div>';
+            html += window.Gamification.renderAchievements(true);
+        }
+
         // Skills overview
         html += '<div class="section-title">Skills</div>';
         var skills = window.GameState.getSkills();
@@ -210,6 +222,12 @@
             '</div>';
         });
         html += '</div>';
+
+        // Detailed Statistics (if Gamification available)
+        if (window.Gamification) {
+            html += '<div class="section-title">Statistics</div>';
+            html += window.Gamification.renderStatistics();
+        }
 
         view.innerHTML = html;
 
