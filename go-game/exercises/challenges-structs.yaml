@@ -1,0 +1,374 @@
+- id: structs_1
+  concept: Structs
+  difficulty: 2
+  patternPrimer:
+    bruteForce: Use separate variables for related data.
+    bestApproach: Group related data into structs. Use pointers when you need to modify.
+    typical: O(1) for field access
+  variants:
+  - id: v1
+    title: Create a Point
+    difficulty: 1
+    description: |-
+      Define a <code>Point</code> struct with X and Y int fields. Create one at (3, 4).
+    hints:
+    - title: Think about it
+      content: Structs group related data. Fields are capitalized if exported.
+    - title: Hint
+      content: <code>type Point struct { X, Y int }</code>
+    solution: |-
+      type Point struct {
+          X, Y int
+      }
+
+      p := Point{X: 3, Y: 4}
+      fmt.Println(p)
+  - id: v2
+    title: Player Stats
+    difficulty: 1
+    description: |-
+      Define a <code>Player</code> with Name (string), HP (int), Level (int). Create "Joker" with 100 HP at level 1.
+    hints:
+    - title: Think about it
+      content: Each field gets a type. String for text, int for numbers.
+    - title: Hint
+      content: '<code>Player{Name: "Joker", HP: 100, Level: 1}</code>'
+    solution: |-
+      type Player struct {
+          Name  string
+          HP    int
+          Level int
+      }
+
+      p := Player{Name: "Joker", HP: 100, Level: 1}
+      fmt.Println(p)
+  - id: v3
+    title: Default Values
+    difficulty: 1
+    description: |-
+      Create a <code>Config</code> struct with Host string and Port int. What are the zero values when you do <code>Config{}</code>?
+    hints:
+    - title: Hint
+      content: String zero value is "", int zero value is 0
+    solution: |-
+      type Config struct {
+          Host string
+          Port int
+      }
+
+      c := Config{}
+      fmt.Println(c.Host)  // "" (empty string)
+      fmt.Println(c.Port)  // 0
+  - id: v4
+    title: Rectangle Area
+    difficulty: 2
+    description: |-
+      Define <code>Rectangle</code> with Width and Height. Write <code>func area(r Rectangle) int</code>.
+    functionSignature: func area(r Rectangle) int
+    hints:
+    - title: Think about it
+      content: 'Access fields with dot notation: r.Width'
+    - title: Hint
+      content: Area = width × height
+    solution: |-
+      type Rectangle struct {
+          Width, Height int
+      }
+
+      func area(r Rectangle) int {
+          return r.Width * r.Height
+      }
+  - id: v5
+    title: Struct Pointer
+    difficulty: 2
+    description: |-
+      Write <code>func levelUp(p *Player)</code> that increments the player's Level by 1.
+    functionSignature: func levelUp(p *Player)
+    hints:
+    - title: Think about it
+      content: To modify a struct, pass a pointer to it.
+    - title: Hint
+      content: Go lets you use <code>p.Level</code> even with pointers (auto-deref).
+    solution: |-
+      func levelUp(p *Player) {
+          p.Level++
+      }
+  - id: v6
+    title: Nested Structs
+    difficulty: 2
+    description: |-
+      Define <code>Address</code> with City string. Define <code>Person</code> with Name string and Home Address. Create a person in Tokyo.
+    hints:
+    - title: Think about it
+      content: Structs can contain other structs as fields.
+    - title: Hint
+      content: '<code>Person{Name: "Ren", Home: Address{City: "Tokyo"}}</code>'
+    solution: |-
+      type Address struct {
+          City string
+      }
+
+      type Person struct {
+          Name string
+          Home Address
+      }
+
+      p := Person{Name: "Ren", Home: Address{City: "Tokyo"}}
+      fmt.Println(p.Home.City)  // Tokyo
+  - id: v7
+    title: Constructor Function
+    difficulty: 2
+    description: |-
+      Write <code>func NewPlayer(name string) *Player</code> that creates a Player with 100 HP, level 1.
+    functionSignature: func NewPlayer(name string) *Player
+    hints:
+    - title: Think about it
+      content: Return a pointer to a new struct with default values set.
+    - title: Hint
+      content: '<code>return &Player{Name: name, HP: 100, Level: 1}</code>'
+    solution: |-
+      func NewPlayer(name string) *Player {
+          return &Player{
+              Name:  name,
+              HP:    100,
+              Level: 1,
+          }
+      }
+  - id: v8
+    title: Struct Comparison
+    difficulty: 2
+    description: |-
+      Write <code>func samePoint(a, b Point) bool</code> that checks if two points are equal.
+    functionSignature: func samePoint(a, b Point) bool
+    hints:
+    - title: Think about it
+      content: Structs with comparable fields can use == directly!
+    - title: Hint
+      content: <code>return a == b</code>
+    solution: |-
+      func samePoint(a, b Point) bool {
+          return a == b
+      }
+  - id: v9
+    title: Slice of Structs
+    difficulty: 3
+    description: Write <code>func totalHP(players []Player) int</code> that sums all
+      players' HP.
+    functionSignature: func totalHP(players []Player) int
+    testCases:
+    - input: '[]Player{{HP: 50}, {HP: 30}}'
+      output: '80'
+    hints:
+    - title: Think about it
+      content: Range over slice, access HP field of each.
+    solution: |-
+      func totalHP(players []Player) int {
+          total := 0
+          for _, p := range players {
+              total += p.HP
+          }
+          return total
+      }
+  - id: v10
+    title: Anonymous Struct
+    difficulty: 3
+    description: |-
+      Create an inline anonymous struct with Name and Age fields for quick one-off data grouping.
+    hints:
+    - title: Think about it
+      content: You can define struct type inline without naming it.
+    - title: Hint
+      content: <code>person := struct { Name string; Age int }{"Joker", 17}</code>
+    solution: |-
+      person := struct {
+          Name string
+          Age  int
+      }{"Joker", 17}
+
+      fmt.Println(person.Name, person.Age)
+  - id: v11
+    title: Struct Tags
+    difficulty: 2
+    description: |-
+      Add a JSON tag to make <code>Name</code> field serialize as <code>"player_name"</code> in JSON.
+    hints:
+    - title: Think about it
+      content: Struct tags are string literals after the type, read by reflection.
+    - title: Hint
+      content: 'Use backticks: <code>Name string `json:"player_name"`</code>'
+    solution: |-
+      type Player struct {
+          Name  string `json:"player_name"`
+          HP    int    `json:"hp"`
+          Level int    `json:"level,omitempty"`
+      }
+
+      // omitempty skips zero values in JSON output
+  - id: v12
+    title: Struct Copy
+    difficulty: 2
+    description: |-
+      Given <code>p1 := Player{Name: "Joker"}</code>, what happens with <code>p2 := p1; p2.Name = "Skull"</code>?
+    hints:
+    - title: Think about it
+      content: Struct assignment creates a COPY. p1 and p2 are independent.
+    solution: |-
+      p1 := Player{Name: "Joker"}
+      p2 := p1           // p2 is a COPY
+      p2.Name = "Skull"  // Only changes p2
+
+      fmt.Println(p1.Name)  // Joker (unchanged)
+      fmt.Println(p2.Name)  // Skull
+  - id: v13
+    title: Pointer Field Gotcha
+    difficulty: 3
+    description: |-
+      If struct has <code>Items *[]string</code>, does copying the struct give independent Items?
+    hints:
+    - title: Think about it
+      content: Copying struct copies the pointer, not what it points to. Shallow copy!
+    solution: |-
+      type Inventory struct {
+          Items *[]string
+      }
+
+      items := []string{"sword"}
+      i1 := Inventory{Items: &items}
+      i2 := i1  // Copies pointer, not slice!
+
+      *i2.Items = append(*i2.Items, "shield")
+      fmt.Println(*i1.Items)  // [sword shield] - both see it!
+  - id: v14
+    title: Struct as Map Key
+    difficulty: 2
+    description: Can you use a struct as a map key? Create a map with Point keys.
+    hints:
+    - title: Think about it
+      content: |-
+        Structs with comparable fields can be map keys (no slices/maps/functions inside).
+    solution: |-
+      type Point struct{ X, Y int }
+
+      // Works! Point fields are comparable
+      visited := make(map[Point]bool)
+      visited[Point{0, 0}] = true
+      visited[Point{1, 2}] = true
+
+      if visited[Point{0, 0}] {
+          fmt.Println("Been there!")
+      }
+  - id: v15
+    title: Empty Struct
+    difficulty: 2
+    description: What is <code>struct{}</code> used for? Create a set of strings using
+      it.
+    hints:
+    - title: Think about it
+      content: Empty struct has size 0. Perfect for sets where you only care about
+        keys.
+    solution: |-
+      // Set implementation with zero memory for values
+      set := make(map[string]struct{})
+
+      set["apple"] = struct{}{}  // Add
+      set["banana"] = struct{}{}
+
+      // Check membership
+      if _, exists := set["apple"]; exists {
+          fmt.Println("Found!")
+      }
+  - id: v16
+    title: Private vs Public Fields
+    difficulty: 1
+    description: |-
+      In a package, which fields are accessible from outside: <code>Name</code>, <code>name</code>, <code>HP</code>, <code>hp</code>?
+    hints:
+    - title: Think about it
+      content: Capital letter = exported (public). Lowercase = unexported (private).
+    solution: |-
+      type Player struct {
+          Name  string  // Exported - visible outside package
+          name  string  // Unexported - package-private
+          HP    int     // Exported
+          hp    int     // Unexported
+      }
+
+      // From another package:
+      // p.Name works, p.name doesn't compile
+  - id: v17
+    title: Struct Initialization Patterns
+    difficulty: 2
+    description: |-
+      Show 3 ways to create a Player: named fields, positional, and zero value then assign.
+    hints:
+    - title: Hint
+      content: |-
+        Named is safest, positional requires exact order, zero value works for optional setup.
+    solution: |-
+      // Named fields (recommended)
+      p1 := Player{Name: "Joker", HP: 100}
+
+      // Positional (fragile - breaks if order changes)
+      p2 := Player{"Skull", 80, 1}
+
+      // Zero value + assignment
+      var p3 Player
+      p3.Name = "Panther"
+      p3.HP = 90
+  - id: v18
+    title: Check Zero Struct
+    difficulty: 2
+    description: |-
+      Write <code>func isEmpty(p Player) bool</code> that checks if p is the zero value.
+    functionSignature: func isEmpty(p Player) bool
+    hints:
+    - title: Think about it
+      content: 'Compare to the zero value of the type: <code>Player{}</code>'
+    solution: |-
+      func isEmpty(p Player) bool {
+          return p == Player{}  // Compare to zero value
+      }
+
+      // Only works if all fields are comparable!
+  - id: v19
+    title: Struct Method vs Function
+    difficulty: 1
+    description: |-
+      What's the difference between <code>func GetHP(p Player) int</code> and <code>func (p Player) GetHP() int</code>?
+    hints:
+    - title: Think about it
+      content: 'Method is attached to type. Call differs: GetHP(p) vs p.GetHP()'
+    solution: |-
+      // Function - standalone
+      func GetHP(p Player) int { return p.HP }
+      hp := GetHP(player)
+
+      // Method - attached to Player
+      func (p Player) GetHP() int { return p.HP }
+      hp := player.GetHP()  // Cleaner, more OOP-like
+  - id: v20
+    title: Flexible Options Pattern
+    difficulty: 3
+    description: |-
+      Design a <code>ServerConfig</code> struct with sensible defaults. Use constructor to fill defaults.
+    hints:
+    - title: Think about it
+      content: Constructor functions let you set defaults, validate, or compute derived
+        fields.
+    solution: |-
+      type ServerConfig struct {
+          Host    string
+          Port    int
+          Timeout int
+      }
+
+      func NewServerConfig() *ServerConfig {
+          return &ServerConfig{
+              Host:    "localhost",
+              Port:    8080,
+              Timeout: 30,
+          }
+      }
+
+      // Usage: config := NewServerConfig()
+      // config.Port = 3000  // Override if needed

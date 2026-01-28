@@ -1,0 +1,21 @@
+# Exercise file manifest
+# Add new files here and they'll be loaded automatically
+
+config: _config.yaml
+
+warmups:
+  - warmups.yaml
+
+challenges:
+  - challenges-basics.yaml
+  - challenges-pointers.yaml
+  - challenges-structs.yaml
+  - challenges-methods.yaml
+  - challenges-interfaces.yaml
+  - challenges-embedding.yaml
+
+advanced:
+  - advanced.yaml
+
+preExercises:
+  - pre-exercises.yaml

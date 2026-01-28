@@ -1,0 +1,510 @@
+advanced_1:
+  title: 'Pre-exercise: Map as a Set'
+  description: |-
+    Before tackling the algorithm, let's practice the core pattern: using a map to track what you've seen.
+  exercises:
+  - id: pre1
+    title: Track Visited Pages
+    problem: |-
+      You're building a browser history tracker. Write code that creates a <code>map[string]bool</code> called <code>visited</code>, marks three pages as visited, then checks if "google.com" has been visited.
+    hints:
+    - title: Creating the map
+      content: |-
+        Create with: <code>visited := make(map[string]bool)</code><br>This creates an empty map where keys are strings and values are booleans.
+    - title: Marking as visited
+      content: |-
+        To mark a page as visited: <code>visited["google.com"] = true</code><br>Do this for three different pages.
+    - title: Checking if visited
+      content: |-
+        The simple way: <code>if visited["google.com"]</code><br>This works because if the key doesn't exist, Go returns <code>false</code> (the zero value for bool)!
+    solution: |-
+      visited := make(map[string]bool)
+
+      // Mark pages as visited
+      visited["google.com"] = true
+      visited["github.com"] = true
+      visited["go.dev"] = true
+
+      // Check if google.com was visited
+      if visited["google.com"] {
+          fmt.Println("You've been to google.com")
+      }
+
+      // Check something NOT visited
+      if visited["facebook.com"] {
+          fmt.Println("You've been to facebook.com")
+      } else {
+          fmt.Println("Never visited facebook.com")
+      }
+    expectedOutput: |-
+      You've been to google.com
+      Never visited facebook.com
+    keyInsight: |-
+      When you access a key that doesn't exist in a <code>map[T]bool</code>, Go returns <code>false</code>. This makes <code>if visited[key]</code> a clean way to check membership - no need for the comma-ok pattern here!
+  - id: pre2
+    title: Unique Letter Collector
+    problem: |-
+      Write code that loops through the string "banana" and collects each unique letter into a <code>map[rune]bool</code>. Print how many unique letters there are.
+    hints:
+    - title: Setup
+      content: |-
+        Create the map: <code>letters := make(map[rune]bool)</code><br>Loop with: <code>for _, char := range "banana"</code>
+    - title: Collecting
+      content: |-
+        For each character, just mark it as seen: <code>letters[char] = true</code><br>Maps automatically handle duplicates - setting the same key twice just overwrites.
+    - title: Counting
+      content: 'The number of unique letters is: <code>len(letters)</code>'
+    solution: |-
+      letters := make(map[rune]bool)
+
+      for _, char := range "banana" {
+          letters[char] = true
+      }
+
+      fmt.Printf("Unique letters: %d\n", len(letters))  // 3: b, a, n
+    expectedOutput: 'Unique letters: 3'
+    keyInsight: |-
+      A map automatically handles duplicates - you can set the same key multiple times and it just overwrites. This is why <code>len(map)</code> gives you the count of unique keys!
+advanced_2:
+  title: 'Pre-exercise: Slow/Fast Pointer Prep'
+  description: |-
+    Before the in-place algorithm, let's practice the core logic of detecting duplicates in sorted arrays.
+  exercises:
+  - id: pre2a
+    title: Copy Unique to New Slice
+    problem: |-
+      Given the sorted slice <code>[]int{1, 1, 2, 2, 3}</code>, create a NEW slice containing only the unique values <code>[1, 2, 3]</code>. Don't modify the original - just build a new one with <code>append</code>.
+    hints:
+    - title: 'Step 1: Setup'
+      content: |-
+        <pre>nums := []int{1, 1, 2, 2, 3}
+        result := []int{nums[0]}  // First element is always unique</pre>
+    - title: 'Step 2: Loop starting from index 1'
+      content: |-
+        <pre>for i := 1; i < len(nums); i++ {
+            // Compare current with previous
+        }</pre>
+    - title: 'Step 3: Append when different'
+      content: |-
+        <pre>if nums[i] != nums[i-1] {
+            result = append(result, nums[i])
+        }</pre>
+    solution: |-
+      nums := []int{1, 1, 2, 2, 3}
+      result := []int{nums[0]}  // First element always unique
+
+      for i := 1; i < len(nums); i++ {
+          if nums[i] != nums[i-1] {
+              result = append(result, nums[i])
+          }
+      }
+
+      fmt.Println(result)  // [1 2 3]
+    expectedOutput: '[1 2 3]'
+    keyInsight: |-
+      In a sorted array, duplicates are always adjacent! So we only need to compare each element with the one before it. This same logic powers the in-place algorithm - we'll just write to the array instead of appending.
+  - id: pre2b
+    title: Count Consecutive Groups
+    problem: |-
+      Given the sorted slice <code>[]int{1, 1, 2, 2, 2, 3}</code>, count how many distinct groups there are. Answer: 3 (the 1s, the 2s, and the 3).
+    hints:
+    - title: 'Step 1: Initialize counter'
+      content: |-
+        <pre>nums := []int{1, 1, 2, 2, 2, 3}
+        groups := 1  // First element starts the first group</pre>
+    - title: 'Step 2: Loop and count transitions'
+      content: |-
+        <pre>for i := 1; i < len(nums); i++ {
+            if nums[i] != nums[i-1] {
+                groups++  // New value = new group
+            }
+        }</pre>
+    solution: |-
+      nums := []int{1, 1, 2, 2, 2, 3}
+      groups := 1  // First element starts the first group
+
+      for i := 1; i < len(nums); i++ {
+          if nums[i] != nums[i-1] {
+              groups++  // New value = new group
+          }
+      }
+
+      fmt.Printf("Groups: %d\n", groups)
+    expectedOutput: 'Groups: 3'
+    keyInsight: |-
+      This is exactly what the slow/fast algorithm returns! The slow pointer ends up at the last unique position, so slow+1 = number of unique elements = number of groups.
+advanced_3:
+  title: 'Pre-exercise: Strings vs Runes'
+  description: |-
+    Before manipulating strings character-by-character, let's understand the difference between bytes and runes in Go.
+  exercises:
+  - id: pre3a
+    title: Explore String Length vs Rune Count
+    problem: |-
+      Compare the byte length and rune count of these strings: <code>"hello"</code>, <code>"世界"</code>, and <code>"🎉"</code>. Print both <code>len(s)</code> and <code>len([]rune(s))</code> for each.
+    hints:
+    - title: 'Step 1: ASCII string'
+      content: |-
+        <pre>s1 := "hello"
+        fmt.Printf("%s: %d bytes, %d runes\n", s1, len(s1), len([]rune(s1)))</pre>
+    - title: 'Step 2: Chinese characters'
+      content: |-
+        <pre>s2 := "世界"
+        fmt.Printf("%s: %d bytes, %d runes\n", s2, len(s2), len([]rune(s2)))</pre>
+    - title: 'Step 3: Emoji'
+      content: |-
+        <pre>s3 := "🎉"
+        fmt.Printf("%s: %d bytes, %d runes\n", s3, len(s3), len([]rune(s3)))</pre>
+    solution: |-
+      s1 := "hello"
+      fmt.Printf("%s: %d bytes, %d runes\n", s1, len(s1), len([]rune(s1)))
+
+      s2 := "世界"
+      fmt.Printf("%s: %d bytes, %d runes\n", s2, len(s2), len([]rune(s2)))
+
+      s3 := "🎉"
+      fmt.Printf("%s: %d bytes, %d runes\n", s3, len(s3), len([]rune(s3)))
+    expectedOutput: |-
+      hello: 5 bytes, 5 runes
+      世界: 6 bytes, 2 runes
+      🎉: 4 bytes, 1 runes
+    keyInsight: |-
+      ASCII characters are 1 byte each, but Unicode characters can be 2-4 bytes! <code>len(string)</code> counts bytes, <code>len([]rune(string))</code> counts actual characters. Always convert to <code>[]rune</code> when you need to work with individual characters.
+  - id: pre3b
+    title: Convert, Modify, Convert Back
+    problem: |-
+      Take the string <code>"Go!"</code>, convert to runes, change the first character to <code>'g'</code>, and convert back to a string. Print the result.
+    hints:
+    - title: 'Step 1: Convert to runes'
+      content: |-
+        <pre>s := "Go!"
+        runes := []rune(s)</pre>
+    - title: 'Step 2: Modify'
+      content: <pre>runes[0] = 'g'  // Single quotes for rune literal</pre>
+    - title: 'Step 3: Convert back'
+      content: |-
+        <pre>result := string(runes)
+        fmt.Println(result)</pre>
+    solution: |-
+      s := "Go!"
+      runes := []rune(s)
+
+      runes[0] = 'g'  // Modify first character
+
+      result := string(runes)
+      fmt.Println(result)
+    expectedOutput: go!
+    keyInsight: |-
+      Strings in Go are immutable - you can't do <code>s[0] = 'g'</code>. The pattern is: convert to <code>[]rune</code>, modify the slice, convert back to <code>string</code>. This is exactly what we'll do for reversing strings!
+advanced_4:
+  title: 'Pre-exercise: Map Counting Prep'
+  description: |-
+    Before counting words, let's practice the building blocks: splitting strings and incrementing map values.
+  exercises:
+  - id: pre4a
+    title: Explore strings.Fields
+    problem: |-
+      Use <code>strings.Fields</code> to split the string <code>"hello world go"</code> into words and print each word on its own line.
+    hints:
+    - title: 'Step 1: Import and split'
+      content: |-
+        <pre>import "strings"
+
+        words := strings.Fields("hello world go")</pre>
+    - title: 'Step 2: Loop and print'
+      content: |-
+        <pre>for _, word := range words {
+            fmt.Println(word)
+        }</pre>
+    solution: |-
+      import "strings"
+
+      words := strings.Fields("hello world go")
+      for _, word := range words {
+          fmt.Println(word)
+      }
+    expectedOutput: |-
+      hello
+      world
+      go
+    keyInsight: |-
+      <code>strings.Fields</code> splits on any whitespace (spaces, tabs, newlines) and returns a <code>[]string</code>. It's smarter than <code>strings.Split(s, " ")</code> because it handles multiple spaces correctly.
+  - id: pre4b
+    title: Count Letters (Simpler)
+    problem: |-
+      Count how many times each letter appears in <code>"hello"</code>. Store in a <code>map[rune]int</code> and print the counts.
+    hints:
+    - title: 'Step 1: Create the map'
+      content: <pre>counts := make(map[rune]int)</pre>
+    - title: 'Step 2: Loop through string'
+      content: |-
+        <pre>for _, char := range "hello" {
+            counts[char]++
+        }</pre>
+    - title: 'Step 3: Print results'
+      content: |-
+        <pre>for char, count := range counts {
+            fmt.Printf("%c: %d\n", char, count)
+        }</pre>
+    solution: |-
+      counts := make(map[rune]int)
+
+      for _, char := range "hello" {
+          counts[char]++
+      }
+
+      for char, count := range counts {
+          fmt.Printf("%c: %d\n", char, count)
+      }
+    expectedOutput: |-
+      h: 1
+      e: 1
+      l: 2
+      o: 1
+    keyInsight: |-
+      The <code>++</code> operator works on map values! When the key doesn't exist, Go returns 0 (the zero value for int), then increments to 1. So <code>counts[char]++</code> handles both first-time and repeat cases.
+advanced_5:
+  title: 'Pre-exercise: Two Sum Building Blocks'
+  description: |-
+    Before the full algorithm, let's practice the two key operations: looking up complements and building index maps.
+  exercises:
+  - id: pre5a
+    title: Find Complement in Map
+    problem: |-
+      Given this pre-built map <code>map[int]int{2: 0, 7: 1, 11: 2}</code> (value to index), target=9, and current number=7: calculate the complement and check if it exists in the map. Print the result.
+    hints:
+    - title: 'Step 1: Setup'
+      content: |-
+        <pre>seen := map[int]int{2: 0, 7: 1, 11: 2}
+        target := 9
+        num := 7</pre>
+    - title: 'Step 2: Calculate complement'
+      content: <pre>complement := target - num  // 9 - 7 = 2</pre>
+    - title: 'Step 3: Check map with comma-ok'
+      content: |-
+        <pre>if idx, ok := seen[complement]; ok {
+            fmt.Printf("Found! %d is at index %d\n", complement, idx)
+        }</pre>
+    solution: |-
+      seen := map[int]int{2: 0, 7: 1, 11: 2}
+      target := 9
+      num := 7
+
+      complement := target - num  // 9 - 7 = 2
+
+      if idx, ok := seen[complement]; ok {
+          fmt.Printf("Found %d at index %d\n", complement, idx)
+      } else {
+          fmt.Println("Not found")
+      }
+    expectedOutput: Found 2 at index 0
+    keyInsight: |-
+      The complement is <code>target - current</code>. If we're looking for two numbers that sum to 9, and we have 7, we need to find 2. The map tells us WHERE we saw the 2 (at index 0).
+  - id: pre5b
+    title: Build Value-to-Index Map
+    problem: |-
+      Given <code>[]int{2, 7, 11}</code>, build a map that maps each value to its index: <code>map[int]int{2: 0, 7: 1, 11: 2}</code>.
+    hints:
+    - title: 'Step 1: Create empty map'
+      content: |-
+        <pre>nums := []int{2, 7, 11}
+        valueToIndex := make(map[int]int)</pre>
+    - title: 'Step 2: Loop with index'
+      content: |-
+        <pre>for i, num := range nums {
+            valueToIndex[num] = i
+        }</pre>
+    solution: |-
+      nums := []int{2, 7, 11}
+      valueToIndex := make(map[int]int)
+
+      for i, num := range nums {
+          valueToIndex[num] = i
+      }
+
+      fmt.Println(valueToIndex)
+    expectedOutput: map[2:0 7:1 11:2]
+    keyInsight: |-
+      The Two Sum algorithm builds this map AS it loops - checking for the complement first, then adding the current number. This ensures we don't match a number with itself!
+advanced_6:
+  title: 'Pre-exercise: Sliding Window Fundamentals'
+  description: |-
+    Before tackling sliding window problems, let's practice the core mechanics: managing a window and efficiently updating its state.
+  exercises:
+  - id: pre6a
+    title: Fixed Window Sum
+    problem: |-
+      Given <code>[]int{1, 2, 3, 4, 5}</code> and window size k=3, calculate the sum of the first window [1,2,3], then slide it one position and calculate the new sum [2,3,4] WITHOUT re-summing all elements.
+    hints:
+    - title: 'Step 1: Calculate first window sum'
+      content: |-
+        <pre>nums := []int{1, 2, 3, 4, 5}
+        k := 3
+
+        // Sum first k elements
+        windowSum := 0
+        for i := 0; i < k; i++ {
+            windowSum += nums[i]
+        }
+        fmt.Println(windowSum)  // 6</pre>
+    - title: 'Step 2: Slide the window'
+      content: |-
+        <pre>// The trick: add new element, subtract old element
+        // New element is at index k (which is 3)
+        // Old element is at index 0
+        windowSum = windowSum + nums[k] - nums[0]</pre>
+    - title: 'Step 3: General formula'
+      content: |-
+        When sliding from position i-1 to i:<pre>windowSum = windowSum + nums[i+k-1] - nums[i-1]</pre>Or equivalently, when the right edge moves to index i:<pre>windowSum = windowSum + nums[i] - nums[i-k]</pre>
+    solution: |-
+      nums := []int{1, 2, 3, 4, 5}
+      k := 3
+
+      // Sum first window
+      windowSum := 0
+      for i := 0; i < k; i++ {
+          windowSum += nums[i]
+      }
+      fmt.Printf("Window [0:3] sum: %d\n", windowSum)  // 6
+
+      // Slide window: add nums[3], remove nums[0]
+      windowSum = windowSum + nums[3] - nums[0]
+      fmt.Printf("Window [1:4] sum: %d\n", windowSum)  // 9
+
+      // Slide again: add nums[4], remove nums[1]
+      windowSum = windowSum + nums[4] - nums[1]
+      fmt.Printf("Window [2:5] sum: %d\n", windowSum)  // 12
+    expectedOutput: |-
+      Window [0:3] sum: 6
+      Window [1:4] sum: 9
+      Window [2:5] sum: 12
+    keyInsight: |-
+      The sliding window trick: instead of recalculating the entire sum (O(k)), just add the new element and subtract the leaving element (O(1)). This makes processing all windows O(n) instead of O(n*k)!
+  - id: pre6b
+    title: Variable Window with Map
+    problem: |-
+      Track characters in a variable-size window. Given string "abca", add characters one by one to a <code>map[byte]int</code> (tracking counts), then simulate shrinking by decrementing counts.
+    hints:
+    - title: 'Step 1: Setup and expand'
+      content: |-
+        <pre>s := "abca"
+        seen := make(map[byte]int)
+
+        // Add each character (expanding window)
+        for i := 0; i < len(s); i++ {
+            seen[s[i]]++
+            fmt.Printf("Added %c, counts: %v\n", s[i], seen)
+        }</pre>
+    - title: 'Step 2: Shrink from left'
+      content: |-
+        <pre>// Remove the first character (shrink)
+        seen[s[0]]--
+        if seen[s[0]] == 0 {
+            delete(seen, s[0])  // Clean up zero counts
+        }
+        fmt.Printf("After removing %c: %v\n", s[0], seen)</pre>
+    solution: |-
+      s := "abca"
+      seen := make(map[byte]int)
+
+      // Expand: add all characters
+      for i := 0; i < len(s); i++ {
+          seen[s[i]]++
+      }
+      fmt.Printf("Full window: %v\n", seen)  // a:2, b:1, c:1
+
+      // Shrink: remove from left (index 0 = 'a')
+      seen[s[0]]--
+      if seen[s[0]] == 0 {
+          delete(seen, s[0])
+      }
+      fmt.Printf("After removing s[0]: %v\n", seen)  // a:1, b:1, c:1
+
+      // Shrink more: remove s[1] = 'b'
+      seen[s[1]]--
+      if seen[s[1]] == 0 {
+          delete(seen, s[1])
+      }
+      fmt.Printf("After removing s[1]: %v\n", seen)  // a:1, c:1
+    expectedOutput: |-
+      Full window: map[97:2 98:1 99:1]
+      After removing s[0]: map[97:1 98:1 99:1]
+      After removing s[1]: map[97:1 99:1]
+    keyInsight: |-
+      Variable sliding windows use a map to track what's in the window. When expanding (right pointer moves), increment counts. When shrinking (left pointer moves), decrement counts. Delete keys when count hits 0 to keep the map clean.
+advanced_7:
+  title: 'Pre-exercise: Tracking Best So Far'
+  description: |-
+    Before tackling optimization problems, let's practice the core pattern: tracking a running minimum/maximum while scanning.
+  exercises:
+  - id: pre7a
+    title: Track Running Minimum
+    problem: |-
+      Given <code>[]int{5, 3, 8, 1, 9, 2}</code>, print the running minimum after each element. Output should show: 5, 3, 3, 1, 1, 1.
+    hints:
+    - title: 'Step 1: Initialize'
+      content: |-
+        <pre>nums := []int{5, 3, 8, 1, 9, 2}
+        minSoFar := nums[0]
+        fmt.Println(minSoFar)  // First element is the min so far</pre>
+    - title: 'Step 2: Loop and update'
+      content: |-
+        <pre>for i := 1; i < len(nums); i++ {
+            if nums[i] < minSoFar {
+                minSoFar = nums[i]
+            }
+            fmt.Println(minSoFar)
+        }</pre>
+    solution: |-
+      nums := []int{5, 3, 8, 1, 9, 2}
+      minSoFar := nums[0]
+      fmt.Println(minSoFar)
+
+      for i := 1; i < len(nums); i++ {
+          if nums[i] < minSoFar {
+              minSoFar = nums[i]
+          }
+          fmt.Println(minSoFar)
+      }
+    expectedOutput: |-
+      5
+      3
+      3
+      1
+      1
+      1
+    keyInsight: |-
+      At each position, <code>minSoFar</code> holds the smallest value we've seen from the start up to that point. This is the foundation of the 'Best So Far' pattern - we don't need to remember ALL previous values, just the one that matters!
+  - id: pre7b
+    title: Calculate Difference from Minimum
+    problem: |-
+      Given <code>[]int{5, 3, 8, 1, 9}</code>, for each element print the difference between it and the minimum of all PREVIOUS elements. Skip the first element (no previous elements). Output: -2, 5, -2, 8.
+    hints:
+    - title: 'Step 1: Initialize'
+      content: |-
+        <pre>nums := []int{5, 3, 8, 1, 9}
+        minSoFar := nums[0]  // Min of elements before current</pre>
+    - title: 'Step 2: Loop from second element'
+      content: |-
+        <pre>for i := 1; i < len(nums); i++ {
+            diff := nums[i] - minSoFar
+            fmt.Println(diff)
+            // Update minSoFar AFTER calculating diff
+            if nums[i] < minSoFar {
+                minSoFar = nums[i]
+            }
+        }</pre>
+    - title: Key insight
+      content: |-
+        The order matters! Calculate the difference BEFORE updating minSoFar. This ensures we're comparing to the minimum of previous elements, not including the current one.
+    solution: "nums := []int{5, 3, 8, 1, 9}\nminSoFar := nums[0]\n\nfor i := 1; i\
+      \ < len(nums); i++ {\n    diff := nums[i] - minSoFar\n    fmt.Println(diff)\n\
+      \    \n    // Update min AFTER calculating diff\n    if nums[i] < minSoFar {\n\
+      \        minSoFar = nums[i]\n    }\n}"
+    expectedOutput: |-
+      -2
+      5
+      -2
+      8
+    keyInsight: |-
+      This is exactly the stock problem! The difference <code>nums[i] - minSoFar</code> is the profit if you bought at the minimum price so far and sold today. The maximum of all these differences is your answer. Notice we update minSoFar AFTER calculating the diff - order matters!

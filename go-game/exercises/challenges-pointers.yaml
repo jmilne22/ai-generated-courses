@@ -1,0 +1,398 @@
+- id: pointers_1
+  concept: Pointers
+  difficulty: 2
+  patternPrimer:
+    bruteForce: Pass values directly - but changes won't persist outside the function.
+    bestApproach: |-
+      Use pointers to modify values in place. Remember: & gets address, * dereferences.
+    typical: O(1) for pointer operations
+  variants:
+  - id: v1
+    title: Double It
+    difficulty: 1
+    description: Write <code>func double(n *int)</code> that doubles the value at
+      the pointer.
+    functionSignature: func double(n *int)
+    testCases:
+    - input: x := 5; double(&x)
+      output: x == 10
+    - input: x := 0; double(&x)
+      output: x == 0
+    hints:
+    - title: Think about it
+      content: |-
+        To modify a value through a pointer, you need to dereference it with <code>*</code>
+    - title: Hint
+      content: <code>*n</code> gives you the value. <code>*n = something</code> sets
+        it.
+    - title: Pattern
+      content: <pre>*n = *n * 2</pre>
+    solution: |-
+      func double(n *int) {
+          *n = *n * 2
+      }
+  - id: v2
+    title: Increment Value
+    difficulty: 1
+    description: |-
+      Write <code>func increment(n *int)</code> that adds 1 to the value at the pointer.
+    functionSignature: func increment(n *int)
+    testCases:
+    - input: x := 5; increment(&x)
+      output: x == 6
+    hints:
+    - title: Think about it
+      content: 'Dereference and increment: <code>*n++</code> or <code>*n = *n + 1</code>'
+    solution: |-
+      func increment(n *int) {
+          *n++
+      }
+  - id: v3
+    title: Swap Values
+    difficulty: 1
+    description: Write <code>func swap(a, b *int)</code> that swaps two integers via
+      pointers.
+    functionSignature: func swap(a, b *int)
+    testCases:
+    - input: x, y := 1, 2; swap(&x, &y)
+      output: x == 2, y == 1
+    hints:
+    - title: Think about it
+      content: |-
+        Classic swap needs a temp variable. But you're swapping what the pointers point TO.
+    - title: Hint
+      content: 'Go can do parallel assignment: <code>*a, *b = *b, *a</code>'
+    solution: |-
+      func swap(a, b *int) {
+          *a, *b = *b, *a
+      }
+  - id: v4
+    title: Set to Zero
+    difficulty: 1
+    description: Write <code>func reset(n *int)</code> that sets the pointed value
+      to 0.
+    functionSignature: func reset(n *int)
+    testCases:
+    - input: x := 42; reset(&x)
+      output: x == 0
+    hints:
+    - title: Hint
+      content: <code>*n = 0</code>
+    solution: |-
+      func reset(n *int) {
+          *n = 0
+      }
+  - id: v5
+    title: Nil Check
+    difficulty: 2
+    description: |-
+      Write <code>func safeDouble(n *int) int</code> that returns doubled value, or 0 if pointer is nil.
+    functionSignature: func safeDouble(n *int) int
+    testCases:
+    - input: x := 5; safeDouble(&x)
+      output: '10'
+    - input: safeDouble(nil)
+      output: '0'
+    hints:
+    - title: Think about it
+      content: Always check for nil before dereferencing!
+    - title: Hint
+      content: <code>if n == nil { return 0 }</code>
+    solution: |-
+      func safeDouble(n *int) int {
+          if n == nil {
+              return 0
+          }
+          return *n * 2
+      }
+  - id: v6
+    title: Increment All
+    difficulty: 2
+    description: |-
+      Write <code>func incrementAll(nums []*int)</code> that adds 1 to each value pointed to.
+    functionSignature: func incrementAll(nums []*int)
+    testCases:
+    - input: a, b := 1, 2; incrementAll([]*int{&a, &b})
+      output: a == 2, b == 3
+    hints:
+    - title: Think about it
+      content: Loop through the slice of pointers, dereference each one.
+    - title: Hint
+      content: <code>for _, p := range nums { *p++ }</code>
+    solution: |-
+      func incrementAll(nums []*int) {
+          for _, p := range nums {
+              *p++
+          }
+      }
+  - id: v7
+    title: Max Via Pointer
+    difficulty: 2
+    description: |-
+      Write <code>func setToMax(target *int, vals []int)</code> that sets target to the max value in vals.
+    functionSignature: func setToMax(target *int, vals []int)
+    testCases:
+    - input: x := 0; setToMax(&x, []int{3, 7, 2})
+      output: x == 7
+    hints:
+    - title: Think about it
+      content: Find the max, then assign it through the pointer.
+    - title: Hint
+      content: 'After finding max: <code>*target = maxVal</code>'
+    solution: |-
+      func setToMax(target *int, vals []int) {
+          if len(vals) == 0 {
+              return
+          }
+          max := vals[0]
+          for _, v := range vals[1:] {
+              if v > max {
+                  max = v
+              }
+          }
+          *target = max
+      }
+  - id: v8
+    title: Scale Array
+    difficulty: 2
+    description: |-
+      Write <code>func scale(nums []int, factor int)</code> that multiplies each element by factor in-place.
+    functionSignature: func scale(nums []int, factor int)
+    testCases:
+    - input: nums := []int{1, 2, 3}; scale(nums, 2)
+      output: nums == [2, 4, 6]
+    hints:
+    - title: Think about it
+      content: Slices are reference types - modifying elements affects the original.
+    - title: Hint
+      content: <code>for i := range nums { nums[i] *= factor }</code>
+    solution: |-
+      func scale(nums []int, factor int) {
+          for i := range nums {
+              nums[i] *= factor
+          }
+      }
+  - id: v9
+    title: Return New or Modify
+    difficulty: 3
+    description: |-
+      Write <code>func getOrCreate(p **int) *int</code> that returns *p if not nil, else creates new int(0) and sets *p to it.
+    functionSignature: func getOrCreate(p **int) *int
+    testCases:
+    - input: var ptr *int; getOrCreate(&ptr)
+      output: '*ptr == 0'
+    hints:
+    - title: Think about it
+      content: Double pointer lets you modify where a pointer points.
+    - title: Hint
+      content: <code>if *p == nil { *p = new(int) }</code>
+    solution: |-
+      func getOrCreate(p **int) *int {
+          if *p == nil {
+              *p = new(int)
+          }
+          return *p
+      }
+  - id: v10
+    title: Pointer Arithmetic Alternative
+    difficulty: 3
+    description: |-
+      Write <code>func sumViaPointers(nums []int) int</code> using a pointer to iterate (Go doesn't have pointer arithmetic, but you can use index + address).
+    functionSignature: func sumViaPointers(nums []int) int
+    testCases:
+    - input: sumViaPointers([]int{1, 2, 3})
+      output: '6'
+    hints:
+    - title: Think about it
+      content: In Go, use <code>&nums[i]</code> to get pointer to element i.
+    - title: Hint
+      content: Loop with index, get pointer, dereference and add.
+    solution: |-
+      func sumViaPointers(nums []int) int {
+          sum := 0
+          for i := range nums {
+              p := &nums[i]
+              sum += *p
+          }
+          return sum
+      }
+  - id: v11
+    title: Value vs Reference
+    difficulty: 1
+    description: |-
+      What prints? <code>x := 5; y := x; y = 10; fmt.Println(x)</code> - Why doesn't x change?
+    hints:
+    - title: Think about it
+      content: In Go, assignment copies the value. y gets a COPY of x.
+    - title: Hint
+      content: x stays 5 because y is independent. To share, you'd need pointers.
+    solution: |-
+      x := 5
+      y := x   // y gets a COPY of 5
+      y = 10   // only changes y
+      fmt.Println(x)  // 5 - x unchanged
+  - id: v12
+    title: Pointer Comparison
+    difficulty: 2
+    description: |-
+      Given <code>a := 5; b := 5; pa := &a; pb := &b</code> - is <code>pa == pb</code>? Is <code>*pa == *pb</code>?
+    hints:
+    - title: Think about it
+      content: Pointer comparison checks if they point to the SAME memory address.
+    - title: Hint
+      content: pa != pb (different addresses), but *pa == *pb (same value).
+    solution: |-
+      a := 5
+      b := 5
+      pa := &a
+      pb := &b
+
+      fmt.Println(pa == pb)   // false - different addresses
+      fmt.Println(*pa == *pb) // true - same value
+  - id: v13
+    title: Return Pointer from Function
+    difficulty: 2
+    description: |-
+      Write <code>func newInt(val int) *int</code> that returns a pointer to a new int with the given value.
+    functionSignature: func newInt(val int) *int
+    hints:
+    - title: Think about it
+      content: Go allows returning pointers to local variables - they escape to heap.
+    - title: Hint
+      content: <code>return &val</code> or use <code>new(int)</code>
+    solution: |-
+      func newInt(val int) *int {
+          return &val  // Go moves this to heap
+      }
+  - id: v14
+    title: Why Pointer Failed
+    difficulty: 2
+    description: |-
+      Bug hunt: <code>func broken(n *int) { n = new(int); *n = 42 }</code> - Why doesn't the caller see 42?
+    hints:
+    - title: Think about it
+      content: |-
+        The function receives a COPY of the pointer. Reassigning n only changes the local copy.
+    - title: Hint
+      content: To change where a pointer points, you need **int (pointer to pointer).
+    solution: |-
+      func broken(n *int) {
+          n = new(int)  // Changes LOCAL copy of pointer
+          *n = 42       // Modifies the new int, not caller's
+      }
+
+      // Caller's pointer still points to original!
+      // Fix: func fixed(n **int) or return *int
+  - id: v15
+    title: Slice Already Reference
+    difficulty: 2
+    description: |-
+      Write <code>func doubleAll(nums []int)</code> - do you need a pointer? Why or why not?
+    functionSignature: func doubleAll(nums []int)
+    hints:
+    - title: Think about it
+      content: Slices contain a pointer to the underlying array. Modifying elements
+        works!
+    - title: Hint
+      content: |-
+        No pointer needed for modifying elements. Pointer needed only for append/reslice.
+    solution: |-
+      func doubleAll(nums []int) {
+          for i := range nums {
+              nums[i] *= 2  // Works! Slice header has pointer to array
+          }
+      }
+
+      // But if you need to GROW the slice (append), use *[]int
+  - id: v16
+    title: Map is Reference Type
+    difficulty: 2
+    description: |-
+      Write <code>func addEntry(m map[string]int, k string, v int)</code> - why no pointer needed?
+    functionSignature: func addEntry(m map[string]int, k string, v int)
+    hints:
+    - title: Think about it
+      content: Maps are reference types - the map value IS a pointer to the data structure.
+    solution: |-
+      func addEntry(m map[string]int, k string, v int) {
+          m[k] = v  // Works! Map is already a reference type
+      }
+  - id: v17
+    title: Pointer in Struct
+    difficulty: 3
+    description: |-
+      Define <code>Node</code> struct with Value int and Next *Node for a linked list node.
+    hints:
+    - title: Think about it
+      content: Self-referential structs require pointers - can't embed Node directly.
+    solution: |-
+      type Node struct {
+          Value int
+          Next  *Node  // Must be pointer - can't embed Node in Node
+      }
+
+      // Create linked list: 1 -> 2 -> 3
+      n3 := &Node{Value: 3, Next: nil}
+      n2 := &Node{Value: 2, Next: n3}
+      n1 := &Node{Value: 1, Next: n2}
+  - id: v18
+    title: String Pointer Optional
+    difficulty: 3
+    description: |-
+      Why use <code>*string</code> instead of <code>string</code>? Write a struct field that's "optional" (can be absent vs empty).
+    hints:
+    - title: Think about it
+      content: Empty string "" vs not-provided are different! Pointer can be nil.
+    - title: Hint
+      content: 'Common in JSON APIs: null vs "" have different meanings.'
+    solution: |-
+      type UserUpdate struct {
+          Name *string  // nil = don't update, "" = set to empty
+      }
+
+      // Checking:
+      if u.Name != nil {
+          // Field was provided
+          actualName := *u.Name  // Could be "" or "John"
+      }
+  - id: v19
+    title: Pointer vs new()
+    difficulty: 1
+    description: |-
+      What's the difference between <code>p := &int{}</code> (error!), <code>p := new(int)</code>, and <code>x := 0; p := &x</code>?
+    hints:
+    - title: Think about it
+      content: |-
+        <code>new(T)</code> allocates zeroed memory and returns *T. Can't do &literal for primitives.
+    solution: |-
+      // These work:
+      p1 := new(int)      // *int pointing to 0
+      x := 0; p2 := &x    // *int pointing to x
+
+      // This doesn't work:
+      // p := &5          // Can't take address of literal
+
+      // But structs can use &Type{}:
+      p3 := &Point{X: 1}  // Works for composite literals
+  - id: v20
+    title: Modify String Characters
+    difficulty: 3
+    description: |-
+      Strings are immutable. To 'modify' a string, what type do you convert to? Write code to uppercase first char.
+    hints:
+    - title: Think about it
+      content: Convert to []byte or []rune, modify, convert back. Pointers won't help
+        here!
+    - title: Hint
+      content: 'For ASCII: []byte. For Unicode: []rune'
+    solution: |-
+      func upperFirst(s string) string {
+          if s == "" {
+              return s
+          }
+          runes := []rune(s)
+          runes[0] = unicode.ToUpper(runes[0])
+          return string(runes)
+      }
+
+      // Strings are immutable - no pointer can change them in place

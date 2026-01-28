@@ -1,0 +1,398 @@
+- id: interfaces_1
+  concept: Interfaces
+  difficulty: 3
+  patternPrimer:
+    bruteForce: Use type switches everywhere to handle different types.
+    bestApproach: |-
+      Define interfaces for common behavior. Types implement implicitly by having the methods.
+    typical: O(1) for interface method dispatch
+  variants:
+  - id: v1
+    title: Speaker Interface
+    difficulty: 1
+    description: |-
+      Define <code>Speaker</code> interface with <code>Speak() string</code>. Make <code>Dog</code> and <code>Cat</code> implement it.
+    hints:
+    - title: Think about it
+      content: Interfaces are implicit - just implement the method!
+    - title: Hint
+      content: <code>type Speaker interface { Speak() string }</code>
+    solution: |-
+      type Speaker interface {
+          Speak() string
+      }
+
+      type Dog struct{}
+      func (d Dog) Speak() string { return "Woof!" }
+
+      type Cat struct{}
+      func (c Cat) Speak() string { return "Meow!" }
+  - id: v2
+    title: Use Interface
+    difficulty: 1
+    description: Write <code>func announce(s Speaker)</code> that prints what the
+      speaker says.
+    functionSignature: func announce(s Speaker)
+    hints:
+    - title: Hint
+      content: Just call <code>s.Speak()</code> - works for any Speaker!
+    solution: |-
+      func announce(s Speaker) {
+          fmt.Println(s.Speak())
+      }
+  - id: v3
+    title: Shape Interface
+    difficulty: 2
+    description: |-
+      Define <code>Shape</code> interface with <code>Area() float64</code>. Implement for Circle (with Radius).
+    functionSignature: func (c Circle) Area() float64
+    hints:
+    - title: Think about it
+      content: Circle area = π × r². Use <code>math.Pi</code>.
+    solution: |-
+      type Shape interface {
+          Area() float64
+      }
+
+      type Circle struct {
+          Radius float64
+      }
+
+      func (c Circle) Area() float64 {
+          return math.Pi * c.Radius * c.Radius
+      }
+  - id: v4
+    title: Rectangle Shape
+    difficulty: 2
+    description: Implement Shape interface for <code>Rectangle</code> with Width and
+      Height.
+    functionSignature: func (r Rectangle) Area() float64
+    hints:
+    - title: Hint
+      content: <code>return r.Width * r.Height</code>
+    solution: |-
+      type Rectangle struct {
+          Width, Height float64
+      }
+
+      func (r Rectangle) Area() float64 {
+          return r.Width * r.Height
+      }
+  - id: v5
+    title: Total Area
+    difficulty: 2
+    description: Write <code>func totalArea(shapes []Shape) float64</code> that sums
+      all areas.
+    functionSignature: func totalArea(shapes []Shape) float64
+    hints:
+    - title: Think about it
+      content: Loop through, call Area() on each - polymorphism!
+    solution: |-
+      func totalArea(shapes []Shape) float64 {
+          var total float64
+          for _, s := range shapes {
+              total += s.Area()
+          }
+          return total
+      }
+  - id: v6
+    title: Type Assertion
+    difficulty: 2
+    description: |-
+      Write <code>func getRadius(s Shape) (float64, bool)</code> that returns radius if s is a Circle.
+    functionSignature: func getRadius(s Shape) (float64, bool)
+    hints:
+    - title: Think about it
+      content: 'Use type assertion with comma-ok: <code>c, ok := s.(Circle)</code>'
+    solution: |-
+      func getRadius(s Shape) (float64, bool) {
+          c, ok := s.(Circle)
+          if !ok {
+              return 0, false
+          }
+          return c.Radius, true
+      }
+  - id: v7
+    title: Type Switch
+    difficulty: 3
+    description: |-
+      Write <code>func describeShape(s Shape) string</code> that returns "circle", "rectangle", or "unknown".
+    functionSignature: func describeShape(s Shape) string
+    hints:
+    - title: Think about it
+      content: 'Use type switch: <code>switch s.(type)</code>'
+    solution: |-
+      func describeShape(s Shape) string {
+          switch s.(type) {
+          case Circle:
+              return "circle"
+          case Rectangle:
+              return "rectangle"
+          default:
+              return "unknown"
+          }
+      }
+  - id: v8
+    title: Empty Interface
+    difficulty: 3
+    description: |-
+      Write <code>func printType(v any)</code> that prints the value's type using <code>%T</code>.
+    functionSignature: func printType(v any)
+    hints:
+    - title: Think about it
+      content: <code>any</code> (or <code>interface{}</code>) accepts any type.
+    solution: |-
+      func printType(v any) {
+          fmt.Printf("%T\n", v)
+      }
+  - id: v9
+    title: Stringer Interface
+    difficulty: 3
+    description: |-
+      Make <code>Player</code> implement <code>fmt.Stringer</code> by adding <code>String() string</code>.
+    functionSignature: func (p Player) String() string
+    hints:
+    - title: Think about it
+      content: fmt.Stringer requires String() string method.
+    solution: |-
+      func (p Player) String() string {
+          return fmt.Sprintf("%s (Lv.%d, HP:%d)", p.Name, p.Level, p.HP)
+      }
+  - id: v10
+    title: Multiple Interfaces
+    difficulty: 3
+    description: |-
+      Define <code>ReadWriter</code> interface that combines <code>Reader</code> (Read) and <code>Writer</code> (Write) methods.
+    hints:
+    - title: Think about it
+      content: Interfaces can embed other interfaces.
+    - title: Hint
+      content: <code>type ReadWriter interface { Reader; Writer }</code>
+    solution: |-
+      type Reader interface {
+          Read(p []byte) (n int, err error)
+      }
+
+      type Writer interface {
+          Write(p []byte) (n int, err error)
+      }
+
+      type ReadWriter interface {
+          Reader
+          Writer
+      }
+  - id: v11
+    title: Implicit Implementation
+    difficulty: 1
+    description: |-
+      Does Dog need to declare it implements Speaker? What keyword is missing compared to Java/C#?
+    hints:
+    - title: Think about it
+      content: Go has NO 'implements' keyword. Just have the methods!
+    solution: |-
+      type Speaker interface {
+          Speak() string
+      }
+
+      type Dog struct{}
+
+      // Just implement the method - no declaration needed!
+      func (d Dog) Speak() string { return "Woof!" }
+
+      // Dog automatically satisfies Speaker
+      var s Speaker = Dog{}  // Works!
+  - id: v12
+    title: Compile-Time Check
+    difficulty: 2
+    description: How do you verify at compile time that Dog implements Speaker?
+    hints:
+    - title: Think about it
+      content: Assign to a variable of interface type. Use blank identifier if unused.
+    solution: |-
+      type Speaker interface {
+          Speak() string
+      }
+
+      type Dog struct{}
+      func (d Dog) Speak() string { return "Woof!" }
+
+      // Compile-time check (common pattern)
+      var _ Speaker = Dog{}      // Value
+      var _ Speaker = (*Dog)(nil) // Pointer - checks *Dog implements Speaker
+  - id: v13
+    title: Accept Interface Return Struct
+    difficulty: 2
+    description: Why is "accept interfaces, return structs" a Go best practice?
+    hints:
+    - title: Think about it
+      content: Interfaces in params = flexibility. Concrete returns = clarity for
+        callers.
+    solution: |-
+      // GOOD: Accept interface - works with any io.Reader
+      func Process(r io.Reader) error {
+          // Can use *os.File, *bytes.Buffer, http.Response.Body...
+      }
+
+      // GOOD: Return concrete type
+      func NewPlayer() *Player {  // Not returning some interface
+          return &Player{HP: 100}
+      }
+
+      // Caller knows exactly what they get
+  - id: v14
+    title: Nil Interface Gotcha
+    difficulty: 3
+    description: |-
+      Why does this panic? <code>var p *Player = nil; var s Speaker = p; s.Speak()</code>
+    hints:
+    - title: Think about it
+      content: Interface has (type, value). s is not nil - it has type *Player, value
+        nil.
+    solution: |-
+      var p *Player = nil
+      var s Speaker = p  // s is NOT nil!
+
+      // s has: (type: *Player, value: nil)
+      // s != nil, but calling method panics because *Player is nil
+
+      // Fix: Check the concrete value
+      if p == nil {
+          // Don't assign to interface
+      }
+  - id: v15
+    title: Error Interface
+    difficulty: 2
+    description: The <code>error</code> type is an interface. What method must you
+      implement?
+    hints:
+    - title: Think about it
+      content: <code>type error interface { Error() string }</code>
+    solution: |-
+      // Custom error type
+      type ValidationError struct {
+          Field string
+          Msg   string
+      }
+
+      func (e ValidationError) Error() string {
+          return fmt.Sprintf("%s: %s", e.Field, e.Msg)
+      }
+
+      // Now it's an error:
+      var err error = ValidationError{"name", "required"}
+      fmt.Println(err)  // name: required
+  - id: v16
+    title: Small Interfaces
+    difficulty: 2
+    description: |-
+      Why does Go prefer small interfaces (1-2 methods) like io.Reader, io.Writer, fmt.Stringer?
+    hints:
+    - title: Think about it
+      content: Smaller = more types can satisfy it = more flexibility.
+    solution: |-
+      // io.Reader has ONE method
+      type Reader interface {
+          Read(p []byte) (n int, err error)
+      }
+
+      // Tons of types implement it:
+      // *os.File, *bytes.Buffer, *strings.Reader,
+      // net.Conn, http.Response.Body, gzip.Reader...
+
+      // Big interfaces = fewer implementers = less useful
+  - id: v17
+    title: Interface Nil Check
+    difficulty: 3
+    description: |-
+      Write <code>func isNil(i interface{}) bool</code> that returns true only if the underlying value is nil.
+    functionSignature: func isNil(i interface{}) bool
+    hints:
+    - title: Think about it
+      content: |-
+        Use reflection: <code>reflect.ValueOf(i).IsNil()</code> but handle nil interface itself.
+    solution: |-
+      func isNil(i interface{}) bool {
+          if i == nil {
+              return true
+          }
+          v := reflect.ValueOf(i)
+          switch v.Kind() {
+          case reflect.Ptr, reflect.Map, reflect.Slice, reflect.Chan, reflect.Func:
+              return v.IsNil()
+          }
+          return false
+      }
+  - id: v18
+    title: Interface Composition
+    difficulty: 2
+    description: |-
+      Create <code>Attacker</code> (Attack), <code>Defender</code> (Defend), then <code>Fighter</code> combining both.
+    hints:
+    - title: Hint
+      content: Embed interfaces in an interface to combine them.
+    solution: |-
+      type Attacker interface {
+          Attack() int
+      }
+
+      type Defender interface {
+          Defend(damage int) int
+      }
+
+      type Fighter interface {
+          Attacker
+          Defender
+      }
+
+      // Player must have BOTH methods to be a Fighter
+  - id: v19
+    title: Duck Typing Power
+    difficulty: 2
+    description: |-
+      You have a third-party <code>Database</code> struct. Without modifying it, make it satisfy your <code>Storage</code> interface.
+    hints:
+    - title: Think about it
+      content: If Database already has the methods Storage needs, it ALREADY satisfies
+        it!
+    solution: |-
+      // Your interface
+      type Storage interface {
+          Get(key string) (string, error)
+          Set(key, value string) error
+      }
+
+      // Third-party Database (you can't modify)
+      type Database struct { ... }
+      func (d *Database) Get(key string) (string, error) { ... }
+      func (d *Database) Set(key, value string) error { ... }
+
+      // It ALREADY satisfies Storage - no changes needed!
+      var s Storage = &Database{}
+  - id: v20
+    title: Wrapper for Missing Method
+    difficulty: 3
+    description: |-
+      If ThirdPartyDB has <code>Fetch</code> but you need <code>Get</code>, how do you adapt it?
+    hints:
+    - title: Think about it
+      content: Create a wrapper type that embeds it and adds the needed method.
+    solution: |-
+      // ThirdParty has Fetch, not Get
+      type ThirdPartyDB struct{}
+      func (t *ThirdPartyDB) Fetch(key string) string { ... }
+
+      // Your interface wants Get
+      type Storage interface {
+          Get(key string) string
+      }
+
+      // Adapter wrapper
+      type DBAdapter struct {
+          *ThirdPartyDB
+      }
+
+      func (a *DBAdapter) Get(key string) string {
+          return a.Fetch(key)  // Delegate
+      }
+
+      var s Storage = &DBAdapter{&ThirdPartyDB{}}

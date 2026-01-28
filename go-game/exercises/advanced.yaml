@@ -1,0 +1,930 @@
+- id: advanced_1
+  difficulty: 5
+  baseTitle: Map as Set
+  concept: Map as Set - Have I Seen This?
+  variants:
+  - id: v1
+    title: Contains Duplicate
+    description: |-
+      Write a function <code>func containsDuplicate(nums []int) bool</code> that returns <code>true</code> if any number appears more than once in the slice, <code>false</code> if all numbers are unique.
+    functionSignature: func containsDuplicate(nums []int) bool
+    testCases:
+    - input: '[]int{1, 2, 3, 1}'
+      output: 'true'
+    - input: '[]int{1, 2, 3, 4}'
+      output: 'false'
+    - input: '[]int{1, 1, 1, 1}'
+      output: 'true'
+    solution: |-
+      func containsDuplicate(nums []int) bool {
+          seen := make(map[int]bool)
+          for _, num := range nums {
+              if seen[num] {
+                  return true
+              }
+              seen[num] = true
+          }
+          return false
+      }
+  - id: v2
+    title: First Duplicate Value
+    description: |-
+      Write a function <code>func firstDuplicate(nums []int) int</code> that returns the first number that appears twice (the second occurrence). Return <code>-1</code> if no duplicates exist.
+    functionSignature: func firstDuplicate(nums []int) int
+    testCases:
+    - input: '[]int{2, 1, 3, 5, 3, 2}'
+      output: '3'
+      note: 3 is seen again before 2 is
+    - input: '[]int{1, 2, 3, 4}'
+      output: '-1'
+    - input: '[]int{1, 1, 2, 2}'
+      output: '1'
+    solution: |-
+      func firstDuplicate(nums []int) int {
+          seen := make(map[int]bool)
+          for _, num := range nums {
+              if seen[num] {
+                  return num
+              }
+              seen[num] = true
+          }
+          return -1
+      }
+    solutionNotes: |-
+      Unlike Contains Duplicate which returns a bool, this returns the actual duplicate value. Same pattern, different return type!
+  - id: v3
+    title: Count Unique Elements
+    description: |-
+      Write a function <code>func countUnique(nums []int) int</code> that returns how many distinct values are in the slice.
+    functionSignature: func countUnique(nums []int) int
+    testCases:
+    - input: '[]int{1, 2, 2, 3, 3, 3}'
+      output: '3'
+      note: 'unique values: 1, 2, 3'
+    - input: '[]int{5, 5, 5, 5}'
+      output: '1'
+    - input: '[]int{1, 2, 3, 4, 5}'
+      output: '5'
+    solution: |-
+      func countUnique(nums []int) int {
+          seen := make(map[int]bool)
+          for _, num := range nums {
+              seen[num] = true
+          }
+          return len(seen)
+      }
+    solutionNotes: |-
+      Here we don't check if seen - we just add everything. The map handles duplicates automatically, and <code>len(seen)</code> gives us the count of unique keys!
+  - id: v4
+    title: Find All Duplicates
+    description: |-
+      Write a function <code>func findDuplicates(nums []int) []int</code> that returns a slice containing each number that appears more than once. Each duplicate should only appear once in the result.
+    functionSignature: func findDuplicates(nums []int) []int
+    testCases:
+    - input: '[]int{4, 3, 2, 7, 8, 2, 3, 1}'
+      output: '[2, 3]'
+    - input: '[]int{1, 1, 2, 2, 3, 3}'
+      output: '[1, 2, 3]'
+    - input: '[]int{1, 2, 3}'
+      output: '[]'
+    solution: "func findDuplicates(nums []int) []int {\n    seen := make(map[int]bool)\n\
+      \    added := make(map[int]bool)\n    result := []int{}\n    \n    for _, num\
+      \ := range nums {\n        if seen[num] && !added[num] {\n            result\
+      \ = append(result, num)\n            added[num] = true\n        }\n        seen[num]\
+      \ = true\n    }\n    return result\n}"
+    solutionNotes: |-
+      We need TWO maps here: one to track what we've seen, and one to avoid adding the same duplicate twice to the result.
+  - id: v5
+    title: Common Elements
+    description: |-
+      Write a function <code>func hasCommon(a, b []int) bool</code> that returns <code>true</code> if the two slices share at least one common element.
+    functionSignature: func hasCommon(a, b []int) bool
+    testCases:
+    - input: '[]int{1, 2, 3}, []int{3, 4, 5}'
+      output: 'true'
+      note: 3 is common
+    - input: '[]int{1, 2}, []int{3, 4}'
+      output: 'false'
+    - input: '[]int{1}, []int{1}'
+      output: 'true'
+    solution: "func hasCommon(a, b []int) bool {\n    setA := make(map[int]bool)\n\
+      \    for _, num := range a {\n        setA[num] = true\n    }\n    \n    for\
+      \ _, num := range b {\n        if setA[num] {\n            return true\n   \
+      \     }\n    }\n    return false\n}"
+    solutionNotes: |-
+      Build a set from the first slice, then check if any element from the second slice exists in it. This is O(n+m) instead of O(n*m)!
+  - id: v6
+    title: Find Intersection
+    description: |-
+      Write a function <code>func intersection(a, b []int) []int</code> that returns a slice of elements that appear in both input slices. Each element should appear only once in the result.
+    functionSignature: func intersection(a, b []int) []int
+    testCases:
+    - input: '[]int{1, 2, 2, 1}, []int{2, 2}'
+      output: '[2]'
+    - input: '[]int{4, 9, 5}, []int{9, 4, 9, 8, 4}'
+      output: '[9, 4]'
+      note: or [4, 9] - order doesn't matter
+    - input: '[]int{1, 2}, []int{3, 4}'
+      output: '[]'
+    solution: "func intersection(a, b []int) []int {\n    setA := make(map[int]bool)\n\
+      \    for _, num := range a {\n        setA[num] = true\n    }\n    \n    result\
+      \ := []int{}\n    seen := make(map[int]bool)\n    for _, num := range b {\n\
+      \        if setA[num] && !seen[num] {\n            result = append(result, num)\n\
+      \            seen[num] = true\n        }\n    }\n    return result\n}"
+    solutionNotes: |-
+      Similar to hasCommon, but we collect the common elements instead of just returning true. We use a second map to avoid adding duplicates to the result.
+- id: advanced_2
+  difficulty: 5
+  baseTitle: Two-Pointer In-Place
+  concept: Slow/Fast Pointer Pattern
+  variants:
+  - id: v1
+    title: Remove Duplicates from Sorted Array
+    description: |-
+      Write a function <code>func removeDuplicates(nums []int) int</code> that removes duplicates from a sorted slice <strong>in-place</strong>. Return the number of unique elements. The first k elements should contain the unique values.
+    functionSignature: func removeDuplicates(nums []int) int
+    testCases:
+    - input: '[]int{1, 1, 2}'
+      output: '2'
+      note: array becomes [1, 2, _]
+    - input: '[]int{0, 0, 1, 1, 2, 2, 3}'
+      output: '4'
+      note: array becomes [0, 1, 2, 3, _, _, _]
+    - input: '[]int{1, 2, 3}'
+      output: '3'
+    solution: |-
+      func removeDuplicates(nums []int) int {
+          if len(nums) == 0 {
+              return 0
+          }
+          slow := 0
+          for fast := 1; fast < len(nums); fast++ {
+              if nums[fast] != nums[slow] {
+                  slow++
+                  nums[slow] = nums[fast]
+              }
+          }
+          return slow + 1
+      }
+  - id: v2
+    title: Remove Element
+    description: |-
+      Write a function <code>func removeElement(nums []int, val int) int</code> that removes all occurrences of <code>val</code> <strong>in-place</strong>. Return the number of elements remaining. Order doesn't need to be preserved.
+    functionSignature: func removeElement(nums []int, val int) int
+    testCases:
+    - input: '[]int{3, 2, 2, 3}, 3'
+      output: '2'
+      note: array becomes [2, 2, _, _]
+    - input: '[]int{0, 1, 2, 2, 3, 0, 4, 2}, 2'
+      output: '5'
+    - input: '[]int{1}, 1'
+      output: '0'
+    solution: |-
+      func removeElement(nums []int, val int) int {
+          slow := 0
+          for fast := 0; fast < len(nums); fast++ {
+              if nums[fast] != val {
+                  nums[slow] = nums[fast]
+                  slow++
+              }
+          }
+          return slow
+      }
+    solutionNotes: |-
+      Unlike Remove Duplicates, here we compare against a fixed value, not the previous element. And both pointers start at 0.
+  - id: v3
+    title: Move Zeroes
+    description: |-
+      Write a function <code>func moveZeroes(nums []int)</code> that moves all <code>0</code>s to the end of the slice while maintaining the relative order of non-zero elements. Modify in-place.
+    functionSignature: func moveZeroes(nums []int)
+    testCases:
+    - input: '[]int{0, 1, 0, 3, 12}'
+      output: '[1, 3, 12, 0, 0]'
+    - input: '[]int{0, 0, 1}'
+      output: '[1, 0, 0]'
+    - input: '[]int{1, 2, 3}'
+      output: '[1, 2, 3]'
+      note: no zeroes
+    solution: "func moveZeroes(nums []int) {\n    slow := 0\n    \n    for fast :=\
+      \ 0; fast < len(nums); fast++ {\n        if nums[fast] != 0 {\n            nums[slow]\
+      \ = nums[fast]\n            slow++\n        }\n    }\n    \n    for i := slow;\
+      \ i < len(nums); i++ {\n        nums[i] = 0\n    }\n}"
+    solutionNotes: |-
+      This is a two-pass solution. First pass moves non-zeroes forward, second pass fills remaining positions with zeroes. Can also be done in one pass with swapping!
+  - id: v4
+    title: Remove Duplicates II (Allow 2)
+    description: |-
+      Write a function <code>func removeDuplicatesII(nums []int) int</code> that removes duplicates from a sorted array such that each element appears <strong>at most twice</strong>. Return the new length.
+    functionSignature: func removeDuplicatesII(nums []int) int
+    testCases:
+    - input: '[]int{1, 1, 1, 2, 2, 3}'
+      output: '5'
+      note: becomes [1, 1, 2, 2, 3, _]
+    - input: '[]int{0, 0, 1, 1, 1, 1, 2, 3, 3}'
+      output: '7'
+    - input: '[]int{1, 1}'
+      output: '2'
+    solution: "func removeDuplicatesII(nums []int) int {\n    if len(nums) <= 2 {\n\
+      \        return len(nums)\n    }\n    \n    slow := 2\n    for fast := 2; fast\
+      \ < len(nums); fast++ {\n        if nums[fast] != nums[slow-2] {\n         \
+      \   nums[slow] = nums[fast]\n            slow++\n        }\n    }\n    return\
+      \ slow\n}"
+    solutionNotes: |-
+      The key insight: compare with nums[slow-2], not nums[slow-1]. This ensures at most 2 of each value. Start both pointers at index 2.
+  - id: v5
+    title: Sorted Squares
+    description: |-
+      Write a function <code>func sortedSquares(nums []int) []int</code> that returns an array of the squares of each number, sorted in ascending order. Input is sorted but may contain negatives.
+    functionSignature: func sortedSquares(nums []int) []int
+    testCases:
+    - input: '[]int{-4, -1, 0, 3, 10}'
+      output: '[0, 1, 9, 16, 100]'
+    - input: '[]int{-7, -3, 2, 3, 11}'
+      output: '[4, 9, 9, 49, 121]'
+    - input: '[]int{1, 2, 3}'
+      output: '[1, 4, 9]'
+    solution: "func sortedSquares(nums []int) []int {\n    n := len(nums)\n    result\
+      \ := make([]int, n)\n    left, right := 0, n-1\n    pos := n - 1\n    \n   \
+      \ for left <= right {\n        leftSq := nums[left] * nums[left]\n        rightSq\
+      \ := nums[right] * nums[right]\n        \n        if leftSq > rightSq {\n  \
+      \          result[pos] = leftSq\n            left++\n        } else {\n    \
+      \        result[pos] = rightSq\n            right--\n        }\n        pos--\n\
+      \    }\n    return result\n}"
+    solutionNotes: |-
+      This uses two pointers from OPPOSITE ENDS (not slow/fast). The largest squares are at the edges (most negative or most positive). Fill result array from the back.
+  - id: v6
+    title: Merge Sorted Array
+    description: |-
+      Write a function <code>func merge(nums1 []int, m int, nums2 []int, n int)</code> that merges nums2 into nums1 <strong>in-place</strong>. nums1 has length m+n, with the last n elements being 0 (placeholders).
+    functionSignature: func merge(nums1 []int, m int, nums2 []int, n int)
+    testCases:
+    - input: '[]int{1, 2, 3, 0, 0, 0}, 3, []int{2, 5, 6}, 3'
+      output: '[1, 2, 2, 3, 5, 6]'
+    - input: '[]int{1}, 1, []int{}, 0'
+      output: '[1]'
+    - input: '[]int{0}, 0, []int{1}, 1'
+      output: '[1]'
+    solution: "func merge(nums1 []int, m int, nums2 []int, n int) {\n    p1 := m -\
+      \ 1\n    p2 := n - 1\n    pos := m + n - 1\n    \n    for p2 >= 0 {\n      \
+      \  if p1 >= 0 && nums1[p1] > nums2[p2] {\n            nums1[pos] = nums1[p1]\n\
+      \            p1--\n        } else {\n            nums1[pos] = nums2[p2]\n  \
+      \          p2--\n        }\n        pos--\n    }\n}"
+    solutionNotes: |-
+      Work BACKWARDS to avoid overwriting elements we haven't processed. The loop continues until all of nums2 is merged. If nums1 elements remain, they're already in place.
+- id: advanced_3
+  difficulty: 5
+  baseTitle: String Manipulation
+  concept: Runes + Two-Pointer Swap
+  variants:
+  - id: v1
+    title: Reverse a String
+    description: |-
+      Write <code>func reverse(s string) string</code> that reverses any string, including Unicode characters like emojis.
+    functionSignature: func reverse(s string) string
+    testCases:
+    - input: '"hello"'
+      output: '"olleh"'
+    - input: '"世界"'
+      output: "\"ç\x95\x8Cä¸\x96\""
+    - input: '"Go🚀"'
+      output: '"🚀oG"'
+    solution: |-
+      func reverse(s string) string {
+          runes := []rune(s)
+          for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+              runes[i], runes[j] = runes[j], runes[i]
+          }
+          return string(runes)
+      }
+  - id: v2
+    title: Is Palindrome
+    description: |-
+      Write <code>func isPalindrome(s string) bool</code> that checks if a string reads the same forwards and backwards. Consider only alphanumeric characters and ignore case.
+    functionSignature: func isPalindrome(s string) bool
+    testCases:
+    - input: '"A man, a plan, a canal: Panama"'
+      output: 'true'
+    - input: '"race a car"'
+      output: 'false'
+    - input: '"Was it a car or a cat I saw?"'
+      output: 'true'
+    solution: "import \"unicode\"\n\nfunc isPalindrome(s string) bool {\n    runes\
+      \ := []rune{}\n    for _, r := range s {\n        if unicode.IsLetter(r) ||\
+      \ unicode.IsDigit(r) {\n            runes = append(runes, unicode.ToLower(r))\n\
+      \        }\n    }\n    \n    for i, j := 0, len(runes)-1; i < j; i, j = i+1,\
+      \ j-1 {\n        if runes[i] != runes[j] {\n            return false\n     \
+      \   }\n    }\n    return true\n}"
+    solutionNotes: |-
+      First filter to only alphanumeric and lowercase, then use two-pointer comparison. The <code>unicode</code> package helps with character classification.
+  - id: v3
+    title: Reverse Words in String
+    description: |-
+      Write <code>func reverseWords(s string) string</code> that reverses the order of words (not characters). Words are separated by spaces.
+    functionSignature: func reverseWords(s string) string
+    testCases:
+    - input: '"hello world"'
+      output: '"world hello"'
+    - input: '"the sky is blue"'
+      output: '"blue is sky the"'
+    - input: '"Go"'
+      output: '"Go"'
+    solution: "import \"strings\"\n\nfunc reverseWords(s string) string {\n    words\
+      \ := strings.Fields(s)\n    \n    for i, j := 0, len(words)-1; i < j; i, j =\
+      \ i+1, j-1 {\n        words[i], words[j] = words[j], words[i]\n    }\n    \n\
+      \    return strings.Join(words, \" \")\n}"
+    solutionNotes: |-
+      Use <code>strings.Fields</code> to split by whitespace, reverse the slice of words, then <code>strings.Join</code> back together.
+  - id: v4
+    title: Reverse Only Letters
+    description: |-
+      Write <code>func reverseOnlyLetters(s string) string</code> that reverses only the letters in a string. All other characters stay in their original positions.
+    functionSignature: func reverseOnlyLetters(s string) string
+    testCases:
+    - input: '"a-bC-dEf-ghIj"'
+      output: '"j-Ih-gfE-dCba"'
+    - input: '"ab-cd"'
+      output: '"dc-ba"'
+    - input: '"Test1ng-Leet=code-Q!"'
+      output: '"Qedo1teleC-test=gnin-T!"'
+      note: wait that's wrong
+    solution: "import \"unicode\"\n\nfunc reverseOnlyLetters(s string) string {\n\
+      \    runes := []rune(s)\n    i, j := 0, len(runes)-1\n    \n    for i < j {\n\
+      \        for i < j && !unicode.IsLetter(runes[i]) {\n            i++\n     \
+      \   }\n        for i < j && !unicode.IsLetter(runes[j]) {\n            j--\n\
+      \        }\n        if i < j {\n            runes[i], runes[j] = runes[j], runes[i]\n\
+      \            i++\n            j--\n        }\n    }\n    return string(runes)\n\
+      }"
+    solutionNotes: |-
+      Two pointers that skip non-letters. Only swap when both pointers are on letters. This is a variation of the standard reverse with added skip logic.
+  - id: v5
+    title: Valid Palindrome II
+    description: |-
+      Write <code>func validPalindromeII(s string) bool</code> that returns true if the string can become a palindrome by removing <strong>at most one</strong> character.
+    functionSignature: func validPalindromeII(s string) bool
+    testCases:
+    - input: '"aba"'
+      output: 'true'
+      note: already palindrome
+    - input: '"abca"'
+      output: 'true'
+      note: remove 'c' or 'b'
+    - input: '"abc"'
+      output: 'false'
+    solution: "func validPalindromeII(s string) bool {\n    runes := []rune(s)\n \
+      \   \n    isPalin := func(i, j int) bool {\n        for i < j {\n          \
+      \  if runes[i] != runes[j] {\n                return false\n            }\n\
+      \            i++\n            j--\n        }\n        return true\n    }\n \
+      \   \n    i, j := 0, len(runes)-1\n    for i < j {\n        if runes[i] != runes[j]\
+      \ {\n            return isPalin(i+1, j) || isPalin(i, j-1)\n        }\n    \
+      \    i++\n        j--\n    }\n    return true\n}"
+    solutionNotes: |-
+      When we find a mismatch, we have one chance: try skipping the left char OR the right char. If either results in a palindrome, return true.
+  - id: v6
+    title: Rotate String Left
+    description: |-
+      Write <code>func rotateLeft(s string, k int) string</code> that rotates a string left by k positions. Characters that fall off the left reappear on the right.
+    functionSignature: func rotateLeft(s string, k int) string
+    testCases:
+    - input: '"abcdef", 2'
+      output: '"cdefab"'
+    - input: '"hello", 1'
+      output: '"elloh"'
+    - input: '"Go", 4'
+      output: '"Go"'
+      note: k=4 is same as k=0 for len=2
+    solution: "func rotateLeft(s string, k int) string {\n    if len(s) == 0 {\n \
+      \       return s\n    }\n    runes := []rune(s)\n    k = k % len(runes)\n  \
+      \  \n    reverse := func(start, end int) {\n        for start < end {\n    \
+      \        runes[start], runes[end] = runes[end], runes[start]\n            start++\n\
+      \            end--\n        }\n    }\n    \n    reverse(0, k-1)\n    reverse(k,\
+      \ len(runes)-1)\n    reverse(0, len(runes)-1)\n    \n    return string(runes)\n\
+      }"
+    solutionNotes: |-
+      The "reversal algorithm" for rotation: reverse the first k elements, reverse the rest, then reverse the entire array. Three reversals achieve a rotation!
+- id: advanced_4
+  difficulty: 5
+  baseTitle: Map Counting
+  concept: Map Counting Pattern
+  variants:
+  - id: v1
+    title: Word Counter
+    description: |-
+      Write <code>func wordCount(s string) map[string]int</code> that counts how many times each word appears in a string.
+    functionSignature: func wordCount(s string) map[string]int
+    testCases:
+    - input: '"the quick brown fox jumps over the lazy dog"'
+      output: map[brown:1 dog:1 fox:1 jumps:1 lazy:1 over:1 quick:1 the:2]
+    solution: |-
+      import "strings"
+
+      func wordCount(s string) map[string]int {
+          counts := make(map[string]int)
+          for _, word := range strings.Fields(s) {
+              counts[word]++
+          }
+          return counts
+      }
+  - id: v2
+    title: Most Frequent Element
+    description: |-
+      Write <code>func mostFrequent(nums []int) int</code> that returns the element that appears most frequently. If there's a tie, return any of them.
+    functionSignature: func mostFrequent(nums []int) int
+    testCases:
+    - input: '[]int{1, 3, 2, 1, 4, 1}'
+      output: '1'
+      note: 1 appears 3 times
+    - input: '[]int{5, 5, 4, 4, 4}'
+      output: '4'
+    - input: '[]int{7}'
+      output: '7'
+    solution: "func mostFrequent(nums []int) int {\n    counts := make(map[int]int)\n\
+      \    for _, num := range nums {\n        counts[num]++\n    }\n    \n    maxCount\
+      \ := 0\n    result := nums[0]\n    for num, count := range counts {\n      \
+      \  if count > maxCount {\n            maxCount = count\n            result =\
+      \ num\n        }\n    }\n    return result\n}"
+    solutionNotes: |-
+      First count everything, then iterate the map to find the max. This is a two-pass approach over different data structures.
+  - id: v3
+    title: First Unique Character
+    description: |-
+      Write <code>func firstUniqChar(s string) int</code> that returns the index of the first non-repeating character. Return -1 if none exists.
+    functionSignature: func firstUniqChar(s string) int
+    testCases:
+    - input: '"leetcode"'
+      output: '0'
+      note: '''l'' is first unique'
+    - input: '"loveleetcode"'
+      output: '2'
+      note: '''v'' is first unique'
+    - input: '"aabb"'
+      output: '-1'
+    solution: "func firstUniqChar(s string) int {\n    counts := make(map[rune]int)\n\
+      \    runes := []rune(s)\n    \n    for _, r := range runes {\n        counts[r]++\n\
+      \    }\n    \n    for i, r := range runes {\n        if counts[r] == 1 {\n \
+      \           return i\n        }\n    }\n    return -1\n}"
+    solutionNotes: |-
+      Two passes needed: first to count, second to find the first character with count == 1. We iterate the original string (not the map) to preserve order.
+  - id: v4
+    title: Is Anagram
+    description: |-
+      Write <code>func isAnagram(s, t string) bool</code> that returns true if t is an anagram of s (same letters, different order).
+    functionSignature: func isAnagram(s, t string) bool
+    testCases:
+    - input: '"anagram", "nagaram"'
+      output: 'true'
+    - input: '"rat", "car"'
+      output: 'false'
+    - input: '"listen", "silent"'
+      output: 'true'
+    solution: "func isAnagram(s, t string) bool {\n    if len(s) != len(t) {\n   \
+      \     return false\n    }\n    \n    counts := make(map[rune]int)\n    for _,\
+      \ r := range s {\n        counts[r]++\n    }\n    for _, r := range t {\n  \
+      \      counts[r]--\n        if counts[r] < 0 {\n            return false\n \
+      \       }\n    }\n    return true\n}"
+    solutionNotes: |-
+      Count characters in s (increment), then 'uncount' characters in t (decrement). If we ever go negative, t has a character s doesn't have.
+  - id: v5
+    title: Can Construct
+    description: |-
+      Write <code>func canConstruct(ransomNote, magazine string) bool</code> that returns true if ransomNote can be constructed from magazine letters (each letter used once).
+    functionSignature: func canConstruct(ransomNote, magazine string) bool
+    testCases:
+    - input: '"a", "b"'
+      output: 'false'
+    - input: '"aa", "aab"'
+      output: 'true'
+    - input: '"aa", "ab"'
+      output: 'false'
+      note: need 2 a's but only 1
+    solution: "func canConstruct(ransomNote, magazine string) bool {\n    available\
+      \ := make(map[rune]int)\n    \n    for _, r := range magazine {\n        available[r]++\n\
+      \    }\n    \n    for _, r := range ransomNote {\n        available[r]--\n \
+      \       if available[r] < 0 {\n            return false\n        }\n    }\n\
+      \    return true\n}"
+    solutionNotes: |-
+      Similar to anagram check, but one-directional: we only need to verify ransomNote letters exist in magazine, not vice versa.
+  - id: v6
+    title: Majority Element
+    description: |-
+      Write <code>func majorityElement(nums []int) int</code> that finds the element appearing more than n/2 times. Assume such element always exists.
+    functionSignature: func majorityElement(nums []int) int
+    testCases:
+    - input: '[]int{3, 2, 3}'
+      output: '3'
+    - input: '[]int{2, 2, 1, 1, 1, 2, 2}'
+      output: '2'
+    - input: '[]int{1, 1, 1, 1}'
+      output: '1'
+    solution: "func majorityElement(nums []int) int {\n    counts := make(map[int]int)\n\
+      \    threshold := len(nums) / 2\n    \n    for _, num := range nums {\n    \
+      \    counts[num]++\n        if counts[num] > threshold {\n            return\
+      \ num\n        }\n    }\n    return -1\n}"
+    solutionNotes: |-
+      We can return early as soon as any element exceeds n/2 count. No need to finish counting everything!
+- id: advanced_5
+  difficulty: 5
+  baseTitle: Hash Map Lookup
+  concept: Hash Map Complement Pattern
+  variants:
+  - id: v1
+    title: Two Sum
+    description: |-
+      Given a slice of ints and a target, return indices of two numbers that add up to the target. <code>func twoSum(nums []int, target int) []int</code>
+    functionSignature: func twoSum(nums []int, target int) []int
+    testCases:
+    - input: '[]int{2, 7, 11, 15}, 9'
+      output: '[0, 1]'
+    - input: '[]int{3, 2, 4}, 6'
+      output: '[1, 2]'
+    - input: '[]int{3, 3}, 6'
+      output: '[0, 1]'
+    solution: |-
+      func twoSum(nums []int, target int) []int {
+          seen := make(map[int]int)
+          for i, num := range nums {
+              complement := target - num
+              if j, ok := seen[complement]; ok {
+                  return []int{j, i}
+              }
+              seen[num] = i
+          }
+          return nil
+      }
+  - id: v2
+    title: Two Sum II (Sorted Input)
+    description: |-
+      Given a <strong>sorted</strong> array and target, return indices (1-indexed) of two numbers that add to target. Use two pointers instead of a hash map. <code>func twoSumSorted(nums []int, target int) []int</code>
+    functionSignature: func twoSumSorted(nums []int, target int) []int
+    testCases:
+    - input: '[]int{2, 7, 11, 15}, 9'
+      output: '[1, 2]'
+      note: 1-indexed!
+    - input: '[]int{2, 3, 4}, 6'
+      output: '[1, 3]'
+    - input: '[]int{-1, 0}, -1'
+      output: '[1, 2]'
+    solution: "func twoSumSorted(nums []int, target int) []int {\n    left, right\
+      \ := 0, len(nums)-1\n    \n    for left < right {\n        sum := nums[left]\
+      \ + nums[right]\n        if sum == target {\n            return []int{left +\
+      \ 1, right + 1}\n        } else if sum < target {\n            left++\n    \
+      \    } else {\n            right--\n        }\n    }\n    return nil\n}"
+    solutionNotes: |-
+      When input is sorted, two pointers is O(1) space vs O(n) for hash map. Move left pointer right for larger sum, right pointer left for smaller sum.
+  - id: v3
+    title: Pair with Difference
+    description: |-
+      Find two numbers whose <strong>difference</strong> equals the target. Return their indices (smaller index first). <code>func pairWithDiff(nums []int, target int) []int</code>
+    functionSignature: func pairWithDiff(nums []int, target int) []int
+    testCases:
+    - input: '[]int{5, 20, 3, 2, 50, 80}, 78'
+      output: '[1, 5]'
+      note: 80 - 2 = 78... wait
+    - input: '[]int{1, 5, 3}, 2'
+      output: '[0, 2]'
+      note: 3 - 1 = 2
+    - input: '[]int{1, 2, 3}, 10'
+      output: nil
+    solution: "func pairWithDiff(nums []int, target int) []int {\n    seen := make(map[int]int)\n\
+      \    \n    for i, num := range nums {\n        if j, ok := seen[num-target];\
+      \ ok {\n            return []int{j, i}\n        }\n        if j, ok := seen[num+target];\
+      \ ok {\n            return []int{j, i}\n        }\n        seen[num] = i\n \
+      \   }\n    return nil\n}"
+    solutionNotes: |-
+      Unlike Two Sum where we look for target-num, here we look for BOTH num-target AND num+target because either could be the pair (a-b=k or b-a=k).
+  - id: v4
+    title: Count Pairs with Sum
+    description: |-
+      Count how many pairs of numbers add up to exactly the target. Each element can only be used once. <code>func countPairs(nums []int, target int) int</code>
+    functionSignature: func countPairs(nums []int, target int) int
+    testCases:
+    - input: '[]int{1, 5, 7, 1}, 6'
+      output: '2'
+      note: (1,5) and (1,5)
+    - input: '[]int{1, 1, 1, 1}, 2'
+      output: '2'
+      note: two pairs of 1+1
+    - input: '[]int{1, 2, 3}, 10'
+      output: '0'
+    solution: "func countPairs(nums []int, target int) int {\n    counts := make(map[int]int)\n\
+      \    for _, num := range nums {\n        counts[num]++\n    }\n    \n    pairs\
+      \ := 0\n    for num, count := range counts {\n        complement := target -\
+      \ num\n        if complement == num {\n            pairs += count * (count -\
+      \ 1) / 2\n        } else if compCount, ok := counts[complement]; ok && complement\
+      \ > num {\n            pairs += count * compCount\n        }\n    }\n    return\
+      \ pairs\n}"
+    solutionNotes: |-
+      This is trickier! We count occurrences first, then for each unique number, find pairs. Handle same-number pairs specially (n choose 2). Use complement > num to avoid double counting.
+  - id: v5
+    title: Three Sum Exists
+    description: |-
+      Return <code>true</code> if any three numbers in the array sum to zero. <code>func threeSumExists(nums []int) bool</code>
+    functionSignature: func threeSumExists(nums []int) bool
+    testCases:
+    - input: '[]int{-1, 0, 1, 2}'
+      output: 'true'
+      note: -1 + 0 + 1 = 0
+    - input: '[]int{1, 2, 3}'
+      output: 'false'
+    - input: '[]int{0, 0, 0}'
+      output: 'true'
+    solution: "import \"sort\"\n\nfunc threeSumExists(nums []int) bool {\n    sort.Ints(nums)\n\
+      \    n := len(nums)\n    \n    for i := 0; i < n-2; i++ {\n        if i > 0\
+      \ && nums[i] == nums[i-1] {\n            continue\n        }\n        \n   \
+      \     left, right := i+1, n-1\n        target := -nums[i]\n        \n      \
+      \  for left < right {\n            sum := nums[left] + nums[right]\n       \
+      \     if sum == target {\n                return true\n            } else if\
+      \ sum < target {\n                left++\n            } else {\n           \
+      \     right--\n            }\n        }\n    }\n    return false\n}"
+    solutionNotes: |-
+      Fix one number, then use Two Sum II (sorted) for the other two. Sorting first enables the two-pointer approach. O(n²) total.
+  - id: v6
+    title: Subarray Sum Equals K
+    description: |-
+      Count the number of continuous subarrays whose elements sum to k. <code>func subarraySum(nums []int, k int) int</code>
+    functionSignature: func subarraySum(nums []int, k int) int
+    testCases:
+    - input: '[]int{1, 1, 1}, 2'
+      output: '2'
+      note: '[1,1] at positions 0-1 and 1-2'
+    - input: '[]int{1, 2, 3}, 3'
+      output: '2'
+      note: '[1,2] and [3]'
+    - input: '[]int{1, -1, 0}, 0'
+      output: '3'
+    solution: "func subarraySum(nums []int, k int) int {\n    count := 0\n    prefixSum\
+      \ := 0\n    seen := make(map[int]int)\n    seen[0] = 1\n    \n    for _, num\
+      \ := range nums {\n        prefixSum += num\n        if c, ok := seen[prefixSum-k];\
+      \ ok {\n            count += c\n        }\n        seen[prefixSum]++\n    }\n\
+      \    return count\n}"
+    solutionNotes: |-
+      This uses the prefix sum technique with a hash map. If prefix[j] - prefix[i] = k, then subarray [i+1...j] sums to k. We track how many times each prefix sum has occurred.
+- id: advanced_6
+  difficulty: 5
+  baseTitle: Sliding Window
+  concept: Sliding Window Pattern
+  variants:
+  - id: v1
+    title: Maximum Sum Subarray of Size K
+    description: |-
+      Given an array of integers and a number k, find the maximum sum of any contiguous subarray of size k. <code>func maxSumSubarray(nums []int, k int) int</code>
+    functionSignature: func maxSumSubarray(nums []int, k int) int
+    testCases:
+    - input: '[]int{2, 1, 5, 1, 3, 2}, 3'
+      output: '9'
+      note: subarray [5,1,3]
+    - input: '[]int{2, 3, 4, 1, 5}, 2'
+      output: '7'
+      note: subarray [3,4]
+    - input: '[]int{1, 1, 1, 1}, 2'
+      output: '2'
+    solution: "func maxSumSubarray(nums []int, k int) int {\n    if len(nums) < k\
+      \ {\n        return 0\n    }\n    windowSum := 0\n    for i := 0; i < k; i++\
+      \ {\n        windowSum += nums[i]\n    }\n    maxSum := windowSum\n    \n  \
+      \  for i := k; i < len(nums); i++ {\n        windowSum += nums[i] - nums[i-k]\n\
+      \        if windowSum > maxSum {\n            maxSum = windowSum\n        }\n\
+      \    }\n    return maxSum\n}"
+    solutionNotes: |-
+      Fixed-size window: calculate first window sum, then slide by adding new element and subtracting leaving element. O(n) time, O(1) space.
+  - id: v2
+    title: Longest Substring Without Repeating
+    description: |-
+      Find the length of the longest substring without repeating characters. <code>func lengthOfLongestSubstring(s string) int</code>
+    functionSignature: func lengthOfLongestSubstring(s string) int
+    testCases:
+    - input: '"abcabcbb"'
+      output: '3'
+      note: '"abc"'
+    - input: '"bbbbb"'
+      output: '1'
+      note: '"b"'
+    - input: '"pwwkew"'
+      output: '3'
+      note: '"wke"'
+    solution: "func lengthOfLongestSubstring(s string) int {\n    seen := make(map[byte]int)\n\
+      \    maxLen := 0\n    left := 0\n    \n    for right := 0; right < len(s); right++\
+      \ {\n        char := s[right]\n        if lastIdx, ok := seen[char]; ok && lastIdx\
+      \ >= left {\n            left = lastIdx + 1\n        }\n        seen[char] =\
+      \ right\n        if right - left + 1 > maxLen {\n            maxLen = right\
+      \ - left + 1\n        }\n    }\n    return maxLen\n}"
+    solutionNotes: |-
+      Variable-size window: expand right, shrink left when duplicate found. Track last seen index of each character to know where to shrink to.
+  - id: v3
+    title: Minimum Size Subarray Sum
+    description: |-
+      Find the minimal length of a contiguous subarray whose sum is >= target. Return 0 if no such subarray. <code>func minSubarrayLen(target int, nums []int) int</code>
+    functionSignature: func minSubarrayLen(target int, nums []int) int
+    testCases:
+    - input: 7, []int{2, 3, 1, 2, 4, 3}
+      output: '2'
+      note: '[4,3] sums to 7'
+    - input: 4, []int{1, 4, 4}
+      output: '1'
+      note: '[4] alone >= 4'
+    - input: 11, []int{1, 1, 1, 1}
+      output: '0'
+      note: can't reach 11
+    solution: "func minSubarrayLen(target int, nums []int) int {\n    minLen := len(nums)\
+      \ + 1\n    left := 0\n    sum := 0\n    \n    for right := 0; right < len(nums);\
+      \ right++ {\n        sum += nums[right]\n        \n        for sum >= target\
+      \ {\n            if right - left + 1 < minLen {\n                minLen = right\
+      \ - left + 1\n            }\n            sum -= nums[left]\n            left++\n\
+      \        }\n    }\n    \n    if minLen == len(nums) + 1 {\n        return 0\n\
+      \    }\n    return minLen\n}"
+    solutionNotes: |-
+      Variable-size window with condition: expand to increase sum, shrink while condition met to find minimum. Classic 'minimum window' pattern.
+  - id: v4
+    title: Average of Subarrays of Size K
+    description: |-
+      Given an array, find the average of all contiguous subarrays of size k. <code>func averageOfSubarrays(nums []int, k int) []float64</code>
+    functionSignature: func averageOfSubarrays(nums []int, k int) []float64
+    testCases:
+    - input: '[]int{1, 3, 2, 6, -1, 4, 1, 8, 2}, 5'
+      output: '[2.2, 2.8, 2.4, 3.6, 2.8]'
+    - input: '[]int{1, 2, 3, 4}, 2'
+      output: '[1.5, 2.5, 3.5]'
+    solution: "func averageOfSubarrays(nums []int, k int) []float64 {\n    result\
+      \ := []float64{}\n    windowSum := 0\n    \n    for i := 0; i < len(nums); i++\
+      \ {\n        windowSum += nums[i]\n        \n        if i >= k-1 {\n       \
+      \     result = append(result, float64(windowSum)/float64(k))\n            windowSum\
+      \ -= nums[i-k+1]\n        }\n    }\n    return result\n}"
+    solutionNotes: |-
+      Basic fixed-window pattern. Build up sum for first k elements, then slide and track averages.
+  - id: v5
+    title: Contains Duplicate Within K Distance
+    description: |-
+      Return true if there are two distinct indices i and j where nums[i] == nums[j] and abs(i - j) <= k. <code>func containsNearbyDuplicate(nums []int, k int) bool</code>
+    functionSignature: func containsNearbyDuplicate(nums []int, k int) bool
+    testCases:
+    - input: '[]int{1, 2, 3, 1}, 3'
+      output: 'true'
+    - input: '[]int{1, 0, 1, 1}, 1'
+      output: 'true'
+    - input: '[]int{1, 2, 3, 1, 2, 3}, 2'
+      output: 'false'
+    solution: "func containsNearbyDuplicate(nums []int, k int) bool {\n    seen :=\
+      \ make(map[int]bool)\n    \n    for i, num := range nums {\n        if seen[num]\
+      \ {\n            return true\n        }\n        seen[num] = true\n        \n\
+      \        if i >= k {\n            delete(seen, nums[i-k])\n        }\n    }\n\
+      \    return false\n}"
+    solutionNotes: |-
+      Maintain a sliding window of size k as a set. If we see a duplicate within the window, return true. Remove elements that leave the window.
+  - id: v6
+    title: Max Consecutive Ones III
+    description: |-
+      Given a binary array and integer k, return the maximum number of consecutive 1's if you can flip at most k 0's. <code>func longestOnes(nums []int, k int) int</code>
+    functionSignature: func longestOnes(nums []int, k int) int
+    testCases:
+    - input: '[]int{1,1,1,0,0,0,1,1,1,1,0}, 2'
+      output: '6'
+      note: flip 0's at indices 5 and 10
+    - input: '[]int{0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1}, 3'
+      output: '10'
+    solution: "func longestOnes(nums []int, k int) int {\n    left := 0\n    zeros\
+      \ := 0\n    maxLen := 0\n    \n    for right := 0; right < len(nums); right++\
+      \ {\n        if nums[right] == 0 {\n            zeros++\n        }\n       \
+      \ \n        for zeros > k {\n            if nums[left] == 0 {\n            \
+      \    zeros--\n            }\n            left++\n        }\n        \n     \
+      \   if right - left + 1 > maxLen {\n            maxLen = right - left + 1\n\
+      \        }\n    }\n    return maxLen\n}"
+    solutionNotes: |-
+      Variable window: expand right, count zeros. When zeros > k, shrink from left. Track maximum valid window size.
+- id: advanced_7
+  difficulty: 5
+  baseTitle: Track Min/Max While Scanning
+  concept: Best So Far Pattern
+  variants:
+  - id: v1
+    title: Best Time to Buy and Sell Stock
+    description: |-
+      Given an array of stock prices where prices[i] is the price on day i, find the maximum profit from one buy and one sell. You must buy before you sell. <code>func maxProfit(prices []int) int</code>
+    functionSignature: func maxProfit(prices []int) int
+    testCases:
+    - input: '[]int{7, 1, 5, 3, 6, 4}'
+      output: '5'
+      note: buy at 1, sell at 6
+    - input: '[]int{7, 6, 4, 3, 1}'
+      output: '0'
+      note: prices only go down, no profit possible
+    - input: '[]int{2, 4, 1}'
+      output: '2'
+      note: buy at 2, sell at 4
+    solution: "func maxProfit(prices []int) int {\n    if len(prices) == 0 {\n   \
+      \     return 0\n    }\n    \n    minPrice := prices[0]\n    maxProfit := 0\n\
+      \    \n    for _, price := range prices {\n        if price < minPrice {\n \
+      \           minPrice = price\n        } else if price - minPrice > maxProfit\
+      \ {\n            maxProfit = price - minPrice\n        }\n    }\n    return\
+      \ maxProfit\n}"
+  - id: v2
+    title: Maximum Difference
+    description: |-
+      Find the maximum difference between any two elements where the larger element comes after the smaller one. Return 0 if no such pair exists. <code>func maxDiff(nums []int) int</code>
+    functionSignature: func maxDiff(nums []int) int
+    testCases:
+    - input: '[]int{2, 3, 10, 6, 4, 8, 1}'
+      output: '8'
+      note: 10 - 2 = 8
+    - input: '[]int{7, 9, 5, 6, 3, 2}'
+      output: '2'
+      note: 9 - 7 = 2
+    - input: '[]int{5, 4, 3, 2, 1}'
+      output: '0'
+      note: decreasing, no valid pair
+    solution: "func maxDiff(nums []int) int {\n    if len(nums) < 2 {\n        return\
+      \ 0\n    }\n    \n    minSoFar := nums[0]\n    maxDiff := 0\n    \n    for i\
+      \ := 1; i < len(nums); i++ {\n        diff := nums[i] - minSoFar\n        if\
+      \ diff > maxDiff {\n            maxDiff = diff\n        }\n        if nums[i]\
+      \ < minSoFar {\n            minSoFar = nums[i]\n        }\n    }\n    return\
+      \ maxDiff\n}"
+    solutionNotes: |-
+      This is the same problem as Best Time to Buy/Sell Stock! Track the minimum seen so far, and at each position calculate the potential profit/difference.
+  - id: v3
+    title: Best Sightseeing Pair
+    description: |-
+      Given an array of values, find max score of values[i] + values[j] + i - j where i < j. <code>func maxScoreSightseeingPair(values []int) int</code>
+    functionSignature: func maxScoreSightseeingPair(values []int) int
+    testCases:
+    - input: '[]int{8, 1, 5, 2, 6}'
+      output: '11'
+      note: 'i=0, j=2: 8+5+0-2=11'
+    - input: '[]int{1, 2}'
+      output: '2'
+      note: 1+2+0-1=2
+    - input: '[]int{1, 3, 5}'
+      output: '7'
+      note: 'i=1, j=2: 3+5+1-2=7'
+    solution: "func maxScoreSightseeingPair(values []int) int {\n    maxScore := 0\n\
+      \    bestI := values[0] + 0  // values[i] + i\n    \n    for j := 1; j < len(values);\
+      \ j++ {\n        score := bestI + values[j] - j\n        if score > maxScore\
+      \ {\n            maxScore = score\n        }\n        if values[j] + j > bestI\
+      \ {\n            bestI = values[j] + j\n        }\n    }\n    return maxScore\n\
+      }"
+    solutionNotes: |-
+      Rewrite the formula: (values[i] + i) + (values[j] - j). Track the best (values[i] + i) seen so far, then for each j compute the score. Same pattern as stock problem!
+  - id: v4
+    title: Maximum Subarray (Kadane's)
+    description: |-
+      Find the contiguous subarray with the largest sum. <code>func maxSubArray(nums []int) int</code>
+    functionSignature: func maxSubArray(nums []int) int
+    testCases:
+    - input: '[]int{-2, 1, -3, 4, -1, 2, 1, -5, 4}'
+      output: '6'
+      note: '[4,-1,2,1] = 6'
+    - input: '[]int{1}'
+      output: '1'
+    - input: '[]int{-1, -2, -3}'
+      output: '-1'
+      note: least negative
+    solution: "func maxSubArray(nums []int) int {\n    maxSum := nums[0]\n    currentSum\
+      \ := nums[0]\n    \n    for i := 1; i < len(nums); i++ {\n        if currentSum\
+      \ < 0 {\n            currentSum = nums[i]\n        } else {\n            currentSum\
+      \ += nums[i]\n        }\n        if currentSum > maxSum {\n            maxSum\
+      \ = currentSum\n        }\n    }\n    return maxSum\n}"
+    solutionNotes: |-
+      Kadane's algorithm: at each position, decide whether to extend the current subarray or start fresh. Track the best sum seen so far. Same 'best so far' pattern!
+  - id: v5
+    title: Best Time to Buy and Sell Stock II
+    description: |-
+      You can buy and sell multiple times (but must sell before buying again). Find the maximum total profit. <code>func maxProfitII(prices []int) int</code>
+    functionSignature: func maxProfitII(prices []int) int
+    testCases:
+    - input: '[]int{7, 1, 5, 3, 6, 4}'
+      output: '7'
+      note: buy@1 sell@5 (+4), buy@3 sell@6 (+3)
+    - input: '[]int{1, 2, 3, 4, 5}'
+      output: '4'
+      note: buy@1 sell@5, or buy/sell each day
+    - input: '[]int{7, 6, 4, 3, 1}'
+      output: '0'
+      note: no profit possible
+    solution: "func maxProfitII(prices []int) int {\n    profit := 0\n    \n    for\
+      \ i := 1; i < len(prices); i++ {\n        if prices[i] > prices[i-1] {\n   \
+      \         profit += prices[i] - prices[i-1]\n        }\n    }\n    return profit\n\
+      }"
+    solutionNotes: |-
+      Greedy insight: capture every upward movement! If tomorrow's price is higher, that's profit. Sum all positive differences. Much simpler than it seems!
+  - id: v6
+    title: Trapping Rain Water
+    description: |-
+      Given an elevation map where width of each bar is 1, compute how much water can be trapped after raining. <code>func trap(height []int) int</code>
+    functionSignature: func trap(height []int) int
+    testCases:
+    - input: '[]int{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1}'
+      output: '6'
+    - input: '[]int{4, 2, 0, 3, 2, 5}'
+      output: '9'
+    - input: '[]int{1, 2, 3}'
+      output: '0'
+      note: strictly increasing, no trapping
+    solution: "func trap(height []int) int {\n    if len(height) == 0 {\n        return\
+      \ 0\n    }\n    \n    n := len(height)\n    maxLeft := make([]int, n)\n    maxRight\
+      \ := make([]int, n)\n    \n    maxLeft[0] = height[0]\n    for i := 1; i < n;\
+      \ i++ {\n        if height[i] > maxLeft[i-1] {\n            maxLeft[i] = height[i]\n\
+      \        } else {\n            maxLeft[i] = maxLeft[i-1]\n        }\n    }\n\
+      \    \n    maxRight[n-1] = height[n-1]\n    for i := n - 2; i >= 0; i-- {\n\
+      \        if height[i] > maxRight[i+1] {\n            maxRight[i] = height[i]\n\
+      \        } else {\n            maxRight[i] = maxRight[i+1]\n        }\n    }\n\
+      \    \n    water := 0\n    for i := 0; i < n; i++ {\n        level := maxLeft[i]\n\
+      \        if maxRight[i] < level {\n            level = maxRight[i]\n       \
+      \ }\n        water += level - height[i]\n    }\n    return water\n}"
+    solutionNotes: |-
+      At each position, water level = min(maxLeft, maxRight). Pre-compute maxLeft[i] and maxRight[i] arrays using the 'best so far' pattern in both directions!

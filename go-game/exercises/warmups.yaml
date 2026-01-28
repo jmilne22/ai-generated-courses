@@ -1,0 +1,1786 @@
+- id: warmup_1
+  concept: For Loops
+  variants:
+  - id: v1
+    title: Print 1 to 10
+    description: Write a program that prints the numbers 1 to 10, one per line.
+    hints:
+    - Use <code>for i := 1; i <= 10; i++</code>
+    solution: |-
+      for i := 1; i <= 10; i++ {
+          fmt.Println(i)
+      }
+  - id: v2
+    title: Countdown from 5
+    description: Write a program that counts down from 5 to 1, then prints "Go!"
+    hints:
+    - Use <code>for i := 5; i >= 1; i--</code>
+    - Print "Go!" after the loop
+    solution: |-
+      for i := 5; i >= 1; i-- {
+          fmt.Println(i)
+      }
+      fmt.Println("Go!")
+  - id: v3
+    title: Print Even Numbers
+    description: Write a program that prints even numbers from 2 to 10.
+    hints:
+    - Use <code>for i := 2; i <= 10; i += 2</code>
+    solution: |-
+      for i := 2; i <= 10; i += 2 {
+          fmt.Println(i)
+      }
+  - id: v4
+    title: Count by Twos
+    description: Write a program that prints odd numbers from 1 to 9.
+    hints:
+    - Use <code>for i := 1; i <= 9; i += 2</code>
+    solution: |-
+      for i := 1; i <= 9; i += 2 {
+          fmt.Println(i)
+      }
+  - id: v5
+    title: Sum First N Numbers
+    description: Write a program that calculates and prints the sum of numbers from
+      1 to 5.
+    hints:
+    - Create a <code>sum</code> variable
+    - 'Add each number: <code>sum += i</code>'
+    solution: |-
+      sum := 0
+      for i := 1; i <= 5; i++ {
+          sum += i
+      }
+      fmt.Println(sum)  // 15
+  - id: v6
+    title: Multiplication Table Row
+    description: Write a program that prints the 3 times table from 3x1 to 3x5.
+    hints:
+    - Loop from 1 to 5
+    - Print <code>3 * i</code> each time
+    solution: |-
+      for i := 1; i <= 5; i++ {
+          fmt.Printf("3 x %d = %d\n", i, 3*i)
+      }
+  - id: v7
+    title: Print Squares
+    description: Write a program that prints the square of numbers from 1 to 4.
+    hints:
+    - Square is <code>i * i</code>
+    solution: |-
+      for i := 1; i <= 4; i++ {
+          fmt.Println(i * i)
+      }
+  - id: v8
+    title: Count Down by Threes
+    description: Write a program that counts down from 15 to 0 by threes (15, 12,
+      9, 6, 3, 0).
+    hints:
+    - Start at 15, use <code>i -= 3</code>
+    solution: |-
+      for i := 15; i >= 0; i -= 3 {
+          fmt.Println(i)
+      }
+  - id: v9
+    title: Fibonacci First N
+    description: |-
+      Write a program that prints the first 7 Fibonacci numbers (1, 1, 2, 3, 5, 8, 13).
+    hints:
+    - Start with <code>a, b := 1, 1</code>
+    - Each new number is the sum of the previous two
+    solution: |-
+      a, b := 1, 1
+      for i := 0; i < 7; i++ {
+          fmt.Println(a)
+          a, b = b, a+b
+      }
+  - id: v10
+    title: Factorial
+    description: "Write a program that calculates and prints 5! (5 factorial = 5 Ã\x97\
+      \ 4 Ã\x97 3 Ã\x97 2 Ã\x97 1 = 120)."
+    hints:
+    - Start with <code>result := 1</code>
+    - 'Multiply by each number: <code>result *= i</code>'
+    solution: |-
+      result := 1
+      for i := 1; i <= 5; i++ {
+          result *= i
+      }
+      fmt.Println(result)  // 120
+  - id: v11
+    title: Skip Count by Fives
+    description: Write a program that counts from 0 to 25 by fives (0, 5, 10, 15,
+      20, 25).
+    hints:
+    - Use <code>for i := 0; i <= 25; i += 5</code>
+    solution: |-
+      for i := 0; i <= 25; i += 5 {
+          fmt.Println(i)
+      }
+  - id: v12
+    title: Print Star Pattern
+    description: |-
+      Write a program that prints a triangle pattern of stars (1 star, then 2 stars, then 3 stars).
+    hints:
+    - Outer loop controls rows
+    - 'Inner loop prints stars: <code>for j := 0; j < i; j++</code>'
+    solution: |-
+      for i := 1; i <= 3; i++ {
+          for j := 0; j < i; j++ {
+              fmt.Print("*")
+          }
+          fmt.Println()
+      }
+  - id: v13
+    title: Power of Two
+    description: Write a program that prints powers of 2 from 2^0 to 2^5 (1, 2, 4,
+      8, 16, 32).
+    hints:
+    - Start with <code>power := 1</code>
+    - 'Double each time: <code>power *= 2</code>'
+    solution: |-
+      power := 1
+      for i := 0; i <= 5; i++ {
+          fmt.Println(power)
+          power *= 2
+      }
+- id: warmup_2
+  concept: If/Else
+  variants:
+  - id: v1
+    title: Odd or Even
+    description: |-
+      Write <code>func oddOrEven(n int) string</code> that returns "even" if n is divisible by 2, else "odd".
+    hints:
+    - 'Use modulo: <code>if n % 2 == 0</code> means even'
+    solution: |-
+      func oddOrEven(n int) string {
+          if n % 2 == 0 {
+              return "even"
+          }
+          return "odd"
+      }
+  - id: v2
+    title: Pass or Fail
+    description: |-
+      Write <code>func passOrFail(score int) string</code> that returns "pass" if score >= 60, else "fail".
+    hints:
+    - 'Simple if/else: <code>if score >= 60 { return "pass" }</code>'
+    solution: |-
+      func passOrFail(score int) string {
+          if score >= 60 {
+              return "pass"
+          }
+          return "fail"
+      }
+  - id: v3
+    title: Temperature Feel
+    description: |-
+      Write <code>func tempFeel(celsius int) string</code> that returns "freezing" (< 0), "cold" (0-15), "warm" (16-25), or "hot" (> 25).
+    hints:
+    - Chain if/else if based on temperature thresholds
+    solution: |-
+      func tempFeel(celsius int) string {
+          if celsius < 0 {
+              return "freezing"
+          } else if celsius <= 15 {
+              return "cold"
+          } else if celsius <= 25 {
+              return "warm"
+          }
+          return "hot"
+      }
+  - id: v4
+    title: Grade Letter
+    description: |-
+      Write <code>func gradeLetter(score int) string</code> that returns "A" (>=90), "B" (>=80), "C" (>=70), "D" (>=60), or "F" (<60).
+    hints:
+    - Use chained if/else if statements
+    - Check highest grade first
+    solution: |-
+      func gradeLetter(score int) string {
+          if score >= 90 {
+              return "A"
+          } else if score >= 80 {
+              return "B"
+          } else if score >= 70 {
+              return "C"
+          } else if score >= 60 {
+              return "D"
+          }
+          return "F"
+      }
+  - id: v5
+    title: Voting Eligibility
+    description: |-
+      Write <code>func canVote(age int) string</code> that returns "can vote" if age >= 18, else "too young".
+    hints:
+    - Simple comparison with 18
+    solution: |-
+      func canVote(age int) string {
+          if age >= 18 {
+              return "can vote"
+          }
+          return "too young"
+      }
+  - id: v6
+    title: Discount Eligibility
+    description: |-
+      Write <code>func getDiscount(age int) string</code> that returns "senior discount" (>=65), "student discount" (<=25), or "no discount".
+    hints:
+    - Check senior first, then student, then default
+    solution: |-
+      func getDiscount(age int) string {
+          if age >= 65 {
+              return "senior discount"
+          } else if age <= 25 {
+              return "student discount"
+          }
+          return "no discount"
+      }
+  - id: v7
+    title: Positive or Negative
+    description: |-
+      Write <code>func posNegZero(n int) string</code> that returns "positive", "negative", or "zero".
+    hints:
+    - Check if n > 0, n < 0, or else it's zero
+    solution: |-
+      func posNegZero(n int) string {
+          if n > 0 {
+              return "positive"
+          } else if n < 0 {
+              return "negative"
+          }
+          return "zero"
+      }
+  - id: v8
+    title: Speed Limit
+    description: |-
+      Write <code>func speedCheck(speed int) string</code> that returns "safe" (<=60), "warning" (61-80), or "ticket" (>80).
+    hints:
+    - Use ranges for different categories
+    solution: |-
+      func speedCheck(speed int) string {
+          if speed <= 60 {
+              return "safe"
+          } else if speed <= 80 {
+              return "warning"
+          }
+          return "ticket"
+      }
+  - id: v9
+    title: Age Category
+    description: |-
+      Write <code>func ageCategory(age int) string</code> that returns "child" if age < 13, "teen" if age < 20, else "adult".
+    hints:
+    - Use multiple if/else if statements
+    - Check conditions from smallest to largest
+    solution: |-
+      func ageCategory(age int) string {
+          if age < 13 {
+              return "child"
+          } else if age < 20 {
+              return "teen"
+          }
+          return "adult"
+      }
+  - id: v10
+    title: BMI Category
+    description: |-
+      Write <code>func bmiCategory(bmi float64) string</code> that returns "underweight" if bmi < 18.5, "normal" if bmi < 25, else "overweight".
+    hints:
+    - Use <code>else if</code> for the middle condition
+    solution: |-
+      func bmiCategory(bmi float64) string {
+          if bmi < 18.5 {
+              return "underweight"
+          } else if bmi < 25 {
+              return "normal"
+          }
+          return "overweight"
+      }
+  - id: v11
+    title: Season from Month
+    description: |-
+      Write <code>func season(month int) string</code> that returns "winter" for 12-2, "spring" for 3-5, "summer" for 6-8, "fall" for 9-11.
+    hints:
+    - Use multiple if/else if conditions
+    - Check ranges like <code>month >= 3 && month <= 5</code>
+    solution: |-
+      func season(month int) string {
+          if month == 12 || month <= 2 {
+              return "winter"
+          } else if month <= 5 {
+              return "spring"
+          } else if month <= 8 {
+              return "summer"
+          }
+          return "fall"
+      }
+  - id: v12
+    title: Weekend or Weekday
+    description: |-
+      Write <code>func dayType(day string) string</code> that returns "weekend" if day is "Saturday" or "Sunday", else "weekday".
+    hints:
+    - Use <code>||</code> (OR) operator
+    - 'Check: <code>if day == "Saturday" || day == "Sunday"</code>'
+    solution: |-
+      func dayType(day string) string {
+          if day == "Saturday" || day == "Sunday" {
+              return "weekend"
+          }
+          return "weekday"
+      }
+  - id: v13
+    title: Password Strength
+    description: |-
+      Write <code>func passwordStrength(length int) string</code> that returns "weak" if length < 8, "medium" if length < 12, else "strong".
+    hints:
+    - Simple if/else if chain based on length thresholds
+    solution: |-
+      func passwordStrength(length int) string {
+          if length < 8 {
+              return "weak"
+          } else if length < 12 {
+              return "medium"
+          }
+          return "strong"
+      }
+- id: warmup_3
+  concept: Slices & Range
+  variants:
+  - id: v1
+    title: Iterate Numbers
+    description: Create a slice with three numbers, then print each using <code>for
+      range</code>.
+    hints:
+    - 'Create: <code>nums := []int{7, 42, 99}</code>'
+    - 'Loop: <code>for _, num := range nums</code>'
+    solution: |-
+      nums := []int{7, 42, 99}
+      for _, num := range nums {
+          fmt.Println(num)
+      }
+  - id: v2
+    title: Iterate with Index
+    description: |-
+      Create a slice of colors, then print each with its index: "0: red", "1: blue", etc.
+    hints:
+    - 'Loop with index: <code>for i, color := range colors</code>'
+    - 'Use <code>fmt.Printf("%d: %s\n", i, color)</code>'
+    solution: |-
+      colors := []string{"red", "blue", "green"}
+      for i, color := range colors {
+          fmt.Printf("%d: %s\n", i, color)
+      }
+  - id: v3
+    title: Iterate Strings
+    description: Create a slice of your favorite foods, print each on its own line.
+    hints:
+    - 'Create: <code>foods := []string{"pizza", "sushi", "tacos"}</code>'
+    solution: |-
+      foods := []string{"pizza", "sushi", "tacos"}
+      for _, food := range foods {
+          fmt.Println(food)
+      }
+  - id: v4
+    title: Sum Slice
+    description: Create a slice of numbers, then calculate and print their sum.
+    hints:
+    - Create a sum variable before the loop
+    - 'Add each number: <code>sum += num</code>'
+    solution: |-
+      nums := []int{10, 20, 30}
+      sum := 0
+      for _, num := range nums {
+          sum += num
+      }
+      fmt.Println(sum)  // 60
+  - id: v5
+    title: Count Items
+    description: Create a slice of fruits and print how many items are in it.
+    hints:
+    - Use <code>len(fruits)</code> to get the count
+    solution: |-
+      fruits := []string{"apple", "banana", "orange", "grape"}
+      fmt.Println(len(fruits))  // 4
+  - id: v6
+    title: Names List
+    description: 'Create a slice of names and print each with a greeting: "Hello,
+      Alice!"'
+    hints:
+    - Use <code>fmt.Printf("Hello, %s!\n", name)</code>
+    solution: |-
+      names := []string{"Alice", "Bob", "Charlie"}
+      for _, name := range names {
+          fmt.Printf("Hello, %s!\n", name)
+      }
+  - id: v7
+    title: Test Scores
+    description: 'Create a slice of test scores and print each one with its position:
+      "Test 1: 85"'
+    hints:
+    - Use the index in the range loop
+    - Add 1 to the index for human-readable numbering
+    solution: |-
+      scores := []int{85, 92, 78, 95}
+      for i, score := range scores {
+          fmt.Printf("Test %d: %d\n", i+1, score)
+      }
+  - id: v8
+    title: Reverse Print
+    description: |-
+      Create a slice of 3 animals and print them in reverse order using a regular for loop.
+    hints:
+    - Start from <code>len(animals)-1</code>
+    - 'Count down: <code>i--</code>'
+    solution: |-
+      animals := []string{"cat", "dog", "bird"}
+      for i := len(animals) - 1; i >= 0; i-- {
+          fmt.Println(animals[i])
+      }
+  - id: v9
+    title: Find Maximum
+    description: |-
+      Write <code>func findMax(nums []int) int</code> that returns the largest number in the slice.
+    hints:
+    - Start with <code>max := nums[0]</code>
+    - Use range to compare each number
+    solution: |-
+      func findMax(nums []int) int {
+          max := nums[0]
+          for _, n := range nums {
+              if n > max {
+                  max = n
+              }
+          }
+          return max
+      }
+  - id: v10
+    title: Find Minimum
+    description: |-
+      Write <code>func findMin(nums []int) int</code> that returns the smallest number in the slice.
+    hints:
+    - Start with <code>min := nums[0]</code>
+    - 'Compare each number: <code>if n < min</code>'
+    solution: |-
+      func findMin(nums []int) int {
+          min := nums[0]
+          for _, n := range nums {
+              if n < min {
+                  min = n
+              }
+          }
+          return min
+      }
+  - id: v11
+    title: Calculate Average
+    description: |-
+      Write <code>func average(nums []float64) float64</code> that returns the average of all numbers.
+    hints:
+    - Sum all numbers first
+    - 'Divide by length: <code>sum / float64(len(nums))</code>'
+    solution: |-
+      func average(nums []float64) float64 {
+          sum := 0.0
+          for _, n := range nums {
+              sum += n
+          }
+          return sum / float64(len(nums))
+      }
+  - id: v12
+    title: Contains Check
+    description: |-
+      Write <code>func contains(items []string, target string) bool</code> that returns true if target is in items.
+    hints:
+    - Use range to check each item
+    - Return true immediately when found
+    solution: |-
+      func contains(items []string, target string) bool {
+          for _, item := range items {
+              if item == target {
+                  return true
+              }
+          }
+          return false
+      }
+  - id: v13
+    title: First N Elements
+    description: |-
+      Write <code>func firstN(items []string, n int) []string</code> that returns the first n elements of the slice.
+    hints:
+    - 'Use slice syntax: <code>items[:n]</code>'
+    solution: |-
+      func firstN(items []string, n int) []string {
+          return items[:n]
+      }
+- id: warmup_4
+  concept: Maps
+  variants:
+  - id: v1
+    title: Ages Map
+    description: Create a map of names to ages, then print each person's name and
+      age.
+    hints:
+    - 'Map syntax: <code>map[string]int{"alice": 30}</code>'
+    - 'Loop: <code>for name, age := range ages</code>'
+    solution: |-
+      ages := map[string]int{
+          "alice": 30,
+          "bob":   25,
+      }
+      for name, age := range ages {
+          fmt.Printf("%s is %d\n", name, age)
+      }
+  - id: v2
+    title: Prices Map
+    description: Create a map of items to prices (float64), then print each item and
+      price.
+    hints:
+    - 'Map syntax: <code>map[string]float64{"apple": 1.50}</code>'
+    solution: |-
+      prices := map[string]float64{
+          "apple":  1.50,
+          "banana": 0.75,
+      }
+      for item, price := range prices {
+          fmt.Printf("%s: $%.2f\n", item, price)
+      }
+  - id: v3
+    title: Capitals Map
+    description: Create a map of countries to their capitals, then print each pair.
+    hints:
+    - 'Map syntax: <code>map[string]string{"France": "Paris"}</code>'
+    solution: |-
+      capitals := map[string]string{
+          "France": "Paris",
+          "Japan":  "Tokyo",
+      }
+      for country, capital := range capitals {
+          fmt.Printf("%s: %s\n", country, capital)
+      }
+  - id: v4
+    title: Inventory Count
+    description: |-
+      Create a map of product names to quantities in stock, then print each item and count.
+    hints:
+    - 'Map syntax: <code>map[string]int{"shirt": 15}</code>'
+    solution: |-
+      inventory := map[string]int{
+          "shirt": 15,
+          "pants": 8,
+          "hat":   20,
+      }
+      for item, count := range inventory {
+          fmt.Printf("%s: %d in stock\n", item, count)
+      }
+  - id: v5
+    title: Student Grades
+    description: |-
+      Create a map of student names to their letter grades, then print each student and grade.
+    hints:
+    - 'Map syntax: <code>map[string]string{"Alice": "A"}</code>'
+    solution: |-
+      grades := map[string]string{
+          "Alice": "A",
+          "Bob":   "B",
+          "Carol": "A",
+      }
+      for student, grade := range grades {
+          fmt.Printf("%s: %s\n", student, grade)
+      }
+  - id: v6
+    title: Phone Book
+    description: Create a map of names to phone numbers, then print each entry.
+    hints:
+    - 'Phone numbers can be strings: <code>"555-1234"</code>'
+    solution: |-
+      phonebook := map[string]string{
+          "Alice": "555-1234",
+          "Bob":   "555-5678",
+      }
+      for name, phone := range phonebook {
+          fmt.Printf("%s: %s\n", name, phone)
+      }
+  - id: v7
+    title: Menu Prices
+    description: |-
+      Create a map of menu items to their prices (use integers for cents), then print the menu.
+    hints:
+    - 'Store cents as int: 250 for $2.50'
+    - Divide by 100.0 when printing
+    solution: |-
+      menu := map[string]int{
+          "burger": 850,
+          "fries":  350,
+          "soda":   200,
+      }
+      for item, cents := range menu {
+          fmt.Printf("%s: $%.2f\n", item, float64(cents)/100.0)
+      }
+  - id: v8
+    title: Room Numbers
+    description: |-
+      Create a map of employee names to their office room numbers, then print the directory.
+    hints:
+    - 'Map syntax: <code>map[string]int{"Alice": 101}</code>'
+    solution: |-
+      offices := map[string]int{
+          "Alice": 101,
+          "Bob":   102,
+          "Carol": 105,
+      }
+      for name, room := range offices {
+          fmt.Printf("%s - Room %d\n", name, room)
+      }
+  - id: v9
+    title: Most Common Value
+    description: |-
+      Write <code>func mostCommon(counts map[string]int) string</code> that returns the key with the highest value.
+    hints:
+    - Track max value and corresponding key
+    - Loop through map with range
+    solution: |-
+      func mostCommon(counts map[string]int) string {
+          maxKey := ""
+          maxVal := 0
+          for k, v := range counts {
+              if v > maxVal {
+                  maxVal = v
+                  maxKey = k
+              }
+          }
+          return maxKey
+      }
+  - id: v10
+    title: Merge Maps
+    description: |-
+      Write <code>func mergeMaps(m1, m2 map[string]int) map[string]int</code> that combines both maps (m2 overwrites m1 on conflicts).
+    hints:
+    - Create new result map
+    - Copy all from m1, then all from m2
+    solution: |-
+      func mergeMaps(m1, m2 map[string]int) map[string]int {
+          result := make(map[string]int)
+          for k, v := range m1 {
+              result[k] = v
+          }
+          for k, v := range m2 {
+              result[k] = v
+          }
+          return result
+      }
+  - id: v11
+    title: Filter by Value
+    description: |-
+      Write <code>func filterByValue(m map[string]int, threshold int) map[string]int</code> that returns only entries where value >= threshold.
+    hints:
+    - Create new map for results
+    - Only add entries that meet the condition
+    solution: |-
+      func filterByValue(m map[string]int, threshold int) map[string]int {
+          result := make(map[string]int)
+          for k, v := range m {
+              if v >= threshold {
+                  result[k] = v
+              }
+          }
+          return result
+      }
+  - id: v12
+    title: Key Exists Multiple
+    description: |-
+      Write <code>func hasAllKeys(m map[string]int, keys []string) bool</code> that returns true if all keys exist in the map.
+    hints:
+    - Loop through keys slice
+    - 'Use comma-ok idiom: <code>_, ok := m[key]</code>'
+    solution: |-
+      func hasAllKeys(m map[string]int, keys []string) bool {
+          for _, key := range keys {
+              if _, ok := m[key]; !ok {
+                  return false
+              }
+          }
+          return true
+      }
+  - id: v13
+    title: Invert Map
+    description: |-
+      Write <code>func invertMap(m map[string]string) map[string]string</code> that swaps keys and values.
+    hints:
+    - Create new map where values become keys
+    - 'Loop: <code>result[v] = k</code>'
+    solution: |-
+      func invertMap(m map[string]string) map[string]string {
+          result := make(map[string]string)
+          for k, v := range m {
+              result[v] = k
+          }
+          return result
+      }
+- id: warmup_5
+  concept: Variables & Assignment
+  variants:
+  - id: v1
+    title: Declare and Print
+    description: |-
+      Declare a variable <code>name</code> with value "Go", and an integer <code>year</code> with value 2009. Print both.
+    hints:
+    - 'Use short declaration: <code>name := "Go"</code>'
+    - Use <code>fmt.Println(name, year)</code>
+    solution: |-
+      name := "Go"
+      year := 2009
+      fmt.Println(name, year)
+  - id: v2
+    title: Swap Two Variables
+    description: |-
+      Create two variables <code>a := 10</code> and <code>b := 20</code>. Swap their values, then print them.
+    hints:
+    - 'Go allows simultaneous assignment: <code>a, b = b, a</code>'
+    solution: |-
+      a := 10
+      b := 20
+      a, b = b, a
+      fmt.Println(a, b)  // 20 10
+  - id: v3
+    title: Type Inference
+    description: |-
+      Create variables for your age (int), height (float64), and name (string) using short declaration. Print their values and types.
+    hints:
+    - 'Go infers types: <code>age := 25</code> is int'
+    - Use <code>fmt.Printf("%T", age)</code> to print type
+    solution: |-
+      age := 25
+      height := 5.9
+      name := "Alice"
+      fmt.Printf("age: %d (%T)\n", age, age)
+      fmt.Printf("height: %.1f (%T)\n", height, height)
+      fmt.Printf("name: %s (%T)\n", name, name)
+  - id: v4
+    title: Calculate Area
+    description: |-
+      Create variables for width (5.0) and height (3.0), calculate the area, and print it.
+    hints:
+    - Area is width * height
+    - Use <code>:=</code> for short declaration
+    solution: |-
+      width := 5.0
+      height := 3.0
+      area := width * height
+      fmt.Println(area)  // 15
+  - id: v5
+    title: String Concatenation
+    description: |-
+      Create variables for first name and last name, then create and print a full name.
+    hints:
+    - Concatenate with <code>+</code>
+    - Don't forget the space between names
+    solution: |-
+      firstName := "John"
+      lastName := "Doe"
+      fullName := firstName + " " + lastName
+      fmt.Println(fullName)  // John Doe
+  - id: v6
+    title: Boolean Logic
+    description: Create two boolean variables, then print their AND and OR results.
+    hints:
+    - 'AND: <code>a && b</code>'
+    - 'OR: <code>a || b</code>'
+    solution: |-
+      a := true
+      b := false
+      fmt.Println(a && b)  // false
+      fmt.Println(a || b)  // true
+  - id: v7
+    title: Temperature Conversion
+    description: |-
+      Create a celsius variable (25), convert it to Fahrenheit (F = C * 9/5 + 32), and print both.
+    hints:
+    - 'Formula: <code>fahrenheit := celsius * 9 / 5 + 32</code>'
+    - Use float64 for decimal precision
+    solution: |-
+      celsius := 25.0
+      fahrenheit := celsius * 9 / 5 + 32
+      fmt.Printf("%.1fC = %.1fF\n", celsius, fahrenheit)  // 25.0C = 77.0F
+  - id: v8
+    title: Shopping Total
+    description: |-
+      Create variables for three item prices, calculate the total, then apply a 10% discount and print the final price.
+    hints:
+    - 'Total: <code>price1 + price2 + price3</code>'
+    - 'Discount: <code>total * 0.9</code>'
+    solution: |-
+      item1 := 10.0
+      item2 := 25.5
+      item3 := 8.75
+      total := item1 + item2 + item3
+      final := total * 0.9
+      fmt.Printf("Total: $%.2f, After discount: $%.2f\n", total, final)
+  - id: v9
+    title: Pythagorean Theorem
+    description: |-
+      Write a program that calculates the hypotenuse c given sides a=3 and b=4 using c = sqrt(a² + b²). Print the result.
+    hints:
+    - Use <code>math.Sqrt()</code> function
+    - 'Formula: <code>c := math.Sqrt(a*a + b*b)</code>'
+    solution: |-
+      import "math"
+
+      a := 3.0
+      b := 4.0
+      c := math.Sqrt(a*a + b*b)
+      fmt.Println(c)  // 5
+  - id: v10
+    title: Compound Interest
+    description: |-
+      Write a program that calculates compound interest. Given principal=1000, rate=0.05, time=2, calculate amount = principal * (1 + rate)^time. Print result.
+    hints:
+    - Use <code>math.Pow()</code> for exponentiation
+    - 'Formula: <code>amount := principal * math.Pow(1+rate, time)</code>'
+    solution: |-
+      import "math"
+
+      principal := 1000.0
+      rate := 0.05
+      time := 2.0
+      amount := principal * math.Pow(1+rate, time)
+      fmt.Println(amount)  // 1102.5
+  - id: v11
+    title: Temperature Conversion
+    description: |-
+      Write a program that converts 100Â°F to Celsius using the formula C = (F - 32) * 5/9. Print the result.
+    hints:
+    - Use parentheses for correct order of operations
+    - 'Formula: <code>celsius := (fahrenheit - 32) * 5 / 9</code>'
+    solution: |-
+      fahrenheit := 100.0
+      celsius := (fahrenheit - 32) * 5 / 9
+      fmt.Println(celsius)  // 37.777...
+  - id: v12
+    title: Circle Circumference
+    description: "Write a program that calculates the circumference of a circle with\
+      \ radius 7 using C = 2Ï\x80r. Print the result."
+    hints:
+    - Use <code>math.Pi</code> constant
+    - 'Formula: <code>circumference := 2 * math.Pi * radius</code>'
+    solution: |-
+      import "math"
+
+      radius := 7.0
+      circumference := 2 * math.Pi * radius
+      fmt.Println(circumference)  // 43.98...
+  - id: v13
+    title: Distance Formula
+    description: |-
+      Write a program that calculates distance between points (1,2) and (4,6) using d = sqrt((x2-x1)² + (y2-y1)²). Print result.
+    hints:
+    - 'Calculate differences first: <code>dx := x2 - x1</code>'
+    - Use <code>math.Sqrt(dx*dx + dy*dy)</code>
+    solution: |-
+      import "math"
+
+      x1, y1 := 1.0, 2.0
+      x2, y2 := 4.0, 6.0
+      dx := x2 - x1
+      dy := y2 - y1
+      dist := math.Sqrt(dx*dx + dy*dy)
+      fmt.Println(dist)  // 5
+- id: warmup_6
+  concept: Multiple Returns
+  variants:
+  - id: v1
+    title: Divide with Remainder
+    description: |-
+      Write <code>func divMod(a, b int) (int, int)</code> that returns both quotient and remainder.
+    hints:
+    - 'Return two values: <code>return a / b, a % b</code>'
+    - 'Call with: <code>q, r := divMod(10, 3)</code>'
+    solution: |-
+      func divMod(a, b int) (int, int) {
+          return a / b, a % b
+      }
+
+      // Usage:
+      q, r := divMod(10, 3)
+      fmt.Println(q, r)  // 3 1
+  - id: v2
+    title: Min and Max
+    description: |-
+      Write <code>func minMax(a, b int) (int, int)</code> that returns the smaller value first, then the larger.
+    hints:
+    - Use if to compare, then return in order
+    solution: |-
+      func minMax(a, b int) (int, int) {
+          if a < b {
+              return a, b
+          }
+          return b, a
+      }
+
+      // Usage:
+      small, big := minMax(5, 3)
+      fmt.Println(small, big)  // 3 5
+  - id: v3
+    title: First and Last
+    description: |-
+      Write <code>func firstLast(s string) (string, string)</code> that returns the first and last character of a string.
+    hints:
+    - 'First char: <code>string(s[0])</code>'
+    - 'Last char: <code>string(s[len(s)-1])</code>'
+    solution: |-
+      func firstLast(s string) (string, string) {
+          return string(s[0]), string(s[len(s)-1])
+      }
+
+      // Usage:
+      f, l := firstLast("hello")
+      fmt.Println(f, l)  // h o
+  - id: v4
+    title: Split Name
+    description: |-
+      Write <code>func splitName(fullName string) (string, string)</code> that splits "John Doe" into first and last name (assume one space).
+    hints:
+    - Find the space with a simple loop or assume fixed position
+    - For warmup, you can hardcode the split at index 4 for "John Doe"
+    solution: |-
+      func splitName(fullName string) (string, string) {
+          // Simple version: find space
+          for i, ch := range fullName {
+              if ch == ' ' {
+                  return fullName[:i], fullName[i+1:]
+              }
+          }
+          return fullName, ""
+      }
+
+      // Usage:
+      first, last := splitName("John Doe")
+      fmt.Println(first, last)  // John Doe
+  - id: v5
+    title: Circle Properties
+    description: |-
+      Write <code>func circleProps(radius float64) (float64, float64)</code> that returns circumference and area (use 3.14 for pi).
+    hints:
+    - 'Circumference: <code>2 * pi * radius</code>'
+    - 'Area: <code>pi * radius * radius</code>'
+    solution: |-
+      func circleProps(radius float64) (float64, float64) {
+          pi := 3.14
+          circumference := 2 * pi * radius
+          area := pi * radius * radius
+          return circumference, area
+      }
+
+      // Usage:
+      c, a := circleProps(5.0)
+      fmt.Printf("Circumference: %.2f, Area: %.2f\n", c, a)
+  - id: v6
+    title: Bounds Check
+    description: |-
+      Write <code>func inRange(n, min, max int) (bool, string)</code> that returns true/"in range" if n is between min and max, else false/"out of range".
+    hints:
+    - Check if <code>n >= min && n <= max</code>
+    - Return both the boolean and a message
+    solution: |-
+      func inRange(n, min, max int) (bool, string) {
+          if n >= min && n <= max {
+              return true, "in range"
+          }
+          return false, "out of range"
+      }
+
+      // Usage:
+      ok, msg := inRange(15, 10, 20)
+      fmt.Println(ok, msg)  // true in range
+  - id: v7
+    title: Quotient and Remainder
+    description: |-
+      Write <code>func divide(dividend, divisor int) (int, int)</code> that returns quotient and remainder.
+    hints:
+    - 'Quotient: <code>dividend / divisor</code>'
+    - 'Remainder: <code>dividend % divisor</code>'
+    solution: |-
+      func divide(dividend, divisor int) (int, int) {
+          quotient := dividend / divisor
+          remainder := dividend % divisor
+          return quotient, remainder
+      }
+
+      // Usage:
+      q, r := divide(17, 5)
+      fmt.Println(q, r)  // 3 2
+  - id: v8
+    title: String Info
+    description: |-
+      Write <code>func stringInfo(s string) (int, string)</code> that returns the length and the first character as a string.
+    hints:
+    - 'Length: <code>len(s)</code>'
+    - 'First char: <code>string(s[0])</code>'
+    solution: |-
+      func stringInfo(s string) (int, string) {
+          length := len(s)
+          firstChar := string(s[0])
+          return length, firstChar
+      }
+
+      // Usage:
+      len, first := stringInfo("hello")
+      fmt.Println(len, first)  // 5 h
+  - id: v9
+    title: Parse Int with Error
+    description: |-
+      Write <code>func parsePositive(s string) (int, error)</code> that converts string to int. Return error if conversion fails or number is negative.
+    hints:
+    - Use <code>strconv.Atoi(s)</code> to convert
+    - Check if result < 0 and return custom error
+    solution: |-
+      import (
+          "errors"
+          "strconv"
+      )
+
+      func parsePositive(s string) (int, error) {
+          n, err := strconv.Atoi(s)
+          if err != nil {
+              return 0, err
+          }
+          if n < 0 {
+              return 0, errors.New("negative number")
+          }
+          return n, nil
+      }
+  - id: v10
+    title: Validate Range
+    description: |-
+      Write <code>func validateRange(n, min, max int) (int, bool)</code> that returns (n, true) if n is in [min,max], else (0, false).
+    hints:
+    - 'Check condition: <code>n >= min && n <= max</code>'
+    - Return the value with a boolean flag
+    solution: |-
+      func validateRange(n, min, max int) (int, bool) {
+          if n >= min && n <= max {
+              return n, true
+          }
+          return 0, false
+      }
+  - id: v11
+    title: String Split at Position
+    description: |-
+      Write <code>func splitAt(s string, pos int) (string, string, bool)</code> that splits string at position. Return false if pos is out of bounds.
+    hints:
+    - Check if <code>pos >= 0 && pos <= len(s)</code>
+    - 'Use slice notation: <code>s[:pos]</code> and <code>s[pos:]</code>'
+    solution: |-
+      func splitAt(s string, pos int) (string, string, bool) {
+          if pos < 0 || pos > len(s) {
+              return "", "", false
+          }
+          return s[:pos], s[pos:], true
+      }
+  - id: v12
+    title: Find First Occurrence
+    description: |-
+      Write <code>func findFirst(items []string, target string) (int, bool)</code> that returns (index, true) if found, else (-1, false).
+    hints:
+    - Use range to get both index and value
+    - Return immediately when target is found
+    solution: |-
+      func findFirst(items []string, target string) (int, bool) {
+          for i, item := range items {
+              if item == target {
+                  return i, true
+              }
+          }
+          return -1, false
+      }
+  - id: v13
+    title: Min and Max
+    description: |-
+      Write <code>func minMax(nums []int) (int, int)</code> that returns both the minimum and maximum values in one call.
+    hints:
+    - Initialize both to first element
+    - Update both in one loop using range
+    solution: |-
+      func minMax(nums []int) (int, int) {
+          min, max := nums[0], nums[0]
+          for _, n := range nums {
+              if n < min {
+                  min = n
+              }
+              if n > max {
+                  max = n
+              }
+          }
+          return min, max
+      }
+- id: warmup_7
+  concept: Recursion
+  variants:
+  - id: v1
+    title: Recursive Countdown
+    description: |-
+      Write <code>func countdown(n int)</code> that prints numbers from n down to 1 using recursion (no loops!).
+    hints:
+    - 'Base case: if n < 1, stop (return)'
+    - 'Recursive case: print n, then call countdown(n-1)'
+    solution: |-
+      func countdown(n int) {
+          if n < 1 {
+              return
+          }
+          fmt.Println(n)
+          countdown(n - 1)
+      }
+  - id: v2
+    title: Recursive Sum
+    description: |-
+      Write <code>func sumTo(n int) int</code> that returns the sum of 1 + 2 + ... + n using recursion.
+    hints:
+    - 'Base case: sumTo(0) = 0'
+    - 'Recursive case: sumTo(n) = n + sumTo(n-1)'
+    solution: |-
+      func sumTo(n int) int {
+          if n <= 0 {
+              return 0
+          }
+          return n + sumTo(n-1)
+      }
+  - id: v3
+    title: Recursive Factorial
+    description: |-
+      Write <code>func factorial(n int) int</code> that returns n! (n factorial) using recursion. 0! = 1.
+    hints:
+    - 'Base case: factorial(0) = 1'
+    - 'Recursive case: factorial(n) = n * factorial(n-1)'
+    solution: |-
+      func factorial(n int) int {
+          if n <= 0 {
+              return 1
+          }
+          return n * factorial(n-1)
+      }
+  - id: v4
+    title: Recursive Power
+    description: |-
+      Write <code>func power(base, exp int) int</code> that returns base^exp using recursion. Assume exp >= 0.
+    hints:
+    - 'Base case: power(base, 0) = 1'
+    - 'Recursive case: power(base, exp) = base * power(base, exp-1)'
+    solution: |-
+      func power(base, exp int) int {
+          if exp == 0 {
+              return 1
+          }
+          return base * power(base, exp-1)
+      }
+  - id: v5
+    title: Recursive Length
+    description: |-
+      Write <code>func length(items []int) int</code> that counts elements in a slice using recursion (don't use len!).
+    hints:
+    - 'Base case: empty slice has length 0'
+    - 'Recursive case: 1 + length(items[1:])'
+    solution: |-
+      func length(items []int) int {
+          if len(items) == 0 {
+              return 0
+          }
+          return 1 + length(items[1:])
+      }
+  - id: v6
+    title: Recursive Contains
+    description: |-
+      Write <code>func contains(items []int, target int) bool</code> that checks if target is in the slice using recursion.
+    hints:
+    - 'Base case: empty slice → false'
+    - 'Check first element, then recurse on the rest: items[1:]'
+    solution: |-
+      func contains(items []int, target int) bool {
+          if len(items) == 0 {
+              return false
+          }
+          if items[0] == target {
+              return true
+          }
+          return contains(items[1:], target)
+      }
+  - id: v7
+    title: Recursive Max
+    description: |-
+      Write <code>func max(items []int) int</code> that finds the maximum value in a non-empty slice using recursion.
+    hints:
+    - 'Base case: one element → return it'
+    - Compare first element with max of the rest
+    solution: |-
+      func max(items []int) int {
+          if len(items) == 1 {
+              return items[0]
+          }
+          rest := max(items[1:])
+          if items[0] > rest {
+              return items[0]
+          }
+          return rest
+      }
+  - id: v8
+    title: Recursive Sum Slice
+    description: |-
+      Write <code>func sumSlice(items []int) int</code> that sums all elements in a slice using recursion.
+    hints:
+    - 'Base case: empty slice → 0'
+    - 'Recursive case: items[0] + sumSlice(items[1:])'
+    solution: |-
+      func sumSlice(items []int) int {
+          if len(items) == 0 {
+              return 0
+          }
+          return items[0] + sumSlice(items[1:])
+      }
+  - id: v9
+    title: Recursive Reverse
+    description: |-
+      Write <code>func reverse(s string) string</code> that reverses a string using recursion.
+    hints:
+    - 'Base case: empty string or single char → return s'
+    - 'Recursive case: reverse(s[1:]) + first character'
+    solution: |-
+      func reverse(s string) string {
+          if len(s) <= 1 {
+              return s
+          }
+          return reverse(s[1:]) + string(s[0])
+      }
+  - id: v10
+    title: Recursive Fibonacci
+    description: |-
+      Write <code>func fib(n int) int</code> that returns the nth Fibonacci number. fib(0)=0, fib(1)=1.
+    hints:
+    - 'Base cases: fib(0) = 0, fib(1) = 1'
+    - 'Recursive case: fib(n) = fib(n-1) + fib(n-2)'
+    solution: |-
+      func fib(n int) int {
+          if n <= 0 {
+              return 0
+          }
+          if n == 1 {
+              return 1
+          }
+          return fib(n-1) + fib(n-2)
+      }
+  - id: v11
+    title: Recursive Count
+    description: |-
+      Write <code>func countOccurrences(items []int, target int) int</code> that counts how many times target appears using recursion.
+    hints:
+    - 'Base case: empty slice → 0'
+    - If first matches, 1 + recurse on rest; else 0 + recurse on rest
+    solution: |-
+      func countOccurrences(items []int, target int) int {
+          if len(items) == 0 {
+              return 0
+          }
+          count := 0
+          if items[0] == target {
+              count = 1
+          }
+          return count + countOccurrences(items[1:], target)
+      }
+  - id: v12
+    title: Recursive String Repeat
+    description: |-
+      Write <code>func repeatStr(s string, n int) string</code> that returns s repeated n times using recursion.
+    hints:
+    - 'Base case: n <= 0 → empty string'
+    - 'Recursive case: s + repeatStr(s, n-1)'
+    solution: |-
+      func repeatStr(s string, n int) string {
+          if n <= 0 {
+              return ""
+          }
+          return s + repeatStr(s, n-1)
+      }
+  - id: v13
+    title: Recursive Is Palindrome
+    description: |-
+      Write <code>func isPalindrome(s string) bool</code> that checks if a string reads the same forwards and backwards, using recursion.
+    hints:
+    - 'Base case: length 0 or 1 → true'
+    - 'Check first == last, then recurse on the middle: s[1:len(s)-1]'
+    solution: |-
+      func isPalindrome(s string) bool {
+          if len(s) <= 1 {
+              return true
+          }
+          if s[0] != s[len(s)-1] {
+              return false
+          }
+          return isPalindrome(s[1 : len(s)-1])
+      }
+- id: warmup_8
+  concept: Strings
+  variants:
+  - id: v1
+    title: String Length
+    description: |-
+      Write <code>func strLen(s string) int</code> that returns the length of string s.
+    hints:
+    - Use the built-in <code>len(s)</code> function
+    solution: |-
+      func strLen(s string) int {
+          return len(s)
+      }
+  - id: v2
+    title: First Character
+    description: |-
+      Write <code>func firstChar(s string) byte</code> that returns the first character of s. Assume s is non-empty.
+    hints:
+    - Access the first byte with <code>s[0]</code>
+    solution: |-
+      func firstChar(s string) byte {
+          return s[0]
+      }
+  - id: v3
+    title: Last Character
+    description: |-
+      Write <code>func lastChar(s string) byte</code> that returns the last character of s. Assume s is non-empty.
+    hints:
+    - Use <code>s[len(s)-1]</code> to get the last byte
+    solution: |-
+      func lastChar(s string) byte {
+          return s[len(s)-1]
+      }
+  - id: v4
+    title: Concatenate
+    description: |-
+      Write <code>func concat(a, b string) string</code> that concatenates two strings.
+    hints:
+    - 'Use the <code>+</code> operator: <code>a + b</code>'
+    solution: |-
+      func concat(a, b string) string {
+          return a + b
+      }
+  - id: v5
+    title: Contains Check
+    description: |-
+      Write <code>func hasSubstring(s, sub string) bool</code> that checks if s contains sub. Import "strings".
+    hints:
+    - Use <code>strings.Contains(s, sub)</code>
+    solution: |-
+      func hasSubstring(s, sub string) bool {
+          return strings.Contains(s, sub)
+      }
+  - id: v6
+    title: To Uppercase
+    description: |-
+      Write <code>func toUpper(s string) string</code> that returns s in all uppercase. Import "strings".
+    hints:
+    - Use <code>strings.ToUpper(s)</code>
+    solution: |-
+      func toUpper(s string) string {
+          return strings.ToUpper(s)
+      }
+  - id: v7
+    title: To Lowercase
+    description: |-
+      Write <code>func toLower(s string) string</code> that returns s in all lowercase. Import "strings".
+    hints:
+    - Use <code>strings.ToLower(s)</code>
+    solution: |-
+      func toLower(s string) string {
+          return strings.ToLower(s)
+      }
+  - id: v8
+    title: Trim Spaces
+    description: |-
+      Write <code>func trimSpaces(s string) string</code> that removes leading and trailing whitespace. Import "strings".
+    hints:
+    - Use <code>strings.TrimSpace(s)</code>
+    solution: |-
+      func trimSpaces(s string) string {
+          return strings.TrimSpace(s)
+      }
+  - id: v9
+    title: Split String
+    description: |-
+      Write <code>func splitByComma(s string) []string</code> that splits a string by commas. Import "strings".
+    hints:
+    - Use <code>strings.Split(s, ",")</code>
+    solution: |-
+      func splitByComma(s string) []string {
+          return strings.Split(s, ",")
+      }
+  - id: v10
+    title: Join Strings
+    description: |-
+      Write <code>func joinWithDash(parts []string) string</code> that joins strings with a dash. Import "strings".
+    hints:
+    - Use <code>strings.Join(parts, "-")</code>
+    solution: |-
+      func joinWithDash(parts []string) string {
+          return strings.Join(parts, "-")
+      }
+  - id: v11
+    title: Replace
+    description: |-
+      Write <code>func replaceAll(s, old, new string) string</code> that replaces all occurrences of old with new in s. Import "strings".
+    hints:
+    - Use <code>strings.ReplaceAll(s, old, new)</code>
+    solution: |-
+      func replaceAll(s, old, new string) string {
+          return strings.ReplaceAll(s, old, new)
+      }
+  - id: v12
+    title: Has Prefix
+    description: |-
+      Write <code>func startsWith(s, prefix string) bool</code> that checks if s starts with prefix. Import "strings".
+    hints:
+    - Use <code>strings.HasPrefix(s, prefix)</code>
+    solution: |-
+      func startsWith(s, prefix string) bool {
+          return strings.HasPrefix(s, prefix)
+      }
+  - id: v13
+    title: Repeat String
+    description: |-
+      Write <code>func repeat(s string, n int) string</code> that repeats s n times. Import "strings".
+    hints:
+    - Use <code>strings.Repeat(s, n)</code>
+    solution: |-
+      func repeat(s string, n int) string {
+          return strings.Repeat(s, n)
+      }
+- id: warmup_9
+  concept: Switch
+  variants:
+  - id: v1
+    title: Day Name
+    description: |-
+      Write <code>func dayName(n int) string</code> that returns the day name for 1=Monday through 7=Sunday. Return "invalid" for other values.
+    hints:
+    - Use a switch statement on n
+    - Each case returns the day name
+    solution: |-
+      func dayName(n int) string {
+          switch n {
+          case 1:
+              return "Monday"
+          case 2:
+              return "Tuesday"
+          case 3:
+              return "Wednesday"
+          case 4:
+              return "Thursday"
+          case 5:
+              return "Friday"
+          case 6:
+              return "Saturday"
+          case 7:
+              return "Sunday"
+          default:
+              return "invalid"
+          }
+      }
+  - id: v2
+    title: Month Name
+    description: |-
+      Write <code>func monthName(n int) string</code> that returns the month name for 1-12. Return "invalid" otherwise.
+    hints:
+    - Use a switch with cases 1 through 12
+    solution: |-
+      func monthName(n int) string {
+          switch n {
+          case 1:
+              return "January"
+          case 2:
+              return "February"
+          case 3:
+              return "March"
+          case 4:
+              return "April"
+          case 5:
+              return "May"
+          case 6:
+              return "June"
+          case 7:
+              return "July"
+          case 8:
+              return "August"
+          case 9:
+              return "September"
+          case 10:
+              return "October"
+          case 11:
+              return "November"
+          case 12:
+              return "December"
+          default:
+              return "invalid"
+          }
+      }
+  - id: v3
+    title: Grade to Message
+    description: |-
+      Write <code>func gradeMessage(grade string) string</code> that returns a message: A="Excellent", B="Good", C="Average", D="Below Average", F="Failing". Default: "Invalid grade".
+    hints:
+    - Switch on the grade string
+    - Use default for unknown grades
+    solution: |-
+      func gradeMessage(grade string) string {
+          switch grade {
+          case "A":
+              return "Excellent"
+          case "B":
+              return "Good"
+          case "C":
+              return "Average"
+          case "D":
+              return "Below Average"
+          case "F":
+              return "Failing"
+          default:
+              return "Invalid grade"
+          }
+      }
+  - id: v4
+    title: Color to Hex
+    description: |-
+      Write <code>func colorHex(color string) string</code> that returns hex for: "red"="#FF0000", "green"="#00FF00", "blue"="#0000FF", "white"="#FFFFFF", "black"="#000000". Default: "unknown".
+    hints:
+    - Switch on the color string
+    solution: |-
+      func colorHex(color string) string {
+          switch color {
+          case "red":
+              return "#FF0000"
+          case "green":
+              return "#00FF00"
+          case "blue":
+              return "#0000FF"
+          case "white":
+              return "#FFFFFF"
+          case "black":
+              return "#000000"
+          default:
+              return "unknown"
+          }
+      }
+  - id: v5
+    title: Traffic Light
+    description: |-
+      Write <code>func trafficAction(light string) string</code> that returns: "red"="stop", "yellow"="caution", "green"="go". Default: "invalid".
+    hints:
+    - Simple switch with three cases plus default
+    solution: |-
+      func trafficAction(light string) string {
+          switch light {
+          case "red":
+              return "stop"
+          case "yellow":
+              return "caution"
+          case "green":
+              return "go"
+          default:
+              return "invalid"
+          }
+      }
+  - id: v6
+    title: Season
+    description: |-
+      Write <code>func season(month int) string</code> that returns the season: 12,1,2="Winter", 3,4,5="Spring", 6,7,8="Summer", 9,10,11="Fall". Default: "invalid".
+    hints:
+    - 'You can list multiple values in one case: <code>case 12, 1, 2:</code>'
+    solution: |-
+      func season(month int) string {
+          switch month {
+          case 12, 1, 2:
+              return "Winter"
+          case 3, 4, 5:
+              return "Spring"
+          case 6, 7, 8:
+              return "Summer"
+          case 9, 10, 11:
+              return "Fall"
+          default:
+              return "invalid"
+          }
+      }
+  - id: v7
+    title: Coin Name
+    description: |-
+      Write <code>func coinName(cents int) string</code>: 1="penny", 5="nickel", 10="dime", 25="quarter". Default: "unknown".
+    hints:
+    - Switch on the cent value
+    solution: |-
+      func coinName(cents int) string {
+          switch cents {
+          case 1:
+              return "penny"
+          case 5:
+              return "nickel"
+          case 10:
+              return "dime"
+          case 25:
+              return "quarter"
+          default:
+              return "unknown"
+          }
+      }
+  - id: v8
+    title: HTTP Status
+    description: |-
+      Write <code>func httpStatus(code int) string</code>: 200="OK", 301="Moved Permanently", 404="Not Found", 500="Internal Server Error". Default: "Unknown".
+    hints:
+    - Switch on the status code integer
+    solution: |-
+      func httpStatus(code int) string {
+          switch code {
+          case 200:
+              return "OK"
+          case 301:
+              return "Moved Permanently"
+          case 404:
+              return "Not Found"
+          case 500:
+              return "Internal Server Error"
+          default:
+              return "Unknown"
+          }
+      }
+  - id: v9
+    title: Calculator
+    description: |-
+      Write <code>func calc(a int, op string, b int) int</code> that performs the operation: "+" add, "-" subtract, "*" multiply, "/" divide. Return 0 for unknown ops or division by zero.
+    hints:
+    - Switch on op
+    - For division, check b != 0 before dividing
+    solution: |-
+      func calc(a int, op string, b int) int {
+          switch op {
+          case "+":
+              return a + b
+          case "-":
+              return a - b
+          case "*":
+              return a * b
+          case "/":
+              if b != 0 {
+                  return a / b
+              }
+              return 0
+          default:
+              return 0
+          }
+      }
+  - id: v10
+    title: Direction
+    description: |-
+      Write <code>func fullDirection(abbr string) string</code>: "N"="North", "S"="South", "E"="East", "W"="West". Default: "Unknown".
+    hints:
+    - Switch on the abbreviation string
+    solution: |-
+      func fullDirection(abbr string) string {
+          switch abbr {
+          case "N":
+              return "North"
+          case "S":
+              return "South"
+          case "E":
+              return "East"
+          case "W":
+              return "West"
+          default:
+              return "Unknown"
+          }
+      }
+  - id: v11
+    title: Planet
+    description: |-
+      Write <code>func planet(n int) string</code> that returns the planet name: 1="Mercury", 2="Venus", 3="Earth", 4="Mars", 5="Jupiter", 6="Saturn", 7="Uranus", 8="Neptune". Default: "Unknown".
+    hints:
+    - Switch with 8 cases plus default
+    solution: |-
+      func planet(n int) string {
+          switch n {
+          case 1:
+              return "Mercury"
+          case 2:
+              return "Venus"
+          case 3:
+              return "Earth"
+          case 4:
+              return "Mars"
+          case 5:
+              return "Jupiter"
+          case 6:
+              return "Saturn"
+          case 7:
+              return "Uranus"
+          case 8:
+              return "Neptune"
+          default:
+              return "Unknown"
+          }
+      }
+  - id: v12
+    title: Zodiac
+    description: |-
+      Write <code>func zodiac(month int) string</code> that returns a simplified zodiac sign: 1="Capricorn", 2="Aquarius", 3="Pisces", 4="Aries", 5="Taurus", 6="Gemini", 7="Cancer", 8="Leo", 9="Virgo", 10="Libra", 11="Scorpio", 12="Sagittarius". Default: "Unknown".
+    hints:
+    - Switch on month number, one case per month
+    solution: |-
+      func zodiac(month int) string {
+          switch month {
+          case 1:
+              return "Capricorn"
+          case 2:
+              return "Aquarius"
+          case 3:
+              return "Pisces"
+          case 4:
+              return "Aries"
+          case 5:
+              return "Taurus"
+          case 6:
+              return "Gemini"
+          case 7:
+              return "Cancer"
+          case 8:
+              return "Leo"
+          case 9:
+              return "Virgo"
+          case 10:
+              return "Libra"
+          case 11:
+              return "Scorpio"
+          case 12:
+              return "Sagittarius"
+          default:
+              return "Unknown"
+          }
+      }
+  - id: v13
+    title: File Type
+    description: |-
+      Write <code>func fileType(ext string) string</code>: ".go"="Go source", ".py"="Python source", ".js"="JavaScript source", ".html"="HTML document", ".css"="CSS stylesheet", ".json"="JSON data". Default: "Unknown type".
+    hints:
+    - Switch on the extension string including the dot
+    solution: |-
+      func fileType(ext string) string {
+          switch ext {
+          case ".go":
+              return "Go source"
+          case ".py":
+              return "Python source"
+          case ".js":
+              return "JavaScript source"
+          case ".html":
+              return "HTML document"
+          case ".css":
+              return "CSS stylesheet"
+          case ".json":
+              return "JSON data"
+          default:
+              return "Unknown type"
+          }
+      }

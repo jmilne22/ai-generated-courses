@@ -1,0 +1,441 @@
+- id: embedding_1
+  concept: Embedding
+  difficulty: 3
+  patternPrimer:
+    bruteForce: Manually delegate to contained struct for each method.
+    bestApproach: Embed the struct to get automatic field and method promotion.
+    typical: O(1) for promoted access
+  variants:
+  - id: v1
+    title: Embed for Fields
+    difficulty: 1
+    description: |-
+      Embed <code>Person</code> (Name string) into <code>Employee</code>. Access Name directly on Employee.
+    hints:
+    - title: Think about it
+      content: Embedding promotes fields. No dot needed for embedded struct's fields.
+    - title: Hint
+      content: <code>type Employee struct { Person; Role string }</code>
+    solution: |-
+      type Person struct {
+          Name string
+      }
+
+      type Employee struct {
+          Person
+          Role string
+      }
+
+      e := Employee{Person: Person{Name: "Joker"}, Role: "Thief"}
+      fmt.Println(e.Name)  // Works! Promoted from Person
+  - id: v2
+    title: Create Embedded
+    difficulty: 1
+    description: |-
+      Create an Employee with Name "Makoto" and Role "Strategist" using embedded Person.
+    hints:
+    - title: Hint
+      content: '<code>Employee{Person: Person{Name: "Makoto"}, Role: "Strategist"}</code>'
+    solution: |-
+      e := Employee{
+          Person: Person{Name: "Makoto"},
+          Role:   "Strategist",
+      }
+      fmt.Println(e.Name, e.Role)
+  - id: v3
+    title: Embed for Methods
+    difficulty: 2
+    description: |-
+      Person has <code>Greet() string</code>. Embed into Employee. Call Greet on Employee.
+    hints:
+    - title: Think about it
+      content: Methods are promoted too! Employee gets Person's methods.
+    solution: |-
+      type Person struct {
+          Name string
+      }
+
+      func (p Person) Greet() string {
+          return "Hi, I'm " + p.Name
+      }
+
+      type Employee struct {
+          Person
+          Role string
+      }
+
+      e := Employee{Person: Person{Name: "Ann"}, Role: "Artist"}
+      fmt.Println(e.Greet())  // Hi, I'm Ann
+  - id: v4
+    title: Access Embedded
+    difficulty: 2
+    description: |-
+      Given Employee embedding Person, access the Person struct directly to call its original method.
+    hints:
+    - title: Hint
+      content: <code>e.Person.Greet()</code> accesses embedded type explicitly.
+    solution: |-
+      // Access embedded struct directly
+      fmt.Println(e.Person.Greet())  // Same as e.Greet() unless overridden
+  - id: v5
+    title: Override Embedded
+    difficulty: 2
+    description: |-
+      Employee has its own <code>Greet()</code> that includes Role. Override the embedded Person's Greet.
+    hints:
+    - title: Think about it
+      content: Define method on Employee - it shadows the embedded one.
+    solution: |-
+      func (e Employee) Greet() string {
+          return fmt.Sprintf("Hi, I'm %s the %s", e.Name, e.Role)
+      }
+
+      // e.Greet() uses Employee's version
+      // e.Person.Greet() still uses Person's version
+  - id: v6
+    title: Pointer Embed
+    difficulty: 2
+    description: Embed <code>*Logger</code> (pointer) in Service. Why might you embed
+      a pointer?
+    hints:
+    - title: Think about it
+      content: Embedding pointer allows nil, sharing same logger, and modifying embedded.
+    solution: |-
+      type Logger struct {
+          Prefix string
+      }
+
+      func (l *Logger) Log(msg string) {
+          fmt.Println(l.Prefix + ": " + msg)
+      }
+
+      type Service struct {
+          *Logger  // Pointer embedding
+      }
+
+      // Logger can be nil, shared, or swapped
+  - id: v7
+    title: Multiple Embeds
+    difficulty: 3
+    description: |-
+      Embed both <code>Logger</code> (Log method) and <code>Counter</code> (Inc method) into Service.
+    hints:
+    - title: Think about it
+      content: You can embed multiple types. All their methods get promoted.
+    solution: |-
+      type Logger struct{}
+      func (l Logger) Log(msg string) { fmt.Println(msg) }
+
+      type Counter struct{ Value int }
+      func (c *Counter) Inc() { c.Value++ }
+
+      type Service struct {
+          Logger
+          Counter
+      }
+
+      s := Service{}
+      s.Log("Starting")  // From Logger
+      s.Inc()            // From Counter
+  - id: v8
+    title: Interface via Embedding
+    difficulty: 3
+    description: |-
+      Make Employee implement <code>Greeter</code> interface automatically via embedded Person's method.
+    hints:
+    - title: Think about it
+      content: If embedded type implements an interface, the outer type does too!
+    solution: |-
+      type Greeter interface {
+          Greet() string
+      }
+
+      // Person implements Greeter
+      // Employee embeds Person
+      // Therefore Employee implements Greeter!
+
+      func sayHi(g Greeter) {
+          fmt.Println(g.Greet())
+      }
+
+      e := Employee{Person: Person{Name: "Ann"}, Role: "Artist"}
+      sayHi(e)  // Works!
+  - id: v9
+    title: Field Name Collision
+    difficulty: 3
+    description: |-
+      Both Person and Address have a Name field. Embed both - how do you access each Name?
+    hints:
+    - title: Think about it
+      content: Ambiguous fields must be accessed through the embedded type name.
+    solution: |-
+      type Person struct{ Name string }
+      type Address struct{ Name string }  // Street name
+
+      type Contact struct {
+          Person
+          Address
+      }
+
+      c := Contact{
+          Person:  Person{Name: "Joker"},
+          Address: Address{Name: "Main St"},
+      }
+      // c.Name is ambiguous - compile error
+      fmt.Println(c.Person.Name)   // Joker
+      fmt.Println(c.Address.Name)  // Main St
+  - id: v10
+    title: Embedding Interface
+    difficulty: 3
+    description: |-
+      Embed <code>io.Reader</code> interface in a struct to require it at construction time.
+    hints:
+    - title: Think about it
+      content: You can embed interfaces in structs - they become required dependencies.
+    solution: |-
+      type MyReader struct {
+          io.Reader  // Embedded interface
+          buffer []byte
+      }
+
+      // Must provide a Reader when creating:
+      r := MyReader{
+          Reader: strings.NewReader("hello"),
+      }
+
+      // Can call Read directly:
+      buf := make([]byte, 5)
+      r.Read(buf)
+  - id: v11
+    title: Embedding vs Composition
+    difficulty: 2
+    description: |-
+      What's the difference between embedding <code>Logger</code> and having field <code>log Logger</code>?
+    hints:
+    - title: Think about it
+      content: Embedding promotes methods. Named field requires explicit access.
+    solution: |-
+      // EMBEDDING - methods promoted
+      type Service1 struct {
+          Logger  // s.Log() works
+      }
+
+      // COMPOSITION - explicit access
+      type Service2 struct {
+          log Logger  // s.log.Log() needed
+      }
+
+      // Embedding: more concise, auto interface satisfaction
+      // Composition: more explicit, better encapsulation
+  - id: v12
+    title: Embedding for Code Reuse
+    difficulty: 2
+    description: |-
+      Create <code>BaseStats</code> with HP, Attack. Embed into both <code>Warrior</code> and <code>Mage</code>.
+    hints:
+    - title: Think about it
+      content: Embedding is Go's way to share code - not inheritance!
+    solution: |-
+      type BaseStats struct {
+          HP     int
+          Attack int
+      }
+
+      func (b BaseStats) IsAlive() bool { return b.HP > 0 }
+
+      type Warrior struct {
+          BaseStats
+          Armor int
+      }
+
+      type Mage struct {
+          BaseStats
+          Mana int
+      }
+
+      w := Warrior{BaseStats: BaseStats{HP: 100, Attack: 20}, Armor: 10}
+      w.IsAlive()  // Promoted from BaseStats
+  - id: v13
+    title: Override Keeps Original
+    difficulty: 2
+    description: Warrior overrides <code>Attack()</code>. Can you still call BaseStats's
+      version?
+    hints:
+    - title: Think about it
+      content: Yes! Access through the embedded type explicitly.
+    solution: |-
+      type BaseStats struct{ ATK int }
+      func (b BaseStats) Attack() int { return b.ATK }
+
+      type Warrior struct {
+          BaseStats
+          Rage int
+      }
+
+      func (w Warrior) Attack() int {
+          return w.BaseStats.Attack() + w.Rage  // Call original!
+      }
+
+      // w.Attack() - uses Warrior's
+      // w.BaseStats.Attack() - uses original
+  - id: v14
+    title: Embed for Interface
+    difficulty: 3
+    description: |-
+      Make <code>LoggingReader</code> satisfy <code>io.Reader</code> by embedding, then intercept reads.
+    hints:
+    - title: Think about it
+      content: Embed io.Reader, but add your own Read that wraps it.
+    solution: |-
+      type LoggingReader struct {
+          io.Reader  // Satisfies interface via embedding
+          count int
+      }
+
+      func (l *LoggingReader) Read(p []byte) (int, error) {
+          n, err := l.Reader.Read(p)  // Call embedded
+          l.count += n
+          fmt.Printf("Read %d bytes\n", n)
+          return n, err
+      }
+
+      // Decorator pattern!
+  - id: v15
+    title: Shallow Copy Issue
+    difficulty: 3
+    description: |-
+      If <code>Outer</code> embeds <code>*Inner</code> (pointer), what happens when you copy Outer?
+    hints:
+    - title: Think about it
+      content: Copying Outer copies the pointer, not Inner. Both share Inner!
+    solution: |-
+      type Inner struct{ Value int }
+      type Outer struct {
+          *Inner  // Embedded pointer
+      }
+
+      a := Outer{Inner: &Inner{Value: 1}}
+      b := a  // Copies pointer!
+
+      b.Value = 99
+      fmt.Println(a.Value)  // 99 - same Inner!
+  - id: v16
+    title: Embedding Mutex
+    difficulty: 3
+    description: |-
+      Embed <code>sync.Mutex</code> into a struct for thread-safe counter. How do you lock it?
+    hints:
+    - title: Think about it
+      content: Mutex methods get promoted. c.Lock() and c.Unlock() work directly!
+    solution: |-
+      type SafeCounter struct {
+          sync.Mutex  // Embedded - Lock/Unlock promoted
+          count int
+      }
+
+      func (c *SafeCounter) Inc() {
+          c.Lock()        // Promoted from sync.Mutex
+          defer c.Unlock()
+          c.count++
+      }
+
+      func (c *SafeCounter) Value() int {
+          c.Lock()
+          defer c.Unlock()
+          return c.count
+      }
+  - id: v17
+    title: Is-A vs Has-A
+    difficulty: 2
+    description: In OOP, is embedding more like 'is-a' (inheritance) or 'has-a' (composition)?
+    hints:
+    - title: Think about it
+      content: Go says it's composition. Car has-a Engine, not Car is-a Engine.
+    solution: |-
+      // Embedding is COMPOSITION, not inheritance!
+
+      type Engine struct{}
+      func (e Engine) Start() {}
+
+      type Car struct {
+          Engine  // Car HAS-A Engine
+      }
+
+      // Car is NOT a subtype of Engine
+      // You CAN'T do: var e Engine = Car{}  // Compile error!
+
+      // Embedding = method forwarding, not polymorphism
+  - id: v18
+    title: Embedding Order Matters
+    difficulty: 3
+    description: If A embeds B, and B embeds C, does A get C's methods? What's the
+      lookup order?
+    hints:
+    - title: Think about it
+      content: Yes, methods propagate up. Shallow embedding wins over deep.
+    solution: |-
+      type C struct{}
+      func (C) Method() string { return "C" }
+
+      type B struct{ C }
+      func (B) Method() string { return "B" }
+
+      type A struct{ B }
+
+      a := A{}
+      a.Method()    // "B" - B's version (shallower)
+      a.B.Method()  // "B"
+      a.B.C.Method() // "C" - explicit access to C
+  - id: v19
+    title: Anonymous Field Syntax
+    difficulty: 1
+    description: How do you access an embedded field? What is the implicit field name?
+    hints:
+    - title: Think about it
+      content: Embedded type name becomes the field name.
+    solution: |-
+      type Logger struct{ Prefix string }
+
+      type App struct {
+          Logger  // Embedded - field name is "Logger"
+      }
+
+      a := App{Logger: Logger{Prefix: "app"}}
+
+      // Access promoted field
+      a.Prefix       // Works! Promoted
+
+      // Access embedded struct directly
+      a.Logger.Prefix  // Also works, explicit
+  - id: v20
+    title: Constructor with Embedded
+    difficulty: 2
+    description: |-
+      Write a constructor for <code>Player</code> that embeds <code>Stats</code> and initializes all fields.
+    hints:
+    - title: Hint
+      content: Initialize the embedded struct inside the composite literal.
+    solution: |-
+      type Stats struct {
+          HP, MP, ATK, DEF int
+      }
+
+      type Player struct {
+          Name string
+          Stats
+      }
+
+      func NewPlayer(name string) *Player {
+          return &Player{
+              Name: name,
+              Stats: Stats{
+                  HP:  100,
+                  MP:  50,
+                  ATK: 10,
+                  DEF: 5,
+              },
+          }
+      }
+
+      p := NewPlayer("Joker")
+      p.HP  // 100 - promoted

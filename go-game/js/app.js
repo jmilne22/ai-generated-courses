@@ -8,20 +8,103 @@
     var exerciseData = null;
     var currentView = 'training';
 
+    function loadYamlFile(path) {
+        return fetch(path)
+            .then(function(res) {
+                if (!res.ok) throw new Error('Failed to load ' + path);
+                return res.text();
+            })
+            .then(function(text) {
+                return jsyaml.load(text);
+            });
+    }
+
     function loadExerciseData() {
-        return fetch('data/exercises.json')
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
+        // Load manifest to know which files to fetch
+        return loadYamlFile('exercises/manifest.yaml')
+            .then(function(manifest) {
+                var promises = [];
+                var fileMap = {};
+
+                // Load config
+                promises.push(
+                    loadYamlFile('exercises/' + manifest.config)
+                        .then(function(data) { fileMap.config = data; })
+                );
+
+                // Load warmups
+                (manifest.warmups || []).forEach(function(file) {
+                    promises.push(
+                        loadYamlFile('exercises/' + file)
+                            .then(function(data) {
+                                fileMap.warmups = (fileMap.warmups || []).concat(data || []);
+                            })
+                    );
+                });
+
+                // Load challenges
+                (manifest.challenges || []).forEach(function(file) {
+                    promises.push(
+                        loadYamlFile('exercises/' + file)
+                            .then(function(data) {
+                                fileMap.challenges = (fileMap.challenges || []).concat(data || []);
+                            })
+                    );
+                });
+
+                // Load advanced
+                (manifest.advanced || []).forEach(function(file) {
+                    promises.push(
+                        loadYamlFile('exercises/' + file)
+                            .then(function(data) {
+                                fileMap.advanced = (fileMap.advanced || []).concat(data || []);
+                            })
+                    );
+                });
+
+                // Load pre-exercises
+                (manifest.preExercises || []).forEach(function(file) {
+                    promises.push(
+                        loadYamlFile('exercises/' + file)
+                            .then(function(data) {
+                                fileMap.preExercises = (fileMap.preExercises || []).concat(data || []);
+                            })
+                    );
+                });
+
+                return Promise.all(promises).then(function() { return fileMap; });
+            })
+            .then(function(fileMap) {
+                var config = fileMap.config || {};
                 exerciseData = {
-                    conceptLinks: data.conceptLinks || {},
-                    sharedContent: data.sharedContent || {},
-                    warmups: data.variants ? data.variants.warmups : (data.warmups || []),
-                    challenges: data.variants ? data.variants.challenges : (data.challenges || [])
+                    conceptLinks: config.conceptLinks || {},
+                    sharedContent: config.sharedContent || {},
+                    warmups: fileMap.warmups || [],
+                    challenges: fileMap.challenges || [],
+                    advanced: fileMap.advanced || [],
+                    preExercises: fileMap.preExercises || []
                 };
                 // Normalize: ensure each exercise has an id
                 exerciseData.warmups.forEach(function(w, i) { if (!w.id) w.id = 'warmup' + (i + 1); });
                 exerciseData.challenges.forEach(function(c, i) { if (!c.id) c.id = 'challenge' + (i + 1); });
                 return exerciseData;
+            })
+            .catch(function(err) {
+                // Fallback to JSON if YAML fails
+                console.warn('YAML load failed, trying JSON fallback:', err);
+                return fetch('data/exercises.json')
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) {
+                        exerciseData = {
+                            conceptLinks: data.conceptLinks || {},
+                            sharedContent: data.sharedContent || {},
+                            warmups: data.variants ? data.variants.warmups : (data.warmups || []),
+                            challenges: data.variants ? data.variants.challenges : (data.challenges || [])
+                        };
+                        exerciseData.warmups.forEach(function(w, i) { if (!w.id) w.id = 'warmup' + (i + 1); });
+                        exerciseData.challenges.forEach(function(c, i) { if (!c.id) c.id = 'challenge' + (i + 1); });
+                        return exerciseData;
+                    });
             });
     }
 
@@ -446,7 +529,7 @@
             if (main) {
                 main.innerHTML = '<div style="padding:2rem;color:var(--red)">' +
                     '<h2>Failed to load exercise data</h2>' +
-                    '<p>Make sure data/exercises.json exists and is valid JSON.</p>' +
+                    '<p>Make sure exercises/ YAML files exist (or data/exercises.json as fallback).</p>' +
                     '<pre>' + err.message + '</pre></div>';
             }
         });
