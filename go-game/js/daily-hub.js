@@ -1,11 +1,11 @@
 /**
- * Go Grind - Mementos Requests
- * Story-driven daily challenges with shadow NPCs.
+ * Go Grind - Mementos Requests / War Council
+ * Story-driven daily challenges with shadow NPCs / military advisors.
  */
 (function() {
     'use strict';
 
-    // Shadow NPCs who post requests
+    // Shadow NPCs who post requests (P5 theme)
     var SHADOW_CLIENTS = [
         { name: 'The Forgetful Archivist', icon: '📚' },
         { name: 'The Impatient Courier', icon: '📮' },
@@ -15,6 +15,18 @@
         { name: 'The Speed Demon', icon: '⚡' },
         { name: 'The Silent Coder', icon: '🤫' },
         { name: 'The Determined Novice', icon: '🌱' }
+    ];
+
+    // Military advisors for 4X theme
+    var MILITARY_ADVISORS = [
+        { name: 'Chief of Staff', icon: '🎖️' },
+        { name: 'Director of Logistics', icon: '📦' },
+        { name: 'Minister of Production', icon: '🏭' },
+        { name: 'Strategic Command', icon: '🗺️' },
+        { name: 'Quality Assurance Division', icon: '✨' },
+        { name: 'Rapid Response Unit', icon: '⚡' },
+        { name: 'Special Operations', icon: '🔇' },
+        { name: 'Training Command', icon: '🎯' }
     ];
 
     // Request templates with narrative framing
@@ -129,7 +141,7 @@
         }
     ];
 
-    // Motivational messages based on progress
+    // Motivational messages based on progress (P5 theme)
     var PROGRESS_MESSAGES = {
         none: [
             "The shadows await your arrival...",
@@ -145,6 +157,25 @@
             "Target eliminated. Well done, Joker.",
             "All requests fulfilled. The shadows are grateful.",
             "Mission complete. Return to reality."
+        ]
+    };
+
+    // Military briefing messages (4X theme)
+    var MILITARY_MESSAGES = {
+        none: [
+            "Supreme Commander, your directives await.",
+            "The War Council has assembled.",
+            "Priority directives require your attention."
+        ],
+        partial: [
+            "Operations are progressing. Continue the advance.",
+            "Good progress, Commander. Maintain momentum.",
+            "The Empire's military machine moves forward."
+        ],
+        complete: [
+            "All directives completed. Outstanding work, Commander.",
+            "Mission accomplished. The Empire grows stronger.",
+            "Objectives secured. Command dismissed for today."
         ]
     };
 
@@ -247,13 +278,17 @@
     }
 
     function getProgressMessage(mementosData) {
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+        var messageSet = is4X ? MILITARY_MESSAGES : PROGRESS_MESSAGES;
+
         var messages;
         if (mementosData.allDone) {
-            messages = PROGRESS_MESSAGES.complete;
+            messages = messageSet.complete;
         } else if (mementosData.completedCount > 0) {
-            messages = PROGRESS_MESSAGES.partial;
+            messages = messageSet.partial;
         } else {
-            messages = PROGRESS_MESSAGES.none;
+            messages = messageSet.none;
         }
         var seed = getDailySeed();
         return messages[seed % messages.length];
@@ -263,30 +298,52 @@
         var view = document.getElementById('view-mementos');
         if (!view || !window.GameState) return;
 
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+
         var mementosData = getMementosRequests();
         mementosData = checkProgress(mementosData);
         var streaks = window.GameState.getStreaks();
         var multiplier = getStreakMultiplier();
 
+        // Theme-aware labels
+        var pageTitle = is4X ? 'WAR COUNCIL' : 'MEMENTOS';
+        var pageSubtitle = is4X ? 'Daily Briefing - Priority Directives' : 'The depths of the collective unconscious';
+        var streakIcon = is4X ? '📦' : '🔥';
+        var streakLabel = is4X ? 'SUPPLY LINE' : 'DAY STREAK';
+        var bestLabel = is4X ? 'Longest: ' : 'Best: ';
+        var multiplierLabel = is4X ? 'PP' : 'XP';
+        var requestsLabel = is4X ? 'TODAY\'S DIRECTIVES' : 'TODAY\'S REQUESTS';
+        var fromLabel = is4X ? 'From: ' : 'From: ';
+        var bonusLabel = is4X ? 'MISSION COMPLETE BONUS' : 'COMPLETION BONUS';
+        var directivesLabel = is4X ? 'directives' : 'requests';
+        var actionLabel = is4X ? 'COMMENCE OPERATIONS' : 'INFILTRATE';
+        var completeIcon = is4X ? '🎖️' : '🎭';
+        var completeText = is4X ? 'ALL DIRECTIVES ACCOMPLISHED' : 'ALL REQUESTS FULFILLED';
+        var completeSub = is4X ? 'Return tomorrow for new orders' : 'Return tomorrow for new targets';
+
+        // Get appropriate client list
+        var clients = is4X ? MILITARY_ADVISORS : SHADOW_CLIENTS;
+
         var html = '';
 
         // Header
         html += '<div class="section-header">';
-        html += '<h2>MEMENTOS</h2>';
-        html += '<div class="section-subtitle">The depths of the collective unconscious</div>';
+        html += '<h2 class="view-title">' + pageTitle + '</h2>';
+        html += '<div class="section-subtitle">' + pageSubtitle + '</div>';
         html += '</div>';
 
         // Streak display
         html += '<div class="mementos-streak-card">';
-        html += '<div class="streak-flames">🔥</div>';
+        html += '<div class="streak-flames">' + streakIcon + '</div>';
         html += '<div class="streak-info">';
         html += '<div class="streak-count">' + (streaks.current || 0) + '</div>';
-        html += '<div class="streak-label">DAY STREAK</div>';
+        html += '<div class="streak-label">' + streakLabel + '</div>';
         html += '</div>';
         html += '<div class="streak-meta">';
-        html += '<div>Best: ' + (streaks.longest || 0) + ' days</div>';
+        html += '<div>' + bestLabel + (streaks.longest || 0) + ' days</div>';
         if (multiplier > 1) {
-            html += '<div class="streak-multiplier">' + multiplier + 'x XP</div>';
+            html += '<div class="streak-multiplier">' + multiplier + 'x ' + multiplierLabel + '</div>';
         }
         html += '</div>';
         html += '</div>';
@@ -294,31 +351,51 @@
         // Progress message
         html += '<div class="mementos-message">"' + getProgressMessage(mementosData) + '"</div>';
 
-        // Requests
+        // Requests/Directives
         html += '<div class="requests-header">';
-        html += '<span>TODAY\'S REQUESTS</span>';
+        html += '<span>' + requestsLabel + '</span>';
         html += '<span class="requests-date">' + mementosData.date + '</span>';
         html += '</div>';
 
         html += '<div class="requests-list">';
         mementosData.requests.forEach(function(req, idx) {
-            var client = SHADOW_CLIENTS[req.client];
+            var client = clients[req.client] || clients[0];
             var statusClass = req.done ? 'complete' : '';
 
-            html += '<div class="request-card ' + statusClass + '">';
+            // Theme the task description
+            var taskText = req.task;
+            if (is4X) {
+                taskText = taskText
+                    .replace('exercises', 'operations')
+                    .replace('XP', 'Production')
+                    .replace('challenge', 'operation')
+                    .replace('challenges', 'operations');
+            }
+
+            // Theme the dialog
+            var dialog = req.dialog;
+            if (is4X) {
+                dialog = dialog
+                    .replace('shadows', 'enemies')
+                    .replace('shadow', 'enemy')
+                    .replace('Phantom Thieves', 'Command')
+                    .replace('Joker', 'Commander');
+            }
+
+            html += '<div class="request-card directive-card ' + statusClass + '">';
 
             // Request header
             html += '<div class="request-header">';
             html += '<span class="request-icon">' + client.icon + '</span>';
             html += '<div class="request-title-area">';
             html += '<div class="request-title">' + req.title + '</div>';
-            html += '<div class="request-client">From: ' + client.name + '</div>';
+            html += '<div class="request-client">' + fromLabel + client.name + '</div>';
             html += '</div>';
-            html += '<div class="request-reward">+' + req.reward + ' XP</div>';
+            html += '<div class="request-reward">+' + req.reward + ' ' + multiplierLabel + '</div>';
             html += '</div>';
 
             // Dialog
-            html += '<div class="request-dialog">"' + req.dialog + '"</div>';
+            html += '<div class="request-dialog">"' + dialog + '"</div>';
 
             // Task and progress
             html += '<div class="request-task">';
@@ -326,7 +403,7 @@
             if (req.done) {
                 html += '<span class="request-check">✓</span> ';
             }
-            html += req.task;
+            html += taskText;
             html += '</div>';
             if (!req.done) {
                 html += '<div class="request-progress">' + (req.current || 0) + '/' + req.goal + '</div>';
@@ -345,25 +422,25 @@
 
         // Bonus reward for all complete
         html += '<div class="mementos-bonus' + (mementosData.allDone ? ' earned' : '') + '">';
-        html += '<div class="bonus-label">COMPLETION BONUS</div>';
-        html += '<div class="bonus-amount">+' + mementosData.bonusReward + ' XP</div>';
+        html += '<div class="bonus-label">' + bonusLabel + '</div>';
+        html += '<div class="bonus-amount">+' + mementosData.bonusReward + ' ' + multiplierLabel + '</div>';
         if (mementosData.allDone) {
-            html += '<div class="bonus-status">CLAIMED</div>';
+            html += '<div class="bonus-status">' + (is4X ? 'AWARDED' : 'CLAIMED') + '</div>';
         } else {
-            html += '<div class="bonus-status">' + mementosData.completedCount + '/' + mementosData.requests.length + ' requests</div>';
+            html += '<div class="bonus-status">' + mementosData.completedCount + '/' + mementosData.requests.length + ' ' + directivesLabel + '</div>';
         }
         html += '</div>';
 
         // Action button
         if (!mementosData.allDone) {
             html += '<div class="mementos-action">';
-            html += '<button class="mementos-btn" id="mementos-train-btn">INFILTRATE</button>';
+            html += '<button class="mementos-btn" id="mementos-train-btn">' + actionLabel + '</button>';
             html += '</div>';
         } else {
             html += '<div class="mementos-complete">';
-            html += '<div class="complete-icon">🎭</div>';
-            html += '<div class="complete-text">ALL REQUESTS FULFILLED</div>';
-            html += '<div class="complete-sub">Return tomorrow for new targets</div>';
+            html += '<div class="complete-icon">' + completeIcon + '</div>';
+            html += '<div class="complete-text">' + completeText + '</div>';
+            html += '<div class="complete-sub">' + completeSub + '</div>';
             html += '</div>';
         }
 
@@ -378,11 +455,20 @@
         }
     }
 
-    window.Mementos = {
-        getMementosRequests: getMementosRequests,
+    // Export with generic name, keep alias for compatibility
+    var api = {
+        getRequests: getMementosRequests,
+        getMementosRequests: getMementosRequests, // Alias
         checkProgress: checkProgress,
         getStreakMultiplier: getStreakMultiplier,
-        renderMementosView: renderMementosView,
-        SHADOW_CLIENTS: SHADOW_CLIENTS
+        render: renderMementosView,
+        renderMementosView: renderMementosView, // Alias
+        CLIENTS: SHADOW_CLIENTS,
+        SHADOW_CLIENTS: SHADOW_CLIENTS // Alias
     };
+
+    // Generic name
+    window.DailyHub = api;
+    // Legacy alias for backwards compatibility
+    window.Mementos = api;
 })();

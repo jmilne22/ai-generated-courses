@@ -478,24 +478,44 @@
             return;
         }
 
+        // Theme detection
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+        var themeConfidant = is4X && T.getConfidantInfo ? T.getConfidantInfo(confidantId) : null;
+
         var confState = window.GameState.getConfidant(confidantId);
         var currentRank = confState.rank || 1;
         var currentPoints = confState.points || 0;
         var pointsNeeded = pointsForNextRank(currentRank);
         var pct = Math.min(100, Math.floor((currentPoints / pointsNeeded) * 100));
 
+        // Themed labels
+        var displayName = themeConfidant ? themeConfidant.name : conf.name;
+        var displayTitle = themeConfidant ? themeConfidant.title : conf.title;
+        var displayArcana = themeConfidant ? (themeConfidant.ambassador || 'Faction Alliance') : (conf.arcana + ' Arcana');
+        var displayIcon = is4X ? (T.getIcon('embassy', '🏛️')) : conf.icon;
+        var rankLabel = is4X ? 'RELATIONS' : 'RANK';
+        var progressLabel = is4X ? 'Next Level' : 'Next Rank';
+        var maxedLabel = is4X ? 'MAXIMUM ALLIANCE' : 'MAX RANK ACHIEVED';
+        var domainLabel = is4X ? 'SPECIALTY' : 'EXPERTISE';
+        var tipsHeader = is4X ? 'RATIFIED TREATIES' : 'UNLOCKED WISDOM';
+        var tipLabel = is4X ? 'Treaty' : 'Rank';
+        var tipTriggerLabel = is4X ? 'Applies to' : 'Appears in';
+        var tipLockedPrefix = is4X ? 'Reach Level' : 'Reach Rank';
+        var howtoTitle = is4X ? 'HOW TO IMPROVE RELATIONS' : 'HOW TO RANK UP';
+
         var html = '';
 
         // Header
         html += '<div class="confidant-header">';
-        html += '<div class="confidant-icon">' + conf.icon + '</div>';
+        html += '<div class="confidant-icon">' + displayIcon + '</div>';
         html += '<div class="confidant-info">';
-        html += '<div class="confidant-name">' + conf.name + '</div>';
-        html += '<div class="confidant-arcana">' + conf.arcana + ' Arcana</div>';
-        html += '<div class="confidant-title">' + conf.title + '</div>';
+        html += '<div class="confidant-name">' + displayName + '</div>';
+        html += '<div class="confidant-arcana">' + displayArcana + '</div>';
+        html += '<div class="confidant-title">' + displayTitle + '</div>';
         html += '</div>';
         html += '<div class="confidant-rank">';
-        html += '<div class="rank-label">RANK</div>';
+        html += '<div class="rank-label">' + rankLabel + '</div>';
         html += '<div class="rank-value">' + currentRank + '</div>';
         html += '</div>';
         html += '</div>';
@@ -503,28 +523,33 @@
         // Relationship bar
         if (currentRank < 10) {
             html += '<div class="confidant-progress">';
-            html += '<div class="progress-label">Next Rank: ' + currentPoints + '/' + pointsNeeded + '</div>';
+            html += '<div class="progress-label">' + progressLabel + ': ' + currentPoints + '/' + pointsNeeded + '</div>';
             html += '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>';
             html += '</div>';
         } else {
-            html += '<div class="confidant-maxed">MAX RANK ACHIEVED</div>';
+            html += '<div class="confidant-maxed">' + maxedLabel + '</div>';
         }
 
         // Domain
+        var domainValue = themeConfidant ? themeConfidant.specialty : conf.domain;
         html += '<div class="confidant-domain">';
-        html += '<div class="domain-label">EXPERTISE</div>';
-        html += '<div class="domain-value">' + conf.domain + '</div>';
+        html += '<div class="domain-label">' + domainLabel + '</div>';
+        html += '<div class="domain-value">' + domainValue + '</div>';
         html += '</div>';
 
         // Description
+        var descGreeting = themeConfidant ? ('"' + (themeConfidant.description || '') + '"') : ('"' + conf.greeting + '"');
+        var descText = themeConfidant ? '' : conf.description;
         html += '<div class="confidant-desc">';
-        html += '<div class="desc-greeting">"' + conf.greeting + '"</div>';
-        html += '<div class="desc-text">' + conf.description + '</div>';
+        html += '<div class="desc-greeting">' + descGreeting + '</div>';
+        if (descText) {
+            html += '<div class="desc-text">' + descText + '</div>';
+        }
         html += '</div>';
 
-        // Unlocked tips
+        // Unlocked tips/treaties
         html += '<div class="confidant-tips">';
-        html += '<div class="tips-header">UNLOCKED WISDOM</div>';
+        html += '<div class="tips-header">' + tipsHeader + '</div>';
         html += '<div class="tips-list">';
 
         conf.tips.forEach(function(tip) {
@@ -534,13 +559,13 @@
             html += '<div class="tip-card ' + statusClass + '">';
             html += '<div class="tip-header">';
             html += '<span class="tip-title">' + (isUnlocked ? tip.title : '???') + '</span>';
-            html += '<span class="tip-rank">Rank ' + tip.rank + '</span>';
+            html += '<span class="tip-rank">' + tipLabel + ' ' + tip.rank + '</span>';
             html += '</div>';
             if (isUnlocked) {
                 html += '<div class="tip-content">' + tip.content + '</div>';
-                html += '<div class="tip-trigger">Appears in: ' + tip.trigger + ' exercises</div>';
+                html += '<div class="tip-trigger">' + tipTriggerLabel + ': ' + tip.trigger + ' ' + (is4X ? 'operations' : 'exercises') + '</div>';
             } else {
-                html += '<div class="tip-locked">Reach Rank ' + tip.rank + ' to unlock</div>';
+                html += '<div class="tip-locked">' + tipLockedPrefix + ' ' + tip.rank + ' to unlock</div>';
             }
             html += '</div>';
         });
@@ -550,9 +575,14 @@
 
         // How to rank up
         html += '<div class="confidant-howto">';
-        html += '<div class="howto-title">HOW TO RANK UP</div>';
-        html += '<div class="howto-text">Complete exercises to build your relationship with ' + conf.name + '. ';
-        html += 'Each completion earns points. Tips will appear as hints during exercises!</div>';
+        html += '<div class="howto-title">' + howtoTitle + '</div>';
+        if (is4X) {
+            html += '<div class="howto-text">Complete operations to improve diplomatic relations with ' + displayName + '. ';
+            html += 'Each completion earns influence. Treaties unlock as intel during operations!</div>';
+        } else {
+            html += '<div class="howto-text">Complete exercises to build your relationship with ' + conf.name + '. ';
+            html += 'Each completion earns points. Tips will appear as hints during exercises!</div>';
+        }
         html += '</div>';
 
         view.innerHTML = html;
@@ -562,19 +592,30 @@
     function renderConfidantsList() {
         var html = '';
 
+        // Theme detection
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+        var rankWord = is4X ? 'Level' : 'Rank';
+
         Object.keys(CONFIDANTS).forEach(function(id) {
             var conf = CONFIDANTS[id];
             var confState = window.GameState ? window.GameState.getConfidant(id) : { rank: 1, unlocked: false };
 
             if (!confState.unlocked) return;
 
+            // Get themed info
+            var themeConfidant = is4X && T.getConfidantInfo ? T.getConfidantInfo(id) : null;
+            var displayName = themeConfidant ? themeConfidant.name : conf.name;
+            var displayArcana = themeConfidant ? themeConfidant.title : conf.arcana;
+            var displayIcon = is4X ? (T.getIcon('embassy', '🏛️')) : conf.icon;
+
             html += '<div class="confidant-list-item" data-confidant="' + id + '">';
-            html += '<span class="conf-icon">' + conf.icon + '</span>';
+            html += '<span class="conf-icon">' + displayIcon + '</span>';
             html += '<div class="conf-details">';
-            html += '<div class="conf-name">' + conf.name + '</div>';
-            html += '<div class="conf-arcana">' + conf.arcana + '</div>';
+            html += '<div class="conf-name">' + displayName + '</div>';
+            html += '<div class="conf-arcana">' + displayArcana + '</div>';
             html += '</div>';
-            html += '<div class="conf-rank">Rank ' + confState.rank + '</div>';
+            html += '<div class="conf-rank">' + rankWord + ' ' + confState.rank + '</div>';
             html += '</div>';
         });
 
@@ -676,10 +717,20 @@
         window.GameState.unlockConfidantTip(selected.confidantId, selected.tip.id);
 
         var conf = CONFIDANTS[selected.confidantId];
+
+        // Theme detection
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+        var themeConfidant = is4X && T.getConfidantInfo ? T.getConfidantInfo(selected.confidantId) : null;
+
+        var displayName = themeConfidant ? themeConfidant.ambassador : conf.name;
+        var displayIcon = is4X ? (T.getIcon('treaty', '📜')) : conf.icon;
+        var tipLabel = is4X ? 'Intel' : 'Tip';
+
         return {
-            title: conf.icon + ' ' + conf.name + '\'s Tip: ' + selected.tip.title,
+            title: displayIcon + ' ' + displayName + '\'s ' + tipLabel + ': ' + selected.tip.title,
             content: selected.tip.content,
-            member: conf.name,
+            member: displayName,
             confidantId: selected.confidantId
         };
     }
@@ -696,15 +747,25 @@
         setTimeout(checkConfidantUnlocks, 100);
     }
 
-    // Export
-    window.Confidants = {
-        CONFIDANTS: CONFIDANTS,
-        renderConfidantView: renderConfidantView,
-        renderConfidantsList: renderConfidantsList,
+    // Export with generic name, keep alias for compatibility
+    var api = {
+        ADVISORS: CONFIDANTS,
+        CONFIDANTS: CONFIDANTS, // Alias
+        render: renderConfidantView,
+        renderConfidantView: renderConfidantView, // Alias
+        renderList: renderConfidantsList,
+        renderConfidantsList: renderConfidantsList, // Alias
         getAvailableTips: getAvailableTips,
-        getMorganaTip: getMorganaTip,
-        getConfidantTip: getConfidantTip,
-        checkConfidantUnlocks: checkConfidantUnlocks,
+        getTip: getConfidantTip,
+        getMorganaTip: getMorganaTip, // P5-specific
+        getConfidantTip: getConfidantTip, // Alias
+        checkUnlocks: checkConfidantUnlocks,
+        checkConfidantUnlocks: checkConfidantUnlocks, // Alias
         pointsForNextRank: pointsForNextRank
     };
+
+    // Generic name
+    window.Advisors = api;
+    // Legacy alias for backwards compatibility
+    window.Confidants = api;
 })();

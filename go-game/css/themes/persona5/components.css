@@ -1,0 +1,168 @@
+/* ============================================================
+   Persona 5 Theme - Components
+   Angular clip-paths, accent bars, cards, and UI elements
+   ============================================================ */
+
+/* === Angular clip-path classes (P5 signature style) === */
+.theme-persona5 .p5-clip-sm,
+:root:not([class*="theme-"]) .p5-clip-sm {
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+
+.theme-persona5 .p5-clip,
+:root:not([class*="theme-"]) .p5-clip {
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+.theme-persona5 .p5-clip-lg,
+:root:not([class*="theme-"]) .p5-clip-lg {
+    clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
+}
+
+.theme-persona5 .p5-clip-xl,
+:root:not([class*="theme-"]) .p5-clip-xl {
+    clip-path: polygon(20px 0, 100% 0, calc(100% - 20px) 100%, 0 100%);
+}
+
+/* === P5 Accent Bar === */
+.theme-persona5 .p5-accent-bar,
+:root:not([class*="theme-"]) .p5-accent-bar {
+    background: linear-gradient(90deg, var(--red) 0%, var(--bg-card) 40%);
+    color: #fff;
+    padding: 0.4rem 1rem;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* === P5 Card style === */
+.theme-persona5 .p5-card,
+:root:not([class*="theme-"]) .p5-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    transition: border-color 0.2s;
+}
+
+.theme-persona5 .p5-card:hover,
+:root:not([class*="theme-"]) .p5-card:hover {
+    border-color: var(--red);
+}
+
+/* === XP/Progress bars (P5 red glow style) === */
+.theme-persona5 .xp-bar,
+:root:not([class*="theme-"]) .xp-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-lighter);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.theme-persona5 .xp-bar-fill,
+:root:not([class*="theme-"]) .xp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--red), var(--red-light));
+    border-radius: 3px;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 6px rgba(230, 0, 18, 0.4);
+}
+
+.theme-persona5 .xp-bar-fill.gold,
+:root:not([class*="theme-"]) .xp-bar-fill.gold {
+    background: linear-gradient(90deg, #cc9900, var(--gold));
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+}
+
+.theme-persona5 .xp-bar-fill.velvet,
+:root:not([class*="theme-"]) .xp-bar-fill.velvet {
+    background: linear-gradient(90deg, #4444aa, var(--velvet-accent));
+    box-shadow: 0 0 6px rgba(136, 136, 255, 0.4);
+}
+
+/* === Grade colors with glow === */
+.theme-persona5 .grade-S,
+:root:not([class*="theme-"]) .grade-S {
+    color: var(--gold);
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+.theme-persona5 .grade-A,
+:root:not([class*="theme-"]) .grade-A {
+    color: var(--red);
+    text-shadow: 0 0 20px rgba(230, 0, 18, 0.4);
+}
+
+.theme-persona5 .grade-B,
+:root:not([class*="theme-"]) .grade-B {
+    color: var(--cyan);
+}
+
+.theme-persona5 .grade-C,
+:root:not([class*="theme-"]) .grade-C {
+    color: #888;
+}
+
+.theme-persona5 .grade-F,
+:root:not([class*="theme-"]) .grade-F {
+    color: #555;
+}
+
+/* === P5 specific UI accents === */
+.theme-persona5 .skill-train-btn,
+:root:not([class*="theme-"]) .skill-train-btn {
+    background: var(--red);
+    border: none;
+}
+
+.theme-persona5 .skill-train-btn:hover,
+:root:not([class*="theme-"]) .skill-train-btn:hover {
+    background: var(--red-light);
+}
+
+/* === P5 Sidebar accent line === */
+.theme-persona5 .sidebar::before,
+:root:not([class*="theme-"]) .sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--red) 0%, transparent 50%, var(--red) 100%);
+}
+
+/* === P5 Nav item active state === */
+.theme-persona5 .nav-item.active,
+:root:not([class*="theme-"]) .nav-item.active {
+    background: var(--red-dim);
+    border-left: 3px solid var(--red);
+}
+
+/* === P5 Button glow on hover === */
+.theme-persona5 button:not(.settings-toggle):not(.slot-remove):hover,
+:root:not([class*="theme-"]) button:not(.settings-toggle):not(.slot-remove):hover {
+    box-shadow: 0 0 15px rgba(230, 0, 18, 0.3);
+}
+
+/* === Velvet Room specific styling === */
+.theme-persona5 .velvet-room-view,
+:root:not([class*="theme-"]) .velvet-room-view {
+    background: linear-gradient(180deg, var(--velvet-bg) 0%, var(--bg-dark) 100%);
+}
+
+.theme-persona5 .persona-card,
+:root:not([class*="theme-"]) .persona-card {
+    border-color: var(--velvet-border);
+}
+
+.theme-persona5 .persona-card:hover,
+:root:not([class*="theme-"]) .persona-card:hover {
+    border-color: var(--velvet-accent);
+    box-shadow: 0 0 20px rgba(136, 136, 255, 0.2);
+}

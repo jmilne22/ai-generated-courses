@@ -1,0 +1,167 @@
+/* ============================================================
+   Persona 5 Theme - Animations
+   JRPG-styled effects, dramatic reveals, stylish transitions
+   ============================================================ */
+
+/* === All-Out Attack style animations === */
+@keyframes p5-slash-in {
+    0% {
+        clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    }
+    100% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+}
+
+@keyframes p5-dramatic-zoom {
+    0% {
+        transform: scale(2) rotate(-5deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1) rotate(2deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+@keyframes p5-pulse-red {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(230, 0, 18, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(230, 0, 18, 0.6);
+    }
+}
+
+@keyframes p5-shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes p5-text-reveal {
+    0% {
+        letter-spacing: 20px;
+        opacity: 0;
+    }
+    100% {
+        letter-spacing: normal;
+        opacity: 1;
+    }
+}
+
+@keyframes p5-card-flip {
+    0% {
+        transform: rotateY(90deg);
+        opacity: 0;
+    }
+    100% {
+        transform: rotateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes p5-velvet-glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(136, 136, 255, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(136, 136, 255, 0.4);
+    }
+}
+
+/* === P5 Theme specific animations === */
+.theme-persona5 .grade-overlay .grade-letter,
+:root:not([class*="theme-"]) .grade-overlay .grade-letter {
+    animation: p5-dramatic-zoom 0.6s ease-out;
+}
+
+.theme-persona5 .grade-overlay .grade-title,
+:root:not([class*="theme-"]) .grade-overlay .grade-title {
+    animation: p5-text-reveal 0.4s ease-out 0.3s both;
+}
+
+.theme-persona5 .levelup-overlay,
+:root:not([class*="theme-"]) .levelup-overlay {
+    animation: p5-slash-in 0.3s ease-out;
+}
+
+/* Red pulse on important elements */
+.theme-persona5 .boss-available,
+:root:not([class*="theme-"]) .boss-available {
+    animation: p5-pulse-red 2s infinite;
+}
+
+/* Persona card entrance */
+.theme-persona5 .persona-card,
+:root:not([class*="theme-"]) .persona-card {
+    animation: p5-card-flip 0.3s ease-out;
+}
+
+/* Velvet room glow */
+.theme-persona5 .velvet-room-view,
+:root:not([class*="theme-"]) .velvet-room-view {
+    animation: p5-velvet-glow 4s infinite;
+}
+
+/* Fusion success celebration */
+.theme-persona5 .fusion-success-modal,
+:root:not([class*="theme-"]) .fusion-success-modal {
+    animation: p5-dramatic-zoom 0.5s ease-out;
+}
+
+/* Exercise card hover */
+.theme-persona5 .exercise-card:hover,
+:root:not([class*="theme-"]) .exercise-card:hover {
+    animation: p5-pulse-red 1s infinite;
+}
+
+/* Grade S special glow */
+.theme-persona5 .grade-S,
+:root:not([class*="theme-"]) .grade-S {
+    animation: p5-velvet-glow 2s infinite;
+}
+
+/* Nav item active pulse */
+.theme-persona5 .nav-item.active,
+:root:not([class*="theme-"]) .nav-item.active {
+    animation: p5-pulse-red 3s infinite;
+}
+
+/* Error/failure shake */
+.theme-persona5 .grade-F,
+:root:not([class*="theme-"]) .grade-F {
+    animation: p5-shake 0.5s ease-out;
+}
+
+/* Button hover lift */
+.theme-persona5 button:hover,
+:root:not([class*="theme-"]) button:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s;
+}
+
+/* Button press */
+.theme-persona5 button:active,
+:root:not([class*="theme-"]) button:active {
+    transform: translateY(0) scale(0.98);
+    transition: transform 0.1s;
+}
+
+/* Modal backdrop fade */
+.theme-persona5 .grade-overlay,
+.theme-persona5 .levelup-overlay,
+:root:not([class*="theme-"]) .grade-overlay,
+:root:not([class*="theme-"]) .levelup-overlay {
+    backdrop-filter: blur(5px);
+}
+
+/* Confidant tip reveal */
+.theme-persona5 .tip-card.unlocked,
+:root:not([class*="theme-"]) .tip-card.unlocked {
+    animation: p5-card-flip 0.3s ease-out;
+}

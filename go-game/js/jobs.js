@@ -403,12 +403,24 @@
         var view = document.getElementById('view-jobs');
         if (!view || !window.GameState) return;
 
+        // Theme detection
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+
+        // Themed labels
+        var headerTitle = is4X ? 'Domestic Programs' : 'Part-Time Jobs';
+        var headerSubtitle = is4X ? 'Run programs to earn Production and boost National Power' : 'Work shifts to earn XP and stat boosts';
+        var xpLabel = is4X ? 'PP' : 'XP';
+        var shiftLabel = is4X ? 'Rotations' : 'Shifts';
+        var workBtnLabel = is4X ? 'Run Program' : 'Work Shift';
+        var reqLabel = is4X ? 'Requires Era' : 'Requires Level';
+
         var jobs = getJobState();
         var playerLevel = window.GameState.getPlayer().level;
 
         var html = '<div class="jobs-header">' +
-            '<div class="jobs-title">Part-Time Jobs</div>' +
-            '<div class="jobs-subtitle">Work shifts to earn XP and stat boosts</div>' +
+            '<div class="jobs-title">' + headerTitle + '</div>' +
+            '<div class="jobs-subtitle">' + headerSubtitle + '</div>' +
         '</div>';
 
         html += '<div class="jobs-grid">';
@@ -419,6 +431,13 @@
             var unlocked = playerLevel >= job.unlockLevel;
             var rankInfo = getJobRank(jobState.shiftsWorked);
 
+            // Themed rank titles for 4X
+            var rankTitle = rankInfo.title;
+            if (is4X) {
+                var rankTitles4X = { 'Newbie': 'Initiated', 'Known': 'Operational', 'Regular': 'Established', 'Skilled': 'Advanced', 'Veteran': 'Exemplary' };
+                rankTitle = rankTitles4X[rankInfo.title] || rankInfo.title;
+            }
+
             html += '<div class="job-card ' + (unlocked ? '' : 'locked') + '" data-job="' + jobId + '">';
             html += '<div class="job-card-header">';
             html += '<span class="job-icon">' + job.icon + '</span>';
@@ -427,7 +446,7 @@
             html += '<div class="job-location">' + job.location + '</div>';
             html += '</div>';
             if (unlocked) {
-                html += '<div class="job-rank-badge">' + rankInfo.title + '</div>';
+                html += '<div class="job-rank-badge">' + rankTitle + '</div>';
             }
             html += '</div>';
 
@@ -435,22 +454,31 @@
                 html += '<div class="job-description">' + job.description + '</div>';
                 html += '<div class="job-skills">';
                 job.skills.forEach(function(skill) {
-                    html += '<span class="job-skill-tag">' + skill.replace('-', ' ') + '</span>';
+                    var skillLabel = skill.replace('-', ' ');
+                    if (is4X && T.getSkillInfo) {
+                        var themeSkill = T.getSkillInfo(skill);
+                        if (themeSkill) skillLabel = themeSkill.label;
+                    }
+                    html += '<span class="job-skill-tag">' + skillLabel + '</span>';
                 });
                 html += '</div>';
                 html += '<div class="job-stats">';
-                html += '<span class="job-wage">' + job.wage + ' XP base</span>';
-                html += '<span class="job-stat-boost">+' + job.statBoost + '</span>';
+                html += '<span class="job-wage">' + job.wage + ' ' + xpLabel + ' base</span>';
+                var statLabel = job.statBoost;
+                if (is4X && T.getStatLabel) {
+                    statLabel = T.getStatLabel(job.statBoost);
+                }
+                html += '<span class="job-stat-boost">+' + statLabel + '</span>';
                 html += '</div>';
                 html += '<div class="job-progress">';
-                html += '<span>Shifts: ' + jobState.shiftsWorked + '</span>';
-                html += '<span>Total XP: ' + jobState.totalXP + '</span>';
+                html += '<span>' + shiftLabel + ': ' + jobState.shiftsWorked + '</span>';
+                html += '<span>Total ' + xpLabel + ': ' + jobState.totalXP + '</span>';
                 html += '</div>';
-                html += '<button class="job-work-btn">Work Shift</button>';
+                html += '<button class="job-work-btn">' + workBtnLabel + '</button>';
             } else {
                 html += '<div class="job-locked-info">';
                 html += '<div class="job-lock-icon">🔒</div>';
-                html += '<div class="job-unlock-req">Requires Level ' + job.unlockLevel + '</div>';
+                html += '<div class="job-unlock-req">' + reqLabel + ' ' + job.unlockLevel + '</div>';
                 html += '</div>';
             }
 

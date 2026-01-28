@@ -70,9 +70,12 @@
 
     // === XP Float ===
     function showXPFloat(xpAmount, sourceEl) {
+        var T = window.ThemeRegistry;
+        var xpLabel = T ? T.getTerm('xpAbbr', 'XP') : 'XP';
+
         var el = document.createElement('div');
         el.className = 'xp-float';
-        el.textContent = '+' + xpAmount + ' XP';
+        el.textContent = '+' + xpAmount + ' ' + xpLabel;
 
         if (sourceEl) {
             var rect = sourceEl.getBoundingClientRect();
@@ -91,9 +94,13 @@
     // === All-Out Attack ===
     function showAllOutAttack() {
         return new Promise(function(resolve) {
+            var T = window.ThemeRegistry;
+            var is4X = T && T.getThemeId() === '4x-strategy';
+            var attackText = is4X ? 'TOTAL VICTORY' : 'ALL-OUT ATTACK';
+
             var overlay = document.createElement('div');
             overlay.className = 'all-out-attack-overlay';
-            overlay.innerHTML = '<div class="all-out-attack-bg"></div><div class="all-out-attack-text">ALL-OUT ATTACK</div>';
+            overlay.innerHTML = '<div class="all-out-attack-bg"></div><div class="all-out-attack-text">' + attackText + '</div>';
             document.body.appendChild(overlay);
 
             if (window.GameAudio) window.GameAudio.playAllOutAttack();
@@ -118,21 +125,31 @@
             var xpEarned = detail.xpEarned;
             var xpProgress = detail.xpProgress || { current: 0, needed: 100, pct: 0 };
             var level = detail.level;
+            var T = window.ThemeRegistry;
+            var is4X = T && T.getThemeId() === '4x-strategy';
 
             if (window.GameAudio) window.GameAudio.playGrade(grade);
 
-            var comboText = comboCount > 1 ? ' <span style="color:var(--gold);font-size:0.9rem">' + comboCount + 'x COMBO</span>' : '';
+            // Theme-aware labels
+            var resultsTitle = is4X ? 'Mission Report' : 'Results';
+            var xpLabel = T ? T.getTerm('xpAbbr', 'XP') : 'XP';
+            var levelLabel = T ? T.getTerm('levelAbbr', 'LV') : 'LV';
+            var exerciseLabel = is4X ? 'Operations Completed' : 'Shadows Defeated';
+            var comboLabel = is4X ? 'CHAIN' : 'COMBO';
+            var gradeDisplay = is4X && T ? (T.getTheme().gradeShort[grade] || grade) : grade;
+
+            var comboText = comboCount > 1 ? ' <span style="color:var(--gold);font-size:0.9rem">' + comboCount + 'x ' + comboLabel + '</span>' : '';
 
             var overlay = document.createElement('div');
-            overlay.className = 'grade-overlay';
+            overlay.className = 'grade-overlay grade-display';
             overlay.innerHTML =
                 '<div class="grade-card">' +
-                    '<div class="grade-title">Results</div>' +
-                    '<div class="grade-letter grade-' + grade + '">' + grade + '</div>' +
-                    '<div class="grade-xp">+' + xpEarned + ' XP' + comboText + '</div>' +
+                    '<div class="grade-title">' + resultsTitle + '</div>' +
+                    '<div class="grade-letter grade-' + grade + '">' + gradeDisplay + '</div>' +
+                    '<div class="grade-xp">+' + xpEarned + ' ' + xpLabel + comboText + '</div>' +
                     '<div class="grade-xp-bar-container"><div class="grade-xp-bar" style="width: 0%"></div></div>' +
-                    '<div class="grade-level">LV ' + level + ' &bull; ' + xpProgress.current + ' / ' + xpProgress.needed + ' XP</div>' +
-                    '<div class="grade-stats"><span>Shadows Defeated: ' + (window.GameState ? window.GameState.getCompletedCount() : '?') + '</span></div>' +
+                    '<div class="grade-level">' + levelLabel + ' ' + level + ' &bull; ' + xpProgress.current + ' / ' + xpProgress.needed + ' ' + xpLabel + '</div>' +
+                    '<div class="grade-stats"><span>' + exerciseLabel + ': ' + (window.GameState ? window.GameState.getCompletedCount() : '?') + '</span></div>' +
                     '<div class="grade-dismiss">click to dismiss</div>' +
                 '</div>';
 
@@ -170,20 +187,34 @@
         return new Promise(function(resolve) {
             if (window.GameAudio) window.GameAudio.playLevelUp();
 
+            var T = window.ThemeRegistry;
+            var is4X = T && T.getThemeId() === '4x-strategy';
+
             var statsHtml = '';
             if (detail.statIncreases) {
                 Object.keys(detail.statIncreases).forEach(function(stat) {
-                    statsHtml += '<div class="levelup-stat">' +
-                        stat.charAt(0).toUpperCase() + stat.slice(1) + ' +' + detail.statIncreases[stat] + '</div>';
+                    var statLabel = T ? T.getStatLabel(stat) : stat;
+                    statLabel = statLabel.charAt(0).toUpperCase() + statLabel.slice(1);
+                    statsHtml += '<div class="levelup-stat">' + statLabel + ' +' + detail.statIncreases[stat] + '</div>';
                 });
             }
 
+            // Theme-aware labels
+            var levelUpTitle = is4X ? 'Promotion!' : 'Level Up!';
+            var levelDisplay = detail.newLevel;
+            if (is4X && T) {
+                var rank = T.getRankForLevel(detail.newLevel);
+                if (rank) {
+                    levelDisplay = rank.insignia + '<div style="font-size:0.5em;margin-top:0.5rem">' + rank.name + '</div>';
+                }
+            }
+
             var overlay = document.createElement('div');
-            overlay.className = 'levelup-overlay';
+            overlay.className = 'levelup-overlay level-up-overlay';
             overlay.innerHTML =
                 '<div class="levelup-card">' +
-                    '<div class="levelup-title">Level Up!</div>' +
-                    '<div class="levelup-level">' + detail.newLevel + '</div>' +
+                    '<div class="levelup-title">' + levelUpTitle + '</div>' +
+                    '<div class="levelup-level">' + levelDisplay + '</div>' +
                     '<div class="levelup-stats">' + statsHtml + '</div>' +
                 '</div>';
 
@@ -205,12 +236,31 @@
     function showSkillLevelUp(detail) {
         if (window.GameAudio) window.GameAudio.playSkillUp();
 
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+
+        // Theme-aware labels
+        var bannerTitle = is4X ? 'Technology Advanced' : 'Skill Level Up';
+        var skillName = detail.skillName || 'Unknown';
+        if (is4X && T) {
+            var skillInfo = T.getSkillInfo(detail.skillKey);
+            if (skillInfo) skillName = skillInfo.label;
+        }
+
+        var levelDisplay = is4X ? 'Tier ' + detail.newLevel : 'Level ' + detail.newLevel;
+        if (is4X && T) {
+            var rank = T.getRankForLevel(detail.newLevel);
+            if (rank) {
+                levelDisplay = rank.insignia + ' ' + rank.name;
+            }
+        }
+
         var banner = document.createElement('div');
         banner.className = 'skill-levelup-banner';
         banner.innerHTML =
-            '<div class="skill-levelup-banner-title">Skill Level Up</div>' +
-            '<div class="skill-levelup-banner-name">' + (detail.skillName || 'Unknown') + '</div>' +
-            '<div class="skill-levelup-banner-level">Level ' + detail.newLevel + '</div>';
+            '<div class="skill-levelup-banner-title">' + bannerTitle + '</div>' +
+            '<div class="skill-levelup-banner-name">' + skillName + '</div>' +
+            '<div class="skill-levelup-banner-level">' + levelDisplay + '</div>';
 
         document.body.appendChild(banner);
 

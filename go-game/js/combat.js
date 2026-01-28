@@ -132,16 +132,24 @@
         var variantDiff = getVariantDifficulty(variant, exercise);
         var variantStars = getDifficultyStars(variantDiff);
         var isChallenge = type === 'challenge';
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
 
-        var html = '<div class="exercise" data-exercise-id="' + exercise.id + '" data-variant-id="' + variant.id + '" data-type="' + type + '">';
+        var html = '<div class="exercise combat-card" data-exercise-id="' + exercise.id + '" data-variant-id="' + variant.id + '" data-type="' + type + '">';
 
-        // Shadow encounter bar
+        // Encounter bar - themed
+        var encounterLabel = is4X ? 'OPERATION' : 'SHADOW ENCOUNTER';
+        var difficultyLabel = is4X ? 'Complexity' : 'Difficulty';
         html += '<div class="shadow-encounter-bar">' +
-            '<span class="encounter-label">SHADOW ENCOUNTER</span>' +
+            '<span class="encounter-label">' + encounterLabel + '</span>' +
             '<span class="encounter-name">' + (exercise.concept || '') + '</span></div>';
 
-        html += '<h4>' + (isChallenge ? 'Challenge' : 'Warmup') + ' ' + num + ': ' + escapeHtml(variant.title) +
-            ' <span class="variant-difficulty" title="Difficulty: ' + variantDiff + '">' + variantStars + '</span></h4>';
+        // Exercise type label - themed
+        var typeLabel = isChallenge
+            ? (is4X ? 'Operation' : 'Challenge')
+            : (is4X ? 'Drill' : 'Warmup');
+        html += '<h4 class="combat-title">' + typeLabel + ' ' + num + ': ' + escapeHtml(variant.title) +
+            ' <span class="variant-difficulty difficulty-stars" title="' + difficultyLabel + ': ' + variantDiff + '">' + variantStars + '</span></h4>';
 
         // Easier/Harder buttons (challenges only)
         if (isChallenge) {
@@ -161,11 +169,14 @@
 
         html += '<p>' + variant.description + '</p>';
 
-        // Hints with party assist labels
-        var partyMembers = ['Morgana', 'Ann', 'Ryuji', 'Makoto', 'Futaba', 'Yusuke', 'Haru'];
+        // Hints with party assist labels (themed)
+        var partyMembers = is4X
+            ? ['Intelligence', 'Recon', 'Strategy', 'Logistics', 'Command', 'Tactics', 'Operations']
+            : ['Morgana', 'Ann', 'Ryuji', 'Makoto', 'Futaba', 'Yusuke', 'Haru'];
+        var hintLabel = is4X ? 'Intel' : 'Hint';
         if (variant.hints) {
             variant.hints.forEach(function(hint, i) {
-                var title = typeof hint === 'object' ? hint.title : 'Hint';
+                var title = typeof hint === 'object' ? hint.title : hintLabel;
                 var content = typeof hint === 'object' ? hint.content : hint;
                 var member = partyMembers[i % partyMembers.length];
                 html += '<details><summary>' + title + ' <span class="party-assist-label">[' + member + ']</span></summary>' +
@@ -280,15 +291,21 @@
 
         var html = '';
 
+        // Theme-aware accent color for inline styles
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+        var accentColor = is4X ? 'var(--accent)' : 'var(--red)';
+        var clipPath = is4X ? 'none' : 'polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)';
+
         if (currentConceptFilter) {
             var totalVariants = challenges.reduce(function(sum, c) { return sum + c.variants.length; }, 0);
-            html += '<p style="color:var(--red);font-size:0.9rem;margin:0 0 1rem;font-weight:600">Practicing: ' + currentConceptFilter + ' (' + challenges.length + ' challenges, ' + totalVariants + ' variants)</p>';
+            html += '<p style="color:' + accentColor + ';font-size:0.9rem;margin:0 0 1rem;font-weight:600">Practicing: ' + currentConceptFilter + ' (' + challenges.length + ' challenges, ' + totalVariants + ' variants)</p>';
 
             // Show pattern primer if available
             if (challenges[0] && challenges[0].patternPrimer) {
                 var pp = challenges[0].patternPrimer;
-                html += '<details style="border:2px solid var(--red);padding:1rem;margin-bottom:1.5rem;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)">' +
-                    '<summary style="color:var(--red);font-weight:600;cursor:pointer">Pattern Primer: ' + currentConceptFilter + '</summary>' +
+                html += '<details style="border:2px solid ' + accentColor + ';padding:1rem;margin-bottom:1.5rem;clip-path:' + clipPath + '">' +
+                    '<summary style="color:' + accentColor + ';font-weight:600;cursor:pointer">Pattern Primer: ' + currentConceptFilter + '</summary>' +
                     '<div class="hint-content" style="margin-top:1rem">' +
                     '<div style="margin-bottom:0.75rem"><strong>Brute force:</strong> ' + pp.bruteForce + '</div>' +
                     '<div style="margin-bottom:0.75rem"><strong>Best approach:</strong> ' + pp.bestApproach + '</div>' +
@@ -553,6 +570,9 @@
         var view = document.getElementById('view-training');
         if (!view || !exerciseData) return;
 
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+
         var warmupConcepts = [];
         var challengeConcepts = [];
         if (exerciseData.warmups) {
@@ -569,47 +589,58 @@
         var totalWarmups = exerciseData.warmups ? exerciseData.warmups.reduce(function(s, w) { return s + w.variants.length; }, 0) : 0;
         var totalChallenges = exerciseData.challenges ? exerciseData.challenges.reduce(function(s, c) { return s + c.variants.length; }, 0) : 0;
 
-        var html = '';
-        html += '<div class="training-header"><h2>Training Ground</h2>' +
-            '<span class="training-count">' + (totalWarmups + totalChallenges) + ' exercise variants</span></div>';
+        // Theme-aware labels
+        var pageTitle = is4X ? 'Command Center' : 'Training Ground';
+        var countLabel = is4X ? 'operation variants' : 'exercise variants';
+        var warmupTitle = is4X ? 'Drills' : 'Warmups';
+        var challengeTitle = is4X ? 'Operations' : 'Challenges';
+        var focusLabel = is4X ? 'FOCUS TECHNOLOGY' : 'FOCUS CONCEPT';
+        var patternLabel = is4X ? 'TARGET SECTOR' : 'FOCUS PATTERN';
+        var complexityLabel = is4X ? 'COMPLEXITY LEVEL' : 'DIFFICULTY MODE';
+        var shuffleWarmupsLabel = is4X ? 'New Drills' : 'Shuffle Warmups';
+        var shuffleChallengesLabel = is4X ? 'New Operations' : 'Shuffle Challenges';
 
-        // Warmup section
-        html += '<div class="section-title">Warmups</div>';
+        var html = '';
+        html += '<div class="training-header combat-header"><h2 class="view-title">' + pageTitle + '</h2>' +
+            '<span class="training-count">' + (totalWarmups + totalChallenges) + ' ' + countLabel + '</span></div>';
+
+        // Warmup/Drill section
+        html += '<div class="section-title">' + warmupTitle + '</div>';
         html += '<div class="concept-filter" id="warmup-concept-filter">' +
-            '<span class="concept-filter-label">FOCUS CONCEPT</span>' +
+            '<span class="concept-filter-label">' + focusLabel + '</span>' +
             '<div class="concept-filter-buttons">' +
             '<button class="concept-btn active" data-concept="">All</button>';
         warmupConcepts.forEach(function(c) {
             html += '<button class="concept-btn" data-concept="' + c + '">' + c + '</button>';
         });
         html += '</div></div>';
-        html += '<button class="shuffle-btn" id="shuffle-warmups-btn">Shuffle Warmups</button>';
+        html += '<button class="shuffle-btn" id="shuffle-warmups-btn">' + shuffleWarmupsLabel + '</button>';
         html += '<div id="warmups-container"></div>';
 
-        // Challenge section
-        html += '<div class="section-title" style="margin-top:2.5rem">Challenges</div>';
+        // Challenge/Operations section
+        html += '<div class="section-title" style="margin-top:2.5rem">' + challengeTitle + '</div>';
 
-        // Difficulty selector
+        // Difficulty/Complexity selector
         html += '<div class="difficulty-mode-selector">' +
-            '<span class="difficulty-mode-label">DIFFICULTY MODE</span>' +
+            '<span class="difficulty-mode-label">' + complexityLabel + '</span>' +
             '<div class="difficulty-mode-buttons">' +
-            '<button class="difficulty-mode-btn easy" data-mode="easy"><div>Easy</div><span class="mode-desc">Only easy variants</span></button>' +
+            '<button class="difficulty-mode-btn easy" data-mode="easy"><div>' + (is4X ? 'Simple' : 'Easy') + '</div><span class="mode-desc">' + (is4X ? 'Basic ops only' : 'Only easy variants') + '</span></button>' +
             '<button class="difficulty-mode-btn" data-mode="mixed"><div>Mixed</div><span class="mode-desc">Random mix</span></button>' +
             '<button class="difficulty-mode-btn active" data-mode="balanced"><div>Balanced</div><span class="mode-desc">35/40/25 split</span></button>' +
-            '<button class="difficulty-mode-btn" data-mode="progressive"><div>Progressive</div><span class="mode-desc">Easy to Hard</span></button>' +
-            '<button class="difficulty-mode-btn hard" data-mode="hard"><div>Hard</div><span class="mode-desc">Only hard variants</span></button>' +
+            '<button class="difficulty-mode-btn" data-mode="progressive"><div>Progressive</div><span class="mode-desc">' + (is4X ? 'Escalating' : 'Easy to Hard') + '</span></button>' +
+            '<button class="difficulty-mode-btn hard" data-mode="hard"><div>' + (is4X ? 'Complex' : 'Hard') + '</div><span class="mode-desc">' + (is4X ? 'Advanced ops only' : 'Only hard variants') + '</span></button>' +
             '</div></div>';
 
         // Challenge concept filter
         html += '<div class="concept-filter" id="challenge-concept-filter">' +
-            '<span class="concept-filter-label">FOCUS PATTERN</span>' +
+            '<span class="concept-filter-label">' + patternLabel + '</span>' +
             '<div class="concept-filter-buttons">' +
-            '<button class="concept-btn active" data-concept="">All Patterns</button>';
+            '<button class="concept-btn active" data-concept="">' + (is4X ? 'All Sectors' : 'All Patterns') + '</button>';
         challengeConcepts.forEach(function(c) {
             html += '<button class="concept-btn" data-concept="' + c + '">' + c + '</button>';
         });
         html += '</div></div>';
-        html += '<button class="shuffle-btn" id="shuffle-challenges-btn">Shuffle Challenges</button>';
+        html += '<button class="shuffle-btn" id="shuffle-challenges-btn">' + shuffleChallengesLabel + '</button>';
         html += '<div id="challenges-container"></div>';
 
         view.innerHTML = html;

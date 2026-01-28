@@ -1,0 +1,99 @@
+/**
+ * 4X Grand Strategy Theme - Color Palette
+ * HOI4 + Civilization inspired military aesthetic
+ */
+
+:root.theme-4x {
+    /* Primary tones - aged map/military aesthetic */
+    --primary: #3d4f5f;
+    --primary-light: #5a7a8a;
+    --primary-dark: #2a3640;
+
+    /* Accent colors - brass/gold military style */
+    --accent: #c9a227;
+    --accent-light: #e0bc4a;
+    --accent-dark: #a08020;
+    --accent-secondary: #8b4513;
+
+    /* Red accent (P5 override) */
+    --red: #8b0000;
+    --red-light: #a52a2a;
+
+    /* Status colors */
+    --success: #2d5a27;
+    --success-light: #3d7a37;
+    --warning: #b8860b;
+    --warning-light: #daa520;
+    --danger: #8b0000;
+    --danger-light: #a52a2a;
+    --info: #4682b4;
+    --info-light: #5a9fd4;
+
+    /* Gold for special elements */
+    --gold: #c9a227;
+    --gold-glow: rgba(201, 162, 39, 0.4);
+
+    /* Backgrounds - map/parchment textures */
+    --bg-dark: #1a1a1a;
+    --bg-darker: #0f0f0f;
+    --bg-sidebar: #1f1f1f;
+    --bg-card: #252525;
+    --bg-card-hover: #2a2a2a;
+    --bg-lighter: #303030;
+    --bg-input: #1a1a1a;
+    --bg-overlay: rgba(0, 0, 0, 0.85);
+    --surface-color: #252525;
+
+    /* Text colors */
+    --text: #d4d4d4;
+    --text-dim: #888888;
+    --text-bright: #f5f5dc;
+    --text-accent: #c9a227;
+    --text-secondary: #aaaaaa;
+
+    /* Borders - HOI4 style */
+    --border: #3d3d3d;
+    --border-color: #3d3d3d;
+    --border-light: #4a4a4a;
+    --border-accent: #c9a227;
+    --border-double: #555555;
+
+    /* Grade colors - military medals */
+    --grade-s: #ffd700;
+    --grade-s-glow: rgba(255, 215, 0, 0.5);
+    --grade-a: #c0c0c0;
+    --grade-a-glow: rgba(192, 192, 192, 0.4);
+    --grade-b: #cd7f32;
+    --grade-b-glow: rgba(205, 127, 50, 0.3);
+    --grade-c: #808080;
+    --grade-f: #555555;
+
+    /* Cyan override for consistency */
+    --cyan: #4682b4;
+    --cyan-glow: rgba(70, 130, 180, 0.3);
+
+    /* Purple override */
+    --purple: #6b5b7a;
+
+    /* Green */
+    --green-bright: #2d5a27;
+
+    /* Progress bar colors */
+    --progress-bg: #1a1a1a;
+    --progress-fill: linear-gradient(90deg, #8b4513 0%, #c9a227 100%);
+    --progress-fill-gold: linear-gradient(90deg, #a08020 0%, #e0bc4a 100%);
+    --progress-fill-military: linear-gradient(90deg, #2d5a27 0%, #3d7a37 100%);
+
+    /* XP bar override */
+    --xp-gradient: linear-gradient(90deg, #8b4513 0%, #c9a227 100%);
+
+    /* Shadows */
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.5);
+    --shadow-accent: 0 0 20px rgba(201, 162, 39, 0.3);
+
+    /* Font adjustments */
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-body: 'Space Grotesk', sans-serif;
+}

@@ -113,16 +113,31 @@
         var player = window.GameState.getPlayer();
         var xpProgress = window.GameState.getPlayerXPProgress();
         var completedCount = window.GameState.getCompletedCount();
+        var T = window.ThemeRegistry;
 
         var nameEl = document.getElementById('player-name');
         var levelEl = document.getElementById('player-level');
         var xpFill = document.getElementById('player-xp-fill');
         var xpText = document.getElementById('player-xp-text');
 
-        if (nameEl) nameEl.textContent = player.name;
-        if (levelEl) levelEl.textContent = 'LV ' + player.level + ' \u2022 ' + completedCount + ' shadows';
+        // Theme-aware display
+        var levelLabel = T ? T.getTerm('levelAbbr', 'LV') : 'LV';
+        var xpLabel = T ? T.getTerm('xp', 'XP') : 'XP';
+        var exerciseLabel = T ? T.getTerm('exercises', 'shadows') : 'shadows';
+
+        // Check for 4X theme - show military rank instead of level
+        var levelDisplay = levelLabel + ' ' + player.level;
+        if (T && T.getThemeId() === '4x-strategy') {
+            var rank = T.getRankForLevel(player.level);
+            if (rank) {
+                levelDisplay = rank.insignia + ' ' + rank.name;
+            }
+        }
+
+        if (nameEl) nameEl.textContent = T ? T.getTerm('playerName', player.name) : player.name;
+        if (levelEl) levelEl.textContent = levelDisplay + ' \u2022 ' + completedCount + ' ' + exerciseLabel;
         if (xpFill) xpFill.style.width = xpProgress.pct + '%';
-        if (xpText) xpText.textContent = xpProgress.current + ' / ' + xpProgress.needed + ' XP';
+        if (xpText) xpText.textContent = xpProgress.current + ' / ' + xpProgress.needed + ' ' + xpLabel;
 
         // Update skill levels in sidebar
         var skills = window.GameState.getSkills();
@@ -145,79 +160,110 @@
     function buildSidebar() {
         var skillDefs = window.GameState ? window.GameState.getSkillDefs() : {};
         var skills = window.GameState ? window.GameState.getSkills() : {};
+        var T = window.ThemeRegistry;
 
         var nav = document.getElementById('sidebar-nav');
         if (!nav) return;
 
         var html = '';
 
-        // COMBAT section
-        html += '<div class="nav-section"><div class="nav-section-title">Combat</div>';
-        html += navItem('training', 'Training Ground', 'T');
-        html += navItem('mementos', 'Mementos', 'M');
-        html += navItem('palace', 'Palaces', 'P');
+        // Get theme-aware labels
+        var is4X = T && T.getThemeId() === '4x-strategy';
+
+        // COMBAT/WARFARE section
+        var combatTitle = T ? T.getTerm('navCombat', 'Combat') : 'Combat';
+        html += '<div class="nav-section"><div class="nav-section-title">' + combatTitle + '</div>';
+        html += navItem('training', T ? T.getTerm('training', 'Training Ground') : 'Training Ground', is4X ? '⚔️' : 'T');
+        html += navItem('mementos', T ? T.getTerm('daily', 'Mementos') : 'Mementos', is4X ? '📋' : 'M');
+        html += navItem('palace', T ? T.getTerm('palaces', 'Palaces') : 'Palaces', is4X ? '🗺️' : 'P');
         html += '</div>';
 
-        // SKILLS section
-        html += '<div class="nav-section"><div class="nav-section-title">Skills</div>';
+        // SKILLS/TECHNOLOGIES section
+        var skillsTitle = T ? T.getTerm('navSkills', 'Skills') : 'Skills';
+        var levelLabel = T ? T.getTerm('levelAbbr', 'LV') : 'LV';
+        html += '<div class="nav-section"><div class="nav-section-title">' + skillsTitle + '</div>';
         Object.keys(skillDefs).forEach(function(key) {
             var def = skillDefs[key];
             var skill = skills[key] || { level: 1 };
+
+            // Get theme-specific skill info
+            var skillInfo = T ? T.getSkillInfo(key) : null;
+            var skillLabel = skillInfo ? skillInfo.label : def.label;
+            var techTier = skillInfo && skillInfo.techTier ? ' [' + skillInfo.techTier + ']' : '';
+
+            // For 4X, show tech tier or rank
+            var levelDisplay = is4X && skillInfo ? techTier : levelLabel + ' ' + skill.level;
+            if (is4X) {
+                var rank = T.getRankForLevel(skill.level);
+                levelDisplay = rank ? rank.insignia : levelLabel + ' ' + skill.level;
+            }
+
             html += '<div class="nav-item" data-view="skill-' + key + '">' +
-                '<span class="nav-icon">' + (def.icon || '\u2022') + '</span>' +
-                '<span class="nav-label">' + def.label + '</span>' +
-                '<span class="nav-level">LV ' + skill.level + '</span></div>';
+                '<span class="nav-icon">' + (is4X ? '🔬' : (def.icon || '\u2022')) + '</span>' +
+                '<span class="nav-label">' + skillLabel + '</span>' +
+                '<span class="nav-level skill-level-badge">' + levelDisplay + '</span></div>';
         });
         html += '</div>';
 
-        // PROJECTS section
-        html += '<div class="nav-section"><div class="nav-section-title">Requests</div>';
-        html += navItem('projects', 'Side Projects', '\u2692');
+        // PROJECTS/STRATEGIC section
+        var requestsTitle = T ? T.getTerm('navRequests', 'Requests') : 'Requests';
+        html += '<div class="nav-section"><div class="nav-section-title">' + requestsTitle + '</div>';
+        html += navItem('projects', T ? T.getTerm('projects', 'Side Projects') : 'Side Projects', is4X ? '📋' : '\u2692');
         html += '</div>';
 
-        // PART-TIME JOBS
-        html += '<div class="nav-section"><div class="nav-section-title">Part-Time</div>';
-        html += navItem('jobs', 'Jobs', '💼');
+        // PART-TIME/DOMESTIC JOBS
+        var partTimeTitle = T ? T.getTerm('navPartTime', 'Part-Time') : 'Part-Time';
+        html += '<div class="nav-section"><div class="nav-section-title">' + partTimeTitle + '</div>';
+        html += navItem('jobs', T ? T.getTerm('jobs', 'Jobs') : 'Jobs', is4X ? '🏭' : '💼');
         html += '</div>';
 
-        // STATUS section
-        html += '<div class="nav-section"><div class="nav-section-title">Status</div>';
-        html += navItem('stats', 'Stats', 'S');
-        html += navItem('calendar', 'Calendar', 'C');
-        html += navItem('exams', 'Exams', 'E');
+        // STATUS/ADMINISTRATION section
+        var statusTitle = T ? T.getTerm('navStatus', 'Status') : 'Status';
+        html += '<div class="nav-section"><div class="nav-section-title">' + statusTitle + '</div>';
+        html += navItem('stats', T ? T.getTerm('stats', 'Stats') : 'Stats', is4X ? '📊' : 'S');
+        html += navItem('calendar', T ? T.getTerm('calendar', 'Calendar') : 'Calendar', is4X ? '📅' : 'C');
+        html += navItem('exams', T ? T.getTerm('exams', 'Exams') : 'Exams', is4X ? '🎓' : 'E');
         html += '</div>';
 
-        // CONFIDANTS
-        html += '<div class="nav-section"><div class="nav-section-title">Confidants</div>';
+        // CONFIDANTS/DIPLOMACY
+        var confidantsTitle = T ? T.getTerm('navConfidants', 'Confidants') : 'Confidants';
+        html += '<div class="nav-section"><div class="nav-section-title">' + confidantsTitle + '</div>';
         var confidantList = [
-            { id: 'morgana', icon: '🐱', name: 'Morgana' },
-            { id: 'makoto', icon: '📚', name: 'Makoto' },
-            { id: 'futaba', icon: '🦊', name: 'Futaba' }
+            { id: 'morgana', p5Icon: '🐱', stratIcon: '🤝', p5Name: 'Morgana' },
+            { id: 'makoto', p5Icon: '📚', stratIcon: '⚙️', p5Name: 'Makoto' },
+            { id: 'futaba', p5Icon: '🦊', stratIcon: '🔬', p5Name: 'Futaba' }
         ];
         confidantList.forEach(function(c) {
             var confState = window.GameState ? window.GameState.getConfidant(c.id) : { rank: 1, unlocked: false };
+            var confInfo = T ? T.getConfidantInfo(c.id) : null;
+            var confName = confInfo ? confInfo.name : c.p5Name;
+            var confIcon = is4X ? c.stratIcon : c.p5Icon;
+            var rankLabel = is4X ? 'Rel. ' : 'Rank ';
+
             if (confState.unlocked) {
                 html += '<div class="nav-item" data-view="confidant-' + c.id + '">' +
-                    '<span class="nav-icon">' + c.icon + '</span>' +
-                    '<span class="nav-label">' + c.name + '</span>' +
-                    '<span class="nav-level">Rank ' + confState.rank + '</span></div>';
+                    '<span class="nav-icon">' + confIcon + '</span>' +
+                    '<span class="nav-label">' + confName + '</span>' +
+                    '<span class="nav-level">' + rankLabel + confState.rank + '</span></div>';
             } else {
                 html += '<div class="nav-item locked" style="opacity:0.4;pointer-events:none">' +
                     '<span class="nav-icon">🔒</span>' +
-                    '<span class="nav-label">' + c.name + '</span>' +
+                    '<span class="nav-label">' + confName + '</span>' +
                     '<span class="nav-level">Locked</span></div>';
             }
         });
         html += '</div>';
 
-        // VELVET ROOM
-        html += '<div class="nav-section"><div class="nav-section-title">Velvet Room</div>';
-        html += navItem('velvet', 'Compendium', 'V');
+        // VELVET ROOM / HIGH COMMAND
+        var velvetTitle = T ? T.getTerm('navVelvetRoom', 'Velvet Room') : 'Velvet Room';
+        html += '<div class="nav-section"><div class="nav-section-title">' + velvetTitle + '</div>';
+        html += navItem('velvet', T ? T.getTerm('compendium', 'Compendium') : 'Compendium', is4X ? '🎖️' : 'V');
         html += '</div>';
 
-        // SETTINGS
-        html += '<div class="nav-section"><div class="nav-section-title">System</div>';
-        html += navItem('settings', 'Settings', '\u2699');
+        // SETTINGS/SYSTEM
+        var systemTitle = T ? T.getTerm('navSystem', 'System') : 'System';
+        html += '<div class="nav-section"><div class="nav-section-title">' + systemTitle + '</div>';
+        html += navItem('settings', T ? T.getTerm('settings', 'Settings') : 'Settings', '\u2699');
         html += '</div>';
 
         nav.innerHTML = html;
@@ -334,8 +380,17 @@
         var palaces = window.GameState.getPalaces();
         var palaceDefs = window.GameState.getPalaceDefs();
         var skillDefs = window.GameState.getSkillDefs();
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
 
-        var html = '<div class="section-title" style="margin-top:0">Palace Infiltration</div>';
+        // Theme-aware labels
+        var pageTitle = is4X ? 'Territorial Conquest' : 'Palace Infiltration';
+        var defeatedLabel = is4X ? 'CONQUERED' : 'BOSS DEFEATED';
+        var availableLabel = is4X ? 'READY TO ANNEX' : 'BOSS AVAILABLE';
+        var bossLabel = is4X ? 'Annexation at 80%' : 'Boss at 80%';
+        var bossPrefix = is4X ? 'Final Battle: ' : 'Boss: ';
+
+        var html = '<div class="section-title" style="margin-top:0">' + pageTitle + '</div>';
         html += '<div class="palace-list">';
 
         Object.keys(palaceDefs).forEach(function(key) {
@@ -343,23 +398,32 @@
             var palace = palaces[key] || { progress: 0, unlocked: false, defeated: false };
             var pct = Math.round(palace.progress * 100);
 
-            html += '<div class="palace-item ' + (palace.defeated ? 'defeated' : '') + '">';
-            html += '<div class="palace-name">' + def.name + '</div>';
+            // Get themed palace info
+            var palaceInfo = T ? T.getPalaceInfo(key) : null;
+            var palaceName = palaceInfo ? palaceInfo.name : def.name;
+            var palaceTheme = palaceInfo ? palaceInfo.theme : def.theme;
+
+            // Determine status class
+            var statusClass = palace.defeated ? 'conquered' : (palace.unlocked ? 'victory-imminent' : (pct > 0 ? 'at-war' : ''));
+
+            html += '<div class="palace-item palace-card ' + (palace.defeated ? 'defeated ' : '') + statusClass + '">';
+            html += '<div class="palace-name">' + palaceName + '</div>';
             html += '<div class="palace-concepts">' + def.concepts.map(function(c) {
-                return skillDefs[c] ? skillDefs[c].label : c;
-            }).join(', ') + ' &bull; ' + def.theme + '</div>';
+                var skillInfo = T ? T.getSkillInfo(c) : null;
+                return skillInfo ? skillInfo.label : (skillDefs[c] ? skillDefs[c].label : c);
+            }).join(', ') + ' &bull; ' + palaceTheme + '</div>';
             html += '<div class="palace-bar"><div class="palace-bar-fill" style="width:' + pct + '%"></div></div>';
-            html += '<div class="palace-status"><span>' + pct + '%</span>';
+            html += '<div class="palace-status"><span>' + pct + '% ' + (is4X ? 'Control' : '') + '</span>';
             if (palace.defeated) {
-                html += '<span class="boss-defeated">BOSS DEFEATED</span>';
+                html += '<span class="boss-defeated palace-status conquered">' + defeatedLabel + '</span>';
             } else if (palace.unlocked) {
-                html += '<span class="boss-available">BOSS AVAILABLE</span>';
+                html += '<span class="boss-available palace-status">' + availableLabel + '</span>';
             } else {
-                html += '<span>Boss at 80%</span>';
+                html += '<span>' + bossLabel + '</span>';
             }
             html += '</div>';
             if (def.boss) {
-                html += '<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim);margin-top:0.25rem">Boss: ' + def.boss + '</div>';
+                html += '<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim);margin-top:0.25rem">' + bossPrefix + def.boss + '</div>';
             }
             html += '</div>';
         });
@@ -373,9 +437,23 @@
         if (!view || !window.GameState) return;
 
         var settings = window.GameState.getSettings();
+        var T = window.ThemeRegistry;
 
         var html = '<div class="section-title" style="margin-top:0">Settings</div>';
         html += '<div class="settings-group">';
+
+        // Theme switcher
+        html += '<div class="settings-item">' +
+            '<span class="settings-label">Game Theme</span>' +
+            '<select id="setting-theme" class="settings-select" style="background:var(--bg-card);color:var(--text);border:1px solid var(--border);padding:0.5rem;font-family:var(--font-body);cursor:pointer">';
+        if (T) {
+            var themes = T.getThemes();
+            var currentTheme = T.getThemeId();
+            themes.forEach(function(theme) {
+                html += '<option value="' + theme.id + '"' + (theme.id === currentTheme ? ' selected' : '') + '>' + theme.name + '</option>';
+            });
+        }
+        html += '</select></div>';
 
         // Sound toggle
         html += '<div class="settings-item">' +
@@ -383,8 +461,9 @@
             '<button class="settings-toggle ' + (settings.sound !== false ? 'on' : '') + '" id="setting-sound">' + (settings.sound !== false ? 'ON' : 'OFF') + '</button></div>';
 
         // Timer duration
+        var timerLabel = T ? T.getTerm('planningPhase', 'Thinking Timer') : 'Thinking Timer';
         html += '<div class="settings-item">' +
-            '<span class="settings-label">Thinking Timer (seconds)</span>' +
+            '<span class="settings-label">' + timerLabel + ' (seconds)</span>' +
             '<span style="display:flex;gap:0.5rem;align-items:center">' +
             '<button class="settings-toggle" id="timer-minus">-</button>' +
             '<span id="timer-value" style="font-family:var(--font-mono);min-width:30px;text-align:center">' + (settings.timerSeconds || 45) + '</span>' +
@@ -413,6 +492,15 @@
         view.innerHTML = html;
 
         // Bind settings
+        var themeSelect = document.getElementById('setting-theme');
+        if (themeSelect) {
+            themeSelect.addEventListener('change', function() {
+                if (window.ThemeRegistry) {
+                    window.ThemeRegistry.setTheme(this.value);
+                }
+            });
+        }
+
         document.getElementById('setting-sound').addEventListener('click', function() {
             var newVal = settings.sound === false ? true : false;
             window.GameState.updateSetting('sound', newVal);
@@ -515,8 +603,21 @@
 
     // === Initialize ===
     function init() {
+        // Initialize theme registry first
+        if (window.ThemeRegistry) {
+            window.ThemeRegistry.init();
+        }
+
         initMobile();
         initKeyboardShortcuts();
+
+        // Listen for theme changes to rebuild UI
+        window.addEventListener('themeChanged', function() {
+            buildSidebar();
+            updatePlayerCard();
+            // Re-render current view
+            navigateTo(currentView);
+        });
 
         loadExerciseData().then(function(data) {
             if (window.Combat) window.Combat.init(data);

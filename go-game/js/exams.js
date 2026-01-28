@@ -271,10 +271,29 @@
         var view = document.getElementById('view-exams');
         if (!view || !window.GameState) return;
 
+        // Theme detection
+        var T = window.ThemeRegistry;
+        var is4X = T && T.getThemeId() === '4x-strategy';
+
+        // Themed labels
+        var scheduleTitle = is4X ? 'Staff College Examinations' : 'Exam Schedule';
+        var xpLabel = is4X ? 'PP' : 'XP';
+        var exerciseWord = is4X ? 'operations' : 'exercises';
+        var takeExamLabel = is4X ? 'BEGIN EVALUATION' : 'TAKE EXAM';
+        var questionsLabel = is4X ? 'tactical scenarios' : 'questions';
+
+        // Themed grade display
+        var gradeDisplay = function(grade) {
+            if (is4X && T.getTheme && T.getTheme().gradeShort) {
+                return T.getTheme().gradeShort[grade] || grade;
+            }
+            return grade;
+        };
+
         var completedCount = window.GameState.getCompletedCount();
         var examResults = window.GameState.getExams();
 
-        var html = '<div class="section-title" style="margin-top:0">Exam Schedule</div>';
+        var html = '<div class="section-title" style="margin-top:0">' + scheduleTitle + '</div>';
         html += '<div class="exam-schedule">';
 
         EXAMS.forEach(function(exam) {
@@ -284,19 +303,26 @@
             if (!available) cls += ' locked';
             else if (result) cls += ' completed';
 
+            // Themed exam names for 4X
+            var examName = exam.name;
+            var examSubtitle = exam.subtitle;
+            if (is4X) {
+                examName = examName.replace('Midterm Exam', 'Field Assessment').replace('Final Exam', 'Strategic Evaluation').replace('Type System Exam', 'Systems Analysis');
+            }
+
             html += '<div class="' + cls + '" data-exam-id="' + exam.id + '">';
             if (result) {
-                html += '<div class="exam-schedule-grade grade-' + result.grade + '">' + result.grade + '</div>';
+                html += '<div class="exam-schedule-grade grade-' + result.grade + '">' + gradeDisplay(result.grade) + '</div>';
             } else {
                 html += '<div class="exam-schedule-grade" style="color:var(--text-dim)">&mdash;</div>';
             }
-            html += '<div class="exam-schedule-name">' + exam.name + '<br><span style="font-size:0.7rem;color:var(--text-dim)">' + exam.subtitle + '</span></div>';
+            html += '<div class="exam-schedule-name">' + examName + '<br><span style="font-size:0.7rem;color:var(--text-dim)">' + examSubtitle + '</span></div>';
             if (!available) {
-                html += '<div class="exam-schedule-info">' + exam.requiredExercises + ' exercises to unlock</div>';
+                html += '<div class="exam-schedule-info">' + exam.requiredExercises + ' ' + exerciseWord + ' to unlock</div>';
             } else if (result) {
-                html += '<div class="exam-schedule-info">' + result.correct + '/' + result.total + ' &bull; +' + result.xpBonus + ' XP</div>';
+                html += '<div class="exam-schedule-info">' + result.correct + '/' + result.total + ' &bull; +' + result.xpBonus + ' ' + xpLabel + '</div>';
             } else {
-                html += '<div class="exam-schedule-info" style="color:var(--red)">' + exam.questionsCount + ' questions &bull; TAKE EXAM</div>';
+                html += '<div class="exam-schedule-info" style="color:var(--red)">' + exam.questionsCount + ' ' + questionsLabel + ' &bull; ' + takeExamLabel + '</div>';
             }
             html += '</div>';
         });
