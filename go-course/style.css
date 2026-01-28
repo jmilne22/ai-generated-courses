@@ -394,21 +394,317 @@
     font-weight: 900;
 }
 
-/* Persona 5 diagonal stripe pattern on cards */
+/* 1. Background - Halftone dot pattern */
+[data-theme="persona5-dark"] body {
+    background:
+        radial-gradient(circle, rgba(230, 0, 18, 0.04) 1px, transparent 1px),
+        var(--bg-dark);
+    background-size: 8px 8px;
+}
+
+/* 12. Scrollbar - Red themed */
+[data-theme="persona5-dark"] ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+[data-theme="persona5-dark"] ::-webkit-scrollbar-track {
+    background: #0d0d0d;
+}
+[data-theme="persona5-dark"] ::-webkit-scrollbar-thumb {
+    background: var(--red);
+    border: 1px solid #000;
+}
+[data-theme="persona5-dark"] ::-webkit-scrollbar-thumb:hover {
+    background: #ff1a2e;
+}
+
+/* 13. Selection - Red highlight */
+[data-theme="persona5-dark"] ::selection {
+    background: var(--red);
+    color: #000;
+}
+
+/* 14. Links - Red accent */
+[data-theme="persona5-dark"] a {
+    color: var(--red);
+    text-decoration: none;
+}
+[data-theme="persona5-dark"] a:hover {
+    text-decoration: underline;
+    opacity: 1;
+}
+[data-theme="persona5-dark"] .breadcrumb a,
+[data-theme="persona5-dark"] .sidebar-header a {
+    color: var(--red);
+}
+
+/* 16. Inline code - Red tint */
+[data-theme="persona5-dark"] code:not(.code-block code) {
+    background: rgba(230, 0, 18, 0.12);
+    color: #ff4757;
+    border: 1px solid rgba(230, 0, 18, 0.25);
+}
+
+/* 2. Container - Skewed accent strip */
+[data-theme="persona5-dark"] .container {
+    position: relative;
+}
+[data-theme="persona5-dark"] .container::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 0;
+    width: 6px;
+    height: 100%;
+    background: var(--red);
+    transform: skewY(-2deg);
+    z-index: 0;
+}
+
+/* 3. Module Header - Angular slash */
+[data-theme="persona5-dark"] .module-tag {
+    display: inline-block;
+    background: var(--red);
+    color: #000;
+    padding: 0.2rem 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    transform: skewX(-8deg);
+}
+
+[data-theme="persona5-dark"] h1 {
+    position: relative;
+    padding-left: 3.5rem;
+    font-size: 2.8rem;
+}
+[data-theme="persona5-dark"] h1::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-image: url('assets/phantom-thieves-mask.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 0 8px rgba(230, 0, 18, 0.9));
+}
+[data-theme="persona5-dark"] h1::after {
+    content: '';
+    display: block;
+    width: 60%;
+    height: 4px;
+    background: var(--red);
+    margin-top: 0.5rem;
+    transform: skewX(-20deg);
+}
+
+[data-theme="persona5-dark"] .module-desc {
+    border-left: 3px solid var(--red);
+    padding-left: 1rem;
+}
+
+/* 4. Headings (h2) - Ransom-note character highlight + diagonal slash */
+[data-theme="persona5-dark"] h2 {
+    position: relative;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: none;
+}
+[data-theme="persona5-dark"] h2::first-letter {
+    background: var(--red);
+    color: #000;
+    padding: 0 0.15em;
+    margin-right: 0.05em;
+    font-weight: 900;
+}
+[data-theme="persona5-dark"] h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: var(--red);
+    transform: skewX(-20deg);
+}
+
+/* 5. Lessons - Skewed top border */
+[data-theme="persona5-dark"] .lesson {
+    position: relative;
+    padding-top: 0.5rem;
+}
+[data-theme="persona5-dark"] .lesson::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--red);
+    transform: skewX(-20deg);
+    transform-origin: left;
+}
+
+/* 6. Tips/Warnings/Info - Angular shape */
+[data-theme="persona5-dark"] .tip,
+[data-theme="persona5-dark"] .warning,
+[data-theme="persona5-dark"] .info {
+    border-left: none;
+    border: 2px solid #222;
+    position: relative;
+    padding-left: 2rem;
+}
+[data-theme="persona5-dark"] .tip::before,
+[data-theme="persona5-dark"] .warning::before,
+[data-theme="persona5-dark"] .info::before {
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-family: 'Barlow Condensed', sans-serif;
+}
+[data-theme="persona5-dark"] .tip::after,
+[data-theme="persona5-dark"] .warning::after,
+[data-theme="persona5-dark"] .info::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 5px;
+    height: 100%;
+    transform: skewX(-3deg);
+}
+[data-theme="persona5-dark"] .tip {
+    background: rgba(0, 255, 65, 0.08);
+}
+[data-theme="persona5-dark"] .tip::after {
+    background: var(--green-bright);
+}
+[data-theme="persona5-dark"] .warning {
+    background: rgba(230, 0, 18, 0.1);
+}
+[data-theme="persona5-dark"] .warning::after {
+    background: var(--red);
+}
+[data-theme="persona5-dark"] .info {
+    background: rgba(0, 229, 255, 0.08);
+}
+[data-theme="persona5-dark"] .info::after {
+    background: var(--blue);
+}
+
+/* 7. Code blocks - Comic panel borders */
+[data-theme="persona5-dark"] .code-block {
+    border: 3px solid #000 !important;
+    border-left: 5px solid var(--red) !important;
+    box-shadow:
+        0 0 0 1px #fff,
+        3px 3px 0 1px #000,
+        3px 3px 0 2px #fff;
+}
+[data-theme="persona5-dark"] .code-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    position: relative;
+}
+[data-theme="persona5-dark"] .code-compare .code-block {
+    margin: 0 !important;
+}
+[data-theme="persona5-dark"] pre {
+    border: none;
+}
+[data-theme="persona5-dark"] .code-header {
+    background: #000 !important;
+    color: #fff !important;
+    border: 2px solid #fff !important;
+    border-left: 4px solid var(--red) !important;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+[data-theme="persona5-dark"] .code-header.python {
+    border-left: 4px solid #3776ab !important;
+}
+[data-theme="persona5-dark"] .code-header.go {
+    border-left: 4px solid #00add8 !important;
+}
+
+/* 8. Nav buttons - Parallelogram shape */
+[data-theme="persona5-dark"] .nav-btn {
+    transform: skewX(-5deg);
+    border: 3px solid #000 !important;
+    box-shadow: 0 0 0 1px #fff, 3px 3px 0 1px #000;
+    border-radius: 0;
+    background: #0d0d0d;
+    transition: all 0.2s ease;
+}
+[data-theme="persona5-dark"] .nav-btn > * {
+    display: inline-block;
+    transform: skewX(5deg);
+}
+[data-theme="persona5-dark"] .nav-btn:hover {
+    background: var(--red) !important;
+    color: #000 !important;
+    border-color: #000 !important;
+    transform: skewX(-5deg) translate(-2px, -2px);
+    box-shadow: 0 0 0 1px #fff, 5px 5px 0 1px #000;
+}
+[data-theme="persona5-dark"] .nav-btn.primary {
+    background: var(--red);
+    color: #000;
+    border-color: #000 !important;
+    font-weight: 900;
+}
+[data-theme="persona5-dark"] .nav-btn.primary:hover {
+    background: #fff !important;
+    color: #000 !important;
+}
+
+/* 9. Cards / Module items - Angled cuts + red accent */
 [data-theme="persona5-dark"] .card,
 [data-theme="persona5-dark"] .stat-card,
 [data-theme="persona5-dark"] .module-item {
     position: relative;
     overflow: hidden;
-    border: 4px solid #000 !important;
+    border: 3px solid #000 !important;
     box-shadow:
-        0 0 0 2px #fff,
-        0 4px 0 2px #000,
-        0 4px 0 4px #fff;
+        0 0 0 1px #fff,
+        3px 3px 0 1px #000,
+        3px 3px 0 2px #fff;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+[data-theme="persona5-dark"] .module-card {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+    border: 3px solid #000;
+    box-shadow: 0 0 0 1px #fff;
+    border-radius: 0;
+    transition: all 0.2s ease;
+}
+[data-theme="persona5-dark"] .module-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--red);
+    transform: scaleX(1) skewY(-3deg);
+    transform-origin: top left;
+}
+[data-theme="persona5-dark"] .module-card:hover {
+    border-color: var(--red);
+    transform: translateY(-4px) translateX(-2px);
+    box-shadow: 0 0 0 1px #fff, 4px 4px 0 1px var(--red);
+}
+[data-theme="persona5-dark"] .module-card:hover::before {
+    transform: scaleX(1) skewY(-3deg);
 }
 
-/* Persona 5 style borders - removed ::before to prevent shift */
-
+/* Persona 5 style borders for session timer */
 [data-theme="persona5-dark"] .session-timer,
 [data-theme="persona5-dark"] .floating-session-timer {
     border: 4px solid #000 !important;
@@ -419,7 +715,7 @@
         -4px 0 0 0 var(--red);
 }
 
-/* Persona 5 button styling - simplified */
+/* Persona 5 button styling */
 [data-theme="persona5-dark"] button,
 [data-theme="persona5-dark"] .quick-btn {
     font-family: 'Barlow Condensed', sans-serif;
@@ -434,7 +730,6 @@
     position: relative;
     overflow: hidden;
 }
-
 [data-theme="persona5-dark"] button:hover,
 [data-theme="persona5-dark"] .quick-btn:hover {
     background: var(--red) !important;
@@ -446,7 +741,7 @@
         4px 4px 0 1px #000;
 }
 
-/* Persona 5 module numbers styling - simplified to prevent shift */
+/* Persona 5 module numbers styling */
 [data-theme="persona5-dark"] .module-num {
     background: var(--red);
     color: #000;
@@ -455,53 +750,30 @@
     display: inline-block;
     border: 3px solid #000;
     box-shadow: 0 0 0 2px #fff, 3px 3px 0 2px #000;
+    transform: skewX(-5deg);
 }
 
-/* Persona 5 progress bars - simplified */
+/* Persona 5 progress bars */
 [data-theme="persona5-dark"] .session-progress {
     border: 2px solid #000;
     box-shadow: inset 0 0 0 1px #fff;
     height: 12px;
 }
-
 [data-theme="persona5-dark"] .session-progress-bar {
     background: var(--red) !important;
     box-shadow: 0 0 0 2px #000, 0 0 10px var(--red);
 }
 
-/* Persona 5 h1 styling - Phantom Thieves mask */
-[data-theme="persona5-dark"] h1 {
-    position: relative;
-    padding-left: 3.5rem;
-}
-
-[data-theme="persona5-dark"] h1::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background-image: url('assets/phantom-thieves-mask.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    filter: drop-shadow(0 0 6px rgba(230, 0, 18, 0.8));
-}
-
-/* Persona 5 checkboxes - more dramatic */
+/* Persona 5 checkboxes */
 [data-theme="persona5-dark"] .module-checkbox {
     border: 3px solid #000 !important;
     box-shadow: 0 0 0 1px #fff, inset 0 0 0 1px #fff;
 }
-
 [data-theme="persona5-dark"] .module-checkbox:checked {
     background: var(--red) !important;
     border-color: #000 !important;
     position: relative;
 }
-
 [data-theme="persona5-dark"] .module-checkbox:checked::after {
     content: '✓';
     position: absolute;
@@ -511,20 +783,24 @@
     -webkit-text-stroke: 1px #fff;
 }
 
-/* Persona 5 track sections - diagonal banners */
+/* 11. Track titles - Full-width diagonal banner */
 [data-theme="persona5-dark"] .track-title {
     background: var(--red);
     color: #000;
-    padding: 0.75rem 1.5rem;
-    margin: 1rem -1rem;
-    font-size: 1.2rem;
+    padding: 0.85rem 2rem;
+    margin: 1.5rem -1.5rem;
+    font-size: 1.4rem;
     font-weight: 900;
     position: relative;
     border: 4px solid #000;
-    box-shadow: 0 0 0 2px #fff, 4px 4px 0 2px #000;
+    box-shadow: 0 0 0 2px #fff, 5px 5px 0 2px #000;
     -webkit-text-stroke: 1px #fff;
+    transform: skewX(-3deg);
 }
-
+[data-theme="persona5-dark"] .track-title > * {
+    display: inline-block;
+    transform: skewX(3deg);
+}
 [data-theme="persona5-dark"] .track-title::before {
     content: '▶';
     margin-right: 0.5rem;
@@ -539,52 +815,57 @@
         3px 3px 0 #000;
 }
 
-/* Stat card styling - removed clip-path to prevent shifts */
-
-/* Persona 5 code blocks - simplified to prevent shift */
-[data-theme="persona5-dark"] .code-block {
-    border: 3px solid #000 !important;
-    border-left: 4px solid var(--red) !important;
-    box-shadow:
-        0 0 0 1px #fff,
-        inset 0 0 0 1px #fff;
+/* 10. Sidebar - P5 menu style */
+[data-theme="persona5-dark"] .sidebar {
+    background: #000;
+    border-right: 3px solid var(--red);
+    border-top: none;
 }
-
-[data-theme="persona5-dark"] .code-compare {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+[data-theme="persona5-dark"] .sidebar-link {
+    border-left: 3px solid transparent;
+    transition: all 0.15s ease;
     position: relative;
 }
-
-[data-theme="persona5-dark"] .code-compare .code-block {
-    margin: 0 !important;
+[data-theme="persona5-dark"] .sidebar-link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--red);
+    opacity: 0;
+    transform: skewX(-3deg);
+    z-index: -1;
+    transition: opacity 0.15s ease;
+}
+[data-theme="persona5-dark"] .sidebar-link:hover {
+    color: #fff;
+    background: transparent;
+}
+[data-theme="persona5-dark"] .sidebar-link:hover::before {
+    opacity: 0.15;
+}
+[data-theme="persona5-dark"] .sidebar-link.active {
+    color: #fff;
+    background: transparent;
+    border-left-color: var(--red);
+}
+[data-theme="persona5-dark"] .sidebar-link.active::before {
+    opacity: 0.25;
+}
+[data-theme="persona5-dark"] .sidebar-module-num {
+    color: var(--red);
+    opacity: 1;
+}
+[data-theme="persona5-dark"] .sidebar-module-num::before {
+    content: '▶ ';
+    font-size: 0.6rem;
+    color: var(--red);
 }
 
-[data-theme="persona5-dark"] pre {
-    border: none;
-}
-
-/* Section headers */
-[data-theme="persona5-dark"] h2 {
-    position: relative;
-    padding-bottom: 1rem;
-    margin-bottom: 2rem;
-    -webkit-text-stroke: 1px #000;
-    border-bottom: 4px solid var(--red);
-}
-
-/* Background - solid to prevent shift */
-[data-theme="persona5-dark"] body {
-    background: var(--bg-dark);
-}
-
-/* Module links with Persona style - simplified */
+/* Module links with Persona style */
 [data-theme="persona5-dark"] .module-link {
     position: relative;
     padding-left: 1.5rem;
 }
-
 [data-theme="persona5-dark"] .module-link::before {
     content: '▶';
     position: absolute;
@@ -600,45 +881,57 @@
     font-size: 1.4rem;
 }
 
-/* Main container styling */
-[data-theme="persona5-dark"] .container {
-    position: relative;
-}
-
 /* Quick action buttons - more angular */
 [data-theme="persona5-dark"] .quick-actions {
     gap: 1rem;
 }
-
 [data-theme="persona5-dark"] .quick-btn.primary {
     background: var(--red) !important;
     color: #000 !important;
     font-weight: 900;
-    -webkit-text-stroke: 0.5px #fff;
 }
 
-/* Code headers */
-[data-theme="persona5-dark"] .code-header {
-    background: #000 !important;
-    color: #fff !important;
-    border: 2px solid #fff !important;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-}
-
-[data-theme="persona5-dark"] .code-header.python {
-    border-left: 4px solid #3776ab !important;
-}
-
-[data-theme="persona5-dark"] .code-header.go {
-    border-left: 4px solid #00add8 !important;
-}
-
-/* Lesson sections */
-[data-theme="persona5-dark"] .lesson {
+/* 15. Exercise blocks - Angular border */
+[data-theme="persona5-dark"] .exercise {
+    border: 3px solid #222;
+    border-radius: 0;
     position: relative;
+    padding-left: 2.5rem;
 }
+[data-theme="persona5-dark"] .exercise::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 5px;
+    height: 100%;
+    background: var(--red);
+    transform: skewX(-3deg);
+}
+
+/* 8. Animated slide-in for elements */
+@keyframes p5SlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px) skewX(-3deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) skewX(0);
+    }
+}
+[data-theme="persona5-dark"] .lesson,
+[data-theme="persona5-dark"] .module-card {
+    animation: p5SlideIn 0.3s ease-out both;
+}
+[data-theme="persona5-dark"] .lesson:nth-child(2) { animation-delay: 0.05s; }
+[data-theme="persona5-dark"] .lesson:nth-child(3) { animation-delay: 0.1s; }
+[data-theme="persona5-dark"] .lesson:nth-child(4) { animation-delay: 0.15s; }
+[data-theme="persona5-dark"] .module-card:nth-child(2) { animation-delay: 0.05s; }
+[data-theme="persona5-dark"] .module-card:nth-child(3) { animation-delay: 0.1s; }
+[data-theme="persona5-dark"] .module-card:nth-child(4) { animation-delay: 0.15s; }
+[data-theme="persona5-dark"] .module-card:nth-child(5) { animation-delay: 0.2s; }
+[data-theme="persona5-dark"] .module-card:nth-child(6) { animation-delay: 0.25s; }
 
 /* ============================================
    2. Reset and Base Styles
