@@ -716,7 +716,7 @@
 }
 
 /* Persona 5 button styling */
-[data-theme="persona5-dark"] button,
+[data-theme="persona5-dark"] button:not(.sidebar-toggle),
 [data-theme="persona5-dark"] .quick-btn {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
@@ -730,7 +730,7 @@
     position: relative;
     overflow: hidden;
 }
-[data-theme="persona5-dark"] button:hover,
+[data-theme="persona5-dark"] button:not(.sidebar-toggle):hover,
 [data-theme="persona5-dark"] .quick-btn:hover {
     background: var(--red) !important;
     color: #000 !important;

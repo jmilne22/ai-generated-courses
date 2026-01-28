@@ -156,7 +156,7 @@
 
         const updateLabel = () => {
             const enabled = isFocusModeEnabled();
-            button.textContent = enabled ? 'Focus On' : 'Focus Off';
+            button.textContent = enabled ? 'Focus Off' : 'Focus On';
             button.classList.toggle('active', enabled);
         };
 
