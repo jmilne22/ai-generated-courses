@@ -3386,3 +3386,174 @@ footer {
         font-size: 0.65rem;
     }
 }
+
+/* ============================================================
+   Streak Section & Activity Heatmap
+   ============================================================ */
+.streak-section {
+    margin: 1.5rem 0;
+}
+
+.activity-heatmap {
+    margin-top: 1rem;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+}
+
+/* ============================================================
+   Flashcard Styles
+   ============================================================ */
+.flashcard {
+    perspective: 1000px;
+    cursor: pointer;
+    min-height: 250px;
+}
+
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    min-height: 250px;
+    transition: transform 0.5s ease;
+    transform-style: preserve-3d;
+}
+
+.flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 250px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.flashcard-front {
+    border-left: 4px solid var(--cyan);
+}
+
+.flashcard-back {
+    transform: rotateY(180deg);
+    border-left: 4px solid var(--green-bright);
+}
+
+.flashcard-front code,
+.flashcard-back code {
+    background: var(--bg-code, var(--bg-lighter));
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+    color: var(--green-bright);
+}
+
+.fc-keyboard-hint {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    margin-top: 1rem;
+}
+
+.fc-keyboard-hint kbd {
+    background: var(--bg-lighter);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+}
+
+/* ============================================================
+   Shared Button Styles (Quick Buttons, Option Buttons)
+   ============================================================ */
+.quick-btn {
+    padding: 1rem 1.5rem;
+    background: var(--bg-card);
+    border: 2px solid var(--bg-lighter);
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    cursor: pointer;
+}
+
+.quick-btn:hover {
+    border-color: var(--orange);
+    transform: translateY(-2px);
+}
+
+.quick-btn.primary {
+    background: var(--green-bright);
+    border-color: var(--green-bright);
+    color: var(--bg-dark);
+    font-weight: 700;
+}
+
+.quick-btn.primary:hover {
+    background: #fff;
+}
+
+.quick-btn .btn-icon {
+    font-size: 1.5rem;
+    display: block;
+}
+
+/* ============================================================
+   Shared Option Button Styles (Daily Practice, Flashcards)
+   ============================================================ */
+.dp-option {
+    background: transparent;
+    border: 2px solid var(--bg-lighter);
+    color: var(--text);
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.dp-option:hover {
+    border-color: var(--orange);
+}
+
+.dp-option.active {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: white;
+    font-weight: 600;
+}
+
+/* ============================================================
+   Analytics / Weak Concept Styles
+   ============================================================ */
+.strength-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--bg-lighter);
+    overflow: hidden;
+}
+
+.strength-fill {
+    height: 100%;
+    border-radius: 4px;
+}

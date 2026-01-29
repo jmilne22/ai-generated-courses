@@ -61,26 +61,6 @@
             gap: 0.5rem;
             flex-wrap: wrap;
         }
-        .dp-option {
-            background: transparent;
-            border: 2px solid var(--bg-lighter);
-            color: var(--text);
-            padding: 0.4rem 1rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-family: 'JetBrains Mono', monospace;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .dp-option:hover {
-            border-color: var(--orange);
-        }
-        .dp-option.active {
-            background: var(--orange);
-            border-color: var(--orange);
-            color: white;
-            font-weight: 600;
-        }
         .dp-start-btn {
             display: inline-flex;
             align-items: center;
@@ -249,6 +229,37 @@
                     <button class="dp-option active" data-mode="review">Due for Review</button>
                     <button class="dp-option" data-mode="weakest">Weakest</button>
                     <button class="dp-option" data-mode="mixed">Mixed</button>
+                </div>
+            </div>
+            <div class="dp-config-row">
+                <span class="dp-config-label">Type:</span>
+                <div class="dp-config-options" id="dp-type-options">
+                    <button class="dp-option active" data-type="all">All</button>
+                    <button class="dp-option" data-type="warmup">Warmups</button>
+                    <button class="dp-option" data-type="challenge">Challenges</button>
+                </div>
+            </div>
+            <div class="dp-config-row">
+                <span class="dp-config-label">Modules:</span>
+                <div class="dp-config-options" id="dp-module-options">
+                    <button class="dp-option active" data-module="all">All</button>
+                    <button class="dp-option" data-module="1">M1</button>
+                    <button class="dp-option" data-module="2">M2</button>
+                    <button class="dp-option" data-module="3">M3</button>
+                    <button class="dp-option" data-module="4">M4</button>
+                    <button class="dp-option" data-module="5">M5</button>
+                    <button class="dp-option" data-module="6">M6</button>
+                    <button class="dp-option" data-module="7">M7</button>
+                    <button class="dp-option" data-module="8">M8</button>
+                    <button class="dp-option" data-module="9">M9</button>
+                    <button class="dp-option" data-module="10">M10</button>
+                    <button class="dp-option" data-module="11">M11</button>
+                    <button class="dp-option" data-module="12">M12</button>
+                    <button class="dp-option" data-module="13">M13</button>
+                    <button class="dp-option" data-module="14">M14</button>
+                    <button class="dp-option" data-module="15">M15</button>
+                    <button class="dp-option" data-module="16">M16</button>
+                    <button class="dp-option" data-module="17">M17</button>
                 </div>
             </div>
             <div style="margin-top: 1rem;">

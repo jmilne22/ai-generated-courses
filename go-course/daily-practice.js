@@ -29,7 +29,7 @@
         17: 'Integration Testing'
     };
 
-    let sessionConfig = { count: 10, mode: 'review' };
+    let sessionConfig = { count: 10, mode: 'review', type: 'all', modules: 'all' };
     let sessionQueue = [];
     let sessionIndex = 0;
     let sessionResults = { completed: 0, skipped: 0, ratings: { 1: 0, 2: 0, 3: 0 } };
@@ -78,6 +78,46 @@
             btn.addEventListener('click', () => {
                 setActiveOption('dp-mode-options', btn);
                 sessionConfig.mode = btn.dataset.mode;
+            });
+        });
+
+        document.querySelectorAll('#dp-type-options .dp-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setActiveOption('dp-type-options', btn);
+                sessionConfig.type = btn.dataset.type;
+            });
+        });
+
+        document.querySelectorAll('#dp-module-options .dp-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Module filter supports multi-select: clicking "All" resets, clicking a module toggles it
+                if (btn.dataset.module === 'all') {
+                    // Reset to all
+                    document.querySelectorAll('#dp-module-options .dp-option').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    sessionConfig.modules = 'all';
+                } else {
+                    // Remove "All" active state
+                    const allBtn = document.querySelector('#dp-module-options .dp-option[data-module="all"]');
+                    if (allBtn) allBtn.classList.remove('active');
+
+                    // Toggle this module
+                    btn.classList.toggle('active');
+
+                    // Collect active modules
+                    const activeModules = [];
+                    document.querySelectorAll('#dp-module-options .dp-option.active').forEach(b => {
+                        if (b.dataset.module !== 'all') activeModules.push(parseInt(b.dataset.module));
+                    });
+
+                    if (activeModules.length === 0) {
+                        // Nothing selected — revert to all
+                        if (allBtn) allBtn.classList.add('active');
+                        sessionConfig.modules = 'all';
+                    } else {
+                        sessionConfig.modules = activeModules;
+                    }
+                }
             });
         });
     }
@@ -164,6 +204,27 @@
 
     // --- Queue Building ---
 
+    function matchesFilters(key) {
+        const cfg = sessionConfig;
+
+        // Type filter
+        if (cfg.type !== 'all') {
+            const isWarmup = key.includes('warmup');
+            const isChallenge = key.includes('challenge');
+            if (cfg.type === 'warmup' && !isWarmup) return false;
+            if (cfg.type === 'challenge' && !isChallenge) return false;
+        }
+
+        // Module filter
+        if (cfg.modules !== 'all') {
+            const match = key.match(/^m(\d+)_/);
+            const moduleNum = match ? parseInt(match[1]) : null;
+            if (moduleNum === null || !cfg.modules.includes(moduleNum)) return false;
+        }
+
+        return true;
+    }
+
     function buildQueue(mode, count) {
         if (!window.SRS) return [];
 
@@ -187,12 +248,15 @@
             });
         }
 
+        // Apply type and module filters
+        candidates = candidates.filter(item => matchesFilters(item.key));
+
         // If we don't have enough from SRS, pad with random tracked exercises
         if (candidates.length < count) {
             const all = window.SRS.getAll();
             const existing = new Set(candidates.map(c => c.key));
             const extras = Object.entries(all)
-                .filter(([key]) => !existing.has(key))
+                .filter(([key]) => !existing.has(key) && matchesFilters(key))
                 .map(([key, item]) => ({ key, ...item }))
                 .sort(() => Math.random() - 0.5);
             candidates.push(...extras);

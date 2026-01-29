@@ -19,36 +19,6 @@
             margin: 2rem auto;
             max-width: 760px;
         }
-        .quick-btn {
-            padding: 1rem 1.5rem;
-            background: var(--bg-card);
-            border: 2px solid var(--bg-lighter);
-            border-radius: 8px;
-            text-align: center;
-            text-decoration: none;
-            color: var(--text);
-            transition: all 0.2s;
-            font-family: 'JetBrains Mono', monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.35rem;
-            cursor: pointer;
-        }
-        .quick-btn:hover {
-            border-color: var(--orange);
-            transform: translateY(-2px);
-        }
-        .quick-btn.primary {
-            background: var(--green-bright);
-            border-color: var(--green-bright);
-            color: var(--bg-dark);
-            font-weight: 700;
-        }
-        .quick-btn.primary:hover {
-            background: #fff;
-        }
         .session-duration {
             width: 100%;
             padding: 0.65rem 0.9rem;
@@ -65,10 +35,6 @@
                 grid-template-columns: 1fr;
                 max-width: 100%;
             }
-        }
-        .quick-btn .btn-icon {
-            font-size: 1.5rem;
-            display: block;
         }
         .session-timer {
             margin-bottom: 2rem;
@@ -246,6 +212,14 @@
                 <span class="btn-icon">🎯</span>
                 Daily Practice
             </a>
+            <a href="flashcards.html" class="quick-btn">
+                <span class="btn-icon">🃏</span>
+                Flashcards
+            </a>
+            <a href="analytics.html" class="quick-btn">
+                <span class="btn-icon">📊</span>
+                Weak Concepts
+            </a>
         </div>
 
         <div class="session-timer" id="session-timer" hidden>
@@ -293,6 +267,24 @@
                 <div class="stat-value" id="due-count">0</div>
                 <div class="stat-label">Due for Review</div>
             </div>
+        </div>
+
+        <div class="streak-section">
+            <div class="progress-stats" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="stat-card">
+                    <div class="stat-value" id="streak-current">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="streak-longest">0</div>
+                    <div class="stat-label">Best Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="streak-today">0</div>
+                    <div class="stat-label">Today</div>
+                </div>
+            </div>
+            <div id="activity-heatmap"></div>
         </div>
 
         <div class="module-list">
@@ -495,13 +487,19 @@
         </div>
 
         <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
-            <button class="export-notes" onclick="exportNotes()">📥 Export Notes to Markdown</button>
+            <button class="export-notes" onclick="exportNotes()">Export Notes</button>
+            <button class="quick-btn" onclick="exportAllData()">Export All Data</button>
+            <label class="quick-btn" style="cursor: pointer;">
+                Import Data <input type="file" accept=".json" hidden onchange="importAllData(this.files[0])">
+            </label>
             <button class="clear-progress" onclick="clearProgress()">Clear All Progress</button>
         </div>
     </div>
 
     <script src="theme.js"></script>
     <script src="srs.js"></script>
+    <script src="streaks.js"></script>
+    <script src="data-backup.js"></script>
     <script src="progress.js"></script>
     <script>
         // Progress tracking with localStorage
@@ -557,6 +555,18 @@
             const dueEl = document.getElementById('due-count');
             if (dueEl && window.SRS) {
                 dueEl.textContent = window.SRS.getDueCount();
+            }
+
+            // Streak stats
+            if (window.Streaks) {
+                const sc = document.getElementById('streak-current');
+                const sl = document.getElementById('streak-longest');
+                const st = document.getElementById('streak-today');
+                if (sc) sc.textContent = Streaks.getCurrent();
+                if (sl) sl.textContent = Streaks.getLongest();
+                if (st) st.textContent = Streaks.getTodayCount();
+                const heatmap = document.getElementById('activity-heatmap');
+                if (heatmap) Streaks.renderHeatmap(heatmap);
             }
 
             // Update UI
@@ -692,6 +702,8 @@
                 localStorage.removeItem(LAST_MODULE_KEY);
                 localStorage.removeItem('go-course-exercise-progress');
                 localStorage.removeItem('go-course-srs');
+                localStorage.removeItem('go-course-streaks');
+                localStorage.removeItem('go-course-activity');
                 location.reload();
             }
         }
@@ -725,6 +737,11 @@
                     recordModuleVisit(moduleNum);
                 });
             });
+
+            // Register service worker (progressive enhancement)
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(function() {});
+            }
         });
     </script>
 </body>
