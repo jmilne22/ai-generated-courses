@@ -1,7 +1,7 @@
 // Service Worker for Go Course — offline support
 // Cache-first strategy for static assets
 
-var CACHE_NAME = 'go-course-v2';
+var CACHE_NAME = 'go-course-v3';
 
 var ASSETS = [
     'index.html',
