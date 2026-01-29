@@ -1,0 +1,71 @@
+{
+  "moduleNum": 14,
+  "moduleName": "System Interaction",
+  "exerciseCount": 4,
+  "exercises": [
+    {
+      "originalTitle": "Exercise 1: Which Clone",
+      "type": "exercise",
+      "num": "1",
+      "title": "Which Clone",
+      "description": "Build <code>which</code> command. Print full path if found, exit 1 if not.",
+      "descriptionHtml": "Build <code>which</code> command. Print full path if found, exit 1 if not.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Use `exec.LookPath(os.Args[1])`. Check error to determine exit code."
+        }
+      ],
+      "solution": "func main() {\n    if len(os.Args) < 2 {\n        fmt.Fprintln(os.Stderr, \"usage: which command\")\n        os.Exit(1)\n    }\n    \n    path, err := exec.LookPath(os.Args[1])\n    if err != nil {\n        os.Exit(1)\n    }\n    fmt.Println(path)\n}",
+      "expected": "$ ./which go\n/usr/local/go/bin/go\n$ ./which nonexistent\n$ echo $?\n1"
+    },
+    {
+      "originalTitle": "Exercise 2: System Info",
+      "type": "exercise",
+      "num": "2",
+      "title": "System Info",
+      "description": "Print: hostname, current user, home directory, shell, and whether you're root.",
+      "descriptionHtml": "Print: hostname, current user, home directory, shell, and whether you're root.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "`os.Hostname()`, `user.Current()`, `os.Getenv(\"SHELL\")`, `os.Geteuid() == 0`"
+        }
+      ],
+      "solution": "func main() {\n    hostname, _ := os.Hostname()\n    u, _ := user.Current()\n    shell := os.Getenv(\"SHELL\")\n    isRoot := os.Geteuid() == 0\n    \n    fmt.Println(\"Hostname:\", hostname)\n    fmt.Println(\"User:\", u.Username)\n    fmt.Println(\"Home:\", u.HomeDir)\n    fmt.Println(\"Shell:\", shell)\n    fmt.Println(\"Root:\", isRoot)\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 3: Process List",
+      "type": "exercise",
+      "num": "3",
+      "title": "Process List",
+      "description": "Run <code>ps aux</code>, parse output, print PID and command for processes using &gt;1% CPU.",
+      "descriptionHtml": "Run <code>ps aux</code>, parse output, print PID and command for processes using &gt;1% CPU.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "`strings.Fields()` for columns. CPU% is field 2 (0-indexed). Parse with `strconv.ParseFloat`."
+        }
+      ],
+      "solution": "func main() {\n    out, _ := exec.Command(\"ps\", \"aux\").Output()\n    lines := strings.Split(string(out), \"\\n\")\n    \n    for _, line := range lines[1:] {\n        fields := strings.Fields(line)\n        if len(fields)  1.0 {\n            fmt.Printf(\"PID: %s  CPU: %.1f%%  CMD: %s\\n\", \n                fields[1], cpu, fields[10])\n        }\n    }\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 4: Git Status Parser",
+      "type": "exercise",
+      "num": "4",
+      "title": "Git Status Parser",
+      "description": "Run <code>git status --porcelain</code> and print counts of modified, new, and deleted files.",
+      "descriptionHtml": "Run <code>git status --porcelain</code> and print counts of modified, new, and deleted files.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Porcelain format: first 2 chars are status. M=modified, A=added, D=deleted, ??=untracked."
+        }
+      ],
+      "solution": "func main() {\n    out, err := exec.Command(\"git\", \"status\", \"--porcelain\").Output()\n    if err != nil {\n        fmt.Println(\"Not a git repo\")\n        return\n    }\n    \n    var modified, added, deleted int\n    for _, line := range strings.Split(string(out), \"\\n\") {\n        if len(line) < 2 {\n            continue\n        }\n        switch line[0:2] {\n        case \" M\", \"M \", \"MM\":\n            modified++\n        case \"A \", \"??\":\n            added++\n        case \" D\", \"D \":\n            deleted++\n        }\n    }\n    fmt.Printf(\"Modified: %d, Added: %d, Deleted: %d\\n\", \n        modified, added, deleted)\n}",
+      "expected": ""
+    }
+  ]
+}

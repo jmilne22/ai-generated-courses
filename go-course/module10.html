@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-module="10">
     <div class="container">
         <nav><a href="module9.html">← Module 9</a><a href="module11.html">Module 11 →</a></nav>
         <div class="module-tag">// MODULE 10</div>
@@ -206,152 +206,38 @@ sql := <span class="func">NewQueryBuilder</span>(<span class="string">"users"</s
 
         <div class="lesson">
             <h2>Exercises</h2>
-            
-            <div class="exercise">
-                <h4>Exercise 1: HTTP Client with Options</h4>
-                <p>Create <code>HTTPClient</code> using functional options: <code>WithTimeout</code>, <code>WithRetries</code>, <code>WithBaseURL</code>.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Define <code>type Option func(*HTTPClient)</code>. Each With function returns an Option. Apply in constructor.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>type HTTPClient struct {
-    timeout time.Duration
-    retries int
-    baseURL string
-}
 
-type Option func(*HTTPClient)
+            <p>Progress through each section in order, or jump to where you need practice.</p>
 
-func WithTimeout(d time.Duration) Option {
-    return func(c *HTTPClient) { c.timeout = d }
-}
-
-func WithRetries(n int) Option {
-    return func(c *HTTPClient) { c.retries = n }
-}
-
-func WithBaseURL(url string) Option {
-    return func(c *HTTPClient) { c.baseURL = url }
-}
-
-func NewHTTPClient(opts ...Option) *HTTPClient {
-    c := &HTTPClient{timeout: 30 * time.Second}
-    for _, opt := range opts {
-        opt(c)
-    }
-    return c
-}</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Usage</div>
-                    <pre>client := NewHTTPClient(
-    WithTimeout(10*time.Second),
-    WithRetries(3),
-    WithBaseURL("https://api.example.com"),
-)</pre>
+            <div style="background: var(--bg-card); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0 2rem 0;">
+                <div style="font-weight: 600; margin-bottom: 0.75rem; color: var(--text);">Jump to section:</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.9rem;">
+                    <a href="#warmups" style="color: var(--green-bright);">🔥 Warmups</a>
+                    <a href="#challenges" style="color: var(--orange);">💪 Challenges</a>
                 </div>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 2: Logger Factory</h4>
-                <p>Create factory returning different loggers: "console" → stdout, "file" → file, "null" → discard.</p>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>type Logger interface {
-    Log(msg string)
-}
+            <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+                <h3 id="warmups" style="color: var(--green-bright); margin: 0;">🔥 Warmups</h3>
+                <button id="shuffle-warmups-btn" onclick="shuffleWarmups()" style="background: var(--bg-card); border: 2px solid var(--green-bright); color: var(--green-bright); padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; transition: all 0.3s;">🎲 Shuffle</button>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Practice individual concepts you just learned.</p>
 
-func NewLogger(logType string) Logger {
-    switch logType {
-    case "console":
-        return &ConsoleLogger{}
-    case "file":
-        return &FileLogger{file: "app.log"}
-    case "null":
-        return &NullLogger{}
-    default:
-        return &ConsoleLogger{}
-    }
-}</pre>
-                    </div>
-                </details>
+            <div id="warmups-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 3: Sort Strategy</h4>
-                <p>Define <code>Sorter</code> interface. Implement <code>BubbleSort</code>, <code>QuickSort</code>. Create <code>DataProcessor</code> that accepts any Sorter.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Interface: <code>Sort([]int) []int</code>. DataProcessor has a Sorter field. Can swap strategies at runtime.
-                    </div>
-                </details>
+            <h3 id="challenges" style="color: var(--orange); margin-top: 2rem;">💪 Challenges</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Combine concepts and learn patterns. Each challenge has multiple variants at different difficulties.</p>
+
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                <button id="shuffle-challenges-btn" onclick="shuffleChallenges()" style="background: var(--bg-card); border: 1px solid var(--orange); color: var(--orange); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; transition: all 0.3s;">
+                    🎲 Shuffle Challenges
+                </button>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 4: SQL Builder</h4>
-                <p>Build fluent SQL query builder: <code>NewQuery("users").Select("name").Where("active = ?", true).Limit(10).String()</code></p>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>type Query struct {
-    table   string
-    cols    []string
-    wheres  []string
-    limit   int
-}
-
-func NewQuery(table string) *Query {
-    return &Query{table: table, cols: []string{"*"}}
-}
-
-func (q *Query) Select(cols ...string) *Query {
-    q.cols = cols
-    return q
-}
-
-func (q *Query) Where(cond string, args ...any) *Query {
-    q.wheres = append(q.wheres, fmt.Sprintf(cond, args...))
-    return q
-}
-
-func (q *Query) Limit(n int) *Query {
-    q.limit = n
-    return q
-}
-
-func (q *Query) String() string {
-    sql := fmt.Sprintf("SELECT %s FROM %s", 
-        strings.Join(q.cols, ", "), q.table)
-    if len(q.wheres) > 0 {
-        sql += " WHERE " + strings.Join(q.wheres, " AND ")
-    }
-    if q.limit > 0 {
-        sql += fmt.Sprintf(" LIMIT %d", q.limit)
-    }
-    return sql
-}</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>NewQuery("users").Select("name", "email").Where("active = %t", true).Limit(10).String()
-// "SELECT name, email FROM users WHERE active = true LIMIT 10"</pre>
-                </div>
+            <div id="challenges-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
         </div>
 
@@ -370,7 +256,11 @@ func (q *Query) String() string {
             <a href="module11.html" class="nav-btn primary">Module 11: HTTP & APIs →</a>
         </div>
     </div>
+    <script src="module-loader.js"></script>
+    <script src="course.js"></script>
     <script src="theme.js"></script>
     <script src="sidebar.js"></script>
+    <script src="srs.js"></script>
+    <script src="progress.js"></script>
 </body>
 </html>

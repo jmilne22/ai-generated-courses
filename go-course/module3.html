@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-module="3">
     <div class="container">
         <nav>
             <a href="module2.html">← Module 2</a>
@@ -200,174 +200,37 @@ data, _ := json.<span class="func">Marshal</span>(user)
         <div class="lesson">
             <h2>Exercises</h2>
             
-            <div class="exercise">
-                <h4>Exercise 1: Rectangle</h4>
-                <p>Create a <code>Rectangle</code> struct with <code>Width</code> and <code>Height</code>. Add methods <code>Area() float64</code> and <code>Perimeter() float64</code>.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Area = width × height. Perimeter = 2 × (width + height). Value receivers are fine here.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>type Rectangle struct {
-    Width  float64
-    Height float64
-}
+            <p>Progress through each section in order, or jump to where you need practice.</p>
 
-func (r Rectangle) Area() float64 {
-    return r.Width * r.Height
-}
-
-func (r Rectangle) Perimeter() float64 {
-    return 2 * (r.Width + r.Height)
-}</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>r := Rectangle{Width: 10, Height: 5}
-fmt.Println(r.Area())      // 50
-fmt.Println(r.Perimeter()) // 30</pre>
+            <div style="background: var(--bg-card); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0 2rem 0;">
+                <div style="font-weight: 600; margin-bottom: 0.75rem; color: var(--text);">Jump to section:</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.9rem;">
+                    <a href="#warmups" style="color: var(--green-bright);">🔥 Warmups</a>
+                    <a href="#challenges" style="color: var(--orange);">💪 Challenges</a>
                 </div>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 2: Bank Account</h4>
-                <p>Create a <code>BankAccount</code> with unexported <code>balance</code>. Add <code>Deposit</code>, <code>Withdraw</code> (returns error if insufficient), and <code>Balance</code>.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Lowercase <code>balance</code> makes it private. Use pointer receivers for Deposit/Withdraw. Return <code>fmt.Errorf(...)</code> for insufficient funds.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>type BankAccount struct {
-    balance float64
-}
+            <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+                <h3 id="warmups" style="color: var(--green-bright); margin: 0;">🔥 Warmups</h3>
+                <button id="shuffle-warmups-btn" onclick="shuffleWarmups()" style="background: var(--bg-card); border: 2px solid var(--green-bright); color: var(--green-bright); padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; transition: all 0.3s;">🎲 Shuffle</button>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Practice individual concepts you just learned.</p>
 
-func (a *BankAccount) Deposit(amount float64) {
-    a.balance += amount
-}
-
-func (a *BankAccount) Withdraw(amount float64) error {
-    if amount > a.balance {
-        return fmt.Errorf("insufficient funds: have %.2f, want %.2f", a.balance, amount)
-    }
-    a.balance -= amount
-    return nil
-}
-
-func (a *BankAccount) Balance() float64 {
-    return a.balance
-}</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>acc := BankAccount{}
-acc.Deposit(100)
-acc.Withdraw(30)
-fmt.Println(acc.Balance()) // 70
-err := acc.Withdraw(100)   // error: insufficient funds</pre>
-                </div>
+            <div id="warmups-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 3: Embedding</h4>
-                <p>Create <code>Animal</code> with <code>Name</code> and <code>Speak()</code>. Create <code>Dog</code> and <code>Cat</code> that embed Animal and override <code>Speak()</code>.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Embed by putting <code>Animal</code> as a field without a name. Override by defining <code>Speak()</code> on the embedding struct.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>type Animal struct {
-    Name string
-}
+            <h3 id="challenges" style="color: var(--orange); margin-top: 2rem;">💪 Challenges</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Combine concepts and learn patterns. Each challenge has multiple variants at different difficulties.</p>
 
-func (a Animal) Speak() string {
-    return "..."
-}
-
-type Dog struct {
-    Animal
-}
-
-func (d Dog) Speak() string {
-    return "Woof!"
-}
-
-type Cat struct {
-    Animal
-}
-
-func (c Cat) Speak() string {
-    return "Meow!"
-}</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>dog := Dog{Animal{Name: "Buddy"}}
-cat := Cat{Animal{Name: "Whiskers"}}
-fmt.Println(dog.Name, dog.Speak()) // Buddy Woof!
-fmt.Println(cat.Name, cat.Speak()) // Whiskers Meow!</pre>
-                </div>
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                <button id="shuffle-challenges-btn" onclick="shuffleChallenges()" style="background: var(--bg-card); border: 1px solid var(--orange); color: var(--orange); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; transition: all 0.3s;">
+                    🎲 Shuffle Challenges
+                </button>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 4: JSON Config</h4>
-                <p>Define a struct that matches this JSON and parse it:</p>
-                <pre style="background: var(--bg-code); padding: 0.75rem; border-radius: 4px; margin: 0.5rem 0;">{"server":{"host":"localhost","port":8080},"debug":true,"allowed_origins":["http://localhost"]}</pre>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Nested struct for "server". Use json tags. <code>allowed_origins</code> is <code>[]string</code>.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>type Config struct {
-    Server struct {
-        Host string `json:"host"`
-        Port int    `json:"port"`
-    } `json:"server"`
-    Debug          bool     `json:"debug"`
-    AllowedOrigins []string `json:"allowed_origins"`
-}
-
-// Parse:
-var cfg Config
-json.Unmarshal([]byte(jsonStr), &cfg)</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>fmt.Println(cfg.Server.Host) // localhost
-fmt.Println(cfg.Server.Port) // 8080
-fmt.Println(cfg.Debug)       // true</pre>
-                </div>
+            <div id="challenges-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
         </div>
 
@@ -388,7 +251,11 @@ fmt.Println(cfg.Debug)       // true</pre>
             <a href="module4.html" class="nav-btn primary">Module 4: Interfaces →</a>
         </div>
     </div>
+    <script src="module-loader.js"></script>
+    <script src="course.js"></script>
     <script src="theme.js"></script>
     <script src="sidebar.js"></script>
+    <script src="srs.js"></script>
+    <script src="progress.js"></script>
 </body>
 </html>

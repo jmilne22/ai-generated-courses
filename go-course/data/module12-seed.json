@@ -1,0 +1,72 @@
+{
+  "moduleNum": 12,
+  "moduleName": "Concurrency & Goroutines",
+  "exerciseCount": 5,
+  "exercises": [
+    {
+      "originalTitle": "Exercise 1: Parallel Sum",
+      "type": "exercise",
+      "num": "1",
+      "title": "Parallel Sum",
+      "description": "Split a large slice into chunks, sum each in a goroutine, combine results. Compare timing vs sequential.",
+      "descriptionHtml": "Split a large slice into chunks, sum each in a goroutine, combine results. Compare timing vs sequential.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Create a channel for partial sums. Launch N goroutines for N chunks. Receive N results and add them."
+        }
+      ],
+      "solution": "func parallelSum(nums []int, workers int) int {\n    ch := make(chan int, workers)\n    chunkSize := len(nums) / workers\n    \n    for i := 0; i < workers; i++ {\n        start := i * chunkSize\n        end := start + chunkSize\n        if i == workers-1 {\n            end = len(nums)\n        }\n        go func(chunk []int) {\n            sum := 0\n            for _, n := range chunk {\n                sum += n\n            }\n            ch <- sum\n        }(nums[start:end])\n    }\n    \n    total := 0\n    for i := 0; i < workers; i++ {\n        total += <-ch\n    }\n    return total\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 2: Timeout Pattern",
+      "type": "exercise",
+      "num": "2",
+      "title": "Timeout Pattern",
+      "description": "Write a function that calls a slow operation but returns error if it takes too long. Use <code>select</code> with <code>time.After</code>.",
+      "descriptionHtml": "Write a function that calls a slow operation but returns error if it takes too long. Use <code>select</code> with <code>time.After</code>.",
+      "hints": [],
+      "solution": "func doWithTimeout(timeout time.Duration) (string, error) {\n    ch := make(chan string, 1)\n    go func() {\n        result := slowOperation()\n        ch <- result\n    }()\n    \n    select {\n    case result := <-ch:\n        return result, nil\n    case <-time.After(timeout):\n        return \"\", fmt.Errorf(\"operation timed out\")\n    }\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 3: Fan-Out Fan-In",
+      "type": "exercise",
+      "num": "3",
+      "title": "Fan-Out Fan-In",
+      "description": "Create 3 goroutines generating numbers. Merge all outputs into a single channel. Print from merged channel.",
+      "descriptionHtml": "Create 3 goroutines generating numbers. Merge all outputs into a single channel. Print from merged channel.",
+      "hints": [],
+      "solution": "func merge(channels ...<-chan int) <-chan int {\n    out := make(chan int)\n    var wg sync.WaitGroup\n    \n    for _, ch := range channels {\n        wg.Add(1)\n        go func(c <-chan int) {\n            defer wg.Done()\n            for n := range c {\n                out <- n\n            }\n        }(ch)\n    }\n    \n    go func() {\n        wg.Wait()\n        close(out)\n    }()\n    \n    return out\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 4: Rate Limiter",
+      "type": "exercise",
+      "num": "4",
+      "title": "Rate Limiter",
+      "description": "Build a rate limiter using <code>time.Ticker</code>. Allow max N operations per second.",
+      "descriptionHtml": "Build a rate limiter using <code>time.Ticker</code>. Allow max N operations per second.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Create ticker with interval `time.Second/N`. Block on ticker before allowing each operation."
+        }
+      ],
+      "solution": "type RateLimiter struct {\n    ticker *time.Ticker\n}\n\nfunc NewRateLimiter(perSecond int) *RateLimiter {\n    return &RateLimiter{\n        ticker: time.NewTicker(time.Second / time.Duration(perSecond)),\n    }\n}\n\nfunc (r *RateLimiter) Wait() {\n    <-r.ticker.C\n}\n\nfunc (r *RateLimiter) Stop() {\n    r.ticker.Stop()\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 5: Graceful Shutdown",
+      "type": "exercise",
+      "num": "5",
+      "title": "Graceful Shutdown",
+      "description": "Start a worker goroutine. On Ctrl+C, signal it to stop gracefully, wait for it, then exit.",
+      "descriptionHtml": "Start a worker goroutine. On Ctrl+C, signal it to stop gracefully, wait for it, then exit.",
+      "hints": [],
+      "solution": "func main() {\n    stop := make(chan struct{})\n    done := make(chan struct{})\n    \n    go func() {\n        defer close(done)\n        for {\n            select {\n            case <-stop:\n                fmt.Println(\"Worker stopping...\")\n                return\n            default:\n                // do work\n                time.Sleep(100 * time.Millisecond)\n            }\n        }\n    }()\n    \n    sigCh := make(chan os.Signal, 1)\n    signal.Notify(sigCh, os.Interrupt)\n    <-sigCh\n    \n    fmt.Println(\"Shutting down...\")\n    close(stop)\n    <-done\n    fmt.Println(\"Done\")\n}",
+      "expected": ""
+    }
+  ]
+}

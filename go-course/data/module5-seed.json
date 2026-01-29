@@ -1,0 +1,87 @@
+{
+  "moduleNum": 5,
+  "moduleName": "Data Structures",
+  "exerciseCount": 5,
+  "exercises": [
+    {
+      "originalTitle": "Exercise 1: Remove Duplicates",
+      "type": "exercise",
+      "num": "1",
+      "title": "Remove Duplicates",
+      "description": "Write <code>func unique(items []string) []string</code> that removes duplicates, preserving order.",
+      "descriptionHtml": "Write <code>func unique(items []string) []string</code> that removes duplicates, preserving order.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Use a map to track seen items. Only append to result if not seen before."
+        }
+      ],
+      "solution": "func unique(items []string) []string {\n    seen := make(map[string]bool)\n    result := make([]string, 0)\n    for _, item := range items {\n        if !seen[item] {\n            seen[item] = true\n            result = append(result, item)\n        }\n    }\n    return result\n}",
+      "expected": "unique([]string{\"a\", \"b\", \"a\", \"c\", \"b\"})\n// [\"a\", \"b\", \"c\"]"
+    },
+    {
+      "originalTitle": "Exercise 2: Merge Maps",
+      "type": "exercise",
+      "num": "2",
+      "title": "Merge Maps",
+      "description": "Write <code>func merge[K comparable, V any](a, b map[K]V) map[K]V</code>. Values from b override a.",
+      "descriptionHtml": "Write <code>func merge[K comparable, V any](a, b map[K]V) map[K]V</code>. Values from b override a.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Create new map. Copy all from a, then all from b (which overwrites conflicts)."
+        }
+      ],
+      "solution": "func merge[K comparable, V any](a, b map[K]V) map[K]V {\n    result := make(map[K]V)\n    for k, v := range a {\n        result[k] = v\n    }\n    for k, v := range b {\n        result[k] = v\n    }\n    return result\n}",
+      "expected": "a := map[string]int{\"x\": 1, \"y\": 2}\nb := map[string]int{\"y\": 3, \"z\": 4}\nmerge(a, b) // {\"x\": 1, \"y\": 3, \"z\": 4}"
+    },
+    {
+      "originalTitle": "Exercise 3: Simple Cache",
+      "type": "exercise",
+      "num": "3",
+      "title": "Simple Cache",
+      "description": "Implement cache with <code>Get(key string) (string, bool)</code> and <code>Set(key, value string)</code>.",
+      "descriptionHtml": "Implement cache with <code>Get(key string) (string, bool)</code> and <code>Set(key, value string)</code>.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Wrap a `map[string]string`. Get returns value and ok. Set just assigns."
+        }
+      ],
+      "solution": "type Cache struct {\n    data map[string]string\n}\n\nfunc NewCache() *Cache {\n    return &Cache{data: make(map[string]string)}\n}\n\nfunc (c *Cache) Get(key string) (string, bool) {\n    val, ok := c.data[key]\n    return val, ok\n}\n\nfunc (c *Cache) Set(key, value string) {\n    c.data[key] = value\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 4: Generic Filter",
+      "type": "exercise",
+      "num": "4",
+      "title": "Generic Filter",
+      "description": "Write <code>func Filter[T any](items []T, pred func(T) bool) []T</code>.",
+      "descriptionHtml": "Write <code>func Filter[T any](items []T, pred func(T) bool) []T</code>.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Loop through items, call pred on each, append to result if true."
+        }
+      ],
+      "solution": "func Filter[T any](items []T, pred func(T) bool) []T {\n    result := make([]T, 0)\n    for _, item := range items {\n        if pred(item) {\n            result = append(result, item)\n        }\n    }\n    return result\n}",
+      "expected": "nums := []int{1, 2, 3, 4, 5}\nevens := Filter(nums, func(n int) bool { return n%2 == 0 })\n// [2, 4]"
+    },
+    {
+      "originalTitle": "Exercise 5: Balanced Brackets",
+      "type": "exercise",
+      "num": "5",
+      "title": "Balanced Brackets",
+      "description": "Using a Stack, check if brackets are balanced: <code>\"({[]})\"</code> → true, <code>\"([)]\"</code> → false.",
+      "descriptionHtml": "Using a Stack, check if brackets are balanced: <code>\"({[]})\"</code> → true, <code>\"([)]\"</code> → false.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Push opening brackets. On closing bracket, pop and check if it matches. Stack should be empty at end."
+        }
+      ],
+      "solution": "func isBalanced(s string) bool {\n    stack := make([]rune, 0)\n    pairs := map[rune]rune{')': '(', ']': '[', '}': '{'}\n    \n    for _, ch := range s {\n        switch ch {\n        case '(', '[', '{':\n            stack = append(stack, ch)\n        case ')', ']', '}':\n            if len(stack) == 0 || stack[len(stack)-1] != pairs[ch] {\n                return false\n            }\n            stack = stack[:len(stack)-1]\n        }\n    }\n    return len(stack) == 0\n}",
+      "expected": "isBalanced(\"({[]})\")  // true\nisBalanced(\"([)]\")    // false\nisBalanced(\"((())\")   // false"
+    }
+  ]
+}

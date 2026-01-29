@@ -1,0 +1,61 @@
+{
+  "moduleNum": 17,
+  "moduleName": "Integration Testing",
+  "exerciseCount": 4,
+  "exercises": [
+    {
+      "originalTitle": "Exercise 1: Test an API Client",
+      "type": "exercise",
+      "num": "1",
+      "title": "Test an API Client",
+      "description": "Create API client. Use <code>httptest.NewServer</code> to mock. Test: success, 404, 500, timeout.",
+      "descriptionHtml": "Create API client. Use <code>httptest.NewServer</code> to mock. Test: success, 404, 500, timeout.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Create mock server that returns different responses based on URL path or query params."
+        }
+      ],
+      "solution": "func TestAPIClient(t *testing.T) {\n    server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n        switch r.URL.Path {\n        case \"/ok\":\n            json.NewEncoder(w).Encode(map[string]string{\"status\": \"ok\"})\n        case \"/notfound\":\n            http.Error(w, \"not found\", 404)\n        case \"/error\":\n            http.Error(w, \"server error\", 500)\n        }\n    }))\n    defer server.Close()\n    \n    client := NewAPIClient(server.URL)\n    \n    t.Run(\"success\", func(t *testing.T) {\n        resp, err := client.Get(\"/ok\")\n        if err != nil || resp.Status != \"ok\" {\n            t.Error(\"expected success\")\n        }\n    })\n    \n    t.Run(\"404\", func(t *testing.T) {\n        _, err := client.Get(\"/notfound\")\n        if err == nil {\n            t.Error(\"expected error\")\n        }\n    })\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 2: File Processing Test",
+      "type": "exercise",
+      "num": "2",
+      "title": "File Processing Test",
+      "description": "Write CSV parser. Use <code>t.TempDir()</code> for test files. Test valid, empty, malformed, missing.",
+      "descriptionHtml": "Write CSV parser. Use <code>t.TempDir()</code> for test files. Test valid, empty, malformed, missing.",
+      "hints": [],
+      "solution": "func TestParseCSV(t *testing.T) {\n    t.Run(\"valid\", func(t *testing.T) {\n        dir := t.TempDir()\n        path := filepath.Join(dir, \"test.csv\")\n        os.WriteFile(path, []byte(\"a,b,c\\n1,2,3\\n\"), 0644)\n        \n        rows, err := ParseCSV(path)\n        if err != nil || len(rows) != 2 {\n            t.Errorf(\"expected 2 rows, got %d, err=%v\", len(rows), err)\n        }\n    })\n    \n    t.Run(\"missing\", func(t *testing.T) {\n        _, err := ParseCSV(\"/nonexistent.csv\")\n        if err == nil {\n            t.Error(\"expected error for missing file\")\n        }\n    })\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 3: Build Tagged Tests",
+      "type": "exercise",
+      "num": "3",
+      "title": "Build Tagged Tests",
+      "description": "Create package with unit + integration tests. Separate with <code>//go:build integration</code>.",
+      "descriptionHtml": "Create package with unit + integration tests. Separate with <code>//go:build integration</code>.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Integration test file starts with:\n                        `//go:build integration`\n                        Run with: `go test -tags=integration`"
+        }
+      ],
+      "solution": "",
+      "expected": "# Unit tests only (default)\n$ go test ./...\n\n# Include integration tests\n$ go test -tags=integration ./..."
+    },
+    {
+      "originalTitle": "Exercise 4: End-to-End HTTP Test",
+      "type": "exercise",
+      "num": "4",
+      "title": "End-to-End HTTP Test",
+      "description": "Build HTTP service with 3 endpoints. Write tests that start full server and make real requests.",
+      "descriptionHtml": "Build HTTP service with 3 endpoints. Write tests that start full server and make real requests.",
+      "hints": [],
+      "solution": "func TestServer(t *testing.T) {\n    mux := http.NewServeMux()\n    mux.HandleFunc(\"/health\", healthHandler)\n    mux.HandleFunc(\"/users\", usersHandler)\n    mux.HandleFunc(\"/echo\", echoHandler)\n    \n    server := httptest.NewServer(mux)\n    defer server.Close()\n    \n    tests := []struct {\n        path       string\n        wantStatus int\n    }{\n        {\"/health\", 200},\n        {\"/users\", 200},\n        {\"/notfound\", 404},\n    }\n    \n    for _, tt := range tests {\n        resp, _ := http.Get(server.URL + tt.path)\n        if resp.StatusCode != tt.wantStatus {\n            t.Errorf(\"%s: got %d, want %d\", tt.path, resp.StatusCode, tt.wantStatus)\n        }\n    }\n}",
+      "expected": ""
+    }
+  ]
+}

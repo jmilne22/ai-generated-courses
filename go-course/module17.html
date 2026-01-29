@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-module="17">
     <div class="container">
         <nav><a href="module16.html">← Module 16</a><a href="index.html">Course Home →</a></nav>
         <div class="module-tag">// MODULE 17</div>
@@ -479,140 +479,37 @@ $ go test -update</pre>
         <div class="lesson">
             <h2>Exercises</h2>
             
-            <div class="exercise">
-                <h4>Exercise 1: Test an API Client</h4>
-                <p>Create API client. Use <code>httptest.NewServer</code> to mock. Test: success, 404, 500, timeout.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Create mock server that returns different responses based on URL path or query params.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func TestAPIClient(t *testing.T) {
-    server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        switch r.URL.Path {
-        case "/ok":
-            json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
-        case "/notfound":
-            http.Error(w, "not found", 404)
-        case "/error":
-            http.Error(w, "server error", 500)
-        }
-    }))
-    defer server.Close()
-    
-    client := NewAPIClient(server.URL)
-    
-    t.Run("success", func(t *testing.T) {
-        resp, err := client.Get("/ok")
-        if err != nil || resp.Status != "ok" {
-            t.Error("expected success")
-        }
-    })
-    
-    t.Run("404", func(t *testing.T) {
-        _, err := client.Get("/notfound")
-        if err == nil {
-            t.Error("expected error")
-        }
-    })
-}</pre>
-                    </div>
-                </details>
-            </div>
+            <p>Progress through each section in order, or jump to where you need practice.</p>
 
-            <div class="exercise">
-                <h4>Exercise 2: File Processing Test</h4>
-                <p>Write CSV parser. Use <code>t.TempDir()</code> for test files. Test valid, empty, malformed, missing.</p>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func TestParseCSV(t *testing.T) {
-    t.Run("valid", func(t *testing.T) {
-        dir := t.TempDir()
-        path := filepath.Join(dir, "test.csv")
-        os.WriteFile(path, []byte("a,b,c\n1,2,3\n"), 0644)
-        
-        rows, err := ParseCSV(path)
-        if err != nil || len(rows) != 2 {
-            t.Errorf("expected 2 rows, got %d, err=%v", len(rows), err)
-        }
-    })
-    
-    t.Run("missing", func(t *testing.T) {
-        _, err := ParseCSV("/nonexistent.csv")
-        if err == nil {
-            t.Error("expected error for missing file")
-        }
-    })
-}</pre>
-                    </div>
-                </details>
-            </div>
-
-            <div class="exercise">
-                <h4>Exercise 3: Build Tagged Tests</h4>
-                <p>Create package with unit + integration tests. Separate with <code>//go:build integration</code>.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Integration test file starts with:<br>
-                        <code>//go:build integration</code><br><br>
-                        Run with: <code>go test -tags=integration</code>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Behavior</div>
-                    <pre># Unit tests only (default)
-$ go test ./...
-
-# Include integration tests
-$ go test -tags=integration ./...</pre>
+            <div style="background: var(--bg-card); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0 2rem 0;">
+                <div style="font-weight: 600; margin-bottom: 0.75rem; color: var(--text);">Jump to section:</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.9rem;">
+                    <a href="#warmups" style="color: var(--green-bright);">🔥 Warmups</a>
+                    <a href="#challenges" style="color: var(--orange);">💪 Challenges</a>
                 </div>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 4: End-to-End HTTP Test</h4>
-                <p>Build HTTP service with 3 endpoints. Write tests that start full server and make real requests.</p>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func TestServer(t *testing.T) {
-    mux := http.NewServeMux()
-    mux.HandleFunc("/health", healthHandler)
-    mux.HandleFunc("/users", usersHandler)
-    mux.HandleFunc("/echo", echoHandler)
-    
-    server := httptest.NewServer(mux)
-    defer server.Close()
-    
-    tests := []struct {
-        path       string
-        wantStatus int
-    }{
-        {"/health", 200},
-        {"/users", 200},
-        {"/notfound", 404},
-    }
-    
-    for _, tt := range tests {
-        resp, _ := http.Get(server.URL + tt.path)
-        if resp.StatusCode != tt.wantStatus {
-            t.Errorf("%s: got %d, want %d", tt.path, resp.StatusCode, tt.wantStatus)
-        }
-    }
-}</pre>
-                    </div>
-                </details>
+            <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+                <h3 id="warmups" style="color: var(--green-bright); margin: 0;">🔥 Warmups</h3>
+                <button id="shuffle-warmups-btn" onclick="shuffleWarmups()" style="background: var(--bg-card); border: 2px solid var(--green-bright); color: var(--green-bright); padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; transition: all 0.3s;">🎲 Shuffle</button>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Practice individual concepts you just learned.</p>
+
+            <div id="warmups-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
+            </div>
+
+            <h3 id="challenges" style="color: var(--orange); margin-top: 2rem;">💪 Challenges</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Combine concepts and learn patterns. Each challenge has multiple variants at different difficulties.</p>
+
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                <button id="shuffle-challenges-btn" onclick="shuffleChallenges()" style="background: var(--bg-card); border: 1px solid var(--orange); color: var(--orange); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; transition: all 0.3s;">
+                    🎲 Shuffle Challenges
+                </button>
+            </div>
+
+            <div id="challenges-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
         </div>
 
@@ -635,7 +532,11 @@ $ go test -tags=integration ./...</pre>
             <a href="index.html" class="nav-btn primary">Course Complete! 🎉</a>
         </div>
     </div>
+    <script src="module-loader.js"></script>
+    <script src="course.js"></script>
     <script src="theme.js"></script>
     <script src="sidebar.js"></script>
+    <script src="srs.js"></script>
+    <script src="progress.js"></script>
 </body>
 </html>

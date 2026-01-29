@@ -1,0 +1,66 @@
+{
+  "moduleNum": 9,
+  "moduleName": "Error Handling & Testing",
+  "exerciseCount": 4,
+  "exercises": [
+    {
+      "originalTitle": "Exercise 1: Custom Error",
+      "type": "exercise",
+      "num": "1",
+      "title": "Custom Error",
+      "description": "Create <code>ValidationError</code> with <code>Field</code> and <code>Message</code>. Implement <code>error</code> interface. Use <code>errors.As</code> to extract it.",
+      "descriptionHtml": "Create <code>ValidationError</code> with <code>Field</code> and <code>Message</code>. Implement <code>error</code> interface. Use <code>errors.As</code> to extract it.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Implement `Error() string`. Use `var ve *ValidationError; errors.As(err, &ve)`."
+        }
+      ],
+      "solution": "type ValidationError struct {\n    Field   string\n    Message string\n}\n\nfunc (e *ValidationError) Error() string {\n    return fmt.Sprintf(\"%s: %s\", e.Field, e.Message)\n}\n\n// Usage:\nerr := &ValidationError{Field: \"email\", Message: \"invalid format\"}\nvar ve *ValidationError\nif errors.As(err, &ve) {\n    fmt.Println(\"Field:\", ve.Field)\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 2: Test Your Module 1 Code",
+      "type": "exercise",
+      "num": "2",
+      "title": "Test Your Module 1 Code",
+      "description": "Write table-driven tests for FizzBuzz, reverse string, and word counter from Module 1.",
+      "descriptionHtml": "Write table-driven tests for FizzBuzz, reverse string, and word counter from Module 1.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Define test struct with input and expected output. Use `t.Run()` for subtests."
+        }
+      ],
+      "solution": "func TestReverse(t *testing.T) {\n    tests := []struct {\n        input, want string\n    }{\n        {\"hello\", \"olleh\"},\n        {\"\", \"\"},\n        {\"a\", \"a\"},\n        {\"世界\", \"界世\"},\n    }\n    for _, tt := range tests {\n        t.Run(tt.input, func(t *testing.T) {\n            if got := reverse(tt.input); got != tt.want {\n                t.Errorf(\"reverse(%q) = %q, want %q\", tt.input, got, tt.want)\n            }\n        })\n    }\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 3: Test Coverage",
+      "type": "exercise",
+      "num": "3",
+      "title": "Test Coverage",
+      "description": "Run <code>go test -cover</code> on your code. Get at least 80% coverage on one function.",
+      "descriptionHtml": "Run <code>go test -cover</code> on your code. Get at least 80% coverage on one function.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Use `go tool cover -html=coverage.out` to see which lines aren't covered. Add edge case tests."
+        }
+      ],
+      "solution": "",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 4: Mock an Interface",
+      "type": "exercise",
+      "num": "4",
+      "title": "Mock an Interface",
+      "description": "Define <code>Fetcher</code> interface with <code>Fetch(url string) ([]byte, error)</code>. Write a function using it. Test with a mock.",
+      "descriptionHtml": "Define <code>Fetcher</code> interface with <code>Fetch(url string) ([]byte, error)</code>. Write a function using it. Test with a mock.",
+      "hints": [],
+      "solution": "type Fetcher interface {\n    Fetch(url string) ([]byte, error)\n}\n\ntype mockFetcher struct {\n    data []byte\n    err  error\n}\n\nfunc (m *mockFetcher) Fetch(url string) ([]byte, error) {\n    return m.data, m.err\n}\n\nfunc TestWithMock(t *testing.T) {\n    mock := &mockFetcher{data: []byte(\"test data\")}\n    result := ProcessURL(mock, \"http://example.com\")\n    // assert result...\n}",
+      "expected": ""
+    }
+  ]
+}

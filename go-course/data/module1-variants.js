@@ -9496,3 +9496,5 @@ window.moduleData = {
     }
   }
 };
+window.moduleDataRegistry = window.moduleDataRegistry || {};
+window.moduleDataRegistry[1] = window.moduleData;

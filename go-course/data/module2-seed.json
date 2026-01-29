@@ -1,0 +1,125 @@
+{
+  "moduleNum": 2,
+  "moduleName": "Pointers & Memory",
+  "exerciseCount": 8,
+  "exercises": [
+    {
+      "originalTitle": "Warmup 1: Get an Address",
+      "type": "warmup",
+      "num": "1",
+      "title": "Get an Address",
+      "description": "Create an integer variable, get its address using <code>&</code>, and print both the value and the address.",
+      "descriptionHtml": "Create an integer variable, get its address using <code>&</code>, and print both the value and the address.",
+      "hints": [],
+      "solution": "x := 42\nptr := &x\nfmt.Println(\"Value:\", x)\nfmt.Println(\"Address:\", ptr)",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Warmup 2: Modify Through Pointer",
+      "type": "warmup",
+      "num": "2",
+      "title": "Modify Through Pointer",
+      "description": "Create a variable, get a pointer to it, then change the value using <code>*ptr = newValue</code>. Print before and after.",
+      "descriptionHtml": "Create a variable, get a pointer to it, then change the value using <code>*ptr = newValue</code>. Print before and after.",
+      "hints": [],
+      "solution": "x := 10\nfmt.Println(\"Before:\", x)\nptr := &x\n*ptr = 50\nfmt.Println(\"After:\", x)  // 50",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Warmup 3: Function with Pointer Parameter",
+      "type": "warmup",
+      "num": "3",
+      "title": "Function with Pointer Parameter",
+      "description": "Write <code>func double(n *int)</code> that doubles the value at the pointer.",
+      "descriptionHtml": "Write <code>func double(n *int)</code> that doubles the value at the pointer.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Dereference the pointer to get and set the value: `*n = *n * 2`"
+        }
+      ],
+      "solution": "func double(n *int) {\n    *n = *n * 2\n}\n\n// Test:\nx := 5\ndouble(&x)\nfmt.Println(x)  // 10",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Warmup 4: Check for nil",
+      "type": "warmup",
+      "num": "4",
+      "title": "Check for nil",
+      "description": "Write a function <code>func printValue(p *int)</code> that prints the value if p is not nil, or prints \"pointer is nil\" if it is.",
+      "descriptionHtml": "Write a function <code>func printValue(p *int)</code> that prints the value if p is not nil, or prints \"pointer is nil\" if it is.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Check `if p != nil` before dereferencing."
+        }
+      ],
+      "solution": "func printValue(p *int) {\n    if p != nil {\n        fmt.Println(\"Value:\", *p)\n    } else {\n        fmt.Println(\"pointer is nil\")\n    }\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Challenge 1: Swap",
+      "type": "challenge",
+      "num": "1",
+      "title": "Swap",
+      "description": "Write a function <code>func swap(a, b *int)</code> that swaps two integers using pointers.",
+      "descriptionHtml": "Write a function <code>func swap(a, b *int)</code> that swaps two integers using pointers.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Dereference both pointers, swap the values. Use parallel assignment: `*a, *b = *b, *a`"
+        }
+      ],
+      "solution": "func swap(a, b *int) {\n    *a, *b = *b, *a\n}\n\n// Usage:\nx, y := 10, 20\nswap(&x, &y)\nfmt.Println(x, y) // 20 10",
+      "expected": "x, y := 5, 10\nswap(&x, &y)\n// x = 10, y = 5"
+    },
+    {
+      "originalTitle": "Challenge 2: Counter Struct",
+      "type": "challenge",
+      "num": "2",
+      "title": "Counter Struct",
+      "description": "Create a <code>Counter</code> struct with an <code>int</code> value. Add methods <code>Increment()</code>, <code>Decrement()</code>, and <code>Value() int</code>.",
+      "descriptionHtml": "Create a <code>Counter</code> struct with an <code>int</code> value. Add methods <code>Increment()</code>, <code>Decrement()</code>, and <code>Value() int</code>.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "`Increment` and `Decrement` need pointer receivers to modify the struct. `Value` can use value receiver."
+        }
+      ],
+      "solution": "type Counter struct {\n    value int\n}\n\nfunc (c *Counter) Increment() {\n    c.value++\n}\n\nfunc (c *Counter) Decrement() {\n    c.value--\n}\n\nfunc (c *Counter) Value() int {\n    return c.value\n}",
+      "expected": "c := Counter{}\nc.Increment()\nc.Increment()\nc.Decrement()\nfmt.Println(c.Value()) // 1"
+    },
+    {
+      "originalTitle": "Challenge 3: Safe Dereference",
+      "type": "challenge",
+      "num": "3",
+      "title": "Safe Dereference",
+      "description": "Write <code>func safeDeref(p *string) string</code> that returns the string value if p is not nil, or <code>\"&lt;nil&gt;\"</code> if it is.",
+      "descriptionHtml": "Write <code>func safeDeref(p *string) string</code> that returns the string value if p is not nil, or <code>\"&lt;nil&gt;\"</code> if it is.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Check `p == nil` before dereferencing. Return the fallback string if nil."
+        }
+      ],
+      "solution": "func safeDeref(p *string) string {\n    if p == nil {\n        return \"\"\n    }\n    return *p\n}",
+      "expected": "s := \"hello\"\nfmt.Println(safeDeref(&s))  // \"hello\"\nfmt.Println(safeDeref(nil)) // \"<nil>\""
+    },
+    {
+      "originalTitle": "Advanced: Linked List Node",
+      "type": "advanced",
+      "num": "1",
+      "title": "Linked List Node",
+      "description": "Define a <code>Node</code> struct with <code>Value int</code> and <code>Next *Node</code>. Write functions to build a list from a slice and traverse it.",
+      "descriptionHtml": "Define a <code>Node</code> struct with <code>Value int</code> and <code>Next *Node</code>. Write functions to build a list from a slice and traverse it.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Build in reverse: start from the last element, create node, link to previous. Traverse with `for node != nil`."
+        }
+      ],
+      "solution": "type Node struct {\n    Value int\n    Next  *Node\n}\n\nfunc buildList(values []int) *Node {\n    var head *Node\n    for i := len(values) - 1; i >= 0; i-- {\n        head = &Node{Value: values[i], Next: head}\n    }\n    return head\n}\n\nfunc traverse(head *Node) {\n    for node := head; node != nil; node = node.Next {\n        fmt.Println(node.Value)\n    }\n}",
+      "expected": "list := buildList([]int{1, 2, 3})\ntraverse(list)\n// 1\n// 2\n// 3"
+    }
+  ]
+}

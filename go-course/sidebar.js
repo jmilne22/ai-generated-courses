@@ -91,6 +91,16 @@
             <div class="sidebar-content">
         `;
 
+        // Daily practice link
+        const isPractice = currentPage === 'daily-practice.html';
+        html += `
+            <a href="daily-practice.html" class="sidebar-link${isPractice ? ' active' : ''}" style="border-left-color: ${isPractice ? 'var(--orange)' : 'transparent'}; color: ${isPractice ? 'var(--orange)' : 'var(--text-dim)'};">
+                <span class="sidebar-module-num" style="color: var(--orange);">DP</span>
+                Daily Practice
+            </a>
+            <hr style="border: none; border-top: 1px solid var(--border); margin: 0.5rem 0;">
+        `;
+
         // All pages - with sections nested under active page
         pages.forEach(page => {
             const isActive = currentPage === page.file;

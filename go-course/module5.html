@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-module="5">
     <div class="container">
         <nav>
             <a href="module4.html">← Module 4</a>
@@ -248,185 +248,37 @@ doubled := <span class="func">Map</span>(nums, <span class="keyword">func</span>
 
         <div class="lesson">
             <h2>Exercises</h2>
-            
-            <div class="exercise">
-                <h4>Exercise 1: Remove Duplicates</h4>
-                <p>Write <code>func unique(items []string) []string</code> that removes duplicates, preserving order.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Use a map to track seen items. Only append to result if not seen before.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func unique(items []string) []string {
-    seen := make(map[string]bool)
-    result := make([]string, 0)
-    for _, item := range items {
-        if !seen[item] {
-            seen[item] = true
-            result = append(result, item)
-        }
-    }
-    return result
-}</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>unique([]string{"a", "b", "a", "c", "b"})
-// ["a", "b", "c"]</pre>
+            <p>Progress through each section in order, or jump to where you need practice.</p>
+
+            <div style="background: var(--bg-card); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0 2rem 0;">
+                <div style="font-weight: 600; margin-bottom: 0.75rem; color: var(--text);">Jump to section:</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.9rem;">
+                    <a href="#warmups" style="color: var(--green-bright);">🔥 Warmups</a>
+                    <a href="#challenges" style="color: var(--orange);">💪 Challenges</a>
                 </div>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 2: Merge Maps</h4>
-                <p>Write <code>func merge[K comparable, V any](a, b map[K]V) map[K]V</code>. Values from b override a.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Create new map. Copy all from a, then all from b (which overwrites conflicts).
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func merge[K comparable, V any](a, b map[K]V) map[K]V {
-    result := make(map[K]V)
-    for k, v := range a {
-        result[k] = v
-    }
-    for k, v := range b {
-        result[k] = v
-    }
-    return result
-}</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>a := map[string]int{"x": 1, "y": 2}
-b := map[string]int{"y": 3, "z": 4}
-merge(a, b) // {"x": 1, "y": 3, "z": 4}</pre>
-                </div>
+            <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+                <h3 id="warmups" style="color: var(--green-bright); margin: 0;">🔥 Warmups</h3>
+                <button id="shuffle-warmups-btn" onclick="shuffleWarmups()" style="background: var(--bg-card); border: 2px solid var(--green-bright); color: var(--green-bright); padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; transition: all 0.3s;">🎲 Shuffle</button>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Practice individual concepts you just learned.</p>
+
+            <div id="warmups-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 3: Simple Cache</h4>
-                <p>Implement cache with <code>Get(key string) (string, bool)</code> and <code>Set(key, value string)</code>.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Wrap a <code>map[string]string</code>. Get returns value and ok. Set just assigns.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>type Cache struct {
-    data map[string]string
-}
+            <h3 id="challenges" style="color: var(--orange); margin-top: 2rem;">💪 Challenges</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Combine concepts and learn patterns. Each challenge has multiple variants at different difficulties.</p>
 
-func NewCache() *Cache {
-    return &Cache{data: make(map[string]string)}
-}
-
-func (c *Cache) Get(key string) (string, bool) {
-    val, ok := c.data[key]
-    return val, ok
-}
-
-func (c *Cache) Set(key, value string) {
-    c.data[key] = value
-}</pre>
-                    </div>
-                </details>
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                <button id="shuffle-challenges-btn" onclick="shuffleChallenges()" style="background: var(--bg-card); border: 1px solid var(--orange); color: var(--orange); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; transition: all 0.3s;">
+                    🎲 Shuffle Challenges
+                </button>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 4: Generic Filter</h4>
-                <p>Write <code>func Filter[T any](items []T, pred func(T) bool) []T</code>.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Loop through items, call pred on each, append to result if true.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func Filter[T any](items []T, pred func(T) bool) []T {
-    result := make([]T, 0)
-    for _, item := range items {
-        if pred(item) {
-            result = append(result, item)
-        }
-    }
-    return result
-}</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>nums := []int{1, 2, 3, 4, 5}
-evens := Filter(nums, func(n int) bool { return n%2 == 0 })
-// [2, 4]</pre>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h4>Exercise 5: Balanced Brackets</h4>
-                <p>Using a Stack, check if brackets are balanced: <code>"({[]})"</code> → true, <code>"([)]"</code> → false.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Push opening brackets. On closing bracket, pop and check if it matches. Stack should be empty at end.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func isBalanced(s string) bool {
-    stack := make([]rune, 0)
-    pairs := map[rune]rune{')': '(', ']': '[', '}': '{'}
-    
-    for _, ch := range s {
-        switch ch {
-        case '(', '[', '{':
-            stack = append(stack, ch)
-        case ')', ']', '}':
-            if len(stack) == 0 || stack[len(stack)-1] != pairs[ch] {
-                return false
-            }
-            stack = stack[:len(stack)-1]
-        }
-    }
-    return len(stack) == 0
-}</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>isBalanced("({[]})")  // true
-isBalanced("([)]")    // false
-isBalanced("((())")   // false</pre>
-                </div>
+            <div id="challenges-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
         </div>
 
@@ -446,7 +298,11 @@ isBalanced("((())")   // false</pre>
             <a href="module6.html" class="nav-btn primary">Module 6: CLI Foundations →</a>
         </div>
     </div>
+    <script src="module-loader.js"></script>
+    <script src="course.js"></script>
     <script src="theme.js"></script>
     <script src="sidebar.js"></script>
+    <script src="srs.js"></script>
+    <script src="progress.js"></script>
 </body>
 </html>

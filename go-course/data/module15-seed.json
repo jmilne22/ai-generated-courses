@@ -1,0 +1,66 @@
+{
+  "moduleNum": 15,
+  "moduleName": "Sets & Diffing",
+  "exerciseCount": 4,
+  "exercises": [
+    {
+      "originalTitle": "Exercise 1: Directory Diff",
+      "type": "exercise",
+      "num": "1",
+      "title": "Directory Diff",
+      "description": "Compare filenames in two directories. Print files only in A, only in B, and in both.",
+      "descriptionHtml": "Compare filenames in two directories. Print files only in A, only in B, and in both.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Use `os.ReadDir()` to list files. Build sets from filenames. Apply set operations."
+        }
+      ],
+      "solution": "func listFiles(dir string) map[string]struct{} {\n    set := make(map[string]struct{})\n    entries, _ := os.ReadDir(dir)\n    for _, e := range entries {\n        set[e.Name()] = struct{}{}\n    }\n    return set\n}\n\nfunc main() {\n    a := listFiles(os.Args[1])\n    b := listFiles(os.Args[2])\n    \n    fmt.Println(\"Only in A:\")\n    for f := range a {\n        if _, ok := b[f]; !ok {\n            fmt.Println(\" \", f)\n        }\n    }\n    // Similar for only in B and in both...\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 2: Find Common",
+      "type": "exercise",
+      "num": "2",
+      "title": "Find Common",
+      "description": "Given two text files (one word per line), find words in both.",
+      "descriptionHtml": "Given two text files (one word per line), find words in both.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Read files with `bufio.Scanner`. Build set from first file. Check second file against it."
+        }
+      ],
+      "solution": "func readLines(path string) map[string]struct{} {\n    set := make(map[string]struct{})\n    file, _ := os.Open(path)\n    defer file.Close()\n    scanner := bufio.NewScanner(file)\n    for scanner.Scan() {\n        set[scanner.Text()] = struct{}{}\n    }\n    return set\n}\n\nfunc main() {\n    a := readLines(os.Args[1])\n    b := readLines(os.Args[2])\n    \n    for word := range a {\n        if _, ok := b[word]; ok {\n            fmt.Println(word)\n        }\n    }\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 3: Set Calculator",
+      "type": "exercise",
+      "num": "3",
+      "title": "Set Calculator",
+      "description": "Build CLI: <code>setcalc union|intersect|diff file1.txt file2.txt</code>",
+      "descriptionHtml": "Build CLI: <code>setcalc union|intersect|diff file1.txt file2.txt</code>",
+      "hints": [],
+      "solution": "func main() {\n    op := os.Args[1]\n    a := readLines(os.Args[2])\n    b := readLines(os.Args[3])\n    \n    switch op {\n    case \"union\":\n        for w := range a { fmt.Println(w) }\n        for w := range b {\n            if _, ok := a[w]; !ok { fmt.Println(w) }\n        }\n    case \"intersect\":\n        for w := range a {\n            if _, ok := b[w]; ok { fmt.Println(w) }\n        }\n    case \"diff\":\n        for w := range a {\n            if _, ok := b[w]; !ok { fmt.Println(w) }\n        }\n    }\n}",
+      "expected": "$ ./setcalc intersect file1.txt file2.txt\napple\nbanana"
+    },
+    {
+      "originalTitle": "Exercise 4: Change Detector",
+      "type": "exercise",
+      "num": "4",
+      "title": "Change Detector",
+      "description": "Take before/after snapshots of a directory. Report what was added, removed, unchanged.",
+      "descriptionHtml": "Take before/after snapshots of a directory. Report what was added, removed, unchanged.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Save \"before\" listing to a temp file or in memory. After changes, diff against new listing."
+        }
+      ],
+      "solution": "",
+      "expected": ""
+    }
+  ]
+}

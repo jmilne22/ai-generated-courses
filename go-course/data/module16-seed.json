@@ -1,0 +1,66 @@
+{
+  "moduleNum": 16,
+  "moduleName": "Unit Testing",
+  "exerciseCount": 4,
+  "exercises": [
+    {
+      "originalTitle": "Exercise 1: Test a Parser",
+      "type": "exercise",
+      "num": "1",
+      "title": "Test a Parser",
+      "description": "Write a function that parses \"KEY=value\" strings. Write table-driven tests for all edge cases.",
+      "descriptionHtml": "Write a function that parses \"KEY=value\" strings. Write table-driven tests for all edge cases.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Test cases: valid input, missing =, empty key, empty value, value containing =."
+        }
+      ],
+      "solution": "func parseKV(s string) (key, value string, err error) {\n    idx := strings.Index(s, \"=\")\n    if idx == -1 {\n        return \"\", \"\", fmt.Errorf(\"missing =\")\n    }\n    return s[:idx], s[idx+1:], nil\n}\n\nfunc TestParseKV(t *testing.T) {\n    tests := []struct {\n        input   string\n        key     string\n        value   string\n        wantErr bool\n    }{\n        {\"KEY=value\", \"KEY\", \"value\", false},\n        {\"noequals\", \"\", \"\", true},\n        {\"=value\", \"\", \"value\", false},\n        {\"KEY=\", \"KEY\", \"\", false},\n        {\"K=a=b\", \"K\", \"a=b\", false},\n    }\n    for _, tt := range tests {\n        t.Run(tt.input, func(t *testing.T) {\n            k, v, err := parseKV(tt.input)\n            if (err != nil) != tt.wantErr {\n                t.Errorf(\"wantErr=%v, got err=%v\", tt.wantErr, err)\n            }\n            if k != tt.key || v != tt.value {\n                t.Errorf(\"got (%q,%q), want (%q,%q)\", k, v, tt.key, tt.value)\n            }\n        })\n    }\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 2: Test with Mocks",
+      "type": "exercise",
+      "num": "2",
+      "title": "Test with Mocks",
+      "description": "Create <code>WeatherService</code> depending on <code>HTTPClient</code> interface. Mock it for testing.",
+      "descriptionHtml": "Create <code>WeatherService</code> depending on <code>HTTPClient</code> interface. Mock it for testing.",
+      "hints": [],
+      "solution": "type HTTPClient interface {\n    Get(url string) (*http.Response, error)\n}\n\ntype WeatherService struct {\n    client HTTPClient\n}\n\n// Mock for testing\ntype mockClient struct {\n    resp *http.Response\n    err  error\n}\n\nfunc (m *mockClient) Get(url string) (*http.Response, error) {\n    return m.resp, m.err\n}\n\nfunc TestWeatherService_Success(t *testing.T) {\n    body := io.NopCloser(strings.NewReader(`{\"temp\": 72}`))\n    mock := &mockClient{\n        resp: &http.Response{StatusCode: 200, Body: body},\n    }\n    svc := &WeatherService{client: mock}\n    // test svc.GetWeather()...\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 3: Test Edge Cases",
+      "type": "exercise",
+      "num": "3",
+      "title": "Test Edge Cases",
+      "description": "Take any function from previous modules. Test: nil inputs, empty slices, zero values, unicode.",
+      "descriptionHtml": "Take any function from previous modules. Test: nil inputs, empty slices, zero values, unicode.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Think about what happens with: `nil`, `[]string{}`, `\"\"`, `0`, `\"世界\"`"
+        }
+      ],
+      "solution": "",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 4: Achieve 80% Coverage",
+      "type": "exercise",
+      "num": "4",
+      "title": "Achieve 80% Coverage",
+      "description": "Run <code>go test -cover</code>. Use <code>go tool cover -html=coverage.out</code> to find gaps. Add tests.",
+      "descriptionHtml": "Run <code>go test -cover</code>. Use <code>go tool cover -html=coverage.out</code> to find gaps. Add tests.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Generate coverage file: `go test -coverprofile=coverage.out`\n                        View in browser: `go tool cover -html=coverage.out`"
+        }
+      ],
+      "solution": "",
+      "expected": "$ go test -cover\nPASS\ncoverage: 82.5% of statements"
+    }
+  ]
+}

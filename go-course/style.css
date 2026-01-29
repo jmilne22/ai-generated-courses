@@ -3143,6 +3143,200 @@ footer {
 /* ============================================
    19. Responsive Adjustments
    ============================================ */
+/* ============================================
+   Exercise Progress Tracking
+   ============================================ */
+.exercise-completed {
+    border-left: 4px solid var(--green-bright);
+    position: relative;
+}
+
+.exercise-completed::after {
+    content: '\2713';
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 24px;
+    height: 24px;
+    background: var(--green-bright);
+    color: var(--bg-dark);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.self-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--bg-lighter);
+}
+
+.self-rating-label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+}
+
+.rating-btn {
+    background: transparent;
+    border: 1px solid var(--bg-lighter);
+    color: var(--text-dim);
+    padding: 0.3rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rating-btn:hover {
+    border-color: var(--text);
+    color: var(--text);
+}
+
+.rating-btn.active.got-it {
+    background: var(--green-bright);
+    border-color: var(--green-bright);
+    color: var(--bg-dark);
+    font-weight: 600;
+}
+
+.rating-btn.active.struggled {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: var(--bg-dark);
+    font-weight: 600;
+}
+
+.rating-btn.active.peeked {
+    background: var(--purple);
+    border-color: var(--purple);
+    color: white;
+    font-weight: 600;
+}
+
+/* Dashboard exercise progress */
+.exercise-progress-inline {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.exercise-progress-bar {
+    width: 60px;
+    height: 4px;
+    background: var(--bg-lighter);
+    border-radius: 2px;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.exercise-progress-fill {
+    height: 100%;
+    background: var(--green-bright);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* ============================================
+   Solution Annotations
+   ============================================ */
+.solution-annotations {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.annotation {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    background: var(--bg-code);
+    border-left: 3px solid var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.annotation-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    background: var(--bg-lighter);
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.annotation-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.annotation-body strong {
+    font-size: 0.8rem;
+}
+
+.annotation-body span {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+}
+
+.ann-idiom {
+    border-left-color: var(--cyan);
+}
+.ann-idiom .annotation-badge {
+    color: var(--cyan);
+}
+
+.ann-complexity {
+    border-left-color: var(--orange);
+}
+.ann-complexity .annotation-badge {
+    color: var(--orange);
+}
+
+.ann-gotcha {
+    border-left-color: var(--red);
+}
+.ann-gotcha .annotation-badge {
+    color: var(--red);
+}
+
+.ann-alternative {
+    border-left-color: var(--purple);
+}
+.ann-alternative .annotation-badge {
+    color: var(--purple);
+}
+
+.ann-stdlib {
+    border-left-color: var(--green-bright);
+}
+.ann-stdlib .annotation-badge {
+    color: var(--green-bright);
+}
+
+.ann-pattern {
+    border-left-color: var(--blue);
+}
+.ann-pattern .annotation-badge {
+    color: var(--blue);
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 1rem;

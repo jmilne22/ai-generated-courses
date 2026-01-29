@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-module="12">
     <div class="container">
         <nav><a href="module11.html">← Module 11</a><a href="module13.html">Module 13 →</a></nav>
         <div class="module-tag">// MODULE 12</div>
@@ -227,178 +227,38 @@ result, err := <span class="func">fetchWithContext</span>(ctx, <span class="stri
 
         <div class="lesson">
             <h2>Exercises</h2>
-            
-            <div class="exercise">
-                <h4>Exercise 1: Parallel Sum</h4>
-                <p>Split a large slice into chunks, sum each in a goroutine, combine results. Compare timing vs sequential.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Create a channel for partial sums. Launch N goroutines for N chunks. Receive N results and add them.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func parallelSum(nums []int, workers int) int {
-    ch := make(chan int, workers)
-    chunkSize := len(nums) / workers
-    
-    for i := 0; i < workers; i++ {
-        start := i * chunkSize
-        end := start + chunkSize
-        if i == workers-1 {
-            end = len(nums)
-        }
-        go func(chunk []int) {
-            sum := 0
-            for _, n := range chunk {
-                sum += n
-            }
-            ch <- sum
-        }(nums[start:end])
-    }
-    
-    total := 0
-    for i := 0; i < workers; i++ {
-        total += <-ch
-    }
-    return total
-}</pre>
-                    </div>
-                </details>
+
+            <p>Progress through each section in order, or jump to where you need practice.</p>
+
+            <div style="background: var(--bg-card); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0 2rem 0;">
+                <div style="font-weight: 600; margin-bottom: 0.75rem; color: var(--text);">Jump to section:</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.9rem;">
+                    <a href="#warmups" style="color: var(--green-bright);">🔥 Warmups</a>
+                    <a href="#challenges" style="color: var(--orange);">💪 Challenges</a>
+                </div>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 2: Timeout Pattern</h4>
-                <p>Write a function that calls a slow operation but returns error if it takes too long. Use <code>select</code> with <code>time.After</code>.</p>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func doWithTimeout(timeout time.Duration) (string, error) {
-    ch := make(chan string, 1)
-    go func() {
-        result := slowOperation()
-        ch <- result
-    }()
-    
-    select {
-    case result := <-ch:
-        return result, nil
-    case <-time.After(timeout):
-        return "", fmt.Errorf("operation timed out")
-    }
-}</pre>
-                    </div>
-                </details>
+            <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+                <h3 id="warmups" style="color: var(--green-bright); margin: 0;">🔥 Warmups</h3>
+                <button id="shuffle-warmups-btn" onclick="shuffleWarmups()" style="background: var(--bg-card); border: 2px solid var(--green-bright); color: var(--green-bright); padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; transition: all 0.3s;">🎲 Shuffle</button>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Practice individual concepts you just learned.</p>
+
+            <div id="warmups-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 3: Fan-Out Fan-In</h4>
-                <p>Create 3 goroutines generating numbers. Merge all outputs into a single channel. Print from merged channel.</p>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func merge(channels ...<-chan int) <-chan int {
-    out := make(chan int)
-    var wg sync.WaitGroup
-    
-    for _, ch := range channels {
-        wg.Add(1)
-        go func(c <-chan int) {
-            defer wg.Done()
-            for n := range c {
-                out <- n
-            }
-        }(ch)
-    }
-    
-    go func() {
-        wg.Wait()
-        close(out)
-    }()
-    
-    return out
-}</pre>
-                    </div>
-                </details>
+            <h3 id="challenges" style="color: var(--orange); margin-top: 2rem;">💪 Challenges</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Combine concepts and learn patterns. Each challenge has multiple variants at different difficulties.</p>
+
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                <button id="shuffle-challenges-btn" onclick="shuffleChallenges()" style="background: var(--bg-card); border: 1px solid var(--orange); color: var(--orange); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; transition: all 0.3s;">
+                    🎲 Shuffle Challenges
+                </button>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 4: Rate Limiter</h4>
-                <p>Build a rate limiter using <code>time.Ticker</code>. Allow max N operations per second.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Create ticker with interval <code>time.Second/N</code>. Block on ticker before allowing each operation.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>type RateLimiter struct {
-    ticker *time.Ticker
-}
-
-func NewRateLimiter(perSecond int) *RateLimiter {
-    return &RateLimiter{
-        ticker: time.NewTicker(time.Second / time.Duration(perSecond)),
-    }
-}
-
-func (r *RateLimiter) Wait() {
-    <-r.ticker.C
-}
-
-func (r *RateLimiter) Stop() {
-    r.ticker.Stop()
-}</pre>
-                    </div>
-                </details>
-            </div>
-
-            <div class="exercise">
-                <h4>Exercise 5: Graceful Shutdown</h4>
-                <p>Start a worker goroutine. On Ctrl+C, signal it to stop gracefully, wait for it, then exit.</p>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func main() {
-    stop := make(chan struct{})
-    done := make(chan struct{})
-    
-    go func() {
-        defer close(done)
-        for {
-            select {
-            case <-stop:
-                fmt.Println("Worker stopping...")
-                return
-            default:
-                // do work
-                time.Sleep(100 * time.Millisecond)
-            }
-        }
-    }()
-    
-    sigCh := make(chan os.Signal, 1)
-    signal.Notify(sigCh, os.Interrupt)
-    <-sigCh
-    
-    fmt.Println("Shutting down...")
-    close(stop)
-    <-done
-    fmt.Println("Done")
-}</pre>
-                    </div>
-                </details>
+            <div id="challenges-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
         </div>
 
@@ -424,7 +284,11 @@ func (r *RateLimiter) Stop() {
             <a href="index.html" class="nav-btn primary">🎉 Course Complete!</a>
         </div>
     </div>
+    <script src="module-loader.js"></script>
+    <script src="course.js"></script>
     <script src="theme.js"></script>
     <script src="sidebar.js"></script>
+    <script src="srs.js"></script>
+    <script src="progress.js"></script>
 </body>
 </html>

@@ -588,7 +588,11 @@
                     ? `<a href="${conceptLink}" class="concept-link" style="color: var(--green-dim); opacity: 0.8;">(${item.warmup.concept} ↗)</a>`
                     : `<span style="font-size: 0.75rem; opacity: 0.6; color: var(--text-dim);">(${item.warmup.concept})</span>`;
 
-                html += `<div class="exercise">
+                const wKey = `m${getModuleNum()}_${item.warmup.id}_${item.variant.id}`;
+                const wProgress = window.ExerciseProgress?.get(wKey);
+                const wCompleted = wProgress?.status === 'completed' ? ' exercise-completed' : '';
+
+                html += `<div class="exercise${wCompleted}" data-exercise-key="${wKey}">
                     <h4>Warmup ${idx + 1}: ${item.variant.title} ${conceptHtml}</h4>
                     <p>${item.variant.description}</p>`;
 
@@ -629,6 +633,7 @@
                 initThinkingTimer(ex);
                 initPersonalNotes(ex);
             });
+            if (window.initExerciseProgress) window.initExerciseProgress();
             return;
         }
 
@@ -642,7 +647,11 @@
                 ? `<a href="${conceptLink}" class="concept-link" style="color: var(--green-dim); opacity: 0.8;">(${warmup.concept} ↗)</a>`
                 : `<span style="font-size: 0.75rem; opacity: 0.6; color: var(--text-dim);">(${warmup.concept})</span>`;
 
-            html += `<div class="exercise">
+            const wuKey = `m${getModuleNum()}_${warmup.id}_${variant.id}`;
+            const wuProgress = window.ExerciseProgress?.get(wuKey);
+            const wuCompleted = wuProgress?.status === 'completed' ? ' exercise-completed' : '';
+
+            html += `<div class="exercise${wuCompleted}" data-exercise-key="${wuKey}">
                 <h4>Warmup ${num}: ${variant.title} ${conceptHtml}</h4>
                 <p>${variant.description}</p>`;
 
@@ -684,6 +693,7 @@
             initThinkingTimer(ex);
             initPersonalNotes(ex);
         });
+        if (window.initExerciseProgress) window.initExerciseProgress();
     }
 
     // Helper function to pick a variant while avoiding the current one
@@ -916,12 +926,21 @@
         });
     }
 
+    function getModuleNum() {
+        return document.body?.dataset?.module ||
+               window.location.pathname.match(/module(\d+)/)?.[1] || '1';
+    }
+
     function renderSingleChallenge(num, variant, challenge, difficulty) {
         // Get variant-specific difficulty if available
         const variantDiff = getVariantDifficulty(variant, challenge);
         const variantStars = getDifficultyStars(variantDiff);
 
-        let html = `<div class="exercise" data-challenge-id="${challenge.id}">
+        const exerciseKey = `m${getModuleNum()}_${challenge.id}_${variant.id}`;
+        const progress = window.ExerciseProgress?.get(exerciseKey);
+        const completedClass = progress?.status === 'completed' ? ' exercise-completed' : '';
+
+        let html = `<div class="exercise${completedClass}" data-challenge-id="${challenge.id}" data-exercise-key="${exerciseKey}">
             <h4>Challenge ${num}: ${variant.title}
                 <span class="variant-difficulty" title="Variant difficulty: ${variantDiff} stars">${variantStars}</span>
             </h4>`;
@@ -1093,6 +1112,7 @@
                 initThinkingTimer(ex);
                 initVariantDifficultyButtons(ex);
             });
+            if (window.initExerciseProgress) window.initExerciseProgress();
             return;
         }
 
@@ -1154,6 +1174,7 @@
             initPersonalNotes(ex);
             initVariantDifficultyButtons(ex);
         });
+        if (window.initExerciseProgress) window.initExerciseProgress();
     }
 
     function getEasierVariant(challengeId) {

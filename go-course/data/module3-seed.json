@@ -1,0 +1,71 @@
+{
+  "moduleNum": 3,
+  "moduleName": "Structs Deep Dive",
+  "exerciseCount": 4,
+  "exercises": [
+    {
+      "originalTitle": "Exercise 1: Rectangle",
+      "type": "exercise",
+      "num": "1",
+      "title": "Rectangle",
+      "description": "Create a <code>Rectangle</code> struct with <code>Width</code> and <code>Height</code>. Add methods <code>Area() float64</code> and <code>Perimeter() float64</code>.",
+      "descriptionHtml": "Create a <code>Rectangle</code> struct with <code>Width</code> and <code>Height</code>. Add methods <code>Area() float64</code> and <code>Perimeter() float64</code>.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Area = width × height. Perimeter = 2 × (width + height). Value receivers are fine here."
+        }
+      ],
+      "solution": "type Rectangle struct {\n    Width  float64\n    Height float64\n}\n\nfunc (r Rectangle) Area() float64 {\n    return r.Width * r.Height\n}\n\nfunc (r Rectangle) Perimeter() float64 {\n    return 2 * (r.Width + r.Height)\n}",
+      "expected": "r := Rectangle{Width: 10, Height: 5}\nfmt.Println(r.Area())      // 50\nfmt.Println(r.Perimeter()) // 30"
+    },
+    {
+      "originalTitle": "Exercise 2: Bank Account",
+      "type": "exercise",
+      "num": "2",
+      "title": "Bank Account",
+      "description": "Create a <code>BankAccount</code> with unexported <code>balance</code>. Add <code>Deposit</code>, <code>Withdraw</code> (returns error if insufficient), and <code>Balance</code>.",
+      "descriptionHtml": "Create a <code>BankAccount</code> with unexported <code>balance</code>. Add <code>Deposit</code>, <code>Withdraw</code> (returns error if insufficient), and <code>Balance</code>.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Lowercase `balance` makes it private. Use pointer receivers for Deposit/Withdraw. Return `fmt.Errorf(...)` for insufficient funds."
+        }
+      ],
+      "solution": "type BankAccount struct {\n    balance float64\n}\n\nfunc (a *BankAccount) Deposit(amount float64) {\n    a.balance += amount\n}\n\nfunc (a *BankAccount) Withdraw(amount float64) error {\n    if amount > a.balance {\n        return fmt.Errorf(\"insufficient funds: have %.2f, want %.2f\", a.balance, amount)\n    }\n    a.balance -= amount\n    return nil\n}\n\nfunc (a *BankAccount) Balance() float64 {\n    return a.balance\n}",
+      "expected": "acc := BankAccount{}\nacc.Deposit(100)\nacc.Withdraw(30)\nfmt.Println(acc.Balance()) // 70\nerr := acc.Withdraw(100)   // error: insufficient funds"
+    },
+    {
+      "originalTitle": "Exercise 3: Embedding",
+      "type": "exercise",
+      "num": "3",
+      "title": "Embedding",
+      "description": "Create <code>Animal</code> with <code>Name</code> and <code>Speak()</code>. Create <code>Dog</code> and <code>Cat</code> that embed Animal and override <code>Speak()</code>.",
+      "descriptionHtml": "Create <code>Animal</code> with <code>Name</code> and <code>Speak()</code>. Create <code>Dog</code> and <code>Cat</code> that embed Animal and override <code>Speak()</code>.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Embed by putting `Animal` as a field without a name. Override by defining `Speak()` on the embedding struct."
+        }
+      ],
+      "solution": "type Animal struct {\n    Name string\n}\n\nfunc (a Animal) Speak() string {\n    return \"...\"\n}\n\ntype Dog struct {\n    Animal\n}\n\nfunc (d Dog) Speak() string {\n    return \"Woof!\"\n}\n\ntype Cat struct {\n    Animal\n}\n\nfunc (c Cat) Speak() string {\n    return \"Meow!\"\n}",
+      "expected": "dog := Dog{Animal{Name: \"Buddy\"}}\ncat := Cat{Animal{Name: \"Whiskers\"}}\nfmt.Println(dog.Name, dog.Speak()) // Buddy Woof!\nfmt.Println(cat.Name, cat.Speak()) // Whiskers Meow!"
+    },
+    {
+      "originalTitle": "Exercise 4: JSON Config",
+      "type": "exercise",
+      "num": "4",
+      "title": "JSON Config",
+      "description": "Define a struct that matches this JSON and parse it:",
+      "descriptionHtml": "Define a struct that matches this JSON and parse it:",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Nested struct for \"server\". Use json tags. `allowed_origins` is `[]string`."
+        }
+      ],
+      "solution": "type Config struct {\n    Server struct {\n        Host string `json:\"host\"`\n        Port int    `json:\"port\"`\n    } `json:\"server\"`\n    Debug          bool     `json:\"debug\"`\n    AllowedOrigins []string `json:\"allowed_origins\"`\n}\n\n// Parse:\nvar cfg Config\njson.Unmarshal([]byte(jsonStr), &cfg)",
+      "expected": "fmt.Println(cfg.Server.Host) // localhost\nfmt.Println(cfg.Server.Port) // 8080\nfmt.Println(cfg.Debug)       // true"
+    }
+  ]
+}

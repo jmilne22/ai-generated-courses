@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-module="16">
     <div class="container">
         <nav><a href="module15.html">← Module 15</a><a href="module17.html">Module 17 →</a></nav>
         <div class="module-tag">// MODULE 16</div>
@@ -436,124 +436,37 @@ total:                           (statements) 80.0%</pre>
         <div class="lesson">
             <h2>Exercises</h2>
             
-            <div class="exercise">
-                <h4>Exercise 1: Test a Parser</h4>
-                <p>Write a function that parses "KEY=value" strings. Write table-driven tests for all edge cases.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Test cases: valid input, missing =, empty key, empty value, value containing =.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func parseKV(s string) (key, value string, err error) {
-    idx := strings.Index(s, "=")
-    if idx == -1 {
-        return "", "", fmt.Errorf("missing =")
-    }
-    return s[:idx], s[idx+1:], nil
-}
+            <p>Progress through each section in order, or jump to where you need practice.</p>
 
-func TestParseKV(t *testing.T) {
-    tests := []struct {
-        input   string
-        key     string
-        value   string
-        wantErr bool
-    }{
-        {"KEY=value", "KEY", "value", false},
-        {"noequals", "", "", true},
-        {"=value", "", "value", false},
-        {"KEY=", "KEY", "", false},
-        {"K=a=b", "K", "a=b", false},
-    }
-    for _, tt := range tests {
-        t.Run(tt.input, func(t *testing.T) {
-            k, v, err := parseKV(tt.input)
-            if (err != nil) != tt.wantErr {
-                t.Errorf("wantErr=%v, got err=%v", tt.wantErr, err)
-            }
-            if k != tt.key || v != tt.value {
-                t.Errorf("got (%q,%q), want (%q,%q)", k, v, tt.key, tt.value)
-            }
-        })
-    }
-}</pre>
-                    </div>
-                </details>
-            </div>
-
-            <div class="exercise">
-                <h4>Exercise 2: Test with Mocks</h4>
-                <p>Create <code>WeatherService</code> depending on <code>HTTPClient</code> interface. Mock it for testing.</p>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>type HTTPClient interface {
-    Get(url string) (*http.Response, error)
-}
-
-type WeatherService struct {
-    client HTTPClient
-}
-
-// Mock for testing
-type mockClient struct {
-    resp *http.Response
-    err  error
-}
-
-func (m *mockClient) Get(url string) (*http.Response, error) {
-    return m.resp, m.err
-}
-
-func TestWeatherService_Success(t *testing.T) {
-    body := io.NopCloser(strings.NewReader(`{"temp": 72}`))
-    mock := &mockClient{
-        resp: &http.Response{StatusCode: 200, Body: body},
-    }
-    svc := &WeatherService{client: mock}
-    // test svc.GetWeather()...
-}</pre>
-                    </div>
-                </details>
-            </div>
-
-            <div class="exercise">
-                <h4>Exercise 3: Test Edge Cases</h4>
-                <p>Take any function from previous modules. Test: nil inputs, empty slices, zero values, unicode.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Think about what happens with: <code>nil</code>, <code>[]string{}</code>, <code>""</code>, <code>0</code>, <code>"世界"</code>
-                    </div>
-                </details>
-            </div>
-
-            <div class="exercise">
-                <h4>Exercise 4: Achieve 80% Coverage</h4>
-                <p>Run <code>go test -cover</code>. Use <code>go tool cover -html=coverage.out</code> to find gaps. Add tests.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Generate coverage file: <code>go test -coverprofile=coverage.out</code><br>
-                        View in browser: <code>go tool cover -html=coverage.out</code>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>$ go test -cover
-PASS
-coverage: 82.5% of statements</pre>
+            <div style="background: var(--bg-card); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0 2rem 0;">
+                <div style="font-weight: 600; margin-bottom: 0.75rem; color: var(--text);">Jump to section:</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.9rem;">
+                    <a href="#warmups" style="color: var(--green-bright);">🔥 Warmups</a>
+                    <a href="#challenges" style="color: var(--orange);">💪 Challenges</a>
                 </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+                <h3 id="warmups" style="color: var(--green-bright); margin: 0;">🔥 Warmups</h3>
+                <button id="shuffle-warmups-btn" onclick="shuffleWarmups()" style="background: var(--bg-card); border: 2px solid var(--green-bright); color: var(--green-bright); padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; transition: all 0.3s;">🎲 Shuffle</button>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Practice individual concepts you just learned.</p>
+
+            <div id="warmups-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
+            </div>
+
+            <h3 id="challenges" style="color: var(--orange); margin-top: 2rem;">💪 Challenges</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Combine concepts and learn patterns. Each challenge has multiple variants at different difficulties.</p>
+
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                <button id="shuffle-challenges-btn" onclick="shuffleChallenges()" style="background: var(--bg-card); border: 1px solid var(--orange); color: var(--orange); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; transition: all 0.3s;">
+                    🎲 Shuffle Challenges
+                </button>
+            </div>
+
+            <div id="challenges-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
         </div>
 
@@ -577,7 +490,11 @@ coverage: 82.5% of statements</pre>
             <a href="module17.html" class="nav-btn primary">Module 17: Integration Testing →</a>
         </div>
     </div>
+    <script src="module-loader.js"></script>
+    <script src="course.js"></script>
     <script src="theme.js"></script>
     <script src="sidebar.js"></script>
+    <script src="srs.js"></script>
+    <script src="progress.js"></script>
 </body>
 </html>

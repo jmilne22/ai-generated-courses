@@ -242,6 +242,10 @@
                 <span class="btn-icon">📚</span>
                 Quick reference
             </a>
+            <a href="daily-practice.html" class="quick-btn">
+                <span class="btn-icon">🎯</span>
+                Daily Practice
+            </a>
         </div>
 
         <div class="session-timer" id="session-timer" hidden>
@@ -271,7 +275,11 @@
         <div class="progress-stats">
             <div class="stat-card">
                 <div class="stat-value" id="completed-count">0</div>
-                <div class="stat-label">Completed</div>
+                <div class="stat-label">Modules Done</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="exercises-count">0</div>
+                <div class="stat-label">Exercises Done</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="remaining-count">17</div>
@@ -280,6 +288,10 @@
             <div class="stat-card">
                 <div class="stat-value" id="progress-percent">0%</div>
                 <div class="stat-label">Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="due-count">0</div>
+                <div class="stat-label">Due for Review</div>
             </div>
         </div>
 
@@ -293,6 +305,7 @@
                         <span class="module-num">MODULE 00</span>
                         <span class="module-name">Go Quick Reference</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-0"></span>
                     <span class="last-studied" id="last-0"></span>
                 </div>
             </div>
@@ -306,6 +319,7 @@
                         <span class="module-num">MODULE 01</span>
                         <span class="module-name">Go Fundamentals</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-1"></span>
                     <span class="last-studied" id="last-1"></span>
                 </div>
                 <div class="module-item" data-module="2">
@@ -314,6 +328,7 @@
                         <span class="module-num">MODULE 02</span>
                         <span class="module-name">Pointers & Memory</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-2"></span>
                     <span class="last-studied" id="last-2"></span>
                 </div>
                 <div class="module-item" data-module="3">
@@ -322,6 +337,7 @@
                         <span class="module-num">MODULE 03</span>
                         <span class="module-name">Structs Deep Dive</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-3"></span>
                     <span class="last-studied" id="last-3"></span>
                 </div>
                 <div class="module-item" data-module="4">
@@ -330,6 +346,7 @@
                         <span class="module-num">MODULE 04</span>
                         <span class="module-name">Interfaces & Polymorphism</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-4"></span>
                     <span class="last-studied" id="last-4"></span>
                 </div>
                 <div class="module-item" data-module="5">
@@ -338,6 +355,7 @@
                         <span class="module-num">MODULE 05</span>
                         <span class="module-name">Data Structures</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-5"></span>
                     <span class="last-studied" id="last-5"></span>
                 </div>
             </div>
@@ -351,6 +369,7 @@
                         <span class="module-num">MODULE 06</span>
                         <span class="module-name">CLI Foundations</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-6"></span>
                     <span class="last-studied" id="last-6"></span>
                 </div>
                 <div class="module-item" data-module="7">
@@ -359,6 +378,7 @@
                         <span class="module-num">MODULE 07</span>
                         <span class="module-name">Files, YAML & Shell</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-7"></span>
                     <span class="last-studied" id="last-7"></span>
                 </div>
                 <div class="module-item" data-module="8">
@@ -367,6 +387,7 @@
                         <span class="module-num">MODULE 08</span>
                         <span class="module-name">Building TUIs</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-8"></span>
                     <span class="last-studied" id="last-8"></span>
                 </div>
             </div>
@@ -380,6 +401,7 @@
                         <span class="module-num">MODULE 09</span>
                         <span class="module-name">Error Handling & Testing</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-9"></span>
                     <span class="last-studied" id="last-9"></span>
                 </div>
                 <div class="module-item" data-module="10">
@@ -388,6 +410,7 @@
                         <span class="module-num">MODULE 10</span>
                         <span class="module-name">Design Patterns</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-10"></span>
                     <span class="last-studied" id="last-10"></span>
                 </div>
                 <div class="module-item" data-module="11">
@@ -396,6 +419,7 @@
                         <span class="module-num">MODULE 11</span>
                         <span class="module-name">HTTP & API Design</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-11"></span>
                     <span class="last-studied" id="last-11"></span>
                 </div>
             </div>
@@ -409,6 +433,7 @@
                         <span class="module-num">MODULE 12</span>
                         <span class="module-name">Concurrency & Goroutines</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-12"></span>
                     <span class="last-studied" id="last-12"></span>
                 </div>
             </div>
@@ -422,6 +447,7 @@
                         <span class="module-num">MODULE 13</span>
                         <span class="module-name">Project Structure</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-13"></span>
                     <span class="last-studied" id="last-13"></span>
                 </div>
                 <div class="module-item" data-module="14">
@@ -430,6 +456,7 @@
                         <span class="module-num">MODULE 14</span>
                         <span class="module-name">System Interaction</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-14"></span>
                     <span class="last-studied" id="last-14"></span>
                 </div>
                 <div class="module-item" data-module="15">
@@ -438,6 +465,7 @@
                         <span class="module-num">MODULE 15</span>
                         <span class="module-name">Sets & Diffing</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-15"></span>
                     <span class="last-studied" id="last-15"></span>
                 </div>
             </div>
@@ -451,6 +479,7 @@
                         <span class="module-num">MODULE 16</span>
                         <span class="module-name">Unit Testing</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-16"></span>
                     <span class="last-studied" id="last-16"></span>
                 </div>
                 <div class="module-item" data-module="17">
@@ -459,6 +488,7 @@
                         <span class="module-num">MODULE 17</span>
                         <span class="module-name">Integration Testing</span>
                     </a>
+                    <span class="exercise-progress-inline" id="ex-progress-17"></span>
                     <span class="last-studied" id="last-17"></span>
                 </div>
             </div>
@@ -471,6 +501,8 @@
     </div>
 
     <script src="theme.js"></script>
+    <script src="srs.js"></script>
+    <script src="progress.js"></script>
     <script>
         // Progress tracking with localStorage
         const STORAGE_KEY = 'go-course-progress';
@@ -502,11 +534,37 @@
             document.getElementById('remaining-count').textContent = remaining;
             document.getElementById('progress-percent').textContent = percent + '%';
 
+            // Exercise-level progress from progress.js data
+            const exerciseProgress = JSON.parse(localStorage.getItem('go-course-exercise-progress') || '{}');
+            const exercisesByModule = {};
+            let totalExercises = 0;
+
+            Object.entries(exerciseProgress).forEach(([key, data]) => {
+                if (data.status === 'completed') {
+                    const match = key.match(/^m(\d+)_/);
+                    if (match) {
+                        const mod = match[1];
+                        exercisesByModule[mod] = (exercisesByModule[mod] || 0) + 1;
+                        totalExercises++;
+                    }
+                }
+            });
+
+            const exercisesEl = document.getElementById('exercises-count');
+            if (exercisesEl) exercisesEl.textContent = totalExercises;
+
+            // SRS due count
+            const dueEl = document.getElementById('due-count');
+            if (dueEl && window.SRS) {
+                dueEl.textContent = window.SRS.getDueCount();
+            }
+
             // Update UI
             for (let i = 0; i <= 17; i++) {
                 const checkbox = document.getElementById(`m${i}`);
                 const item = document.querySelector(`[data-module="${i}"]`);
                 const lastStudied = document.getElementById(`last-${i}`);
+                const exProgress = document.getElementById(`ex-progress-${i}`);
 
                 if (checkbox && progress[i]) {
                     checkbox.checked = progress[i].completed;
@@ -517,6 +575,12 @@
                         const date = new Date(progress[i].lastStudied);
                         lastStudied.textContent = date.toLocaleDateString();
                     }
+                }
+
+                // Show exercise completion count per module
+                if (exProgress && exercisesByModule[i]) {
+                    const count = exercisesByModule[i];
+                    exProgress.innerHTML = `<span class="exercise-progress-bar"><span class="exercise-progress-fill" style="width: 100%"></span></span> ${count} done`;
                 }
             }
         }
@@ -626,6 +690,8 @@
             if (confirm('Clear all progress? This cannot be undone.')) {
                 localStorage.removeItem(STORAGE_KEY);
                 localStorage.removeItem(LAST_MODULE_KEY);
+                localStorage.removeItem('go-course-exercise-progress');
+                localStorage.removeItem('go-course-srs');
                 location.reload();
             }
         }

@@ -1,0 +1,61 @@
+{
+  "moduleNum": 10,
+  "moduleName": "Design Patterns",
+  "exerciseCount": 4,
+  "exercises": [
+    {
+      "originalTitle": "Exercise 1: HTTP Client with Options",
+      "type": "exercise",
+      "num": "1",
+      "title": "HTTP Client with Options",
+      "description": "Create <code>HTTPClient</code> using functional options: <code>WithTimeout</code>, <code>WithRetries</code>, <code>WithBaseURL</code>.",
+      "descriptionHtml": "Create <code>HTTPClient</code> using functional options: <code>WithTimeout</code>, <code>WithRetries</code>, <code>WithBaseURL</code>.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Define `type Option func(*HTTPClient)`. Each With function returns an Option. Apply in constructor."
+        }
+      ],
+      "solution": "type HTTPClient struct {\n    timeout time.Duration\n    retries int\n    baseURL string\n}\n\ntype Option func(*HTTPClient)\n\nfunc WithTimeout(d time.Duration) Option {\n    return func(c *HTTPClient) { c.timeout = d }\n}\n\nfunc WithRetries(n int) Option {\n    return func(c *HTTPClient) { c.retries = n }\n}\n\nfunc WithBaseURL(url string) Option {\n    return func(c *HTTPClient) { c.baseURL = url }\n}\n\nfunc NewHTTPClient(opts ...Option) *HTTPClient {\n    c := &HTTPClient{timeout: 30 * time.Second}\n    for _, opt := range opts {\n        opt(c)\n    }\n    return c\n}",
+      "expected": "client := NewHTTPClient(\n    WithTimeout(10*time.Second),\n    WithRetries(3),\n    WithBaseURL(\"https://api.example.com\"),\n)"
+    },
+    {
+      "originalTitle": "Exercise 2: Logger Factory",
+      "type": "exercise",
+      "num": "2",
+      "title": "Logger Factory",
+      "description": "Create factory returning different loggers: \"console\" → stdout, \"file\" → file, \"null\" → discard.",
+      "descriptionHtml": "Create factory returning different loggers: \"console\" → stdout, \"file\" → file, \"null\" → discard.",
+      "hints": [],
+      "solution": "type Logger interface {\n    Log(msg string)\n}\n\nfunc NewLogger(logType string) Logger {\n    switch logType {\n    case \"console\":\n        return &ConsoleLogger{}\n    case \"file\":\n        return &FileLogger{file: \"app.log\"}\n    case \"null\":\n        return &NullLogger{}\n    default:\n        return &ConsoleLogger{}\n    }\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 3: Sort Strategy",
+      "type": "exercise",
+      "num": "3",
+      "title": "Sort Strategy",
+      "description": "Define <code>Sorter</code> interface. Implement <code>BubbleSort</code>, <code>QuickSort</code>. Create <code>DataProcessor</code> that accepts any Sorter.",
+      "descriptionHtml": "Define <code>Sorter</code> interface. Implement <code>BubbleSort</code>, <code>QuickSort</code>. Create <code>DataProcessor</code> that accepts any Sorter.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Interface: `Sort([]int) []int`. DataProcessor has a Sorter field. Can swap strategies at runtime."
+        }
+      ],
+      "solution": "",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 4: SQL Builder",
+      "type": "exercise",
+      "num": "4",
+      "title": "SQL Builder",
+      "description": "Build fluent SQL query builder: <code>NewQuery(\"users\").Select(\"name\").Where(\"active = ?\", true).Limit(10).String()</code>",
+      "descriptionHtml": "Build fluent SQL query builder: <code>NewQuery(\"users\").Select(\"name\").Where(\"active = ?\", true).Limit(10).String()</code>",
+      "hints": [],
+      "solution": "type Query struct {\n    table   string\n    cols    []string\n    wheres  []string\n    limit   int\n}\n\nfunc NewQuery(table string) *Query {\n    return &Query{table: table, cols: []string{\"*\"}}\n}\n\nfunc (q *Query) Select(cols ...string) *Query {\n    q.cols = cols\n    return q\n}\n\nfunc (q *Query) Where(cond string, args ...any) *Query {\n    q.wheres = append(q.wheres, fmt.Sprintf(cond, args...))\n    return q\n}\n\nfunc (q *Query) Limit(n int) *Query {\n    q.limit = n\n    return q\n}\n\nfunc (q *Query) String() string {\n    sql := fmt.Sprintf(\"SELECT %s FROM %s\", \n        strings.Join(q.cols, \", \"), q.table)\n    if len(q.wheres) > 0 {\n        sql += \" WHERE \" + strings.Join(q.wheres, \" AND \")\n    }\n    if q.limit > 0 {\n        sql += fmt.Sprintf(\" LIMIT %d\", q.limit)\n    }\n    return sql\n}",
+      "expected": "NewQuery(\"users\").Select(\"name\", \"email\").Where(\"active = %t\", true).Limit(10).String()\n// \"SELECT name, email FROM users WHERE active = true LIMIT 10\""
+    }
+  ]
+}

@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-module="6">
     <div class="container">
         <nav>
             <a href="module5.html">← Module 5</a>
@@ -222,186 +222,37 @@ $ cat file.txt | go run main.go | grep pattern</pre>
 
         <div class="lesson">
             <h2>Exercises</h2>
-            
-            <div class="exercise">
-                <h4>Exercise 1: Echo Clone</h4>
-                <p>Build <code>echo</code> that prints args joined by spaces. Add <code>-n</code> flag to suppress trailing newline.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Use <code>flag.Bool("n", false, "...")</code>. After <code>flag.Parse()</code>, args are in <code>flag.Args()</code>. Use <code>strings.Join()</code>.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func main() {
-    noNewline := flag.Bool("n", false, "no trailing newline")
-    flag.Parse()
-    
-    output := strings.Join(flag.Args(), " ")
-    if *noNewline {
-        fmt.Print(output)
-    } else {
-        fmt.Println(output)
-    }
-}</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>$ ./echo hello world
-hello world
-$ ./echo -n hello world
-hello world$</pre>
+            <p>Progress through each section in order, or jump to where you need practice.</p>
+
+            <div style="background: var(--bg-card); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0 2rem 0;">
+                <div style="font-weight: 600; margin-bottom: 0.75rem; color: var(--text);">Jump to section:</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.9rem;">
+                    <a href="#warmups" style="color: var(--green-bright);">🔥 Warmups</a>
+                    <a href="#challenges" style="color: var(--orange);">💪 Challenges</a>
                 </div>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 2: Line Counter</h4>
-                <p>Build <code>lc</code> that reads stdin and counts lines. Add <code>-w</code> for words, <code>-c</code> for characters.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Use <code>bufio.Scanner</code> for lines. For words, use <code>strings.Fields()</code>. For chars, use <code>len([]rune(line))</code>.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func main() {
-    words := flag.Bool("w", false, "count words")
-    chars := flag.Bool("c", false, "count chars")
-    flag.Parse()
-    
-    var lines, wordCount, charCount int
-    scanner := bufio.NewScanner(os.Stdin)
-    for scanner.Scan() {
-        line := scanner.Text()
-        lines++
-        wordCount += len(strings.Fields(line))
-        charCount += len([]rune(line))
-    }
-    
-    switch {
-    case *words:
-        fmt.Println(wordCount)
-    case *chars:
-        fmt.Println(charCount)
-    default:
-        fmt.Println(lines)
-    }
-}</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>$ echo -e "hello world\nfoo bar" | ./lc
-2
-$ echo -e "hello world\nfoo bar" | ./lc -w
-4</pre>
-                </div>
+            <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+                <h3 id="warmups" style="color: var(--green-bright); margin: 0;">🔥 Warmups</h3>
+                <button id="shuffle-warmups-btn" onclick="shuffleWarmups()" style="background: var(--bg-card); border: 2px solid var(--green-bright); color: var(--green-bright); padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; transition: all 0.3s;">🎲 Shuffle</button>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Practice individual concepts you just learned.</p>
+
+            <div id="warmups-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 3: Env Printer</h4>
-                <p>Print env vars. No args = all. With args = only matching. Add <code>-export</code> for export format.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        <code>os.Environ()</code> returns <code>[]string</code> in "KEY=value" format. Filter by checking prefix of key.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func main() {
-    export := flag.Bool("export", false, "export format")
-    flag.Parse()
-    filters := flag.Args()
-    
-    for _, env := range os.Environ() {
-        parts := strings.SplitN(env, "=", 2)
-        key, val := parts[0], parts[1]
-        
-        if len(filters) > 0 && !matchesAny(key, filters) {
-            continue
-        }
-        
-        if *export {
-            fmt.Printf("export %s=%q\n", key, val)
-        } else {
-            fmt.Println(env)
-        }
-    }
-}</pre>
-                    </div>
-                </details>
+            <h3 id="challenges" style="color: var(--orange); margin-top: 2rem;">💪 Challenges</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Combine concepts and learn patterns. Each challenge has multiple variants at different difficulties.</p>
+
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                <button id="shuffle-challenges-btn" onclick="shuffleChallenges()" style="background: var(--bg-card); border: 1px solid var(--orange); color: var(--orange); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; transition: all 0.3s;">
+                    🎲 Shuffle Challenges
+                </button>
             </div>
 
-            <div class="exercise">
-                <h4>Exercise 4: Simple Calculator</h4>
-                <p>Build <code>calc num op num</code> supporting +, -, *, /. Exit code 1 on division by zero.</p>
-                
-                <details>
-                    <summary>💡 Hint</summary>
-                    <div class="hint-content">
-                        Parse with <code>strconv.ParseFloat()</code>. Use switch on operator. Call <code>os.Exit(1)</code> for errors.
-                    </div>
-                </details>
-                
-                <details>
-                    <summary>✅ Solution</summary>
-                    <div class="hint-content">
-<pre>func main() {
-    if len(os.Args) != 4 {
-        fmt.Fprintln(os.Stderr, "usage: calc num op num")
-        os.Exit(1)
-    }
-    a, _ := strconv.ParseFloat(os.Args[1], 64)
-    op := os.Args[2]
-    b, _ := strconv.ParseFloat(os.Args[3], 64)
-    
-    var result float64
-    switch op {
-    case "+":
-        result = a + b
-    case "-":
-        result = a - b
-    case "*":
-        result = a * b
-    case "/":
-        if b == 0 {
-            fmt.Fprintln(os.Stderr, "division by zero")
-            os.Exit(1)
-        }
-        result = a / b
-    default:
-        fmt.Fprintln(os.Stderr, "unknown operator")
-        os.Exit(1)
-    }
-    fmt.Println(result)
-}</pre>
-                    </div>
-                </details>
-                
-                <div class="expected">
-                    <div class="expected-title">Expected Output</div>
-                    <pre>$ ./calc 10 + 5
-15
-$ ./calc 10 / 0
-division by zero
-$ echo $?
-1</pre>
-                </div>
+            <div id="challenges-container">
+            <noscript><p class="js-required">JavaScript is required for the interactive exercises.</p></noscript>
             </div>
         </div>
 
@@ -421,7 +272,11 @@ $ echo $?
             <a href="module7.html" class="nav-btn primary">Module 7: Files & YAML →</a>
         </div>
     </div>
+    <script src="module-loader.js"></script>
+    <script src="course.js"></script>
     <script src="theme.js"></script>
     <script src="sidebar.js"></script>
+    <script src="srs.js"></script>
+    <script src="progress.js"></script>
 </body>
 </html>

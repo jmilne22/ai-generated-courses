@@ -1,0 +1,71 @@
+{
+  "moduleNum": 4,
+  "moduleName": "Interfaces & Polymorphism",
+  "exerciseCount": 4,
+  "exercises": [
+    {
+      "originalTitle": "Exercise 1: Implement Stringer",
+      "type": "exercise",
+      "num": "1",
+      "title": "Implement Stringer",
+      "description": "Create a <code>Person</code> struct and implement <code>fmt.Stringer</code> so printing is nice.",
+      "descriptionHtml": "Create a <code>Person</code> struct and implement <code>fmt.Stringer</code> so printing is nice.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Implement `String() string` method. Use `fmt.Sprintf` to format."
+        }
+      ],
+      "solution": "type Person struct {\n    Name string\n    Age  int\n}\n\nfunc (p Person) String() string {\n    return fmt.Sprintf(\"%s (%d years old)\", p.Name, p.Age)\n}",
+      "expected": "p := Person{Name: \"Alice\", Age: 30}\nfmt.Println(p) // Alice (30 years old)"
+    },
+    {
+      "originalTitle": "Exercise 2: Shape Interface",
+      "type": "exercise",
+      "num": "2",
+      "title": "Shape Interface",
+      "description": "Define <code>Shape</code> interface with <code>Area() float64</code>. Implement for <code>Circle</code> and <code>Rectangle</code>. Write <code>TotalArea(shapes []Shape)</code>.",
+      "descriptionHtml": "Define <code>Shape</code> interface with <code>Area() float64</code>. Implement for <code>Circle</code> and <code>Rectangle</code>. Write <code>TotalArea(shapes []Shape)</code>.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Circle area = π × r². Loop through shapes, sum areas. Use `math.Pi`."
+        }
+      ],
+      "solution": "type Shape interface {\n    Area() float64\n}\n\ntype Circle struct{ Radius float64 }\nfunc (c Circle) Area() float64 { return math.Pi * c.Radius * c.Radius }\n\ntype Rectangle struct{ Width, Height float64 }\nfunc (r Rectangle) Area() float64 { return r.Width * r.Height }\n\nfunc TotalArea(shapes []Shape) float64 {\n    var total float64\n    for _, s := range shapes {\n        total += s.Area()\n    }\n    return total\n}",
+      "expected": "shapes := []Shape{Circle{5}, Rectangle{4, 3}}\nfmt.Println(TotalArea(shapes)) // ~90.54"
+    },
+    {
+      "originalTitle": "Exercise 3: Custom Writer",
+      "type": "exercise",
+      "num": "3",
+      "title": "Custom Writer",
+      "description": "Create <code>UpperWriter</code> that wraps <code>io.Writer</code> and uppercases all bytes before writing.",
+      "descriptionHtml": "Create <code>UpperWriter</code> that wraps <code>io.Writer</code> and uppercases all bytes before writing.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Store inner writer in struct. In `Write(p []byte)`, use `bytes.ToUpper(p)` then call inner writer."
+        }
+      ],
+      "solution": "type UpperWriter struct {\n    w io.Writer\n}\n\nfunc (u *UpperWriter) Write(p []byte) (int, error) {\n    return u.w.Write(bytes.ToUpper(p))\n}\n\n// Usage:\nupper := &UpperWriter{os.Stdout}\nfmt.Fprintln(upper, \"hello\") // HELLO",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 4: Type Switch",
+      "type": "exercise",
+      "num": "4",
+      "title": "Type Switch",
+      "description": "Write <code>func describe(i any) string</code> returning type-specific descriptions.",
+      "descriptionHtml": "Write <code>func describe(i any) string</code> returning type-specific descriptions.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Use `switch v := i.(type)`. Handle `int`, `string`, `bool`, and `default`."
+        }
+      ],
+      "solution": "func describe(i any) string {\n    switch v := i.(type) {\n    case int:\n        return fmt.Sprintf(\"integer: %d\", v)\n    case string:\n        return fmt.Sprintf(\"text: %s\", v)\n    case bool:\n        return fmt.Sprintf(\"boolean: %t\", v)\n    default:\n        return \"unknown\"\n    }\n}",
+      "expected": "describe(42)      // \"integer: 42\"\ndescribe(\"hi\")    // \"text: hi\"\ndescribe(true)    // \"boolean: true\"\ndescribe(3.14)    // \"unknown\""
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "moduleNum": 6,
+  "moduleName": "CLI Foundations",
+  "exerciseCount": 4,
+  "exercises": [
+    {
+      "originalTitle": "Exercise 1: Echo Clone",
+      "type": "exercise",
+      "num": "1",
+      "title": "Echo Clone",
+      "description": "Build <code>echo</code> that prints args joined by spaces. Add <code>-n</code> flag to suppress trailing newline.",
+      "descriptionHtml": "Build <code>echo</code> that prints args joined by spaces. Add <code>-n</code> flag to suppress trailing newline.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Use `flag.Bool(\"n\", false, \"...\")`. After `flag.Parse()`, args are in `flag.Args()`. Use `strings.Join()`."
+        }
+      ],
+      "solution": "func main() {\n    noNewline := flag.Bool(\"n\", false, \"no trailing newline\")\n    flag.Parse()\n    \n    output := strings.Join(flag.Args(), \" \")\n    if *noNewline {\n        fmt.Print(output)\n    } else {\n        fmt.Println(output)\n    }\n}",
+      "expected": "$ ./echo hello world\nhello world\n$ ./echo -n hello world\nhello world$"
+    },
+    {
+      "originalTitle": "Exercise 2: Line Counter",
+      "type": "exercise",
+      "num": "2",
+      "title": "Line Counter",
+      "description": "Build <code>lc</code> that reads stdin and counts lines. Add <code>-w</code> for words, <code>-c</code> for characters.",
+      "descriptionHtml": "Build <code>lc</code> that reads stdin and counts lines. Add <code>-w</code> for words, <code>-c</code> for characters.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Use `bufio.Scanner` for lines. For words, use `strings.Fields()`. For chars, use `len([]rune(line))`."
+        }
+      ],
+      "solution": "func main() {\n    words := flag.Bool(\"w\", false, \"count words\")\n    chars := flag.Bool(\"c\", false, \"count chars\")\n    flag.Parse()\n    \n    var lines, wordCount, charCount int\n    scanner := bufio.NewScanner(os.Stdin)\n    for scanner.Scan() {\n        line := scanner.Text()\n        lines++\n        wordCount += len(strings.Fields(line))\n        charCount += len([]rune(line))\n    }\n    \n    switch {\n    case *words:\n        fmt.Println(wordCount)\n    case *chars:\n        fmt.Println(charCount)\n    default:\n        fmt.Println(lines)\n    }\n}",
+      "expected": "$ echo -e \"hello world\\nfoo bar\" | ./lc\n2\n$ echo -e \"hello world\\nfoo bar\" | ./lc -w\n4"
+    },
+    {
+      "originalTitle": "Exercise 3: Env Printer",
+      "type": "exercise",
+      "num": "3",
+      "title": "Env Printer",
+      "description": "Print env vars. No args = all. With args = only matching. Add <code>-export</code> for export format.",
+      "descriptionHtml": "Print env vars. No args = all. With args = only matching. Add <code>-export</code> for export format.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "`os.Environ()` returns `[]string` in \"KEY=value\" format. Filter by checking prefix of key."
+        }
+      ],
+      "solution": "func main() {\n    export := flag.Bool(\"export\", false, \"export format\")\n    flag.Parse()\n    filters := flag.Args()\n    \n    for _, env := range os.Environ() {\n        parts := strings.SplitN(env, \"=\", 2)\n        key, val := parts[0], parts[1]\n        \n        if len(filters) > 0 && !matchesAny(key, filters) {\n            continue\n        }\n        \n        if *export {\n            fmt.Printf(\"export %s=%q\\n\", key, val)\n        } else {\n            fmt.Println(env)\n        }\n    }\n}",
+      "expected": ""
+    },
+    {
+      "originalTitle": "Exercise 4: Simple Calculator",
+      "type": "exercise",
+      "num": "4",
+      "title": "Simple Calculator",
+      "description": "Build <code>calc num op num</code> supporting +, -, *, /. Exit code 1 on division by zero.",
+      "descriptionHtml": "Build <code>calc num op num</code> supporting +, -, *, /. Exit code 1 on division by zero.",
+      "hints": [
+        {
+          "title": "💡 Hint",
+          "content": "Parse with `strconv.ParseFloat()`. Use switch on operator. Call `os.Exit(1)` for errors."
+        }
+      ],
+      "solution": "func main() {\n    if len(os.Args) != 4 {\n        fmt.Fprintln(os.Stderr, \"usage: calc num op num\")\n        os.Exit(1)\n    }\n    a, _ := strconv.ParseFloat(os.Args[1], 64)\n    op := os.Args[2]\n    b, _ := strconv.ParseFloat(os.Args[3], 64)\n    \n    var result float64\n    switch op {\n    case \"+\":\n        result = a + b\n    case \"-\":\n        result = a - b\n    case \"*\":\n        result = a * b\n    case \"/\":\n        if b == 0 {\n            fmt.Fprintln(os.Stderr, \"division by zero\")\n            os.Exit(1)\n        }\n        result = a / b\n    default:\n        fmt.Fprintln(os.Stderr, \"unknown operator\")\n        os.Exit(1)\n    }\n    fmt.Println(result)\n}",
+      "expected": "$ ./calc 10 + 5\n15\n$ ./calc 10 / 0\ndivision by zero\n$ echo $?\n1"
+    }
+  ]
+}
