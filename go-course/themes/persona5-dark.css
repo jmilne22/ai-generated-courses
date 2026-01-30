@@ -285,7 +285,8 @@
 
 /* --- Buttons: bold, uppercase, red hover --- */
 [data-theme="persona5-dark"] button:not(.sidebar-toggle),
-[data-theme="persona5-dark"] .quick-btn {
+[data-theme="persona5-dark"] .quick-btn,
+[data-theme="persona5-dark"] .data-btn {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
     letter-spacing: 0.08em;
@@ -296,7 +297,8 @@
     transition: all 0.15s ease;
 }
 [data-theme="persona5-dark"] button:not(.sidebar-toggle):hover,
-[data-theme="persona5-dark"] .quick-btn:hover {
+[data-theme="persona5-dark"] .quick-btn:hover,
+[data-theme="persona5-dark"] .data-btn:hover {
     background: var(--red) !important;
     color: #fff !important;
     border-color: var(--red) !important;

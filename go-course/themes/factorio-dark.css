@@ -566,7 +566,8 @@
 /* Buttons - machine control style */
 [data-theme="factorio-dark"] button:not(.sidebar-toggle),
 [data-theme="factorio-dark"] .quick-btn,
-[data-theme="factorio-dark"] .session-control-btn {
+[data-theme="factorio-dark"] .session-control-btn,
+[data-theme="factorio-dark"] .data-btn {
     font-family: 'Titillium Web', sans-serif;
     font-weight: 600;
     border: none;
@@ -583,7 +584,8 @@
 
 [data-theme="factorio-dark"] button:not(.sidebar-toggle):hover,
 [data-theme="factorio-dark"] .quick-btn:hover,
-[data-theme="factorio-dark"] .session-control-btn:hover {
+[data-theme="factorio-dark"] .session-control-btn:hover,
+[data-theme="factorio-dark"] .data-btn:hover {
     background: linear-gradient(180deg, #3a3a3d 0%, #2d2d30 100%);
     box-shadow:
         inset 1px 1px 0 #4a4a4d,
