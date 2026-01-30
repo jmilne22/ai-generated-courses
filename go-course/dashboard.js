@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (startBtn) {
         startBtn.addEventListener('click', function () {
             var duration = document.getElementById('session-duration').value;
-            window.startSession && window.startSession(duration);
+            window.startTimerSession && window.startTimerSession(duration);
         });
     }
 

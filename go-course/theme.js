@@ -959,7 +959,7 @@
         }
     }
 
-    window.startSession = startSession;
+    window.startTimerSession = startSession;
     window.updateSessionTimer = updateSessionTimer;
     window.updateSessionDuration = updateSessionDuration;
     window.sessionReset = resetSession;
