@@ -71,11 +71,12 @@
                 <button id="fc-flip-btn" onclick="flipCard()" class="quick-btn" style="flex: 1;">Flip Card</button>
             </div>
             <div id="fc-rating" style="display: none; gap: 1rem; justify-content: center; margin-top: 1rem;">
-                <button onclick="rateCard(true)" class="quick-btn" style="flex: 1; border-color: var(--green-bright); color: var(--green-bright);">Knew it</button>
-                <button onclick="rateCard(false)" class="quick-btn" style="flex: 1; border-color: var(--red); color: var(--red);">Didn't know</button>
+                <button onclick="rateCard(1)" class="quick-btn" style="flex: 1; border-color: var(--red); color: var(--red);">Didn't know</button>
+                <button onclick="rateCard(3)" class="quick-btn" style="flex: 1; border-color: var(--orange); color: var(--orange);">Partially</button>
+                <button onclick="rateCard(5)" class="quick-btn" style="flex: 1; border-color: var(--green-bright); color: var(--green-bright);">Knew it</button>
             </div>
             <div class="fc-keyboard-hint">
-                <kbd>Space</kbd> flip &middot; <kbd>&larr;</kbd> didn't know &middot; <kbd>&rarr;</kbd> knew it
+                <kbd>Space</kbd> flip &middot; <kbd>&larr;</kbd> didn't know &middot; <kbd>&darr;</kbd> partially &middot; <kbd>&rarr;</kbd> knew it
             </div>
         </div>
 
@@ -83,7 +84,7 @@
         <div id="fc-results" style="display: none;">
             <div class="lesson" style="text-align: center;">
                 <h2>Session Complete</h2>
-                <div class="progress-stats" id="fc-results-stats" style="grid-template-columns: repeat(3, 1fr); margin: 1.5rem 0;"></div>
+                <div class="progress-stats" id="fc-results-stats" style="grid-template-columns: repeat(4, 1fr); margin: 1.5rem 0;"></div>
                 <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
                     <button onclick="resetFlashcards()" class="quick-btn primary">New Session</button>
                     <a href="index.html" class="quick-btn">Dashboard</a>

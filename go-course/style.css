@@ -1441,6 +1441,16 @@
     color: #131314;
 }
 
+/* Option buttons (flashcards, daily practice) - active state must override base button styles */
+[data-theme="factorio-dark"] .dp-option.active {
+    background: linear-gradient(180deg, #ffd54f 0%, #fca311 50%, #d48806 100%);
+    color: #131314;
+    box-shadow:
+        inset 1px 1px 0 rgba(255,255,255,0.4),
+        inset -1px -1px 0 rgba(0,0,0,0.2),
+        0 0 8px rgba(252, 163, 17, 0.3);
+}
+
 /* Track titles - production panel header */
 [data-theme="factorio-dark"] .track-header {
     background: linear-gradient(180deg, #1e1e20 0%, #1a1a1c 100%);
@@ -3429,4 +3439,22 @@ footer {
 .strength-fill {
     height: 100%;
     border-radius: 4px;
+}
+
+.analytics-drill-btn {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--orange);
+    border-radius: 4px;
+    color: var(--orange);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+
+.analytics-drill-btn:hover {
+    background: var(--orange);
+    color: var(--bg-dark);
 }

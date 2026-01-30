@@ -101,7 +101,7 @@
     }
 
     // Record a review result for an exercise
-    function recordReview(exerciseKey, quality) {
+    function recordReview(exerciseKey, quality, label) {
         const srsData = loadSRS();
         const current = srsData[exerciseKey] || {
             easeFactor: 2.5,
@@ -112,6 +112,11 @@
         };
 
         srsData[exerciseKey] = calculateNext(current, quality);
+        if (label) {
+            srsData[exerciseKey].label = label;
+        } else if (current.label) {
+            srsData[exerciseKey].label = current.label;
+        }
         saveSRS(srsData);
         return srsData[exerciseKey];
     }
@@ -139,10 +144,14 @@
     }
 
     // Get the exercises the user struggles with most (lowest ease factor)
+    // Only returns items reviewed at least twice with ease below the "Good" threshold (2.5).
+    // A single review doesn't establish a pattern — don't flag those as weak.
     function getWeakestExercises(count) {
         count = count || 10;
         const srsData = loadSRS();
-        const items = Object.entries(srsData).map(([key, item]) => ({ key, ...item }));
+        const items = Object.entries(srsData)
+            .map(([key, item]) => ({ key, ...item }))
+            .filter(item => item.repetitions >= 2 && item.easeFactor < 2.5);
 
         items.sort((a, b) => a.easeFactor - b.easeFactor);
 

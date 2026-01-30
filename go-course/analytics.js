@@ -21,20 +21,36 @@
     // Helpers
     // ---------------------------------------------------------------------------
 
-    /** Extract module number from an exercise key like "m2_warmup_1" */
+    /** Extract module number from an exercise or flashcard key like "m2_warmup_1" or "fc_m1_0" */
     function extractModuleNum(key) {
-        var match = key.match(/^m(\d+)_/);
+        var match = key.match(/^(?:fc_)?m(\d+)_/);
         return match ? parseInt(match[1], 10) : null;
     }
 
-    /** Prettify an exercise key: "m2_warmup_1" -> "Module 2 — Warmup 1" */
-    function prettifyKey(key) {
-        var match = key.match(/^m(\d+)_(\w+?)_(\d+)$/);
-        if (!match) return key;
-        var modNum = match[1];
-        var type = match[2].charAt(0).toUpperCase() + match[2].slice(1);
-        var num = match[3];
-        return 'Module ' + modNum + ' \u2014 ' + type + ' ' + num;
+    /** Prettify an exercise/flashcard key for display */
+    function prettifyKey(key, srsEntry) {
+        // Use stored label if available
+        if (srsEntry && srsEntry.label) return srsEntry.label;
+
+        // Exercise keys: m2_warmup_1 -> "Module 2 — Warmup 1"
+        var exMatch = key.match(/^m(\d+)_(\w+?)_(\d+)$/);
+        if (exMatch) {
+            var modNum = exMatch[1];
+            var type = exMatch[2].charAt(0).toUpperCase() + exMatch[2].slice(1);
+            var num = exMatch[3];
+            return 'Module ' + modNum + ' \u2014 ' + type + ' ' + num;
+        }
+
+        // Flashcard keys: fc_m1_0 -> "M1 Flashcard 1 (Go Fundamentals)"
+        var fcMatch = key.match(/^fc_m(\d+)_(\d+)$/);
+        if (fcMatch) {
+            var fcMod = fcMatch[1];
+            var fcIdx = parseInt(fcMatch[2], 10);
+            var modName = MODULE_NAMES[parseInt(fcMod, 10)] || '';
+            return 'M' + fcMod + ' Flashcard ' + (fcIdx + 1) + (modName ? ' (' + modName + ')' : '');
+        }
+
+        return key;
     }
 
     /** Return a human-readable relative-date string for a nextReview ISO date */
@@ -58,12 +74,17 @@
             case 'Good':     return 'var(--cyan)';
             case 'Moderate': return 'var(--orange)';
             case 'Weak':     return 'var(--red)';
+            case 'Too early': return 'var(--text-dim)';
             default:         return 'var(--text-dim)';
         }
     }
 
+    /** Minimum reviews per module before showing a strength label */
+    var MIN_REVIEWS = 5;
+
     /** Determine strength label from average ease factor */
-    function strengthLabel(avgEase) {
+    function strengthLabel(avgEase, count) {
+        if (count < MIN_REVIEWS) return 'Too early';
         if (avgEase >= 2.5) return 'Strong';
         if (avgEase >= 2.0) return 'Good';
         if (avgEase >= 1.7) return 'Moderate';
@@ -121,7 +142,7 @@
             if (entry.easeFactor > 2.5) {
                 moduleMap[modNum].mastered++;
             }
-            moduleMap[modNum].entries.push({ key: key, easeFactor: entry.easeFactor, nextReview: entry.nextReview });
+            moduleMap[modNum].entries.push({ key: key, easeFactor: entry.easeFactor, nextReview: entry.nextReview, label: entry.label });
         }
 
         // 4. Build module summaries
@@ -131,7 +152,7 @@
             var num = parseInt(moduleNums[j], 10);
             var data = moduleMap[num];
             var avgEase = data.totalEase / data.count;
-            var label = strengthLabel(avgEase);
+            var label = strengthLabel(avgEase, data.count);
             modules.push({
                 num: num,
                 name: MODULE_NAMES[num] || ('Module ' + num),
@@ -147,14 +168,22 @@
         modules.sort(function(a, b) { return a.avgEase - b.avgEase; });
 
         // 5. Top 10 weakest individual exercises
+        // Only actual exercises (not flashcards), reviewed at least twice,
+        // with ease below "Good" (2.5). Flashcards use a different quality
+        // scale so mixing them with exercises is meaningless.
         var allExercises = [];
         for (var k = 0; k < srsKeys.length; k++) {
             var exKey = srsKeys[k];
-            allExercises.push({
-                key: exKey,
-                easeFactor: srsData[exKey].easeFactor,
-                nextReview: srsData[exKey].nextReview
-            });
+            if (exKey.indexOf('fc_') === 0) continue; // skip flashcard keys
+            var entry = srsData[exKey];
+            if (entry.repetitions >= 2 && entry.easeFactor < 2.5) {
+                allExercises.push({
+                    key: exKey,
+                    easeFactor: entry.easeFactor,
+                    nextReview: entry.nextReview,
+                    label: entry.label
+                });
+            }
         }
         allExercises.sort(function(a, b) { return a.easeFactor - b.easeFactor; });
         var weakest = allExercises.slice(0, 10);
@@ -173,20 +202,17 @@
 
         // 7. Global stats
         var totalTracked = srsKeys.length;
-        var totalEaseSum = 0;
         var masteredCount = 0;
         var weakCount = 0;
         for (var t = 0; t < srsKeys.length; t++) {
-            var ef = srsData[srsKeys[t]].easeFactor;
-            totalEaseSum += ef;
-            if (ef > 2.5) masteredCount++;
-            if (ef < 1.7) weakCount++;
+            var srsEntry = srsData[srsKeys[t]];
+            // Only count items with enough reviews to be meaningful
+            if (srsEntry.repetitions >= 2 && srsEntry.easeFactor > 2.5) masteredCount++;
+            if (srsEntry.repetitions >= 2 && srsEntry.easeFactor < 1.7) weakCount++;
         }
-        var avgEaseGlobal = Math.round((totalEaseSum / totalTracked) * 10) / 10;
 
         return {
             totalTracked: totalTracked,
-            avgEase: avgEaseGlobal,
             masteredCount: masteredCount,
             weakCount: weakCount,
             modules: modules,
@@ -218,14 +244,19 @@
 
         // ------ Summary stats ------
         var statsEl = document.getElementById('analytics-stats');
+        var modulesRated = 0;
+        for (var s = 0; s < report.modules.length; s++) {
+            if (report.modules[s].label !== 'Too early') modulesRated++;
+        }
+
         statsEl.innerHTML =
             '<div class="stat-card">' +
                 '<div class="stat-value">' + report.totalTracked + '</div>' +
-                '<div class="stat-label">Exercises Tracked</div>' +
+                '<div class="stat-label">Items Reviewed</div>' +
             '</div>' +
             '<div class="stat-card">' +
-                '<div class="stat-value">' + report.avgEase + '</div>' +
-                '<div class="stat-label">Avg Ease Factor</div>' +
+                '<div class="stat-value">' + modulesRated + ' / ' + report.modules.length + '</div>' +
+                '<div class="stat-label">Modules Rated</div>' +
             '</div>' +
             '<div class="stat-card">' +
                 '<div class="stat-value" style="color: var(--green-bright);">' + report.masteredCount + '</div>' +
@@ -241,15 +272,18 @@
         var rankingsHTML = '';
         for (var i = 0; i < report.modules.length; i++) {
             var mod = report.modules[i];
-            var pct = Math.min(100, Math.round((mod.avgEase / 3.0) * 100));
+            var isTooEarly = mod.label === 'Too early';
+            var pct = isTooEarly ? 0 : Math.min(100, Math.round((mod.avgEase / 3.0) * 100));
+            var easeDisplay = isTooEarly ? '' : '<span style="color: var(--text-dim); font-size: 0.85rem; min-width: 4rem;">' + mod.avgEase + '</span>';
             rankingsHTML +=
                 '<div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: var(--bg-card); border-radius: 6px; margin-bottom: 0.5rem; border-left: 3px solid ' + mod.color + ';">' +
                     '<span style="color: var(--text-dim); min-width: 2rem;">M' + mod.num + '</span>' +
                     '<span style="flex: 1;">' + mod.name + '</span>' +
+                    '<span style="color: var(--text-dim); font-size: 0.8rem;">' + mod.count + ' reviewed</span>' +
                     '<div style="width: 120px; height: 8px; background: var(--bg-lighter); border-radius: 4px; overflow: hidden;">' +
                         '<div style="width: ' + pct + '%; height: 100%; background: ' + mod.color + '; border-radius: 4px;"></div>' +
                     '</div>' +
-                    '<span style="color: var(--text-dim); font-size: 0.85rem; min-width: 4rem;">' + mod.avgEase + '</span>' +
+                    easeDisplay +
                     '<span class="module-tag" style="background: ' + mod.color + '; font-size: 0.75rem;">' + mod.label + '</span>' +
                 '</div>';
         }
@@ -265,10 +299,13 @@
             weakestHTML +=
                 '<div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: var(--bg-card); border-radius: 6px; margin-bottom: 0.5rem;">' +
                     '<span style="color: var(--red); font-weight: 700; min-width: 2rem;">#' + rank + '</span>' +
-                    '<span style="flex: 1;">' + prettifyKey(ex.key) + '</span>' +
+                    '<span style="flex: 1;">' + prettifyKey(ex.key, ex) + '</span>' +
                     '<span style="color: var(--text-dim);">Ease: ' + ex.easeFactor + '</span>' +
                     '<span style="color: var(--orange);">' + status + '</span>' +
                 '</div>';
+        }
+        if (report.weakest.length === 0) {
+            weakestHTML = '<div style="padding: 1.5rem; text-align: center; color: var(--text-dim);">No weak exercises yet. Keep reviewing and exercises you struggle with will appear here.</div>';
         }
         weakestEl.innerHTML = weakestHTML;
 

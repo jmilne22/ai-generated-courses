@@ -9,7 +9,8 @@ var BACKUP_KEYS = [
   'go-course-timer-sound',
   'go-course-sidebar',
   'go-course-streaks',
-  'go-course-activity'
+  'go-course-activity',
+  'go-course-session'
 ];
 
 window.exportAllData = function () {
@@ -88,4 +89,51 @@ window.importAllData = function (file) {
   };
 
   reader.readAsText(file);
+};
+
+window.nukeEverything = function () {
+  if (!confirm('This will permanently delete ALL course data, localStorage, and service worker caches. There is no undo. Continue?')) {
+    return;
+  }
+  if (!confirm('Are you really sure? Export your data first if you want to keep it.')) {
+    return;
+  }
+
+  // Clear all known keys
+  BACKUP_KEYS.forEach(function (key) {
+    localStorage.removeItem(key);
+  });
+
+  // Also nuke any go-course key we might have missed
+  var toRemove = [];
+  for (var i = 0; i < localStorage.length; i++) {
+    var k = localStorage.key(i);
+    if (k && k.indexOf('go-course') === 0) {
+      toRemove.push(k);
+    }
+  }
+  toRemove.forEach(function (k) {
+    localStorage.removeItem(k);
+  });
+
+  // Unregister service workers
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (registrations) {
+      registrations.forEach(function (reg) {
+        reg.unregister();
+      });
+    });
+  }
+
+  // Delete all caches
+  if ('caches' in window) {
+    caches.keys().then(function (names) {
+      names.forEach(function (name) {
+        caches.delete(name);
+      });
+    });
+  }
+
+  alert('Everything nuked. Page will reload.');
+  location.reload();
 };

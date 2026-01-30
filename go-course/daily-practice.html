@@ -140,6 +140,65 @@
             border-color: var(--text);
             color: var(--text);
         }
+        .dp-discover-rating {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .dp-rate-btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+        }
+        .dp-rate-btn:hover {
+            filter: brightness(1.2);
+            transform: translateY(-1px);
+        }
+        .dp-rate-btn.rate-got-it { background: var(--green-bright); color: var(--bg-dark); }
+        .dp-rate-btn.rate-struggled { background: var(--orange); }
+        .dp-rate-btn.rate-no-clue { background: #e05555; }
+        .dp-rate-skip {
+            padding: 0.6rem 1.5rem;
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--bg-lighter);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dp-rate-skip:hover {
+            border-color: var(--text);
+            color: var(--text);
+        }
+        .dp-kbd-hints {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 0.25rem;
+            width: 100%;
+        }
+        .dp-kbd-hints kbd {
+            background: var(--bg-lighter);
+            border: 1px solid var(--text-dim);
+            border-radius: 3px;
+            padding: 0 0.3rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+        }
+        .dp-option:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
         .dp-complete {
             background: var(--bg-card);
             border: 2px solid var(--green-bright);
@@ -212,6 +271,12 @@
             </div>
         </div>
 
+        <!-- Quick Start -->
+        <div id="dp-quick-start" style="margin: 1.5rem 0;">
+            <button class="dp-start-btn" onclick="quickStart()" style="width: 100%; padding: 1rem; font-size: 1.1rem;">Quick Start</button>
+            <p id="dp-quick-desc" style="color: var(--text-dim); font-size: 0.85rem; text-align: center; margin-top: 0.5rem;"></p>
+        </div>
+
         <!-- Configuration -->
         <div class="dp-config" id="dp-config">
             <div class="dp-config-row">
@@ -229,6 +294,7 @@
                     <button class="dp-option active" data-mode="review">Due for Review</button>
                     <button class="dp-option" data-mode="weakest">Weakest</button>
                     <button class="dp-option" data-mode="mixed">Mixed</button>
+                    <button class="dp-option" data-mode="discover">Discover</button>
                 </div>
             </div>
             <div class="dp-config-row">
@@ -277,9 +343,21 @@
                 <div class="dp-progress-fill" id="dp-session-bar" style="width: 0%"></div>
             </div>
             <div id="dp-exercise-container"></div>
-            <div class="dp-nav-btns">
+            <div class="dp-nav-btns" id="dp-nav-standard">
                 <button class="dp-next-btn" id="dp-next" onclick="nextExercise()">Next &rarr;</button>
                 <button class="dp-skip-btn" onclick="skipExercise()">Skip</button>
+            </div>
+            <div class="dp-discover-rating" id="dp-discover-rating" hidden>
+                <button class="dp-rate-btn rate-got-it" onclick="discoverRate(5)">Got it</button>
+                <button class="dp-rate-btn rate-struggled" onclick="discoverRate(3)">Struggled</button>
+                <button class="dp-rate-btn rate-no-clue" onclick="discoverRate(1)">No clue</button>
+                <button class="dp-rate-skip" onclick="discoverSkip()">Skip</button>
+                <div class="dp-kbd-hints">
+                    <kbd>&rarr;</kbd> or <kbd>1</kbd> Got it &nbsp;
+                    <kbd>&darr;</kbd> or <kbd>2</kbd> Struggled &nbsp;
+                    <kbd>&larr;</kbd> or <kbd>3</kbd> No clue &nbsp;
+                    <kbd>S</kbd> Skip
+                </div>
             </div>
         </div>
 

@@ -29,10 +29,17 @@
         17: 'Integration Testing'
     };
 
+    // Modules that have no variant data files — exercises from these can never render
+    const MODULES_WITHOUT_VARIANTS = new Set([7, 8, 11, 13]);
+
+    // Modules that DO have variant data — used by Discover mode
+    const MODULES_WITH_VARIANTS = [1, 2, 3, 4, 5, 6, 9, 10, 12, 14, 15, 16, 17];
+
     let sessionConfig = { count: 10, mode: 'review', type: 'all', modules: 'all' };
     let sessionQueue = [];
     let sessionIndex = 0;
     let sessionResults = { completed: 0, skipped: 0, ratings: { 1: 0, 2: 0, 3: 0 } };
+    let discoverResults = { seen: 0, gotIt: 0, struggled: 0, noClue: 0, skipped: 0, addedToSRS: 0 };
 
     // --- Initialization ---
 
@@ -40,29 +47,95 @@
         updateStats();
         setupConfigButtons();
         checkAvailability();
+        updateQuickStartDesc();
+
+        // URL param autostart (#1)
+        var urlConfig = parseUrlConfig();
+        if (urlConfig) {
+            if (urlConfig.mode) sessionConfig.mode = urlConfig.mode;
+            if (urlConfig.count) sessionConfig.count = urlConfig.count;
+            if (urlConfig.modules) sessionConfig.modules = urlConfig.modules;
+            if (urlConfig.type) sessionConfig.type = urlConfig.type;
+            if (urlConfig.autostart) {
+                history.replaceState(null, '', window.location.pathname);
+                startSession();
+            }
+        }
+
+        // Keyboard shortcuts for discover mode
+        document.addEventListener('keydown', function(e) {
+            if (sessionConfig.mode !== 'discover') return;
+            var sessionEl = document.getElementById('dp-session');
+            if (!sessionEl || sessionEl.hidden) return;
+            // Don't intercept if user is typing in an input/textarea
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            if (e.key === 'ArrowRight' || e.key === '1') {
+                e.preventDefault();
+                discoverRate(5);
+            } else if (e.key === 'ArrowDown' || e.key === '2') {
+                e.preventDefault();
+                discoverRate(3);
+            } else if (e.key === 'ArrowLeft' || e.key === '3') {
+                e.preventDefault();
+                discoverRate(1);
+            } else if (e.key === 's' || e.key === 'S') {
+                e.preventDefault();
+                discoverSkip();
+            }
+        });
+    }
+
+    function parseUrlConfig() {
+        var params = new URLSearchParams(window.location.search);
+        if (!params.has('mode') && !params.has('autostart')) return null;
+
+        var cfg = {};
+        if (params.get('mode')) cfg.mode = params.get('mode');
+        if (params.get('count')) cfg.count = parseInt(params.get('count'), 10);
+        if (params.get('modules')) {
+            var mods = params.get('modules').split(',').map(function(s) { return parseInt(s.trim(), 10); });
+            cfg.modules = mods;
+        }
+        if (params.get('type')) cfg.type = params.get('type');
+        if (params.has('autostart')) cfg.autostart = true;
+        return cfg;
     }
 
     function updateStats() {
         if (!window.SRS) return;
 
-        const due = window.SRS.getDueExercises();
-        const weak = window.SRS.getWeakestExercises(10).filter(e => e.easeFactor < 2.0);
+        const due = window.SRS.getDueExercises().filter(e => isRenderableExercise(e.key));
+        const weak = window.SRS.getWeakestExercises(10).filter(e => e.easeFactor < 2.0 && isRenderableExercise(e.key));
         const all = window.SRS.getAll();
-        const total = Object.keys(all).length;
+        const total = Object.keys(all).filter(isRenderableExercise).length;
 
         setText('dp-due', due.length);
         setText('dp-weak', weak.length);
         setText('dp-total', total);
     }
 
+    /** Check whether a key can actually render as an exercise (not a flashcard, not a variant-less module) */
+    function isRenderableExercise(key) {
+        if (key.startsWith('fc_')) return false;
+        const match = key.match(/^m(\d+)_/);
+        if (!match) return false;
+        return !MODULES_WITHOUT_VARIANTS.has(parseInt(match[1]));
+    }
+
     function checkAvailability() {
         if (!window.SRS) return;
         const all = window.SRS.getAll();
-        const total = Object.keys(all).length;
+        const hasRenderable = Object.keys(all).some(isRenderableExercise);
 
-        if (total === 0) {
-            show('dp-empty');
-            hide('dp-config');
+        if (!hasRenderable) {
+            // No SRS data yet — auto-select Discover mode, keep config visible
+            var discoverBtn = document.querySelector('#dp-mode-options .dp-option[data-mode="discover"]');
+            if (discoverBtn) {
+                setActiveOption('dp-mode-options', discoverBtn);
+                sessionConfig.mode = 'discover';
+                updateModuleButtonStates();
+            }
         }
     }
 
@@ -78,6 +151,7 @@
             btn.addEventListener('click', () => {
                 setActiveOption('dp-mode-options', btn);
                 sessionConfig.mode = btn.dataset.mode;
+                updateModuleButtonStates();
             });
         });
 
@@ -90,6 +164,8 @@
 
         document.querySelectorAll('#dp-module-options .dp-option').forEach(btn => {
             btn.addEventListener('click', () => {
+                if (btn.disabled) return;
+
                 // Module filter supports multi-select: clicking "All" resets, clicking a module toggles it
                 if (btn.dataset.module === 'all') {
                     // Reset to all
@@ -122,9 +198,46 @@
         });
     }
 
+    /** Disable module buttons that have no variant data when Discover mode is selected */
+    function updateModuleButtonStates() {
+        var isDiscover = sessionConfig.mode === 'discover';
+        document.querySelectorAll('#dp-module-options .dp-option').forEach(function(btn) {
+            var mod = btn.dataset.module;
+            if (mod === 'all') return;
+            var modNum = parseInt(mod);
+            if (MODULES_WITHOUT_VARIANTS.has(modNum)) {
+                btn.disabled = isDiscover;
+                btn.title = isDiscover ? 'No exercises available for this module' : '';
+                if (isDiscover && btn.classList.contains('active')) {
+                    btn.classList.remove('active');
+                }
+            } else {
+                btn.disabled = false;
+                btn.title = '';
+            }
+        });
+        // If discover deselected some modules, check if we need to reset to All
+        if (isDiscover) {
+            var activeModules = [];
+            document.querySelectorAll('#dp-module-options .dp-option.active').forEach(function(b) {
+                if (b.dataset.module !== 'all') activeModules.push(parseInt(b.dataset.module));
+            });
+            var allBtn = document.querySelector('#dp-module-options .dp-option[data-module="all"]');
+            if (activeModules.length === 0 && allBtn && !allBtn.classList.contains('active')) {
+                allBtn.classList.add('active');
+                sessionConfig.modules = 'all';
+            }
+        }
+    }
+
     // --- Session Management ---
 
     window.startSession = function() {
+        if (sessionConfig.mode === 'discover') {
+            startDiscoverSession();
+            return;
+        }
+
         sessionQueue = buildQueue(sessionConfig.mode, sessionConfig.count);
 
         if (sessionQueue.length === 0) {
@@ -138,10 +251,76 @@
 
         hide('dp-config');
         hide('dp-stats');
+        hide('dp-quick-start');
         show('dp-session');
+        show('dp-nav-standard');
+        hide('dp-discover-rating');
 
-        renderCurrentExercise();
+        // Show loading state while variant data loads
+        const container = document.getElementById('dp-exercise-container');
+        if (container) {
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-dim);">Loading...</div>';
+        }
+
+        // Collect unique module numbers that need variant data
+        const modulesToLoad = new Set();
+        sessionQueue.forEach(item => {
+            if (item.moduleNum !== null && !MODULES_WITHOUT_VARIANTS.has(item.moduleNum)) {
+                modulesToLoad.add(item.moduleNum);
+            }
+        });
+
+        // Preload all variant scripts in parallel
+        const loadPromises = [];
+        modulesToLoad.forEach(moduleNum => {
+            if (!loadedModules.has(moduleNum)) {
+                loadPromises.push(preloadModuleData(moduleNum));
+            }
+        });
+
+        Promise.all(loadPromises).then(function() {
+            renderCurrentExercise();
+        });
     };
+
+    function startDiscoverSession() {
+        sessionIndex = 0;
+        discoverResults = { seen: 0, gotIt: 0, struggled: 0, noClue: 0, skipped: 0, addedToSRS: 0 };
+
+        hide('dp-config');
+        hide('dp-stats');
+        hide('dp-quick-start');
+        show('dp-session');
+        hide('dp-nav-standard');
+        show('dp-discover-rating');
+
+        var container = document.getElementById('dp-exercise-container');
+        if (container) {
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-dim);">Loading exercise data...</div>';
+        }
+
+        // Determine which modules to load
+        var targetModules = sessionConfig.modules === 'all'
+            ? MODULES_WITH_VARIANTS
+            : MODULES_WITH_VARIANTS.filter(function(m) {
+                return sessionConfig.modules.includes(m);
+            });
+
+        // Preload ALL target module data
+        var loadPromises = targetModules.map(function(moduleNum) {
+            return preloadModuleData(moduleNum);
+        });
+
+        Promise.all(loadPromises).then(function() {
+            sessionQueue = buildDiscoverQueue(sessionConfig.count);
+            if (sessionQueue.length === 0) {
+                hide('dp-session');
+                show('dp-empty');
+                return;
+            }
+            renderCurrentExercise();
+        });
+    }
 
     window.nextExercise = function() {
         sessionResults.completed++;
@@ -150,6 +329,44 @@
 
     window.skipExercise = function() {
         sessionResults.skipped++;
+        advance();
+    };
+
+    window.discoverRate = function(quality) {
+        var item = sessionQueue[sessionIndex];
+        if (!item) return;
+
+        // Record SRS review
+        var label = item.moduleName + ' — ' + (item.type === 'warmup' ? 'Warmup' : 'Challenge');
+        if (window.SRS) {
+            window.SRS.recordReview(item.key, quality, label);
+        }
+
+        // Record exercise progress
+        var selfRating;
+        if (quality === 5) selfRating = 1;       // got it
+        else if (quality === 3) selfRating = 2;   // struggled
+        else selfRating = 3;                       // had to peek / no clue
+
+        if (window.ExerciseProgress) {
+            window.ExerciseProgress.update(item.key, {
+                status: 'completed',
+                selfRating: selfRating
+            });
+        }
+
+        // Track results
+        discoverResults.seen++;
+        discoverResults.addedToSRS++;
+        if (quality === 5) discoverResults.gotIt++;
+        else if (quality === 3) discoverResults.struggled++;
+        else discoverResults.noClue++;
+
+        advance();
+    };
+
+    window.discoverSkip = function() {
+        discoverResults.skipped++;
         advance();
     };
 
@@ -167,45 +384,225 @@
         show('dp-complete');
 
         const resultsEl = document.getElementById('dp-results');
-        if (resultsEl) {
-            // Count ratings from exercise progress
-            const progress = window.ExerciseProgress?.loadAll() || {};
-            let gotIt = 0, struggled = 0, peeked = 0;
-            sessionQueue.forEach(item => {
-                const p = progress[item.key];
-                if (p?.selfRating === 1) gotIt++;
-                else if (p?.selfRating === 2) struggled++;
-                else if (p?.selfRating === 3) peeked++;
-            });
+        if (!resultsEl) return;
 
+        if (sessionConfig.mode === 'discover') {
             resultsEl.innerHTML = `
                 <div class="dp-stat">
-                    <div class="dp-stat-value" style="color: var(--green-bright);">${sessionResults.completed}</div>
-                    <div class="dp-stat-label">Completed</div>
+                    <div class="dp-stat-value" style="color: var(--cyan);">${discoverResults.seen + discoverResults.skipped}</div>
+                    <div class="dp-stat-label">Exercises Seen</div>
                 </div>
                 <div class="dp-stat">
-                    <div class="dp-stat-value" style="color: var(--text-dim);">${sessionResults.skipped}</div>
-                    <div class="dp-stat-label">Skipped</div>
-                </div>
-                <div class="dp-stat">
-                    <div class="dp-stat-value" style="color: var(--green-bright);">${gotIt}</div>
+                    <div class="dp-stat-value" style="color: var(--green-bright);">${discoverResults.gotIt}</div>
                     <div class="dp-stat-label">Got It</div>
                 </div>
                 <div class="dp-stat">
-                    <div class="dp-stat-value" style="color: var(--orange);">${struggled}</div>
+                    <div class="dp-stat-value" style="color: var(--orange);">${discoverResults.struggled}</div>
                     <div class="dp-stat-label">Struggled</div>
                 </div>
                 <div class="dp-stat">
-                    <div class="dp-stat-value" style="color: var(--purple);">${peeked}</div>
-                    <div class="dp-stat-label">Had to Peek</div>
+                    <div class="dp-stat-value" style="color: #e05555;">${discoverResults.noClue}</div>
+                    <div class="dp-stat-label">No Clue</div>
+                </div>
+                <div class="dp-stat">
+                    <div class="dp-stat-value" style="color: var(--text-dim);">${discoverResults.skipped}</div>
+                    <div class="dp-stat-label">Skipped</div>
+                </div>
+                <div class="dp-stat">
+                    <div class="dp-stat-value" style="color: var(--green-bright);">${discoverResults.addedToSRS}</div>
+                    <div class="dp-stat-label">Added to SRS</div>
                 </div>`;
+            return;
+        }
+
+        // Standard mode results
+        const progress = window.ExerciseProgress?.loadAll() || {};
+        let gotIt = 0, struggled = 0, peeked = 0;
+        sessionQueue.forEach(item => {
+            const p = progress[item.key];
+            if (p?.selfRating === 1) gotIt++;
+            else if (p?.selfRating === 2) struggled++;
+            else if (p?.selfRating === 3) peeked++;
+        });
+
+        resultsEl.innerHTML = `
+            <div class="dp-stat">
+                <div class="dp-stat-value" style="color: var(--green-bright);">${sessionResults.completed}</div>
+                <div class="dp-stat-label">Completed</div>
+            </div>
+            <div class="dp-stat">
+                <div class="dp-stat-value" style="color: var(--text-dim);">${sessionResults.skipped}</div>
+                <div class="dp-stat-label">Skipped</div>
+            </div>
+            <div class="dp-stat">
+                <div class="dp-stat-value" style="color: var(--green-bright);">${gotIt}</div>
+                <div class="dp-stat-label">Got It</div>
+            </div>
+            <div class="dp-stat">
+                <div class="dp-stat-value" style="color: var(--orange);">${struggled}</div>
+                <div class="dp-stat-label">Struggled</div>
+            </div>
+            <div class="dp-stat">
+                <div class="dp-stat-value" style="color: var(--purple);">${peeked}</div>
+                <div class="dp-stat-label">Had to Peek</div>
+            </div>`;
+    }
+
+    // --- Quick Start (#6) ---
+
+    window.quickStart = function() {
+        if (!window.SRS) return;
+
+        var all = window.SRS.getAll();
+        var hasRenderable = Object.keys(all).some(isRenderableExercise);
+
+        if (!hasRenderable) {
+            // No SRS data — default to discover mode
+            sessionConfig.mode = 'discover';
+            sessionConfig.count = 10;
+            sessionConfig.type = 'all';
+            sessionConfig.modules = 'all';
+            startSession();
+            return;
+        }
+
+        var due = window.SRS.getDueExercises();
+        var weak = window.SRS.getWeakestExercises(10).filter(function(e) { return e.easeFactor < 2.0; });
+
+        if (due.length >= 5) {
+            sessionConfig.mode = 'review';
+        } else if (weak.length >= 3) {
+            sessionConfig.mode = 'weakest';
+        } else {
+            sessionConfig.mode = 'mixed';
+        }
+        sessionConfig.count = 10;
+        sessionConfig.type = 'all';
+        sessionConfig.modules = 'all';
+
+        startSession();
+    };
+
+    function updateQuickStartDesc() {
+        var descEl = document.getElementById('dp-quick-desc');
+        if (!descEl || !window.SRS) return;
+
+        var due = window.SRS.getDueExercises().filter(function(e) { return isRenderableExercise(e.key); });
+        var weak = window.SRS.getWeakestExercises(10).filter(function(e) { return e.easeFactor < 2.0 && isRenderableExercise(e.key); });
+
+        var all = window.SRS.getAll();
+        var hasAny = Object.keys(all).some(isRenderableExercise);
+
+        if (!hasAny) {
+            // No SRS data — show discover messaging instead of hiding
+            descEl.textContent = 'Start exploring new exercises';
+            return;
+        }
+
+        if (due.length >= 5) {
+            descEl.textContent = due.length + ' exercises due for review — will start a review session';
+        } else if (weak.length >= 3) {
+            descEl.textContent = weak.length + ' weak exercises detected — will drill your weakest areas';
+        } else {
+            descEl.textContent = 'Will start a mixed session of due and weak exercises';
         }
     }
 
     // --- Queue Building ---
 
+    function shuffle(arr) {
+        for (var i = arr.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = tmp;
+        }
+        return arr;
+    }
+
+    function buildDiscoverQueue(count) {
+        var registry = window.moduleDataRegistry;
+        if (!registry) return [];
+
+        var targetModules = sessionConfig.modules === 'all'
+            ? MODULES_WITH_VARIANTS
+            : MODULES_WITH_VARIANTS.filter(function(m) {
+                return sessionConfig.modules.includes(m);
+            });
+
+        var srsData = window.SRS ? window.SRS.getAll() : {};
+        var allItems = [];
+
+        targetModules.forEach(function(moduleNum) {
+            var moduleData = registry[moduleNum];
+            if (!moduleData || !moduleData.variants) return;
+
+            var variants = moduleData.variants;
+            var moduleName = MODULE_NAMES[moduleNum] || ('Module ' + moduleNum);
+
+            // Collect warmups
+            if (variants.warmups && (sessionConfig.type === 'all' || sessionConfig.type === 'warmup')) {
+                variants.warmups.forEach(function(warmup) {
+                    if (!warmup.variants) return;
+                    warmup.variants.forEach(function(variant) {
+                        var key = 'm' + moduleNum + '_' + warmup.id + '_' + variant.id;
+                        allItems.push({
+                            key: key,
+                            moduleNum: moduleNum,
+                            moduleName: moduleName,
+                            type: 'warmup',
+                            challenge: null,
+                            variant: variant,
+                            inSRS: !!srsData[key]
+                        });
+                    });
+                });
+            }
+
+            // Collect challenges
+            if (variants.challenges && (sessionConfig.type === 'all' || sessionConfig.type === 'challenge')) {
+                variants.challenges.forEach(function(challenge) {
+                    if (!challenge.variants) return;
+                    challenge.variants.forEach(function(variant) {
+                        var key = 'm' + moduleNum + '_' + challenge.id + '_' + variant.id;
+                        allItems.push({
+                            key: key,
+                            moduleNum: moduleNum,
+                            moduleName: moduleName,
+                            type: 'challenge',
+                            challenge: challenge,
+                            variant: variant,
+                            inSRS: !!srsData[key]
+                        });
+                    });
+                });
+            }
+        });
+
+        // Split into unseen and seen
+        var unseen = allItems.filter(function(item) { return !item.inSRS; });
+        var seen = allItems.filter(function(item) { return item.inSRS; });
+
+        // Shuffle both pools, prioritize unseen
+        shuffle(unseen);
+        shuffle(seen);
+
+        var queue = unseen.concat(seen).slice(0, count);
+        return queue;
+    }
+
     function matchesFilters(key) {
         const cfg = sessionConfig;
+
+        // Flashcard keys (fc_m1_0 etc.) aren't exercises — never include them
+        if (key.startsWith('fc_')) return false;
+
+        // Extract module number
+        const modMatch = key.match(/^m(\d+)_/);
+        const moduleNum = modMatch ? parseInt(modMatch[1]) : null;
+
+        // Skip modules that have no variant data files
+        if (moduleNum !== null && MODULES_WITHOUT_VARIANTS.has(moduleNum)) return false;
 
         // Type filter
         if (cfg.type !== 'all') {
@@ -217,8 +614,6 @@
 
         // Module filter
         if (cfg.modules !== 'all') {
-            const match = key.match(/^m(\d+)_/);
-            const moduleNum = match ? parseInt(match[1]) : null;
             if (moduleNum === null || !cfg.modules.includes(moduleNum)) return false;
         }
 
@@ -264,7 +659,7 @@
 
         // Limit to requested count and resolve to renderable items
         return candidates.slice(0, count).map(item => {
-            const match = item.key.match(/^m(\d+)_/);
+            const match = item.key.match(/^(?:fc_)?m(\d+)_/);
             const moduleNum = match ? parseInt(match[1]) : null;
             return {
                 key: item.key,
@@ -301,7 +696,29 @@
         const container = document.getElementById('dp-exercise-container');
         if (!container) return;
 
-        // Try to render from loaded variant data
+        // Discover items carry their variant data directly
+        if (item.variant) {
+            const html = window.ExerciseRenderer?.renderExerciseCard({
+                num: 1,
+                variant: item.variant,
+                challenge: item.challenge,
+                type: item.type,
+                exerciseKey: item.key,
+                moduleLabel: `M${item.moduleNum}`
+            });
+            if (html) {
+                container.innerHTML = html;
+                if (window.initExerciseProgress) window.initExerciseProgress();
+                container.querySelectorAll('.exercise').forEach(ex => {
+                    if (window.ExerciseRenderer) {
+                        window.ExerciseRenderer.initPersonalNotes(ex);
+                    }
+                });
+                return;
+            }
+        }
+
+        // Standard path: render from key lookup
         const exerciseHtml = renderFromKey(item);
         if (exerciseHtml) {
             container.innerHTML = exerciseHtml;
@@ -313,13 +730,13 @@
                 }
             });
         } else {
-            // Fallback: show link to module
+            // Fallback: exercise lives in the module page
             container.innerHTML = `
-                <div class="exercise">
-                    <h4>Exercise from Module ${item.moduleNum}</h4>
-                    <p>This exercise's variant data isn't loaded. Open the module to practice it.</p>
-                    <a href="module${item.moduleNum}.html" style="color: var(--green-bright);">
-                        Go to Module ${item.moduleNum}: ${item.moduleName} &rarr;
+                <div class="exercise" style="text-align: center; padding: 2rem;">
+                    <h4 style="margin-bottom: 0.5rem;">Module ${item.moduleNum}: ${item.moduleName}</h4>
+                    <p style="color: var(--text-dim); margin-bottom: 1.25rem;">This exercise is available in the module page.</p>
+                    <a href="module${item.moduleNum}.html" class="dp-next-btn" style="text-decoration: none; display: inline-block;">
+                        Open Module ${item.moduleNum} &rarr;
                     </a>
                 </div>`;
         }
@@ -390,20 +807,24 @@
     // Dynamically load a module's variant data
     const loadedModules = new Set();
 
-    function loadModuleData(moduleNum) {
-        if (loadedModules.has(moduleNum)) return;
+    /** Preload a module's variant data, returning a Promise that resolves when done */
+    function preloadModuleData(moduleNum) {
+        if (loadedModules.has(moduleNum)) return Promise.resolve();
         loadedModules.add(moduleNum);
 
-        const script = document.createElement('script');
-        script.src = `data/module${moduleNum}-variants.js`;
-        script.onload = () => {
-            // Re-render current exercise now that data is available
-            renderCurrentExercise();
-        };
-        script.onerror = () => {
-            // Module doesn't have variant data yet — fallback link will show
-        };
-        document.head.appendChild(script);
+        return new Promise(function(resolve) {
+            const script = document.createElement('script');
+            script.src = `data/module${moduleNum}-variants.js`;
+            script.onload = resolve;
+            script.onerror = resolve; // resolve anyway — fallback will show for this module
+            document.head.appendChild(script);
+        });
+    }
+
+    /** Legacy sync loader — used by renderFromKey as a last resort */
+    function loadModuleData(moduleNum) {
+        if (loadedModules.has(moduleNum)) return;
+        preloadModuleData(moduleNum);
     }
 
     // --- Helpers ---
