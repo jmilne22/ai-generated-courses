@@ -757,52 +757,11 @@
         inset -1px -1px 0 rgba(0,0,0,0.2),
         0 0 12px rgba(252, 163, 17, 0.4);
 }
-[data-theme="factorio-dark"] button.dp-rate-btn.rate-got-it {
-    background: linear-gradient(180deg, #66bb6a 0%, #43a047 50%, #2e7d32 100%);
-    color: #fff;
-    box-shadow:
-        inset 1px 1px 0 rgba(255,255,255,0.3),
-        inset -1px -1px 0 rgba(0,0,0,0.2);
-}
-[data-theme="factorio-dark"] button.dp-rate-btn.rate-got-it:hover {
-    box-shadow:
-        inset 1px 1px 0 rgba(255,255,255,0.4),
-        inset -1px -1px 0 rgba(0,0,0,0.2),
-        0 0 12px rgba(67, 160, 71, 0.4);
-}
-[data-theme="factorio-dark"] button.dp-rate-btn.rate-struggled {
-    background: linear-gradient(180deg, #ffd54f 0%, #fca311 50%, #d48806 100%);
-    color: #131314;
-    box-shadow:
-        inset 1px 1px 0 rgba(255,255,255,0.4),
-        inset -1px -1px 0 rgba(0,0,0,0.2);
-}
-[data-theme="factorio-dark"] button.dp-rate-btn.rate-struggled:hover {
-    box-shadow:
-        inset 1px 1px 0 rgba(255,255,255,0.5),
-        inset -1px -1px 0 rgba(0,0,0,0.2),
-        0 0 12px rgba(252, 163, 17, 0.4);
-}
-[data-theme="factorio-dark"] button.dp-rate-btn.rate-no-clue {
-    background: linear-gradient(180deg, #ef5350 0%, #d32f2f 50%, #b71c1c 100%);
-    color: #fff;
-    box-shadow:
-        inset 1px 1px 0 rgba(255,255,255,0.3),
-        inset -1px -1px 0 rgba(0,0,0,0.2);
-}
-[data-theme="factorio-dark"] button.dp-rate-btn.rate-no-clue:hover {
-    box-shadow:
-        inset 1px 1px 0 rgba(255,255,255,0.4),
-        inset -1px -1px 0 rgba(0,0,0,0.2),
-        0 0 12px rgba(211, 47, 47, 0.4);
-}
-[data-theme="factorio-dark"] button.dp-skip-btn,
-[data-theme="factorio-dark"] button.dp-rate-skip {
+[data-theme="factorio-dark"] button.dp-skip-btn {
     border: 1px solid #3a3a3d;
     color: var(--text-dim);
 }
-[data-theme="factorio-dark"] button.dp-skip-btn:hover,
-[data-theme="factorio-dark"] button.dp-rate-skip:hover {
+[data-theme="factorio-dark"] button.dp-skip-btn:hover {
     border-color: var(--orange);
     color: var(--orange);
     box-shadow: 0 0 8px rgba(252, 163, 17, 0.2);

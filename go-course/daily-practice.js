@@ -39,7 +39,6 @@
     let sessionQueue = [];
     let sessionIndex = 0;
     let sessionResults = { completed: 0, skipped: 0, ratings: { 1: 0, 2: 0, 3: 0 } };
-    let discoverResults = { seen: 0, gotIt: 0, struggled: 0, noClue: 0, skipped: 0, addedToSRS: 0 };
 
     // --- Initialization ---
 
@@ -61,28 +60,6 @@
             }
         }
 
-        // Keyboard shortcuts for discover mode
-        document.addEventListener('keydown', function(e) {
-            if (sessionConfig.mode !== 'discover') return;
-            var sessionEl = document.getElementById('dp-session');
-            if (!sessionEl || sessionEl.hidden) return;
-            // Don't intercept if user is typing in an input/textarea
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-            if (e.key === 'ArrowRight' || e.key === '1') {
-                e.preventDefault();
-                discoverRate(5);
-            } else if (e.key === 'ArrowDown' || e.key === '2') {
-                e.preventDefault();
-                discoverRate(3);
-            } else if (e.key === 'ArrowLeft' || e.key === '3') {
-                e.preventDefault();
-                discoverRate(1);
-            } else if (e.key === 's' || e.key === 'S') {
-                e.preventDefault();
-                discoverSkip();
-            }
-        });
     }
 
     function parseUrlConfig() {
@@ -272,7 +249,7 @@
         hide('dp-stats');
         show('dp-session');
         show('dp-nav-standard');
-        hide('dp-discover-rating');
+
 
         // Show loading state while variant data loads
         const container = document.getElementById('dp-exercise-container');
@@ -303,13 +280,13 @@
 
     function startDiscoverSession() {
         sessionIndex = 0;
-        discoverResults = { seen: 0, gotIt: 0, struggled: 0, noClue: 0, skipped: 0, addedToSRS: 0 };
+        sessionResults = { completed: 0, skipped: 0, ratings: { 1: 0, 2: 0, 3: 0 } };
 
         hide('dp-config');
         hide('dp-stats');
         show('dp-session');
-        hide('dp-nav-standard');
-        show('dp-discover-rating');
+        show('dp-nav-standard');
+
 
         var container = document.getElementById('dp-exercise-container');
         if (container) {
@@ -349,43 +326,6 @@
         advance();
     };
 
-    window.discoverRate = function(quality) {
-        var item = sessionQueue[sessionIndex];
-        if (!item) return;
-
-        // Record SRS review
-        var label = item.moduleName + ' — ' + (item.type === 'warmup' ? 'Warmup' : 'Challenge');
-        if (window.SRS) {
-            window.SRS.recordReview(item.key, quality, label);
-        }
-
-        // Record exercise progress
-        var selfRating;
-        if (quality === 5) selfRating = 1;       // got it
-        else if (quality === 3) selfRating = 2;   // struggled
-        else selfRating = 3;                       // had to peek / no clue
-
-        if (window.ExerciseProgress) {
-            window.ExerciseProgress.update(item.key, {
-                status: 'completed',
-                selfRating: selfRating
-            });
-        }
-
-        // Track results
-        discoverResults.seen++;
-        discoverResults.addedToSRS++;
-        if (quality === 5) discoverResults.gotIt++;
-        else if (quality === 3) discoverResults.struggled++;
-        else discoverResults.noClue++;
-
-        advance();
-    };
-
-    window.discoverSkip = function() {
-        discoverResults.skipped++;
-        advance();
-    };
 
     function advance() {
         sessionIndex++;
@@ -403,36 +343,6 @@
         const resultsEl = document.getElementById('dp-results');
         if (!resultsEl) return;
 
-        if (sessionConfig.mode === 'discover') {
-            resultsEl.innerHTML = `
-                <div class="dp-stat">
-                    <div class="dp-stat-value" style="color: var(--cyan);">${discoverResults.seen + discoverResults.skipped}</div>
-                    <div class="dp-stat-label">Exercises Seen</div>
-                </div>
-                <div class="dp-stat">
-                    <div class="dp-stat-value" style="color: var(--green-bright);">${discoverResults.gotIt}</div>
-                    <div class="dp-stat-label">Got It</div>
-                </div>
-                <div class="dp-stat">
-                    <div class="dp-stat-value" style="color: var(--orange);">${discoverResults.struggled}</div>
-                    <div class="dp-stat-label">Struggled</div>
-                </div>
-                <div class="dp-stat">
-                    <div class="dp-stat-value" style="color: #e05555;">${discoverResults.noClue}</div>
-                    <div class="dp-stat-label">No Clue</div>
-                </div>
-                <div class="dp-stat">
-                    <div class="dp-stat-value" style="color: var(--text-dim);">${discoverResults.skipped}</div>
-                    <div class="dp-stat-label">Skipped</div>
-                </div>
-                <div class="dp-stat">
-                    <div class="dp-stat-value" style="color: var(--green-bright);">${discoverResults.addedToSRS}</div>
-                    <div class="dp-stat-label">Added to SRS</div>
-                </div>`;
-            return;
-        }
-
-        // Standard mode results
         const progress = window.ExerciseProgress?.loadAll() || {};
         let gotIt = 0, struggled = 0, peeked = 0;
         sessionQueue.forEach(item => {
