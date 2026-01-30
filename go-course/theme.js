@@ -422,6 +422,9 @@
     }
 
     function getPhaseDurationSeconds(session) {
+        if (session.phase === 'prep') {
+            return 5 * 60;
+        }
         if (session.phase === 'break') {
             return (session.breakMinutes || 0) * 60;
         }
@@ -636,18 +639,38 @@
         if (session.status === 'paused') {
             const totalSeconds = getPhaseDurationSeconds(session);
             const remainingSeconds = Math.max(0, session.remainingSeconds || totalSeconds);
-            const elapsedSeconds = totalSeconds - remainingSeconds;
-            setSession({
-                status: 'running',
-                phase: session.phase || 'focus',
-                focusMinutes: session.focusMinutes || session.minutes,
-                breakMinutes: session.breakMinutes || 0,
-                longBreakMinutes: session.longBreakMinutes || 15,
-                completedCycles: session.completedCycles || 0,
-                cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
-                startAt: Date.now() - elapsedSeconds * 1000,
-                hidden: false
-            });
+
+            // Detect fresh start: seeded focus session with no elapsed time
+            const isFreshStart = session.phase === 'focus'
+                && (session.completedCycles || 0) === 0
+                && remainingSeconds === (session.focusMinutes || 0) * 60;
+
+            if (isFreshStart) {
+                setSession({
+                    status: 'running',
+                    phase: 'prep',
+                    focusMinutes: session.focusMinutes || session.minutes,
+                    breakMinutes: session.breakMinutes || 0,
+                    longBreakMinutes: session.longBreakMinutes || 15,
+                    completedCycles: 0,
+                    cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
+                    startAt: Date.now(),
+                    hidden: false
+                });
+            } else {
+                const elapsedSeconds = totalSeconds - remainingSeconds;
+                setSession({
+                    status: 'running',
+                    phase: session.phase || 'focus',
+                    focusMinutes: session.focusMinutes || session.minutes,
+                    breakMinutes: session.breakMinutes || 0,
+                    longBreakMinutes: session.longBreakMinutes || 15,
+                    completedCycles: session.completedCycles || 0,
+                    cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
+                    startAt: Date.now() - elapsedSeconds * 1000,
+                    hidden: false
+                });
+            }
         } else {
             const remainingSeconds = getRemainingSeconds(session);
             setSession({
@@ -748,7 +771,10 @@
         let labelMinutes = session.focusMinutes || 0;
 
         if (session.status !== 'paused') {
-            if (session.phase === 'longBreak') {
+            if (session.phase === 'prep') {
+                statusLabel = 'Prep';
+                labelMinutes = 5;
+            } else if (session.phase === 'longBreak') {
                 statusLabel = 'Long break';
                 labelMinutes = session.longBreakMinutes || 15;
             } else if (session.phase === 'break') {
@@ -782,6 +808,25 @@
         }
 
         if (session.status === 'running' && remainingSeconds <= 0) {
+            // Prep phase completed - transition to focus
+            if (session.phase === 'prep') {
+                playSound('work');
+                showTimerCompletion('Prep done — focus time!');
+                setSession({
+                    status: 'running',
+                    phase: 'focus',
+                    focusMinutes: session.focusMinutes,
+                    breakMinutes: session.breakMinutes,
+                    longBreakMinutes: session.longBreakMinutes || 15,
+                    completedCycles: session.completedCycles || 0,
+                    cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
+                    startAt: Date.now(),
+                    hidden: false
+                });
+                updateSessionTimer();
+                return;
+            }
+
             // Focus session completed - increment cycle and start break
             if (session.phase === 'focus' && session.breakMinutes > 0) {
                 const newCompletedCycles = (session.completedCycles || 0) + 1;
@@ -860,7 +905,7 @@
         const { focusMinutes, breakMinutes, longBreakMinutes } = parseDurationValue(minutes);
         setSession({
             status: 'running',
-            phase: 'focus',
+            phase: 'prep',
             focusMinutes,
             breakMinutes,
             longBreakMinutes,
