@@ -38,44 +38,10 @@
             ]
         },
         {
-            label: 'Catppuccin',
-            options: [
-                { value: 'catppuccin-dark', label: 'Dark' },
-                { value: 'catppuccin-light', label: 'Light' }
-            ]
-        },
-        {
             label: 'Gruvbox',
             options: [
                 { value: 'gruvbox-dark', label: 'Dark' },
                 { value: 'gruvbox-light', label: 'Light' }
-            ]
-        },
-        {
-            label: 'Tokyo Night',
-            options: [
-                { value: 'tokyonight-dark', label: 'Dark' },
-                { value: 'tokyonight-light', label: 'Light' }
-            ]
-        },
-        {
-            label: 'Ayu',
-            options: [
-                { value: 'ayu-dark', label: 'Dark' },
-                { value: 'ayu-light', label: 'Light' }
-            ]
-        },
-        {
-            label: 'Nord',
-            options: [
-                { value: 'nord-dark', label: 'Dark' },
-                { value: 'nord-light', label: 'Light' }
-            ]
-        },
-        {
-            label: 'Dracula',
-            options: [
-                { value: 'dracula-dark', label: 'Dark' }
             ]
         },
         {
@@ -93,12 +59,6 @@
             ]
         },
         {
-            label: 'Pastel',
-            options: [
-                { value: 'pastel-light', label: 'Light' }
-            ]
-        },
-        {
             label: 'Persona 5',
             options: [
                 { value: 'persona5-dark', label: 'Dark' }
@@ -112,10 +72,13 @@
         }
     ];
 
+    // All valid theme values
+    const validThemes = new Set(themeGroups.flatMap(g => g.options.map(o => o.value)));
+
     // Check for saved theme preference or default to dark
     function getPreferredTheme() {
         const saved = safeGet('go-course-theme');
-        if (saved) {
+        if (saved && validThemes.has(saved)) {
             return saved;
         }
         // Default to dark mode (the original theme)
