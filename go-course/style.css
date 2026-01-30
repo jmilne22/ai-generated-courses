@@ -2514,6 +2514,19 @@ body.focus-mode .code-compare {
     color: var(--text-dim);
 }
 
+.session-message {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-top: 0.3rem;
+    min-height: 1.2em;
+    opacity: 0.7;
+}
+
+.session-message:empty {
+    display: none;
+}
+
 .session-controls {
     display: flex;
     gap: 0.5rem;

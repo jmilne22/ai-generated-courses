@@ -513,25 +513,7 @@
             }, 1000);
         });
 
-        // Show in-page toast
-        const existing = document.getElementById('timer-toast');
-        if (existing) existing.remove();
-
-        const toast = document.createElement('div');
-        toast.id = 'timer-toast';
-        toast.textContent = message;
-        toast.style.cssText = 'position:fixed;top:1.5rem;left:50%;transform:translateX(-50%);'
-            + 'background:#1a1a2e;color:#e0e0e0;padding:0.75rem 1.5rem;border-radius:8px;'
-            + 'font-size:0.95rem;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.3);'
-            + 'opacity:0;transition:opacity 0.3s ease;pointer-events:none;';
-        document.body.appendChild(toast);
-        requestAnimationFrame(() => { toast.style.opacity = '1'; });
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-
-        // Also show browser notification if supported
+        // Show browser notification if supported
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Go Course Timer', {
                 body: message,
@@ -556,6 +538,7 @@
                 <div class="session-progress-bar" id="floating-session-progress"></div>
             </div>
             <div class="session-meta" id="floating-session-label">Focus block</div>
+            <div class="session-message" id="floating-session-message"></div>
             <div class="session-controls">
                 <button class="session-control-btn" type="button" data-session-action="toggle">Pause</button>
                 <button class="session-control-btn" type="button" data-session-action="reset">Reset</button>
@@ -581,6 +564,7 @@
         countdownText,
         progressWidth,
         labelText,
+        messageText,
         toggleLabel,
         showToggle
     }) {
@@ -590,12 +574,14 @@
             const countdown = document.getElementById('session-countdown');
             const progress = document.getElementById('session-progress');
             const label = document.getElementById('session-label');
+            const message = document.getElementById('session-message');
             const toggleBtn = dashboardTimer.querySelector('[data-session-action="toggle"]');
 
             dashboardTimer.hidden = false;
             if (countdown) countdown.textContent = countdownText;
             if (progress) progress.style.width = progressWidth;
             if (label) label.textContent = labelText;
+            if (message) message.textContent = messageText || '';
             if (toggleBtn && toggleLabel) toggleBtn.textContent = toggleLabel;
             if (toggleBtn) toggleBtn.hidden = !showToggle;
 
@@ -607,11 +593,13 @@
         const countdown = floating.querySelector('#floating-session-countdown');
         const progress = floating.querySelector('#floating-session-progress');
         const label = floating.querySelector('#floating-session-label');
+        const message = floating.querySelector('#floating-session-message');
         const toggleBtn = floating.querySelector('[data-session-action="toggle"]');
 
         if (countdown) countdown.textContent = countdownText;
         if (progress) progress.style.width = progressWidth;
         if (label) label.textContent = labelText;
+        if (message) message.textContent = messageText || '';
         if (toggleBtn && toggleLabel) toggleBtn.textContent = toggleLabel;
         if (toggleBtn) toggleBtn.hidden = !showToggle;
     }
@@ -704,9 +692,9 @@
                     completedCycles: 0,
                     cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
                     startAt: Date.now(),
+                    message: pickRandom(phaseMessages.prepStart),
                     hidden: false
                 });
-                showTimerCompletion(pickRandom(phaseMessages.prepStart));
             } else {
                 const elapsedSeconds = totalSeconds - remainingSeconds;
                 setSession({
@@ -718,6 +706,7 @@
                     completedCycles: session.completedCycles || 0,
                     cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
                     startAt: Date.now() - elapsedSeconds * 1000,
+                    message: session.message || '',
                     hidden: false
                 });
             }
@@ -732,6 +721,7 @@
                 completedCycles: session.completedCycles || 0,
                 cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
                 remainingSeconds,
+                message: session.message || '',
                 hidden: false
             });
         }
@@ -845,6 +835,7 @@
             countdownText,
             progressWidth,
             labelText,
+            messageText: session.message || '',
             toggleLabel,
             showToggle
         });
@@ -860,8 +851,9 @@
         if (session.status === 'running' && remainingSeconds <= 0) {
             // Prep phase completed - transition to focus
             if (session.phase === 'prep') {
+                const msg = pickRandom(phaseMessages.focusStart);
                 playSound('work');
-                showTimerCompletion(pickRandom(phaseMessages.focusStart));
+                showTimerCompletion(msg);
                 setSession({
                     status: 'running',
                     phase: 'focus',
@@ -871,6 +863,7 @@
                     completedCycles: session.completedCycles || 0,
                     cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
                     startAt: Date.now(),
+                    message: msg,
                     hidden: false
                 });
                 updateSessionTimer();
@@ -882,8 +875,9 @@
                 const newCompletedCycles = (session.completedCycles || 0) + 1;
                 const needsLongBreak = newCompletedCycles % (session.cyclesBeforeLongBreak || 4) === 0;
 
-                playSound('break'); // Play break sound
-                showTimerCompletion(pickRandom(phaseMessages.breakStart));
+                const msg = pickRandom(phaseMessages.breakStart);
+                playSound('break');
+                showTimerCompletion(msg);
 
                 setSession({
                     status: 'running',
@@ -894,6 +888,7 @@
                     completedCycles: newCompletedCycles,
                     cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
                     startAt: Date.now(),
+                    message: msg,
                     hidden: false
                 });
                 updateSessionTimer();
@@ -902,8 +897,9 @@
 
             // Break completed - automatically start next focus session
             if ((session.phase === 'break' || session.phase === 'longBreak') && session.focusMinutes > 0) {
-                playSound('work'); // Play work sound
-                showTimerCompletion(pickRandom(phaseMessages.backToWork));
+                const msg = pickRandom(phaseMessages.backToWork);
+                playSound('work');
+                showTimerCompletion(msg);
 
                 setSession({
                     status: 'running',
@@ -914,6 +910,7 @@
                     completedCycles: session.completedCycles || 0,
                     cyclesBeforeLongBreak: session.cyclesBeforeLongBreak || 4,
                     startAt: Date.now(),
+                    message: msg,
                     hidden: false
                 });
                 updateSessionTimer();
@@ -962,9 +959,9 @@
             completedCycles: 0,
             cyclesBeforeLongBreak: 4,
             startAt: Date.now(),
+            message: pickRandom(phaseMessages.prepStart),
             hidden: false
         });
-        showTimerCompletion(pickRandom(phaseMessages.prepStart));
         updateSessionTimer();
 
         const lastModule = localStorage.getItem('go-course-last-module');
