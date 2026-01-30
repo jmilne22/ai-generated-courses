@@ -1,5 +1,5 @@
 // Service Worker for Go Course — offline support
-// Cache-first strategy for static assets
+// Network-first strategy: always fresh, cache for offline fallback
 
 var CACHE_NAME = 'go-course-v3';
 
@@ -58,34 +58,34 @@ var ASSETS = [
     'data/module17-variants.js'
 ];
 
-// Install: cache all assets
+// Install: cache all assets, activate immediately
 self.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open(CACHE_NAME).then(function(cache) {
             return cache.addAll(ASSETS);
         })
     );
+    self.skipWaiting();
 });
 
-// Fetch: cache-first, fall back to network
+// Fetch: network-first, fall back to cache when offline
 self.addEventListener('fetch', function(event) {
     event.respondWith(
-        caches.match(event.request).then(function(cached) {
-            return cached || fetch(event.request).then(function(response) {
-                // Cache new successful responses
-                if (response.ok) {
-                    var clone = response.clone();
-                    caches.open(CACHE_NAME).then(function(cache) {
-                        cache.put(event.request, clone);
-                    });
-                }
-                return response;
-            });
+        fetch(event.request).then(function(response) {
+            if (response.ok) {
+                var clone = response.clone();
+                caches.open(CACHE_NAME).then(function(cache) {
+                    cache.put(event.request, clone);
+                });
+            }
+            return response;
+        }).catch(function() {
+            return caches.match(event.request);
         })
     );
 });
 
-// Activate: clean old caches
+// Activate: clean old caches, take control of all pages immediately
 self.addEventListener('activate', function(event) {
     event.waitUntil(
         caches.keys().then(function(names) {
@@ -96,6 +96,8 @@ self.addEventListener('activate', function(event) {
                     return caches.delete(name);
                 })
             );
+        }).then(function() {
+            return self.clients.claim();
         })
     );
 });
