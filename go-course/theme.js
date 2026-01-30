@@ -468,6 +468,37 @@
         };
     }
 
+    function pickRandom(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    const phaseMessages = {
+        prepStart: [
+            'Get set up — you have 5 minutes',
+            'Open your notes, grab a drink',
+            'Pick your task and settle in',
+            'Clear your desk, get comfortable',
+        ],
+        focusStart: [
+            'Prep done — let\'s go',
+            'Alright, focus time',
+            'Time to lock in',
+            'Let\'s get to work',
+        ],
+        breakStart: [
+            'Step away from the screen',
+            'Grab a drink, stretch your legs',
+            'Take a breather',
+            'Good work — take a break',
+        ],
+        backToWork: [
+            'Break\'s over — back to it',
+            'Ready for another round',
+            'Recharged? Let\'s continue',
+            'Back at it',
+        ],
+    };
+
     function showTimerCompletion(message) {
         // Flash visual feedback
         const timers = [
@@ -482,7 +513,25 @@
             }, 1000);
         });
 
-        // Show notification if supported
+        // Show in-page toast
+        const existing = document.getElementById('timer-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'timer-toast';
+        toast.textContent = message;
+        toast.style.cssText = 'position:fixed;top:1.5rem;left:50%;transform:translateX(-50%);'
+            + 'background:#1a1a2e;color:#e0e0e0;padding:0.75rem 1.5rem;border-radius:8px;'
+            + 'font-size:0.95rem;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.3);'
+            + 'opacity:0;transition:opacity 0.3s ease;pointer-events:none;';
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => { toast.style.opacity = '1'; });
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+
+        // Also show browser notification if supported
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Go Course Timer', {
                 body: message,
@@ -657,6 +706,7 @@
                     startAt: Date.now(),
                     hidden: false
                 });
+                showTimerCompletion(pickRandom(phaseMessages.prepStart));
             } else {
                 const elapsedSeconds = totalSeconds - remainingSeconds;
                 setSession({
@@ -811,7 +861,7 @@
             // Prep phase completed - transition to focus
             if (session.phase === 'prep') {
                 playSound('work');
-                showTimerCompletion('Prep done — focus time!');
+                showTimerCompletion(pickRandom(phaseMessages.focusStart));
                 setSession({
                     status: 'running',
                     phase: 'focus',
@@ -833,7 +883,7 @@
                 const needsLongBreak = newCompletedCycles % (session.cyclesBeforeLongBreak || 4) === 0;
 
                 playSound('break'); // Play break sound
-                showTimerCompletion('Break time!');
+                showTimerCompletion(pickRandom(phaseMessages.breakStart));
 
                 setSession({
                     status: 'running',
@@ -853,7 +903,7 @@
             // Break completed - automatically start next focus session
             if ((session.phase === 'break' || session.phase === 'longBreak') && session.focusMinutes > 0) {
                 playSound('work'); // Play work sound
-                showTimerCompletion('Back to work!');
+                showTimerCompletion(pickRandom(phaseMessages.backToWork));
 
                 setSession({
                     status: 'running',
@@ -914,6 +964,7 @@
             startAt: Date.now(),
             hidden: false
         });
+        showTimerCompletion(pickRandom(phaseMessages.prepStart));
         updateSessionTimer();
 
         const lastModule = localStorage.getItem('go-course-last-module');
