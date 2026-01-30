@@ -46,8 +46,7 @@
     function init() {
         updateStats();
         setupConfigButtons();
-        checkAvailability();
-        updateQuickStartDesc();
+        preselectBestMode();
 
         // URL param autostart (#1)
         var urlConfig = parseUrlConfig();
@@ -123,20 +122,30 @@
         return !MODULES_WITHOUT_VARIANTS.has(parseInt(match[1]));
     }
 
-    function checkAvailability() {
+    /** Pre-select the best mode based on current SRS state */
+    function preselectBestMode() {
         if (!window.SRS) return;
-        const all = window.SRS.getAll();
-        const hasRenderable = Object.keys(all).some(isRenderableExercise);
 
-        if (!hasRenderable) {
-            // No SRS data yet — auto-select Discover mode, keep config visible
-            var discoverBtn = document.querySelector('#dp-mode-options .dp-option[data-mode="discover"]');
-            if (discoverBtn) {
-                setActiveOption('dp-mode-options', discoverBtn);
-                sessionConfig.mode = 'discover';
-                updateModuleButtonStates();
-            }
+        var due = window.SRS.getDueExercises().filter(function(e) { return isRenderableExercise(e.key); });
+        var weak = window.SRS.getWeakestExercises(10).filter(function(e) { return e.easeFactor < 2.0 && isRenderableExercise(e.key); });
+
+        var bestMode;
+        if (due.length >= 5) {
+            bestMode = 'review';
+        } else if (weak.length >= 3) {
+            bestMode = 'weakest';
+        } else if (due.length > 0 || weak.length > 0) {
+            bestMode = 'mixed';
+        } else {
+            bestMode = 'discover';
         }
+
+        sessionConfig.mode = bestMode;
+        var btn = document.querySelector('#dp-mode-options .dp-option[data-mode="' + bestMode + '"]');
+        if (btn) {
+            setActiveOption('dp-mode-options', btn);
+        }
+        updateModuleButtonStates();
     }
 
     function setupConfigButtons() {
@@ -241,17 +250,26 @@
         sessionQueue = buildQueue(sessionConfig.mode, sessionConfig.count);
 
         if (sessionQueue.length === 0) {
-            show('dp-empty');
-            hide('dp-config');
+            var hintEl = document.getElementById('dp-start-hint');
+            if (hintEl) {
+                var modeLabel = sessionConfig.mode === 'review' ? 'due for review'
+                    : sessionConfig.mode === 'weakest' ? 'weak enough'
+                    : 'matching';
+                hintEl.textContent = 'Not enough exercises ' + modeLabel + ' yet — try Discover mode, or complete and rate exercises in the course modules.';
+                hintEl.style.display = '';
+            }
             return;
         }
+
+        // Clear any previous hint
+        var hintEl = document.getElementById('dp-start-hint');
+        if (hintEl) hintEl.style.display = 'none';
 
         sessionIndex = 0;
         sessionResults = { completed: 0, skipped: 0, ratings: { 1: 0, 2: 0, 3: 0 } };
 
         hide('dp-config');
         hide('dp-stats');
-        hide('dp-quick-start');
         show('dp-session');
         show('dp-nav-standard');
         hide('dp-discover-rating');
@@ -289,7 +307,6 @@
 
         hide('dp-config');
         hide('dp-stats');
-        hide('dp-quick-start');
         show('dp-session');
         hide('dp-nav-standard');
         show('dp-discover-rating');
@@ -448,66 +465,6 @@
             </div>`;
     }
 
-    // --- Quick Start (#6) ---
-
-    window.quickStart = function() {
-        if (!window.SRS) return;
-
-        var all = window.SRS.getAll();
-        var hasRenderable = Object.keys(all).some(isRenderableExercise);
-
-        if (!hasRenderable) {
-            // No SRS data — default to discover mode
-            sessionConfig.mode = 'discover';
-            sessionConfig.count = 10;
-            sessionConfig.type = 'all';
-            sessionConfig.modules = 'all';
-            startSession();
-            return;
-        }
-
-        var due = window.SRS.getDueExercises();
-        var weak = window.SRS.getWeakestExercises(10).filter(function(e) { return e.easeFactor < 2.0; });
-
-        if (due.length >= 5) {
-            sessionConfig.mode = 'review';
-        } else if (weak.length >= 3) {
-            sessionConfig.mode = 'weakest';
-        } else {
-            sessionConfig.mode = 'mixed';
-        }
-        sessionConfig.count = 10;
-        sessionConfig.type = 'all';
-        sessionConfig.modules = 'all';
-
-        startSession();
-    };
-
-    function updateQuickStartDesc() {
-        var descEl = document.getElementById('dp-quick-desc');
-        if (!descEl || !window.SRS) return;
-
-        var due = window.SRS.getDueExercises().filter(function(e) { return isRenderableExercise(e.key); });
-        var weak = window.SRS.getWeakestExercises(10).filter(function(e) { return e.easeFactor < 2.0 && isRenderableExercise(e.key); });
-
-        var all = window.SRS.getAll();
-        var hasAny = Object.keys(all).some(isRenderableExercise);
-
-        if (!hasAny) {
-            // No SRS data — show discover messaging instead of hiding
-            descEl.textContent = 'Start exploring new exercises';
-            return;
-        }
-
-        if (due.length >= 5) {
-            descEl.textContent = due.length + ' exercises due for review — will start a review session';
-        } else if (weak.length >= 3) {
-            descEl.textContent = weak.length + ' weak exercises detected — will drill your weakest areas';
-        } else {
-            descEl.textContent = 'Will start a mixed session of due and weak exercises';
-        }
-    }
-
     // --- Queue Building ---
 
     function shuffle(arr) {
@@ -646,7 +603,13 @@
         // Apply type and module filters
         candidates = candidates.filter(item => matchesFilters(item.key));
 
-        // If we don't have enough from SRS, pad with random tracked exercises
+        // Review and weakest need a minimum pool to be meaningful —
+        // below 5 exercises the mode doesn't have enough signal
+        if ((mode === 'review' || mode === 'weakest') && candidates.length < 5) {
+            return [];
+        }
+
+        // Pad with random tracked exercises to fill the requested count
         if (candidates.length < count) {
             const all = window.SRS.getAll();
             const existing = new Set(candidates.map(c => c.key));

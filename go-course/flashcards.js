@@ -994,12 +994,32 @@
     // =========================================================================
     // SESSION MANAGEMENT
     // =========================================================================
+    function getOrCreateHint() {
+        var el = document.getElementById('fc-start-hint');
+        if (!el) {
+            el = document.createElement('p');
+            el.id = 'fc-start-hint';
+            el.style.cssText = 'color: var(--orange); font-size: 0.85rem; margin-top: 0.5rem;';
+            var configEl = document.getElementById('fc-config');
+            if (configEl) configEl.appendChild(el);
+        }
+        return el;
+    }
+
     window.startFlashcardSession = function() {
         deck = buildDeck();
+        var hintEl = getOrCreateHint();
         if (deck.length === 0) {
-            alert('No flashcards available for the selected options.');
+            if (hintEl) {
+                var modeLabel = config.mode === 'due' ? 'due for review'
+                    : config.mode === 'weak' ? 'weak enough'
+                    : 'matching';
+                hintEl.textContent = 'Not enough cards ' + modeLabel + ' yet — try Random mode, or review some cards first.';
+                hintEl.style.display = 'block';
+            }
             return;
         }
+        if (hintEl) hintEl.style.display = 'none';
         currentIndex = 0;
         isFlipped = false;
         results = { knew: 0, partial: 0, didnt: 0 };
@@ -1059,13 +1079,12 @@
     }
 
     function sortByDue(cards) {
-        if (!window.SRS) return cards;
+        if (!window.SRS) return [];
         var srsData = window.SRS.getAll();
         var now = new Date();
 
-        // Separate due and unseen
+        // Only include cards that are in SRS and actually due
         var due = [];
-        var unseen = [];
 
         for (var i = 0; i < cards.length; i++) {
             var key = srsKey(cards[i]);
@@ -1073,40 +1092,34 @@
             if (entry && new Date(entry.nextReview) <= now) {
                 cards[i]._overdue = now - new Date(entry.nextReview);
                 due.push(cards[i]);
-            } else if (!entry) {
-                unseen.push(cards[i]);
             }
         }
 
-        // Sort due by most overdue first
+        // Sort by most overdue first
         due.sort(function(a, b) { return b._overdue - a._overdue; });
 
-        // Shuffle unseen
-        for (var j = unseen.length - 1; j > 0; j--) {
-            var k = Math.floor(Math.random() * (j + 1));
-            var temp = unseen[j];
-            unseen[j] = unseen[k];
-            unseen[k] = temp;
-        }
-
-        return due.concat(unseen);
+        return due;
     }
 
     function sortByWeak(cards) {
-        if (!window.SRS) return cards;
+        if (!window.SRS) return [];
         var srsData = window.SRS.getAll();
 
-        // Assign ease factor (default 2.5 for unseen, which sorts last)
+        // Only include cards that are in SRS (have been reviewed)
+        var reviewed = [];
         for (var i = 0; i < cards.length; i++) {
             var key = srsKey(cards[i]);
             var entry = srsData[key];
-            cards[i]._ease = entry ? entry.easeFactor : 2.5;
+            if (entry) {
+                cards[i]._ease = entry.easeFactor;
+                reviewed.push(cards[i]);
+            }
         }
 
         // Sort by ease ascending (weakest first)
-        cards.sort(function(a, b) { return a._ease - b._ease; });
+        reviewed.sort(function(a, b) { return a._ease - b._ease; });
 
-        return cards;
+        return reviewed;
     }
 
     // =========================================================================
