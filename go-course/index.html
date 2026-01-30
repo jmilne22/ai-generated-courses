@@ -28,39 +28,24 @@
             <p class="module-desc">Track your progress through 17 modules</p>
         </div>
 
-        <div class="quick-actions">
-            <div class="quick-btn" style="padding: 1rem;">
-                <label for="session-duration" style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Session length</label>
-                <select id="session-duration" class="session-duration">
-                    <option value="25-5-15">Pomodoro 25/5/15</option>
-                    <option value="50-10-15">Pomodoro 50/10/15</option>
-                    <option value="90-20-30">Pomodoro 90/20/30</option>
-                </select>
+        <div class="dashboard-panel">
+            <div class="panel-actions">
+                <a href="#" id="resume-btn" class="resume-btn">▶ Resume last module</a>
+                <div class="session-controls">
+                    <select id="session-duration" class="session-duration">
+                        <option value="25-5-15">25/5/15</option>
+                        <option value="50-10-15">50/10/15</option>
+                        <option value="90-20-30">90/20/30</option>
+                    </select>
+                    <button class="session-start-btn" type="button" id="start-session-btn">Start</button>
+                </div>
             </div>
-            <button class="quick-btn primary" type="button" id="start-session-btn">
-                <span class="btn-icon">⏱️</span>
-                Start session
-            </button>
-            <a href="#" id="resume-btn" class="quick-btn">
-                <span class="btn-icon">▶️</span>
-                Resume last module
-            </a>
-            <a href="module0.html" class="quick-btn">
-                <span class="btn-icon">📚</span>
-                Quick reference
-            </a>
-            <a href="daily-practice.html" class="quick-btn">
-                <span class="btn-icon">🎯</span>
-                Daily Practice
-            </a>
-            <a href="flashcards.html" class="quick-btn">
-                <span class="btn-icon">🃏</span>
-                Flashcards
-            </a>
-            <a href="analytics.html" class="quick-btn">
-                <span class="btn-icon">📊</span>
-                Weak Concepts
-            </a>
+            <nav class="panel-nav">
+                <a href="module0.html" class="nav-pill">Quick Ref</a>
+                <a href="daily-practice.html" class="nav-pill">Daily Practice</a>
+                <a href="flashcards.html" class="nav-pill">Flashcards</a>
+                <a href="analytics.html" class="nav-pill">Weak Concepts</a>
+            </nav>
         </div>
 
         <div class="session-timer" id="session-timer" hidden>
@@ -82,49 +67,17 @@
 
         <div id="focus-toggle-slot" class="focus-toggle-slot"></div>
 
-        <div class="focus-links">
-            <span>Pomodoro stream:</span>
-            <a class="focus-link" href="https://www.youtube.com/watch?v=QOfygTDyITY" target="_blank" rel="noopener">Persona 1</a>
-            <a class="focus-link" href="https://www.youtube.com/watch?v=brTT4cmTRTY" target="_blank" rel="noopener">Persona 2</a>
-        </div>
-
-        <div class="progress-stats">
-            <div class="stat-card">
-                <div class="stat-value" id="completed-count">0</div>
-                <div class="stat-label">Modules Done</div>
+        <div class="stats-panel">
+            <div class="stats-row">
+                <div class="stat-item"><span class="stat-value" id="completed-count">0</span><span class="stat-label">Modules</span></div>
+                <div class="stat-item"><span class="stat-value" id="exercises-count">0</span><span class="stat-label">Exercises</span></div>
+                <div class="stat-item"><span class="stat-value" id="progress-percent">0%</span><span class="stat-label">Progress</span></div>
+                <div class="stat-item"><span class="stat-value" id="due-count">0</span><span class="stat-label">Due for Review</span></div>
             </div>
-            <div class="stat-card">
-                <div class="stat-value" id="exercises-count">0</div>
-                <div class="stat-label">Exercises Done</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="remaining-count">17</div>
-                <div class="stat-label">Remaining</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="progress-percent">0%</div>
-                <div class="stat-label">Progress</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="due-count">0</div>
-                <div class="stat-label">Due for Review</div>
-            </div>
-        </div>
-
-        <div class="streak-section">
-            <div class="progress-stats" style="grid-template-columns: repeat(3, 1fr);">
-                <div class="stat-card">
-                    <div class="stat-value" id="streak-current">0</div>
-                    <div class="stat-label">Day Streak</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="streak-longest">0</div>
-                    <div class="stat-label">Best Streak</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="streak-today">0</div>
-                    <div class="stat-label">Today</div>
-                </div>
+            <div class="stats-row">
+                <div class="stat-item"><span class="stat-value" id="streak-current">0</span><span class="stat-label">Day Streak</span></div>
+                <div class="stat-item"><span class="stat-value" id="streak-longest">0</span><span class="stat-label">Best Streak</span></div>
+                <div class="stat-item"><span class="stat-value" id="streak-today">0</span><span class="stat-label">Today</span></div>
             </div>
             <div id="activity-heatmap"></div>
         </div>
@@ -365,15 +318,18 @@
             </div>
         </div>
 
-        <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
-            <button class="export-notes" id="export-notes-btn">Export Notes</button>
-            <button class="quick-btn" id="export-all-btn">Export All Data</button>
-            <label class="quick-btn" style="cursor: pointer;">
-                Import Data <input type="file" accept=".json" hidden id="import-data-input">
-            </label>
-            <button class="clear-progress" id="clear-progress-btn">Clear All Progress</button>
-            <button class="clear-progress" style="border-color: var(--red); color: var(--red);" id="nuke-btn">Nuke Everything</button>
-        </div>
+        <details class="data-management">
+            <summary>Data Management</summary>
+            <div class="data-actions">
+                <button class="export-notes" id="export-notes-btn">Export Notes</button>
+                <button class="data-btn" id="export-all-btn">Export All Data</button>
+                <label class="data-btn">
+                    Import Data <input type="file" accept=".json" hidden id="import-data-input">
+                </label>
+                <button class="clear-progress" id="clear-progress-btn">Clear All Progress</button>
+                <button class="clear-progress clear-progress--danger" id="nuke-btn">Nuke Everything</button>
+            </div>
+        </details>
     </div>
 
     <script src="theme.js"></script>

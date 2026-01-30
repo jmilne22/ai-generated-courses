@@ -915,6 +915,66 @@
     color: var(--factorio-yellow);
 }
 
+/* Dashboard panel overrides */
+[data-theme="factorio-dark"] button.session-start-btn {
+    background: linear-gradient(180deg, #ffd54f 0%, #fca311 50%, #d48806 100%);
+    color: #131314;
+    border: none;
+    box-shadow:
+        inset 1px 1px 0 rgba(255,255,255,0.4),
+        inset -1px -1px 0 rgba(0,0,0,0.2);
+}
+[data-theme="factorio-dark"] button.session-start-btn:hover {
+    background: linear-gradient(180deg, #ffe082 0%, #ffd54f 50%, #fca311 100%);
+    color: #131314;
+    box-shadow:
+        inset 1px 1px 0 rgba(255,255,255,0.5),
+        inset -1px -1px 0 rgba(0,0,0,0.2),
+        0 0 12px rgba(252, 163, 17, 0.4);
+}
+[data-theme="factorio-dark"] a.resume-btn {
+    background: linear-gradient(180deg, #66bb6a 0%, #43a047 50%, #2e7d32 100%);
+    color: #fff;
+    box-shadow:
+        inset 1px 1px 0 rgba(255,255,255,0.3),
+        inset -1px -1px 0 rgba(0,0,0,0.2);
+}
+[data-theme="factorio-dark"] a.resume-btn:hover {
+    background: linear-gradient(180deg, #81c784 0%, #66bb6a 50%, #43a047 100%);
+    color: #fff;
+    box-shadow:
+        inset 1px 1px 0 rgba(255,255,255,0.4),
+        inset -1px -1px 0 rgba(0,0,0,0.2),
+        0 0 12px rgba(67, 160, 71, 0.4);
+}
+
+/* Sidebar toggle - match industrial square aesthetic */
+[data-theme="factorio-dark"] .sidebar-toggle {
+    border-radius: 0;
+    background: linear-gradient(180deg, #2d2d30 0%, #232326 100%);
+    border: none;
+    box-shadow:
+        inset 1px 1px 0 #3a3a3d,
+        inset -1px -1px 0 #0f0f10;
+}
+[data-theme="factorio-dark"] .sidebar-toggle:hover {
+    box-shadow:
+        inset 1px 1px 0 #4a4a4d,
+        inset -1px -1px 0 #1a1a1c,
+        0 0 0 1px var(--orange);
+    color: var(--orange);
+}
+[data-theme="factorio-dark"] body.sidebar-open .sidebar-toggle {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    border-right: 1px solid #0f0f10;
+}
+[data-theme="factorio-dark"] body.sidebar-open .sidebar-toggle:hover {
+    background: linear-gradient(180deg, rgba(252, 163, 17, 0.1) 0%, transparent 100%);
+    box-shadow: none;
+}
+
 /* Disable pulse animation for cleaner industrial look */
 [data-theme="factorio-dark"] .session-timer:not([hidden]),
 [data-theme="factorio-dark"] .floating-session-timer {

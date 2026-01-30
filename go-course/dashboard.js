@@ -24,11 +24,9 @@ function updateStats() {
         return /^\d+$/.test(el.dataset.module);
     }).length;
     const completed = Object.values(progress).filter(function (p) { return p.completed; }).length;
-    const remaining = total - completed;
     const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 
     document.getElementById('completed-count').textContent = completed;
-    document.getElementById('remaining-count').textContent = remaining;
     document.getElementById('progress-percent').textContent = percent + '%';
 
     // Exercise-level progress from progress.js data

@@ -431,6 +431,25 @@
     font-size: 0.7rem;
 }
 
+/* --- Dashboard panel buttons --- */
+[data-theme="persona5-dark"] .session-start-btn {
+    background: var(--red) !important;
+    color: #fff !important;
+    border-color: var(--red) !important;
+}
+[data-theme="persona5-dark"] .session-start-btn:hover {
+    background: #ff2233 !important;
+    box-shadow: 0 4px 16px rgba(217, 35, 35, 0.3);
+}
+[data-theme="persona5-dark"] .resume-btn {
+    background: var(--red) !important;
+    color: #fff !important;
+}
+[data-theme="persona5-dark"] .resume-btn:hover {
+    background: #ff2233 !important;
+    box-shadow: 0 4px 16px rgba(217, 35, 35, 0.3);
+}
+
 /* --- Quick action buttons --- */
 [data-theme="persona5-dark"] .quick-btn.primary {
     background: var(--red) !important;
