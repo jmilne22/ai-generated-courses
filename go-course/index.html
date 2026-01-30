@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive Go programming course with 17 modules covering fundamentals, CLI tools, concurrency, testing, and capstone projects.">
     <title>Go Course - Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,176 +19,6 @@
     <link rel="stylesheet" href="themes/everforest-light.css">
     <link rel="stylesheet" href="themes/persona5-dark.css">
     <link rel="stylesheet" href="themes/factorio-dark.css">
-    <style>
-        .dashboard-header {
-            margin: 2rem 0 2.5rem;
-        }
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1rem;
-            margin: 2rem auto;
-            max-width: 760px;
-        }
-        .session-duration {
-            width: 100%;
-            padding: 0.65rem 0.9rem;
-            border-radius: 8px;
-            border: 2px solid var(--bg-lighter);
-            background: var(--bg-card);
-            color: var(--text);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-        }
-
-        @media (max-width: 720px) {
-            .quick-actions {
-                grid-template-columns: 1fr;
-                max-width: 100%;
-            }
-        }
-        .session-timer {
-            margin-bottom: 2rem;
-        }
-        .focus-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            align-items: center;
-            margin: 0.5rem 0 2rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--text-dim);
-        }
-        .focus-link {
-            padding: 0.35rem 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 999px;
-            text-decoration: none;
-            color: var(--cyan);
-            transition: all 0.2s;
-        }
-        .focus-link:hover {
-            border-color: var(--cyan);
-            color: var(--text-main);
-        }
-        .progress-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-        .stat-card {
-            background: var(--bg-card);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px solid var(--bg-lighter);
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--orange);
-            font-family: 'JetBrains Mono', monospace;
-        }
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-dim);
-            margin-top: 0.5rem;
-        }
-        .module-list {
-            margin-top: 2rem;
-        }
-        .track-section {
-            margin: 2rem 0;
-        }
-        .track-title {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-        .module-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--bg-card);
-            border: 1px solid var(--bg-lighter);
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
-            transition: all 0.2s;
-        }
-        .module-item:hover {
-            border-color: var(--orange);
-        }
-        .module-checkbox {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: var(--green-bright);
-        }
-        .module-link {
-            flex: 1;
-            text-decoration: none;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .module-num {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            min-width: 80px;
-        }
-        .module-name {
-            font-weight: 500;
-        }
-        .module-item.completed {
-            opacity: 0.6;
-        }
-        .module-item.completed .module-name {
-            text-decoration: line-through;
-        }
-        .last-studied {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            font-family: 'JetBrains Mono', monospace;
-        }
-        .clear-progress {
-            padding: 0.5rem 1rem;
-            background: transparent;
-            border: 1px solid var(--bg-lighter);
-            color: var(--text-dim);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-family: 'JetBrains Mono', monospace;
-            transition: all 0.2s;
-        }
-        .clear-progress:hover {
-            border-color: var(--orange);
-            color: var(--orange);
-        }
-        .export-notes {
-            padding: 0.5rem 1rem;
-            background: transparent;
-            border: 1px solid var(--purple);
-            color: var(--purple);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-family: 'JetBrains Mono', monospace;
-            transition: all 0.2s;
-        }
-        .export-notes:hover {
-            background: var(--purple);
-            color: var(--bg-dark);
-        }
-    </style>
 </head>
 <body>
     <div class="container">
@@ -200,17 +31,17 @@
         <div class="quick-actions">
             <div class="quick-btn" style="padding: 1rem;">
                 <label for="session-duration" style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Session length</label>
-                <select id="session-duration" class="session-duration" onchange="window.updateSessionDuration && window.updateSessionDuration(this.value)">
+                <select id="session-duration" class="session-duration">
                     <option value="25-5-15">Pomodoro 25/5/15</option>
                     <option value="50-10-15">Pomodoro 50/10/15</option>
                     <option value="90-20-30">Pomodoro 90/20/30</option>
                 </select>
             </div>
-            <button class="quick-btn primary" type="button" onclick="startSession(document.getElementById('session-duration').value)">
+            <button class="quick-btn primary" type="button" id="start-session-btn">
                 <span class="btn-icon">⏱️</span>
                 Start session
             </button>
-            <a href="#" onclick="resumeLastModule(event)" class="quick-btn">
+            <a href="#" id="resume-btn" class="quick-btn">
                 <span class="btn-icon">▶️</span>
                 Resume last module
             </a>
@@ -243,9 +74,9 @@
             <div class="session-meta" id="session-label">Focus block • 25 min</div>
             <div class="session-message" id="session-message"></div>
             <div class="session-controls">
-                <button class="session-control-btn" type="button" data-session-action="toggle" onclick="window.sessionToggle && window.sessionToggle()">Pause</button>
-                <button class="session-control-btn" type="button" data-session-action="reset" onclick="window.sessionReset && window.sessionReset()">Reset timer</button>
-                <button class="session-control-btn" type="button" id="sound-toggle" onclick="window.toggleTimerSound && window.toggleTimerSound()">🔔 Sound</button>
+                <button class="session-control-btn" type="button" data-session-action="toggle">Pause</button>
+                <button class="session-control-btn" type="button" data-session-action="reset">Reset timer</button>
+                <button class="session-control-btn" type="button" id="sound-toggle">🔔 Sound</button>
             </div>
         </div>
 
@@ -495,16 +326,53 @@
                     <span class="last-studied" id="last-17"></span>
                 </div>
             </div>
+
+            <!-- Projects -->
+            <div class="track-section">
+                <div class="track-title">Projects • Capstone</div>
+                <div class="module-item" data-module="p1">
+                    <input type="checkbox" class="module-checkbox" id="mp1">
+                    <a href="project-taskrunner.html" class="module-link">
+                        <span class="module-num">PROJECT 01</span>
+                        <span class="module-name">Task Runner</span>
+                    </a>
+                    <span class="last-studied" id="last-p1"></span>
+                </div>
+                <div class="module-item" data-module="p2">
+                    <input type="checkbox" class="module-checkbox" id="mp2">
+                    <a href="project-filebrowser.html" class="module-link">
+                        <span class="module-num">PROJECT 02</span>
+                        <span class="module-name">File Browser TUI</span>
+                    </a>
+                    <span class="last-studied" id="last-p2"></span>
+                </div>
+                <div class="module-item" data-module="p3">
+                    <input type="checkbox" class="module-checkbox" id="mp3">
+                    <a href="project-githubcli.html" class="module-link">
+                        <span class="module-num">PROJECT 03</span>
+                        <span class="module-name">GitHub CLI</span>
+                    </a>
+                    <span class="last-studied" id="last-p3"></span>
+                </div>
+                <div class="module-item" data-module="p4">
+                    <input type="checkbox" class="module-checkbox" id="mp4">
+                    <a href="project-downloader.html" class="module-link">
+                        <span class="module-num">PROJECT 04</span>
+                        <span class="module-name">Parallel Downloader</span>
+                    </a>
+                    <span class="last-studied" id="last-p4"></span>
+                </div>
+            </div>
         </div>
 
         <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
-            <button class="export-notes" onclick="exportNotes()">Export Notes</button>
-            <button class="quick-btn" onclick="exportAllData()">Export All Data</button>
+            <button class="export-notes" id="export-notes-btn">Export Notes</button>
+            <button class="quick-btn" id="export-all-btn">Export All Data</button>
             <label class="quick-btn" style="cursor: pointer;">
-                Import Data <input type="file" accept=".json" hidden onchange="importAllData(this.files[0])">
+                Import Data <input type="file" accept=".json" hidden id="import-data-input">
             </label>
-            <button class="clear-progress" onclick="clearProgress()">Clear All Progress</button>
-            <button class="clear-progress" style="border-color: var(--red); color: var(--red);" onclick="nukeEverything()">Nuke Everything</button>
+            <button class="clear-progress" id="clear-progress-btn">Clear All Progress</button>
+            <button class="clear-progress" style="border-color: var(--red); color: var(--red);" id="nuke-btn">Nuke Everything</button>
         </div>
     </div>
 
@@ -513,248 +381,6 @@
     <script src="streaks.js"></script>
     <script src="data-backup.js"></script>
     <script src="progress.js"></script>
-    <script>
-        // Progress tracking with localStorage
-        const STORAGE_KEY = 'go-course-progress';
-        const LAST_MODULE_KEY = 'go-course-last-module';
-
-        function loadProgress() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            return saved ? JSON.parse(saved) : {};
-        }
-
-        function saveProgress(moduleNum, completed) {
-            const progress = loadProgress();
-            progress[moduleNum] = {
-                completed,
-                lastStudied: completed ? new Date().toISOString() : (progress[moduleNum]?.lastStudied || null)
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-            updateStats();
-        }
-
-        function updateStats() {
-            const progress = loadProgress();
-            const total = 17;
-            const completed = Object.values(progress).filter(p => p.completed).length;
-            const remaining = total - completed;
-            const percent = Math.round((completed / total) * 100);
-
-            document.getElementById('completed-count').textContent = completed;
-            document.getElementById('remaining-count').textContent = remaining;
-            document.getElementById('progress-percent').textContent = percent + '%';
-
-            // Exercise-level progress from progress.js data
-            const exerciseProgress = JSON.parse(localStorage.getItem('go-course-exercise-progress') || '{}');
-            const exercisesByModule = {};
-            let totalExercises = 0;
-
-            Object.entries(exerciseProgress).forEach(([key, data]) => {
-                if (data.status === 'completed') {
-                    const match = key.match(/^m(\d+)_/);
-                    if (match) {
-                        const mod = match[1];
-                        exercisesByModule[mod] = (exercisesByModule[mod] || 0) + 1;
-                        totalExercises++;
-                    }
-                }
-            });
-
-            const exercisesEl = document.getElementById('exercises-count');
-            if (exercisesEl) exercisesEl.textContent = totalExercises;
-
-            // SRS due count
-            const dueEl = document.getElementById('due-count');
-            if (dueEl && window.SRS) {
-                dueEl.textContent = window.SRS.getDueCount();
-            }
-
-            // Streak stats
-            if (window.Streaks) {
-                const sc = document.getElementById('streak-current');
-                const sl = document.getElementById('streak-longest');
-                const st = document.getElementById('streak-today');
-                if (sc) sc.textContent = Streaks.getCurrent();
-                if (sl) sl.textContent = Streaks.getLongest();
-                if (st) st.textContent = Streaks.getTodayCount();
-                const heatmap = document.getElementById('activity-heatmap');
-                if (heatmap) Streaks.renderHeatmap(heatmap);
-            }
-
-            // Update UI
-            for (let i = 0; i <= 17; i++) {
-                const checkbox = document.getElementById(`m${i}`);
-                const item = document.querySelector(`[data-module="${i}"]`);
-                const lastStudied = document.getElementById(`last-${i}`);
-                const exProgress = document.getElementById(`ex-progress-${i}`);
-
-                if (checkbox && progress[i]) {
-                    checkbox.checked = progress[i].completed;
-                    if (progress[i].completed && item) {
-                        item.classList.add('completed');
-                    }
-                    if (progress[i].lastStudied && lastStudied) {
-                        const date = new Date(progress[i].lastStudied);
-                        lastStudied.textContent = date.toLocaleDateString();
-                    }
-                }
-
-                // Show exercise completion count per module
-                if (exProgress && exercisesByModule[i]) {
-                    const count = exercisesByModule[i];
-                    exProgress.innerHTML = `<span class="exercise-progress-bar"><span class="exercise-progress-fill" style="width: 100%"></span></span> ${count} done`;
-                }
-            }
-        }
-
-        function recordModuleVisit(moduleNum) {
-            localStorage.setItem(LAST_MODULE_KEY, moduleNum);
-            const progress = loadProgress();
-            if (!progress[moduleNum]) {
-                progress[moduleNum] = { completed: false };
-            }
-            progress[moduleNum].lastStudied = new Date().toISOString();
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-        }
-
-        function resumeLastModule(e) {
-            e.preventDefault();
-            const lastModule = localStorage.getItem(LAST_MODULE_KEY);
-            if (lastModule) {
-                window.location.href = `module${lastModule}.html`;
-            } else {
-                window.location.href = 'module0.html';
-            }
-        }
-
-
-        function exportNotes() {
-            const notesKey = 'go-course-personal-notes';
-            const allNotes = JSON.parse(localStorage.getItem(notesKey) || '{}');
-
-            if (Object.keys(allNotes).length === 0) {
-                alert('No notes to export yet!');
-                return;
-            }
-
-            // Group notes by section
-            const grouped = {
-                warmups: [],
-                challenges: [],
-                advanced: []
-            };
-
-            Object.entries(allNotes).forEach(([key, note]) => {
-                if (note.trim() === '') return; // Skip empty notes
-
-                const [exerciseId, variantId] = key.split('_');
-                const section = exerciseId.replace(/[0-9]/g, ''); // warmup, challenge, advanced
-
-                let title = key;
-                if (exerciseId.startsWith('warmup')) {
-                    title = `Warmup ${exerciseId.replace('warmup', '')} - Variant ${variantId.replace('v', '')}`;
-                } else if (exerciseId.startsWith('challenge')) {
-                    title = `Challenge ${exerciseId.replace('challenge', '')} - Variant ${variantId.replace('v', '')}`;
-                } else if (exerciseId.startsWith('advanced')) {
-                    title = `Advanced ${exerciseId.replace('advanced', '')} - Variant ${variantId.replace('v', '')}`;
-                }
-
-                const item = { title, note };
-
-                if (section === 'warmup') {
-                    grouped.warmups.push(item);
-                } else if (section === 'challenge') {
-                    grouped.challenges.push(item);
-                } else if (section === 'advanced') {
-                    grouped.advanced.push(item);
-                }
-            });
-
-            // Generate Markdown
-            let markdown = `# Go Course - Personal Notes\n\n`;
-            markdown += `Exported on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}\n\n`;
-            markdown += `---\n\n`;
-
-            if (grouped.warmups.length > 0) {
-                markdown += `## Warmups\n\n`;
-                grouped.warmups.forEach(({ title, note }) => {
-                    markdown += `### ${title}\n\n${note}\n\n---\n\n`;
-                });
-            }
-
-            if (grouped.challenges.length > 0) {
-                markdown += `## Challenges\n\n`;
-                grouped.challenges.forEach(({ title, note }) => {
-                    markdown += `### ${title}\n\n${note}\n\n---\n\n`;
-                });
-            }
-
-            if (grouped.advanced.length > 0) {
-                markdown += `## Advanced\n\n`;
-                grouped.advanced.forEach(({ title, note }) => {
-                    markdown += `### ${title}\n\n${note}\n\n---\n\n`;
-                });
-            }
-
-            // Create and download file
-            const blob = new Blob([markdown], { type: 'text/markdown' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `go-course-notes-${new Date().toISOString().split('T')[0]}.md`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function clearProgress() {
-            if (confirm('Clear all progress? This cannot be undone.')) {
-                localStorage.removeItem(STORAGE_KEY);
-                localStorage.removeItem(LAST_MODULE_KEY);
-                localStorage.removeItem('go-course-exercise-progress');
-                localStorage.removeItem('go-course-srs');
-                localStorage.removeItem('go-course-streaks');
-                localStorage.removeItem('go-course-activity');
-                location.reload();
-            }
-        }
-
-        // Add event listeners to checkboxes
-        document.addEventListener('DOMContentLoaded', () => {
-            updateStats();
-            if (window.updateSessionTimer) {
-                window.updateSessionTimer();
-            }
-
-            document.querySelectorAll('.module-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', (e) => {
-                    const moduleNum = e.target.id.replace('m', '');
-                    const item = document.querySelector(`[data-module="${moduleNum}"]`);
-
-                    saveProgress(moduleNum, e.target.checked);
-
-                    if (e.target.checked) {
-                        item?.classList.add('completed');
-                    } else {
-                        item?.classList.remove('completed');
-                    }
-                });
-            });
-
-            // Track clicks on module links
-            document.querySelectorAll('.module-link').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    const moduleNum = link.closest('[data-module]').dataset.module;
-                    recordModuleVisit(moduleNum);
-                });
-            });
-
-            // Register service worker (progressive enhancement)
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(function() {});
-            }
-        });
-    </script>
+    <script src="dashboard.js"></script>
 </body>
 </html>
